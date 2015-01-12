@@ -1,0 +1,11 @@
+IP - 192.168.100.213 and 192.168.100.217
+Path - /etc/opt/OC/ocmp/ccxml/scripts
+
+Main CCXML - voicexml20.ccxml
+Replacement of Main ccxml for chat on reliance infra - voicexml20_chat_relplatform
+Precall testing - voicexml20_precall.ccxml
+Call rejection after ring - voicexml20_rejectafterring.ccxml
+Call rejection - voicexml20_rejectcall.ccxml
+for timer event - voicexml20_timerevt.ccxml
+for OBD - voicexml21.ccxml
+default ccxml - voicexml20_default.ccxml

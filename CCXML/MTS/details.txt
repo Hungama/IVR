@@ -1,0 +1,30 @@
+MU:--
+http://10.130.14.106:8088/hungama/hungama_mod/HUNGAMA_MOD_ROOT.ccxml
+
+REG PORTAL:-
+toll and toll free - http://10.130.14.106:8088/hungama/Hungama_Regional_Portal/REGIONAL_ROOT_TOLL.ccxml
+
+BHAKTISAGAR:-
+http://10.130.14.106:8088/hungama/hungama_devotional/devotional.ccxml
+
+55789 ROOT PORTAL:-
+http://10.130.14.106:8088/hungama/hungama_root_portal/hungama_root_portal.ccxml
+
+54646;--
+toll model - http://10.130.14.106:8088/hungama/hungama_54646/hungama_54646.ccxml
+toll free - http://10.130.14.106:8088/hungama/hungama_54646/hungama_54646_TF.ccxml
+
+VOICE_ALERT:-
+http://10.130.14.106:8088/hungama/voice_alert/voice.ccxml
+
+VOICE_ALERT OBD:-
+http://10.130.14.106:8088/hungama/obd_HUNGAMA/HUNGAMA_ROOT.ccxml
+
+HUNGAMA_MONSOON_CONTEST:-
+toll and toll free - http://10.130.14.106:8088/hungama/Hungama_Monsoon_Contest/Monsoon_Contest_TOLLMODE.ccxml
+
+RED FM:-
+http://10.130.14.106:8088/hungama/REDFM/Hungama_Red.ccxml
+
+FMJ:-
+http://10.130.14.106:8088/hungama/celebrity_chat/HUNGAMA_STARCLUB_ROOT.ccxml

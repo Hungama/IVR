@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- this ccxml script implements voicexml 2.0/2.1 behaviour for incoming and originated calls -->
+<!-- $Id: voicexml20.ccxml 4591 2010-04-27 17:10:24Z dominique_domet_de_mont $ -->
+
+<ccxml version="1.0" xmlns="http://www.w3.org/2002/09/ccxml">
+
+    <!-- declare the vars we are going to use -->
+    <var name="in_connectionid"/>
+    <var name="out_connectionid"/>
+    <var name="dialogid"/>
+    <var name="vxml_maxtime"/>
+    <var name="maxtime_sendid" expr="null"/>
+    <!--
+         The "src" attribute of dialogprepare or dialogstart elements can either be:
+         
+           - builtin:configured         In that case, the new vxml dialog is executed in the context
+                                        of the configured vxml service matching the called number.
+                                        The URL of the executed vxml script comes from that configuration.
+           - a valid vxml http URL      In that case, the new vxml dialog is executed in the context
+                                        of the configured vxml service matching the called number.
+                                        The URL of the executed vxml script comes from the src attribute.
+           - builtin:service:<name>     In that case, the new vxml dialog is executed in the context
+                                        of the configured vxml service matching the service name specified
+                                        in the string "builtin:service:<name>".
+                                        The URL of the executed vxml script comes from that configuration.
+    -->
+    <var name="vxml_url" expr="'builtin:configured'"/>
+    <var name="callinit_request"/>
+    <var name="transfer_duration_in_millis"/>
+    <var name="accept_refer" expr="false"/>
+    <var name="ANI" expr="'9999216077'"/>
+    <var name="User_ANI" expr="'9711071741'"/>
+    <var name="CELEB_ONLINE" expr="'FALSE'"/>
+    <var name="Input_Celeb" expr="''"/>
+    <var name="conidnewvin" expr="'CONFERENCE1'"/>
+    <var name="user_conid_incof" expr="''"/>
+    <var name="DNIS" expr="'45678'"/>
+    <var name="realDNIS" expr="''"/>
+	    <var name="SEND_FLAG" expr="'0'"/>
+	    <var name="SEND_FLAG_USER" expr="'0'"/>
+
+       <var name="unjoin_user_value" expr="''"/>
+    <var name="conn1" expr="''"/>	
+    <var name="conn3" expr="''"/>	
+    <var name="status" expr="''"/>
+    <var name="confconnectionid"/>
+    <var name="streamtypeaudio"/>
+    <assign name="streamtypeaudio" expr="'audio'" />
+    <var name="flag" expr="''"/>	
+    <var name="thestate" expr="''"/>		    
+    <var name="dlgid" expr="''"/>
+    <var name="dialogid1" expr="''"/>
+    <var name="dialogid2" expr="''"/>
+    <var name="dialogid3" expr="''"/>
+    <var name="recordingId" expr="''"/>	
+    <var name="IP_Name" expr="'192.168.100.226:8080'"/>	
+	    
+    <!-- set an initial state -->
+    <var name="mystate" expr="'init'"/>
+    <var name="filename" expr="''"/>
+    <var name="in_sessionid_call" expr="''"/>
+  
+
+    <eventprocessor statevariable="mystate">
+        <!-- deal with an incoming call -->
+        <transition state="init" event="connection.alerting" name="evt">
+              <!-- save off the connection id -->
+	      <assign name="ANI" expr="evt.connection.remote"/>
+	      <log expr="'ANI=='"/>
+	      <log expr="ANI"/> 
+	      <assign name="in_connectionid" expr="evt.connectionid"/>
+	      <log expr="'in_connectionid=='"/>
+	      <log expr="in_connectionid"/>  
+              <assign name="in_sessionid_call" expr="session.id"/>
+	      <log expr="'session idddddddssssssssss=='"/>
+	      <log expr="in_sessionid_call"/>
+	      <assign name="realDNIS" expr="evt.connection.local"/>
+	      <log expr="'realDNIS of thi call is======'"/>
+	      <log expr="realDNIS"/>
+	      <if cond="realDNIS == '66291352' || realDNIS == '66291351'">
+			 <assign name="in_connectionid" expr="realDNIS"/>
+			<send targettype="'basichttp'" target="'http://192.168.100.226:8083/hungama/maxBupadetails'" namelist="ANI in_connectionid in_sessionid_call" /> 
+			<exit/>
+		</if>
+		 <if cond="realDNIS == '30959300' &amp;&amp; ANI == '9999130777'">
+			<assign name="mystate" expr="'precall'"/>
+			<!-- <send data="'ims.precall'" target="session.id" targettype="'ccxml'" /> -->
+		</if>
+
+
+	      <if cond="realDNIS==30959300">
+			<if cond="ANI == '9711071741' || ANI == '09711071741' || ANI == '7838696917' || ANI == '07838696917'">
+				<assign name="status" expr="'TRUE'"/>
+				<assign name="flag" expr="'3'"/>
+				<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/celebradio_rngmenu'" namelist="ANI in_connectionid in_sessionid_call" /> 
+				<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/CelebChatStatus'" namelist="ANI status flag" />
+				<accept/>
+			<else/>
+				<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/celebradio_rngmenu'" namelist="ANI in_connectionid in_sessionid_call" />
+				<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/> 
+			</if>
+	      <else/>
+	      		<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/>
+	      </if>
+        </transition>
+	
+  <transition state="precall" event="dialog.prepared" name="evt">
+               <log expr="'log case :'+mystate" /> 
+		<accept/>
+		<dialogstart prepareddialogid="dialogid"/>
+	 </transition>
+
+
+<transition state="precall" event="ims.precall" name="evt">
+		<log expr="'PRE CALL TESTING... I AM VINS'"/>
+		<assign name="mystate" expr="'precall'"/>
+		<dialogstart connectionid="in_connectionid" dialogid="dlgid" src="'http://'+IP_Name+'/hungama/Newseleb/traiMandate.vxml'" type="'application/voicexml+xml'" mediadirection="'dialogreceive'"></dialogstart>
+	</transition>
+
+<transition state="precall" event="dialog.started" name="evt">
+  	  
+	<assign name="mystate" expr="'newdialog'"/>
+ 	<log expr="'log case :'+mystate" /> 
+
+  	 
+  </transition>
+  
+   <transition state="newdialog" event="dialog.exit" name="evt">
+  	<assign name="mystate" expr="'init'"/>
+  	<log expr="'vinayANI=='"/>
+    	<!-- <send data="'connection.alerting'" target="session.id" targettype="'ccxml'" />  -->
+  </transition>
+  
+  
+  <transition state="newdialog" event="connection.disconnected" name="evt">
+      <assign name="stateVar" expr="'init'"/>
+  	<log expr="'vinayANI=='"/>
+    	<!-- <send data="'connection.alerting'" target="session.id" targettype="'ccxml'" />    -->
+  </transition>
+	
+        <!-- dialog successfully prepared. accept incoming call. -->
+        <transition state="init" event="dialog.prepared" name="evt">
+                <accept connectionid="in_connectionid"/>
+	 </transition>
+
+        <!-- call is connected so lets start the dialog. -->
+        <transition state="init" event="connection.connected" name="evt">
+       	<log expr="'traceid:' + evt.info.traceid"/>
+		<assign name="mystate" expr="'connected'" />
+		<if cond="realDNIS==30959300">
+			<if cond="ANI == '9711071741' || ANI == '09711071741' || ANI == '7838696917' || ANI == '07838696917'">
+				<log expr="ANI"/>
+				<assign name="mystate" expr="'connected'" />
+				<send data="'ims.createconf'" target="session.id" targettype="'ccxml'" /> 
+			<else/>
+				 <dialogstart prepareddialogid="dialogid"/>
+			</if>
+		<else/>
+			 <dialogstart prepareddialogid="dialogid"/>
+		</if>
+	</transition>
+
+	<transition state="connected" event="ims.createconf" name="evt">
+		<log expr="'call connected, create the conference... I AM VINS'"/>
+		<assign name="mystate" expr="'creatingtheconf'"/>
+		<createconference confname="'CONFERENCE1'" conferenceid="confconnectionid" connectionid="in_connectionid" />
+	</transition>
+
+	<transition state="creatingtheconf" event="conference.created" name="evt">
+		<log expr="'conference created, joining the conf...'"/>
+		<assign name="mystate" expr="'connected'" />
+		<log expr="'Joining... conference is transmiting to chairman'"/>
+		<join dtmfclamp="true" id1="in_connectionid" id2="confconnectionid"/>
+			
+	</transition>
+
+
+	<transition state="connected" event="conference.joined" name="evt">
+		<log expr="'Conference JOINED.., preparing the vxml play dialog...'"/>
+		<if cond="ANI == '9711071741' || ANI == '7838696917' || ANI == '07838696917'">
+			<assign name="CELEB_ONLINE" expr="'TRUE'"/>
+			<assign name="mystate" expr="'preparingplaydialog'"/>
+			<dialogprepare conferenceid="confconnectionid" dialogid="recordingId" src="'http://'+IP_Name+'/hungama/Newseleb/record.vxml'" namelist="confconnectionid dialogid CELEB_ONLINE">
+				<stream media="'audio'" direction="'both'"/>
+			</dialogprepare> 
+		<else/>
+			<assign name="mystate" expr="'playingnext'"/>
+			<dialogstart connectionid="in_connectionid" dialogid="dlgid" src="'http://'+IP_Name+'/hungama/Newseleb/second.vxml'" type="'application/voicexml+xml'" mediadirection="'dialogreceive'"></dialogstart>
+		</if>
+	</transition>
+
+	<transition state="preparingplaydialog" event="dialog.prepared" name="evt">
+		<log expr="'Play dialog prepared, starting execution...'"/>
+		<assign name="mystate" expr="'playing'"/>
+		<log expr="'Joining... dialog is playing to the conference '"/>
+		<dialogstart connectionid="confconnectionid" prepareddialogid="recordingId" hints="{dtmforigine:in_connectionid,dtmfdetection:'any'}"></dialogstart>
+	</transition>
+
+	<transition state="playing" event="dialog.started" name="evt">
+		<log expr="'Play dialog started...'"/>
+		<assign name="mystate" expr="'playingnext'"/>
+		<dialogstart connectionid="in_connectionid" dialogid="dlgid" src="'http://'+IP_Name+'/hungama/Newseleb/second.vxml'" type="'application/voicexml+xml'" mediadirection="'dialogreceive'"></dialogstart>
+	</transition>
+		
+	<transition state="playingnext" event="dialog.started" name="evt">
+		<log expr="'Play dialog started...'"/>
+	</transition>
+
+	 <transition state="connected" event="dialog.started" name="evt">
+   	        <log expr="'NORMAL CALL'"/>	
+                <if cond="realDNIS==30959300">
+			  <assign name="mystate" expr="'connected'" />
+		<else/>
+			  <assign name="mystate" expr="'dialogActive'" />		     
+		</if>
+        </transition>
+  
+   	<transition state="connected" event="connection.disconnected" name="evt">
+     		<log expr="'User hangup'"/>
+		<if cond="ANI == '9711071741' || ANI == '7838696917' || ANI == '07838696917'">
+  			<assign name="status" expr="'FALSE'"/>
+			<assign name="flag" expr="'3'"/>
+			<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/CelebChatStatus'" namelist="ANI status flag" /> 
+			<destroyconference conferenceid="conidnewvin"/>
+		<elseif cond="ANI == User_ANI"/>
+			<assign name="status" expr="'TRUE'"/>
+			<assign name="flag" expr="'2'"/>
+			<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/CelebChatStatus'" namelist="ANI status flag" /> 
+		<else/>
+			<assign name="status" expr="'TRUE'"/>
+			<assign name="flag" expr="'4'"/>
+			<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/CelebChatStatus'" namelist="ANI status flag" />
+  		</if>
+		<exit/>			
+        </transition>
+        
+        <transition state="playingnext" event="connection.disconnected" name="evt">
+	     		<log expr="'User hangup'"/>
+			<if cond="ANI == '9711071741' || ANI == '7838696917' || ANI == '07838696917'">
+	  			<assign name="status" expr="'FALSE'"/>
+				<assign name="flag" expr="'3'"/>
+				<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/CelebChatStatus'" namelist="ANI status flag" /> 
+				<destroyconference conferenceid="conidnewvin"/>
+			<elseif cond="ANI == User_ANI"/>
+				<assign name="status" expr="'TRUE'"/>
+				<assign name="flag" expr="'2'"/>
+				<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/CelebChatStatus'" namelist="ANI status flag" /> 
+			<else/>
+				<assign name="status" expr="'TRUE'"/>
+				<assign name="flag" expr="'4'"/>
+				<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/CelebChatStatus'" namelist="ANI status flag" />
+	  		</if>
+			<exit/>			
+        </transition>
+  
+
+      	<transition  state="connected"  event="dialog.transfer" name="evt">
+		<assign name="mystate" expr="'connected'" /> 
+		<assign name="User_ANI" expr="evt.values.ANI" />
+		<assign name="user_conid_incof" expr="evt.values.conn1" />
+		<log expr="'user user_conid_incof from call @@@@@@@@@ :'+user_conid_incof" />
+		<log expr="'user ani celeb @@@@@@@@@ :'+User_ANI" />
+		<join dtmfclamp="true" id1="evt.values.conn1" id2="conidnewvin" duplex="'full'"/>	
+		<log expr="'outbound call progress, do nothing'+mystate"/>
+   	</transition>
+   	
+
+	<transition  state="playingnext"  event="dialog.exit" name="evt"> 
+		<if cond="ANI == '9711071741' || ANI == '7838696917' || ANI == '07838696917'">
+			<assign name="CELEB_ONLINE" expr="'FALSE'"/>
+  			<assign name="status" expr="'FALSE'"/>
+			<assign name="flag" expr="'3'"/>
+			<assign name="Input_Celeb" expr="evt.values.getDigitsnext"/>
+			<log expr="'Input_Celeb=='"/>
+	      		<log expr="Input_Celeb"/>
+			<assign name="unjoin_user_value" expr="evt.values.user_sessionid_fromapp"/>
+			<send data="'ims.usercall_sessionaction'" target="evt.values.user_sessionid_fromapp" targettype="'ccxml'" />	
+			<dialogstart connectionid="in_connectionid" dialogid="dlgid" src="'http://'+IP_Name+'/hungama/Newseleb/second.vxml'" type="'application/voicexml+xml'" mediadirection="'dialogreceive'"></dialogstart>
+		<elseif cond="ANI == User_ANI"/>
+			<assign name="status" expr="'TRUE'"/>
+			<assign name="flag" expr="'2'"/>
+			<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/CelebChatStatus'" namelist="ANI status flag" />
+			<exit/> 
+		<else/>
+			<assign name="status" expr="'TRUE'"/>
+			<assign name="flag" expr="'4'"/>
+			<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/CelebChatStatus'" namelist="ANI status flag" />
+			<exit/>
+  		</if> 
+   	</transition>
+   	
+	<transition event="ims.usercall_sessionaction" name="evt">
+		<!-- multiple time unjoin will not call or Exute unjoin if user join -->
+		<if cond="mystate=='playingnext'">
+			<assign name="SEND_FLAG_USER" expr="'1'" />
+			<log expr="'usercall_sessionaction i am here'"/>
+			<unjoin id1="in_connectionid" id2="conidnewvin"/> 
+		<else/>
+			<log expr="'should not call unjoin i am here'"/>
+		</if>  
+	</transition>
+
+	<transition event="ims.createnewcall" name="evt">
+		  <log expr="'heeeeeeeeeeeee i am here'"/>
+		  <assign name="mystate" expr="'playingnext'"/>
+	          <dialogstart connectionid="in_connectionid" dialogid="dlgid" src="'http://'+IP_Name+'/hungama/Newseleb/second.vxml'" type="'application/voicexml+xml'" mediadirection="'dialogreceive'"></dialogstart>
+	</transition>
+	
+	<transition state="playingnext" event="conference.unjoined" name="evt">
+		<if cond="ANI == '9711071741' || ANI=='9711071741' || ANI == '7838696917' || ANI == '07838696917'">
+			<log expr="'vinay jain inside'" />
+			<log expr="'SEND_FLAG=='"/>
+	      		<log expr="SEND_FLAG"/>
+			<log expr="'SEND_FLAG_USER=='"/>
+	      		<log expr="SEND_FLAG_USER"/>
+
+			<!-- <send data="'ims.createnewcall'" target="session.id" targettype="'ccxml'" /> -->
+		<else/>
+			<assign name="status" expr="'TRUE'"/>
+			<assign name="flag" expr="'2'"/>
+			<send targettype="'basichttp'" target="'http://'+IP_Name+'/hungama/CelebChatStatus'" namelist="ANI status flag" /> 
+			
+			<log expr="'SEND_FLAG=='"/>
+	      		<log expr="SEND_FLAG"/>
+			<log expr="'SEND_FLAG_USER=='"/>
+	      		<log expr="SEND_FLAG_USER"/>
+
+			<if cond="SEND_FLAG_USER=='0'">
+				<log expr="'vinayseth=='"/>
+				 <disconnect connectionid="evt.connectionid" hints="evt.values" />
+			</if>
+			<log expr="'UN Joing two parties'" /> 
+			<dialogterminate dialogid="dialogid"/>
+			<assign name="mystate" expr="'connected'" />
+			<dialogstart dialogid="dlgid" src="'http://'+IP_Name+'/hungama/Newseleb/celeb_input.vxml'" connectionid="in_connectionid"/>
+		</if>
+  	</transition>
+
+
+        <!-- dialog failed to prepare. reject incoming call or hup initiated call. -->
+        <transition state="init" event="error.dialog.notprepared" name="evt">
+		    <var name="reason" expr="evt.reason"/>
+		    <if cond="reason.startsWith( 'No service found for address' )">
+			<reject connectionid="in_connectionid" reason="reason" hints="{statusCode:404}"/>
+		    <elseif cond="reason.startsWith( 'error.badfetch.http.500' )"/>
+			<reject connectionid="in_connectionid" reason="reason" hints="{statusCode:500}"/>
+		    <elseif cond="reason.startsWith( 'error.badfetch.http.404' )"/>
+			<reject connectionid="in_connectionid" reason="reason" hints="{statusCode:404}"/>
+		    <else/>
+			<reject connectionid="in_connectionid" reason="reason" hints="{statusCode:503}"/>
+		    </if>
+        </transition>
+
+
+        <!-- and do the same for any exit events. -->
+        <transition event="error.connection.*" name="evt">
+          	  <var name="results" expr="evt.reason"/>
+          	  <exit expr="'failed'" namelist="results"/>
+        </transition>
+        
+        <transition event="error.dialog.*" name="evt">
+	  	 <var name="results" expr="evt.reason"/>
+	  	 <exit expr="'failed'" namelist="results"/>
+	</transition>
+	
+
+	<transition event="dialog.disconnect" name="evt">
+	  	<exit/>
+	</transition>
+	
+	<transition state="connected" event="dialog.disconnect" name="evt">
+			         <log expr="'user disconnected from celeb chat : '"/>
+			         <exit/> 
+		</transition>
+		
+	<transition event="error.*" name="evt">
+		<log expr="'Got error as : '+evt.reason"/>
+	       <exit/>  	
+	</transition>
+	
+	 <transition state="playingnext" event="error.send.failed" name="evt">
+		  <log expr="'after failed first time send UNsuccessful for sendid=' + evt.sendid + ' reason:' + evt.reason"/>
+		  <send data="'ims.usercall_sessionaction'" target="unjoin_user_value" targettype="'ccxml'" />	
+                <log expr="'send UNsuccessful for sendid=' + evt.sendid + ' reason:' + evt.reason"/>
+	 </transition>
+
+		 <transition state="playingnext" event="send.successful" name="evt">
+		      <assign name="SEND_FLAG" expr="'1'" />
+	            <log expr="'send successful for sendid=' + evt.sendid"/>
+	        </transition>
+	
+		 <transition state="playingnext" event="dialog.disconnect" name="evt">
+	            <disconnect connectionid="evt.connectionid" hints="evt.values" />
+	            <assign name="mystate" expr="'connectAgain'" />
+	        </transition>
+
+	  <transition state="dialogActive" event="send.successful" name="evt">
+	            <log expr="'send successful for sendid=' + evt.sendid"/>
+	        </transition>
+	
+	        <!-- send failed -->
+	        <transition state="dialogActive" event="error.send.failed" name="evt">
+	            <log expr="'send UNsuccessful for sendid=' + evt.sendid + ' reason:' + evt.reason"/>
+	        </transition>
+	
+	        <!--
+	             the caller disconnected. we need to send the event up to
+	             the dialog and change our state.
+	             -->
+	        <transition state="dialogActive" event="connection.disconnected" name="evt">
+	            <if cond="evt.connectionid == in_connectionid">
+	                <var name="status" expr="evt.info.status"/>
+	                <send data="'connection.disconnect.hangup'"
+	                      target="dialogid"
+	                      targettype="'dialog'"
+	                      namelist="status" />
+	                <assign name="mystate" expr="'userDisconnect'" />
+	            </if>
+	        </transition>
+	
+	        <!-- dialog requests that we disconnect the call -->
+	        <transition state="dialogActive" event="dialog.disconnect" name="evt">
+	            <disconnect connectionid="evt.connectionid" hints="evt.values" />
+	            <assign name="mystate" expr="'disconnecting'" />
+	        </transition>
+	
+	
+	        <!-- videocall VFU acquisition -->
+	        <transition state="dialogActive" event="videocall.vfu" name="evt">
+	            <assign name="vfu_ct" expr="evt.values.contenttype"/>
+	            <assign name="vfu_body" expr="evt.values.body"/>
+	            <if cond="setVFUState('acquire')">
+	                <assign name="vfu_delay" expr="vfu_acquire_delay"/>
+	                <send data="'videocall.vfu.send'" target="session.id"/>
+	            <else/>
+	                <log expr="'videocall.vfu: unable to change state from ' +
+	                     getVFUState() + ' to acquire'"/>
+	            </if>
+	        </transition>
+	
+	        <!-- videocall VFU record -->
+	        <transition state="dialogActive" event="videocall.vfu.record">
+	            <if cond="setVFUState('record')">
+	                <log expr="'VFU is now in record state'"/>
+	                <assign name="vfu_delay" expr="vfu_record_delay"/>
+	            <else/>
+	                <log expr="'videocall.vfu: unable to change state from ' +
+	                     getVFUState() + ' to record'"/>
+	            </if>
+	        </transition>
+	
+	        <!-- videocall VFU recordstop -->
+	        <transition state="dialogActive" event="videocall.vfu.recordstop">
+	            <if cond="setVFUState('idle')">
+	                <log expr="'VFU is now in idle state'"/>
+	                <assign name="vfu_current_count" expr="0"/>
+	                <assign name="vfu_delay" expr="0"/>
+	            <else/>
+	                <log expr="'videocall.vfu: unable to change state from ' +
+	                    getVFUState() + ' to idle'"/>
+	            </if>
+	        </transition>
+	
+	        <!-- videocall VFU send -->
+	        <transition state="dialogActive" event="videocall.vfu.send" name="evt">
+	            <if cond="!isVFUState('idle') &amp;&amp; (vfu_current_count &lt; vfu_max_count)">
+	                <send data="'sip.INFO'" target="in_connectionid" targettype="'connection'" hints="setContentTypeToVFU"/>
+	                <assign name="vfu_current_count" expr="vfu_current_count + 1"/>
+	                <log expr="'sent another VFU - count is now ' +
+	                     vfu_current_count + '(max=' + vfu_max_count + ')'"/>
+	            <else/>
+	               <log expr="'VFU NOT sent: state is ' + getVFUState()
+	                    + ', current count is ' + vfu_current_count + ' (max=' + vfu_max_count + ')'"/>
+	          </if>
+	        </transition>
+	
+	        <!--
+	             we have disconnected the call. We need to send an
+	             event to the dialog saying we are done.
+	             -->
+	        <transition state="disconnecting" event="connection.disconnected" name="evt">
+	            <var name="status" expr="evt.info.status"/>
+	            <send data="'connection.disconnect.hangup'"
+	                  target="dialogid"
+	                  targettype="'dialog'"
+	                  namelist="status" />
+	        </transition>
+	
+	        <!--
+	             dialog has exited after we disconnected the call.
+	             we just are going to exit from this CCXML session...
+	             -->
+	        <transition state="disconnecting" event="dialog.exit" name="evt">
+	            <exit/>
+	        </transition>
+	   <transition state="dialogActive" event="dialog.exit" name="evt">
+	            <exit/>
+	        </transition>
+
+	        <!--
+	             dialog has exited after the caller hungup.
+	             we just are going to exit from this CCXML session...
+	             -->
+	        <transition state="userDisconnect" event="dialog.exit" name="evt">
+	            <exit/>
+	        </transition>
+	
+	        <!-- if call was transferred, we may receive these events, while we wait
+	             for the dialog.exit -->
+	        <transition state="userDisconnect" event="connection.disconnected" name="evt">
+	        </transition>
+	        <transition state="userDisconnect" event="connection.failed" name="evt">
+	        </transition>
+
+
+    </eventprocessor>
+
+</ccxml>

@@ -1,0 +1,917 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- this ccxml script implements voicexml 2.0/2.1 behaviour for incoming and originated calls -->
+<!-- $Id: voicexml20.ccxml 4591 2010-04-27 17:10:24Z dominique_domet_de_mont $ -->
+
+<ccxml version="1.0" xmlns="http://www.w3.org/2002/09/ccxml">
+
+    <!-- declare the vars we are going to use -->
+    <var name="in_connectionid"/>
+    <var name="out_connectionid"/>
+    <var name="connid2"/>
+    <var name="dialogid"/>
+    <var name="vxml_maxtime"/>
+    <var name="maxtime_sendid" expr="null"/>
+    <!--
+         The "src" attribute of dialogprepare or dialogstart elements can either be:
+         
+           - builtin:configured         In that case, the new vxml dialog is executed in the context
+                                        of the configured vxml service matching the called number.
+                                        The URL of the executed vxml script comes from that configuration.
+           - a valid vxml http URL      In that case, the new vxml dialog is executed in the context
+                                        of the configured vxml service matching the called number.
+                                        The URL of the executed vxml script comes from the src attribute.
+           - builtin:service:<name>     In that case, the new vxml dialog is executed in the context
+                                        of the configured vxml service matching the service name specified
+                                        in the string "builtin:service:<name>".
+                                        The URL of the executed vxml script comes from that configuration.
+    -->
+    <var name="vxml_url" expr="'builtin:configured'"/>
+    <var name="callinit_request"/>
+    <var name="transfer_duration_in_millis"/>
+    <var name="accept_refer" expr="false"/>
+	<var name="ANI" expr="''"/>
+    <var name="in_sessionid_call" expr="''"/>
+    <var name="realDNIS" expr="''"/>
+
+    <!-- VFU related -->
+    <!-- states: idle - acquire - record - idle -->
+    <var name="vfu_state" expr="'idle'"/>
+    <!-- delay (ms) sending VFUs during acquisition -->
+    <var name="vfu_acquire_delay" expr="750"/>
+    <!-- delay (ms) to send VFUs during recording -->
+    <var name="vfu_record_delay" expr="2000"/>
+    <!-- maximum number of VFU sent during single acquisition/recording cycle -->
+    <var name="vfu_max_count" expr="100"/>
+    <!-- current number of VFUs sent during acquisition/recording -->
+    <var name="vfu_current_count" expr="0"/>
+    <!-- delay (ms) in sending VFUs -->
+    <var name="vfu_delay" expr="0"/>
+    <var name="vfu_ct"/>
+    <var name="vfu_body"/>
+
+    <!-- set an initial state -->
+    <var name="mystate" expr="'init'"/>
+
+
+    <!-- utility functions for SIP INFO and VFU handling -->
+    <script><![CDATA[
+
+        function isVFU(length, contenttype, body) {
+            if (length != null && length > 0 && contenttype != null &&
+                contenttype.toString().equals("application/media_control+xml")) {
+                if(body != null && body.toString().indexOf("picture_fast_update") != -1)
+                    return true;
+            }
+            return false;
+        }
+
+        function setVFUState(newstate) {
+            if(vfu_state == 'idle') {
+                if(newstate == 'acquire') {
+                    vfu_state = newstate;
+                    return true;
+                }
+            } else if(vfu_state == 'acquire') {
+                if(newstate == 'record' || newstate == 'idle') {
+                    vfu_state = newstate;
+                    return true;
+                }
+            } else if(vfu_state == 'record') {
+                if(newstate == 'idle') {
+                    vfu_state = newstate;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function isVFUState(astate) {
+            if(vfu_state == astate)
+                return true;
+            else
+                return false;
+        }
+
+        function getVFUState() {
+            return vfu_state;
+        }
+
+        function setContentTypeToVFU( message, factoryAccess ) {
+            var contentType = vfu_ct.split( '/' );
+            var contentTypeHeader = factoryAccess.header.createContentTypeHeader( contentType[0], contentType[1] );
+            message.setContent( vfu_body, contentTypeHeader  );
+        }
+
+        function vfu_body_hardcoded() {
+            var t="<?xml version=\"1.0\" encoding=\"utf-8\" ?><media_control><vc_primitive><to_encoder><picture_fast_update></picture_fast_update></to_encoder></vc_primitive></media_control>"
+            return t;
+        }
+
+    ]]></script>
+
+    <eventprocessor statevariable="mystate">
+	
+		<transition event="ccxml.loaded" name="evt">
+			<assign name="in_connectionid" expr="application.in_connectionid"/>
+			<assign name="in_sessionid_call" expr="application.in_sessionid_call"/>
+			<assign name="realDNIS" expr="application.realDNIS"/>
+			<assign name="ANI" expr="application.ANI"/>
+			<log expr="'*** OUR NEW CCXML FOR DEFAULT FUNCTIONALITY HAS BEEN LOADED! ***'"/>
+			<log expr="'ANI of the call is - '+ANI"/>
+			<log expr="'DNIS of the call is - '+realDNIS"/>
+			<log expr="'Connection id of the call is - '+in_connectionid"/>
+			<log expr="'Session id of the call is - '+in_sessionid_call"/>
+			<log expr="'Application VXML URL is - '+application.vxml_url"/>
+			
+			<!-- call alerting event -->
+			<send data="'connection.alerting'" target="session.id" targettype="'ccxml'" delay="7000" />
+		</transition> 
+
+        <!-- deal with an incoming call -->
+        <transition state="init" event="connection.alerting" name="evt">
+            <!-- save off the connection id -->
+			<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/>
+			<log expr="'connection alert, play audio'"/>
+			
+<!--			<assign name="mystate" expr="'precall'" />
+			<dialogstart connectionid="in_connectionid" src="'test.wav'" type="'audio/wav'"/>-->
+        </transition>
+		
+		<!-- dialog successfully prepared. accept incoming call. -->
+		<transition state="precall" event="dialog.started" name="evt">
+			<log expr="'Play dialog started'"/>
+        </transition>
+		
+        <transition state="precall" event="dialog.exit" name="evt">
+			<assign name="init" expr="'precall'" />
+			<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/>
+        </transition>
+
+        <!-- dialog successfully prepared. accept incoming call. -->
+        <transition state="init" event="dialog.prepared" name="evt">
+			<accept connectionid="in_connectionid"/>
+        </transition>
+
+        <!-- call is connected so lets start the dialog. -->
+        <transition state="init" event="connection.connected" name="evt">
+            <log expr="'traceid:' + evt.info.traceid"/>
+            <dialogstart prepareddialogid="dialogid"/>
+            <assign name="mystate" expr="'connected'" />
+        </transition>
+
+        <!-- call is connected so lets start the dialog. -->
+        <transition state="init" event="connection.failed" name="evt">
+            <var name="results" expr="evt.reason"/>
+            <exit expr="'failed'" namelist="results"/>
+        </transition>
+
+        <!-- dialog failed to prepare. reject incoming call or hup initiated call. -->
+        <transition state="init" event="error.dialog.notprepared" name="evt">
+            <var name="reason" expr="evt.reason"/>
+            	<var name="DNIS" expr="''+realDNIS"/>
+		<var name="status" expr="'16'"/>
+		<var name="DCEND" expr="'near_end_disconnect'"/>
+		<send targettype="'basichttp'" target="'http://192.168.100.226:8080/hungama/hangupdetails'" namelist="ANI DNIS status DCEND evt" />
+		
+		    <if cond="reason.startsWith( 'No service found for address' )">
+			<reject connectionid="in_connectionid" reason="reason" hints="{statusCode:404}"/>
+		    <elseif cond="reason.startsWith( 'error.badfetch.http.500' )"/>
+			<reject connectionid="in_connectionid" reason="reason" hints="{statusCode:500}"/>
+		    <elseif cond="reason.startsWith( 'error.badfetch.http.404' )"/>
+			<reject connectionid="in_connectionid" reason="reason" hints="{statusCode:404}"/>
+		    <else/>
+			<reject connectionid="in_connectionid" reason="reason" hints="{statusCode:503}"/>
+		    </if>
+        </transition>
+
+        <!--
+           Non CCXML standard event. This event is generated
+           when using OCMP-BRE callinitiation/callout manager.
+           Also createsession event injection will generate this
+           -->
+        <transition state="init" event="ccxml.externalloaded" name="evt">
+            <var name="dest_connection"/>
+            <var name="dest_connectiontimeout"/>
+            <if cond="evt.fields.eventsourcetype=='createsession'">
+                <if cond="evt.fields.content != undefined">
+                    <assign name="vxml_url" expr="evt.fields.content"/>
+                </if>
+                <if cond="evt.fields.connectiontimeout != undefined">
+                    <assign name="dest_connectiontimeout" expr="evt.fields.connectiontimeout"/>
+                <else/>
+                    <assign name="dest_connectiontimeout" expr="'-1ms'"/>
+                </if>
+                <assign name="dest_connection" expr="evt.fields.connection"/>
+            <else/>
+                <if cond="evt.content != undefined">
+                    <assign name="vxml_url" expr="evt.content"/>
+                </if>
+                <assign name="dest_connection" expr="evt.connection"/>
+                <assign name="dest_connectiontimeout" expr="evt.fields.connectiontimeout"/>
+                <assign name="callinit_request" expr="evt"/>
+            </if>
+            <createcall dest="dest_connection"
+                        connectionid="in_connectionid"
+                        callerid="evt.fields.localuri"
+                        timeout="dest_connectiontimeout"/>
+            <assign name="mystate" expr="'placing'" />
+        </transition>
+
+        <!-- failed placing outgoing call -->
+        <transition state="placing" event="connection.failed" name="evt">
+            <var name="results" expr="evt.reason"/>
+            <exit expr="'failed'" namelist="results"/>
+        </transition>
+
+        <!-- failed placing outgoing call -->
+        <transition state="placing" event="connection.disconnected" name="evt">
+            <var name="results" expr="evt.reason"/>
+			<var name="DNIS" expr="''+realDNIS"/>
+			<var name="status" expr="''+evt.info.status"/>
+			<var name="DCEND" expr="evt.reason"/>
+			<send targettype="'basichttp'" target="'http://192.168.100.226:8080/hungama/hangupdetails'" namelist="ANI DNIS status DCEND evt" />
+            <exit expr="'failed'" namelist="results"/>
+        </transition>
+
+        <transition state="placing" event="connection.connected" name="evt">
+            <!--log expr="'The entire SDP of the 200 OK :' + evt.info.message.SDPBody"/-->
+            <dialogstart connectionid="evt.connectionid"
+                         src="vxml_url"
+                         dialogid="dialogid"/>
+            <assign name="mystate" expr="'connected'" />
+        </transition>
+
+        <!-- other dialog error, reject incoming call or hup initiated call. -->
+        <transition state="connected" event="error.dialog.*" name="evt">
+            <var name="results" expr="evt.reason"/>
+            			<var name="DNIS" expr="''+realDNIS"/>
+				<var name="status" expr="'16'"/>
+				<var name="DCEND" expr="'near_end_disconnect'"/>
+		<send targettype="'basichttp'" target="'http://192.168.100.226:8080/hungama/hangupdetails'" namelist="ANI DNIS status DCEND evt" />
+            <exit expr="'failed'" namelist="results"/>
+        </transition>
+
+        <!-- dialog is active -->
+        <transition state="connected" event="dialog.started" name="evt">
+            <assign name="mystate" expr="'dialogActive'" />
+            <if cond="callinit_request != undefined">
+                <send data="'ongoing'"
+                      targettype="'callinitiation'"
+                      target="callinit_request.report"/>
+            </if>
+        </transition>
+
+
+        <!-- sent successfully -->
+        <transition state="dialogActive" event="send.successful" name="evt">
+            <log expr="'send successful for sendid=' + evt.sendid"/>
+        </transition>
+
+        <!-- send failed -->
+        <transition state="dialogActive" event="error.send.failed" name="evt">
+            <log expr="'send UNsuccessful for sendid=' + evt.sendid + ' reason:' + evt.reason"/>
+        </transition>
+
+        <!--
+             the caller disconnected. we need to send the event up to
+             the dialog and change our state.
+             -->
+        <transition state="dialogActive" event="connection.disconnected" name="evt">
+            <if cond="evt.connectionid == in_connectionid">
+				<var name="DNIS" expr="''+realDNIS"/>
+				<var name="status" expr="''+evt.info.status"/>
+				<var name="DCEND" expr="evt.reason"/>
+				<send targettype="'basichttp'" target="'http://192.168.100.226:8080/hungama/hangupdetails'" namelist="ANI DNIS status DCEND evt" />
+                
+                <send data="'connection.disconnect.hangup'"
+                      target="dialogid"
+                      targettype="'dialog'"
+                      namelist="status" />
+                <assign name="mystate" expr="'userDisconnect'" />
+            </if>
+			
+        </transition>
+
+        <!-- dialog requests that we disconnect the call -->
+        <transition state="dialogActive" event="dialog.disconnect" name="evt">
+            <!--<disconnect connectionid="evt.connectionid" hints="evt.values" />
+            <assign name="mystate" expr="'disconnecting'" />-->
+		<!-- This code will send signal to vxml to terminate the vxml dialog
+		<var name="status" expr="evt.info.status"/>-->
+		<var name="status" expr="16"/>
+                <send data="'connection.disconnect.hangup'"
+                      target="dialogid"
+                      targettype="'dialog'"
+                      namelist="status" />
+                <assign name="mystate" expr="'userDisconnect'" />
+        </transition>
+
+	<transition event="error.maxsessionduration" name="evt">
+		<var name="status" expr="16"/>
+		<var name="DNIS" expr="''+realDNIS"/>
+		<var name="status" expr="'16'"/>
+		<var name="DCEND" expr="'near_end_disconnect'"/>
+		<send targettype="'basichttp'" target="'http://192.168.100.226:8080/hungama/hangupdetails'" namelist="ANI DNIS status DCEND evt" />
+		 <send data="'connection.disconnect.hangup'"
+                      target="dialogid"
+                      targettype="'dialog'"
+                      namelist="status" />
+                <assign name="mystate" expr="'userDisconnect'" />		
+	</transition>
+
+
+
+        <!-- videocall VFU acquisition -->
+        <transition state="dialogActive" event="videocall.vfu" name="evt">
+            <assign name="vfu_ct" expr="evt.values.contenttype"/>
+            <assign name="vfu_body" expr="evt.values.body"/>
+            <if cond="setVFUState('acquire')">
+                <assign name="vfu_delay" expr="vfu_acquire_delay"/>
+                <send data="'videocall.vfu.send'" target="session.id"/>
+            <else/>
+                <log expr="'videocall.vfu: unable to change state from ' +
+                     getVFUState() + ' to acquire'"/>
+            </if>
+        </transition>
+
+        <!-- videocall VFU record -->
+        <transition state="dialogActive" event="videocall.vfu.record">
+            <if cond="setVFUState('record')">
+                <log expr="'VFU is now in record state'"/>
+                <assign name="vfu_delay" expr="vfu_record_delay"/>
+            <else/>
+                <log expr="'videocall.vfu: unable to change state from ' +
+                     getVFUState() + ' to record'"/>
+            </if>
+        </transition>
+
+        <!-- videocall VFU recordstop -->
+        <transition state="dialogActive" event="videocall.vfu.recordstop">
+            <if cond="setVFUState('idle')">
+                <log expr="'VFU is now in idle state'"/>
+                <assign name="vfu_current_count" expr="0"/>
+                <assign name="vfu_delay" expr="0"/>
+            <else/>
+                <log expr="'videocall.vfu: unable to change state from ' +
+                    getVFUState() + ' to idle'"/>
+            </if>
+        </transition>
+
+        <!-- videocall VFU send -->
+        <transition state="dialogActive" event="videocall.vfu.send" name="evt">
+            <if cond="!isVFUState('idle') &amp;&amp; (vfu_current_count &lt; vfu_max_count)">
+                <send data="'sip.INFO'" target="in_connectionid" targettype="'connection'" hints="setContentTypeToVFU"/>
+                <assign name="vfu_current_count" expr="vfu_current_count + 1"/>
+                <log expr="'sent another VFU - count is now ' +
+                     vfu_current_count + '(max=' + vfu_max_count + ')'"/>
+            <else/>
+               <log expr="'VFU NOT sent: state is ' + getVFUState()
+                    + ', current count is ' + vfu_current_count + ' (max=' + vfu_max_count + ')'"/>
+          </if>
+        </transition>
+
+        <!--
+             we have disconnected the call. We need to send an
+             event to the dialog saying we are done.
+             -->
+        <transition state="disconnecting" event="connection.disconnected" name="evt">
+            <var name="status" expr="evt.info.status"/>
+            <send data="'connection.disconnect.hangup'"
+                  target="dialogid"
+                  targettype="'dialog'"
+                  namelist="status" />
+        </transition>
+
+        <!--
+             dialog has exited after we disconnected the call.
+             we just are going to exit from this CCXML session...
+             -->
+        <transition state="disconnecting" event="dialog.exit" name="evt">
+			<var name="DNIS" expr="''+realDNIS"/>
+			<var name="status" expr="'16'"/>
+			<var name="DCEND" expr="'near_end_disconnect'"/>
+			<send targettype="'basichttp'" target="'http://192.168.100.226:8080/hungama/hangupdetails'" namelist="ANI DNIS status DCEND evt" />
+            <exit/>
+        </transition>
+
+        <!--
+             dialog has exited after the caller hungup.
+             we just are going to exit from this CCXML session...
+             -->
+        <transition state="userDisconnect" event="dialog.exit" name="evt">
+			<!-- this state transition happens only in case of remote disconnect. no need to add hangup log here -->
+            <exit/>
+        </transition>
+
+	<transition state="dialogActive" event="dialog.exit" name="evt">
+			<var name="DNIS" expr="''+realDNIS"/>
+			<var name="status" expr="'16'"/>
+			<var name="DCEND" expr="'near_end_disconnect'"/>
+			<send targettype="'basichttp'" target="'http://192.168.100.226:8080/hungama/hangupdetails'" namelist="ANI DNIS status DCEND evt" />
+            <exit/>
+        </transition>
+
+        <!-- if call was transferred, we may receive these events, while we wait
+             for the dialog.exit -->
+        <transition state="userDisconnect" event="connection.disconnected" name="evt">
+        </transition>
+        <transition state="userDisconnect" event="connection.failed" name="evt">
+        </transition>
+
+        <transition  event="connection.signal" name="evt">
+            <if cond="evt.connection.protocol.name == 'isup'">
+                <log expr="'Received an ISUP message: ' + evt.info.message"/>
+
+            <elseif cond="evt.connection.protocol.name == 'sip'"/>
+                <var name="transactionid" expr="evt.info.transaction"/>
+                <log expr="'Received a SIP message: ' + evt.info.message"/>
+
+                <if cond="evt.info.message.method != undefined">
+                    <log expr="'Received a '+evt.info.message.method+' message'"/>
+                    <!-- check if SIP INFO message -->
+
+                    <if cond="evt.info.message.method == 'INFO'">
+                        <!-- check if VFU message -->
+                        <var name="myContentLength"  expr="null"/>
+                        <var name="contentTypeHeader"  expr="null"/>
+                        <var name="fullContentType"  expr="null"/>
+                        
+                        <if cond = "evt.info.message.getHeader('Content-Length') != null">
+                            <log expr="' Content Length is defined in SIP INFO:' + evt.info.message.getHeader('Content-Length')"/>
+                            <if cond = "evt.info.message.getHeader('Content-Length').contentLength != '0'" >
+                                <log expr="' Content Length is NOT null in SIP INFO:' + evt.info.message.getHeader('Content-Length').contentLength"/>
+                                <assign name="myContentLength" expr="evt.info.message.getHeader('Content-Length').contentLength"/>
+                                <assign name="contentTypeHeader" expr="evt.info.message.getHeader('Content-Type')"/>
+                                <assign name="fullContentType" expr="contentTypeHeader.contentType + '/' + contentTypeHeader.contentSubType"/>
+                            <else/>
+                                <log expr="' Content Length is null in SIP INFO'"/>
+                            </if>
+                        <else/>
+                            <log expr="' Content Length is undefined in SIP INFO'"/>
+                        </if>
+                 
+                        <if cond="isVFU(myContentLength, fullContentType, evt.info.message)">
+                            <log expr="'identified as VFU INFO message'"/>
+
+                            <if cond="mystate == 'outgoing_call_active'">
+                                <!-- send vfu to the other connection on reception of vfu request on first leg when the call is bridged -->
+                                <assign name="vfu_ct" expr="'application/media_control+xml'"/>
+                                <assign name="vfu_body" expr="vfu_body_hardcoded()"/>
+                                <if cond="evt.connectionid == in_connectionid">
+                                    <send data="'sip.INFO'" target="out_connectionid" targettype="'connection'" hints="setContentTypeToVFU"/>
+                                <else/>
+                                    <send data="'sip.INFO'" target="in_connectionid" targettype="'connection'" hints="setContentTypeToVFU"/>
+                                </if>
+                            </if>
+
+                            <!-- VFU message - 200 OK -->
+                            <send data="'sip.STATUS_200'" target="evt.connectionid" targettype="'connection'"  namelist="transactionid"/>
+                        <else/>
+                            <log expr="'identified as Non-VFU INFO message'"/>
+                            <!-- Non-VFU message - 415 Unsupported Media Type -->
+                            <send data="'sip.STATUS_415'" target="evt.connectionid" targettype="'connection'"  namelist="transactionid"/>
+                        </if>
+
+                    <elseif cond="evt.info.message.method == 'REFER'" />
+
+                        <if cond="accept_refer == true">
+                            <!-- to accept a REFER send a 202 ACCEPTED -->
+                            <send data="'sip.STATUS_202'" target="evt.connectionid" targettype="'connection'"  namelist="transactionid"/>
+                        <else/>
+                            <!-- to reject a REFER  send a 401 UNAUTHORIZED -->
+                            <send data="'sip.STATUS_401'" target="evt.connectionid" targettype="'connection'"  namelist="transactionid"/>
+                        </if>
+
+                    <else/>
+                        <log expr="'identified as NON SIP INFO or REFER message'"/>
+                    </if>
+                <else/>
+                    <if cond="evt.info.message.statusCode == 200">
+                        <log expr="'identified as 200 OK message'"/>
+                    <else/>
+                        <log expr="'Received a evt.info.message.statusCode = ' + evt.info.message.statusCode"/>
+                    </if>
+                </if>
+
+            <else/>
+                <log expr="'Received an ISDN message: ' + evt.info.message"/>
+            </if>
+        </transition>
+
+
+        <!-- handle an transfer request from a VXML script. -->
+        <!--<transition state="dialogActive" event="dialog.transfer" name="evt">-->
+	<transition state="dialogActive" event="dialog.transfer" name="evt">
+
+		
+		<!--<createcall dest="evt.URI"
+                                connectionid="out_connectionid"
+                                aai="evt.aai"
+                                timeout="evt.connecttimeout"
+                                callerid="evt.values.localuri"/>-->
+    <assign name="mystate" expr="'homecall'" />
+
+		<createcall dest="evt.URI" callerid="ANI" connectionid="connid2" timeout="'29s'" />
+	</transition>
+
+<transition state="homecall" event="connection.progressing" name="evt">
+			
+			<join id1="in_connectionid" id2="connid2" duplex="'full'" entertone="''" /> 
+	</transition>
+
+	<transition state="dummy" event="dialog.transfer" name="evt">
+            <!-- branch on transfer type -->
+            <log expr="'connecttimeout = ' + evt.connecttimeout"/>
+            <log expr="'maxtime = ' + evt.maxtime"/>
+            <if cond="evt.type == 'blind'">
+                <!-- bridge == false. We are going to just redirect the call -->
+                <assign name="mystate" expr="'redirecting'" />
+
+                <!-- redirect to the uri specified in the event -->
+                <if cond="session.connections[in_connectionid].protocol.name == 'sip'">
+                    <redirect connectionid="in_connectionid" dest="evt.URI"
+                              hints="{redirecttype : evt.type, timeout : evt.connecttimeout}"/>
+                <else/>
+                    <createcall dest="evt.URI"
+                                connectionid="out_connectionid"
+                                aai="evt.aai"
+                                timeout="evt.connecttimeout"
+                                callerid="evt.values.localuri"/>
+                </if>
+
+                <!-- just send the success event to the dialog -->
+                <send data="'connection.disconnect.transfer'"
+                      target="dialogid"
+                      targettype="'dialog'"/>
+
+            <elseif cond="evt.type == 'consultation'"/>
+                <!--
+                     consultation transfer. if call is connected properly,
+                     then like blind, otherwise hand control back to app.
+                     -->
+
+                <assign name="mystate" expr="'consulting'"/>
+
+                <if cond="session.connections[in_connectionid].protocol.name == 'sip'">
+                    <redirect connectionid="in_connectionid" dest="evt.URI"
+                              hints="{redirecttype : evt.type, timeout : evt.connecttimeout}"/>
+                <else/>
+                    <!-- place the call using the values from the transfer request -->
+                    <createcall dest="evt.URI"
+                                connectionid="out_connectionid"
+                                aai="evt.aai"
+                                timeout="evt.connecttimeout"
+                                callerid="evt.values.localuri"/>
+                </if>
+
+            <else/>
+                <!--
+                     bridge == true. In this case we need to place a call
+                     and bridge the calls
+                     -->
+
+                <!-- save off maxtime -->
+                <assign name="vxml_maxtime" expr="evt.maxtime" />
+
+                <assign name="mystate" expr="'calling'" />
+
+                <send data="'dialog.vxml.transfer.inprogress'"
+                      target="dialogid"
+                      targettype="'dialog'"/>
+
+                <!-- place the call using the values from the transfer request -->
+                <createcall dest="evt.URI"
+                            connectionid="out_connectionid"
+                            aai="evt.aai"
+                            timeout="evt.connecttimeout"
+                            callerid="evt.values.localuri"/>
+            </if>
+        </transition>
+
+        <!--
+             we will get the following events but we do not do anything
+             because in VoiceXML 2.0 you just ignore redirect errors.
+             we do however process the dialog.exit and shutdown
+             the CCXML Session.
+             -->
+        <!--
+             implemented blind transfer to not use redirect, but instead create
+             an outgoing call so we must handle that here.
+        -->
+        <transition state="redirecting" event="connection.connected" name="evt">
+            <!-- join the two calls together -->
+            <join id1="in_connectionid" id2="evt.connectionid" duplex="'full'" />
+        </transition>
+
+        <!-- For SIP, we will always recieve connection.redirected and then we do exit -->
+        <transition state="redirecting" event="connection.redirected" name="evt">
+            <exit/>
+        </transition>
+
+        <transition state="redirecting" event="connection.failed" name="evt">
+            <exit/>
+        </transition>
+
+        <transition state="redirecting" event="dialog.disconnect" name="evt">
+        </transition>
+
+        <transition state="redirecting" event="dialog.exit" name="evt">
+        </transition>
+
+        <transition state="redirecting" event="connection.disconnected" name="evt">
+            <exit/>
+        </transition>
+
+        <!-- consultation transfer for ISDN/ISUP. -->
+        <transition state="consulting" event="connection.connected" name="evt">
+            <assign name="mystate" expr="'redirecting'" />
+            <!-- join the two calls together -->
+            <send data="'connection.disconnect.transfer'" target="dialogid" targettype="'dialog'"/>
+            <join id1="in_connectionid" id2="evt.connectionid" duplex="'full'" />
+        </transition>
+
+        <!-- This event will occur when we have done a SIP consultation transfer -->
+        <!-- If the transfer is successful we will have "200" as result code -->
+        <!-- If the transfer is unsuccessful (resumed in CCAPI) we will have unknown -->
+        <transition state="consulting" event="connection.redirected" name="evt">
+            <!-- just send the error event to the dialog -->
+            <var name="results" expr="evt.info.vxmlresult"/>
+            <var name="message" expr="evt.info.vxmlmessage"/>
+            <log expr="'results = ' + evt.info.vxmlresult"/>
+            <log expr="'message = ' + evt.info.vxmlmessage"/>
+            <!-- two cases, return a result or throw an event -->
+            <if cond="results == 'busy' || results == 'noanswer' || results == 'network_busy' || results == 'unknown'">
+                <send data="'dialog.vxml.transfer.complete'"
+                      target="dialogid"
+                      targettype="'dialog'"
+                      namelist="results" />
+            <else/>
+                <assign name="mystate" expr="'redirecting'" />
+                <send data="'connection.disconnect.transfer'" target="dialogid" targettype="'dialog'"/>
+                <!-- Need to check for error. cases: if results.indexOf(error.) In that case do code below... -->
+                <!--send data="evt.info.vxmlresult"
+                      target="dialogid"
+                      targettype="'dialog'"
+                      namelist="message" /-->
+            </if>
+            <!-- update our state var back to the original state -->
+            <assign name="mystate" expr="'dialogActive'" />
+        </transition>
+
+        <transition state="consulting" event="connection.failed" name="evt">
+            <!-- just send the error event to the dialog -->
+            <var name="results" expr="evt.info.vxmlresult"/>
+            <var name="message" expr="evt.info.vxmlmessage"/>
+            <!-- two cases, return a result or throw an event -->
+            <if cond="results == 'busy' || results == 'noanswer' || results == 'network_busy' || results == 'unknown'">
+                <send data="'dialog.vxml.transfer.complete'"
+                      target="dialogid"
+                      targettype="'dialog'"
+                      namelist="results" />
+            <else/>
+                <send data="evt.info.vxmlresult"
+                      target="dialogid"
+                      targettype="'dialog'"
+                      namelist="message" />
+            </if>
+            <!-- update our state var back to the original state -->
+            <assign name="mystate" expr="'dialogActive'" />
+        </transition>
+
+        <!-- incoming call disconnected before connected state. -->
+        <transition state="consulting" event="connection.disconnected" name="evt">
+            <disconnect connectionid="out_connectionid"/>
+            <var name="status" expr="evt.info.status"/>
+            <send data="'connection.disconnect.hangup'"
+                  target="dialogid"
+                  targettype="'dialog'"
+                  namelist="status" />
+            <assign name="mystate" expr="'userDisconnect'" />
+        </transition>
+
+        <transition state="consulting" event="error.*" name="evt">
+            <assign name="mystate" expr="'dialogActive'" />
+            <send data="evt.name" target="dialogid" targettype="'dialog'"/>
+        </transition>
+         
+         <transition  event="error.*" name="evt">
+			<var name="DNIS" expr="''+realDNIS"/>
+			<var name="status" expr="'16'"/>
+			<var name="DCEND" expr="'near_end_disconnect'"/>
+			<send targettype="'basichttp'" target="'http://192.168.100.226:8080/hungama/hangupdetails'" namelist="ANI DNIS status DCEND evt" />
+			<exit/>
+        </transition>
+        
+
+        <!--
+             handle bridge=true events
+             this first event is for if the outbound call failed.
+             -->
+        <transition state="calling" event="connection.failed" name="evt">
+            <!-- just send the error event to the dialog -->
+            <var name="results" expr="evt.info.vxmlresult"/>
+            <var name="message" expr="evt.info.vxmlmessage"/>
+            <var name="status" expr="evt.info.status"/>
+
+            <!-- two cases, return a result or throw an event -->
+            <if cond="results == 'busy' || results == 'noanswer' || results == 'network_busy' || results == 'unknown'">
+                <send data="'dialog.vxml.transfer.complete'"
+                      target="dialogid"
+                      targettype="'dialog'"
+                      namelist="results status" />
+            <else/>
+                <send data="evt.info.vxmlresult"
+                      target="dialogid"
+                      targettype="'dialog'"
+                      namelist="message status" />
+            </if>
+            <!-- update our state var back to the original state -->
+            <assign name="mystate" expr="'dialogActive'" />
+        </transition>
+
+        <!-- it is perfectly valid to get the 2 connection.failed in a row ! 
+        	Let just catch it (to avoid the unconditionnal kill) and do nothing -->
+        <transition state="dialogActive" event="connection.failed" name="evt">
+        </transition>
+
+
+        <transition state="calling" event="dialog.terminatetransfer" name="evt">
+            <var name="results" expr="'near_end_disconnect'" />
+            <!-- disconnect the outbound call -->
+            <disconnect connectionid="out_connectionid"/>
+
+            <send data="'dialog.vxml.transfer.complete'"
+                  target="dialogid"
+                  targettype="'dialog'"
+                  namelist="results" />
+
+            <!-- update our state var back to the original state -->
+            <assign name="mystate" expr="'dialogActive'" />
+        </transition>
+
+        <!-- the outbound call has been answered. -->
+        <transition state="calling" event="connection.connected" name="evt">
+            <!-- update our state var back to show that we are connected -->
+            <assign name="mystate" expr="'outgoing_call_active'" />
+            <!-- join the two calls together -->
+            <join id1="in_connectionid" id2="evt.connectionid" duplex="'full'" />
+        </transition>
+
+        <!-- incoming call disconnected before connected state. -->
+        <transition state="calling" event="connection.disconnected" name="evt">
+            <disconnect connectionid="out_connectionid"/>
+            <var name="status" expr="evt.info.status"/>
+            <send data="'connection.disconnect.hangup'"
+                  target="dialogid"
+                  targettype="'dialog'"
+                  namelist="status" />
+            <assign name="mystate" expr="'userDisconnect'" />
+        </transition>
+
+        <!-- we will get here once the join completes.
+             (conversely, an unjoin command generates a conference.unjoined event) -->
+        <transition state="outgoing_call_active" event="conference.joined" name="evt">
+            <!-- if maxtime has been set then we setup a timer -->
+            <log expr="'maxtime event scheduled in '+vxml_maxtime"/>
+
+            <send data="'dialog.vxml.transfer.active'"
+                  target="dialogid"
+                  targettype="'dialog'" />
+
+            <if cond="vxml_maxtime != '0ms'">
+                <send data="'maxtime_disconnect'"
+                      target="session.id"
+                      delay="vxml_maxtime"
+                      sendid="maxtime_sendid"/>
+            </if>
+        </transition>
+
+        <!-- deal with maxtime disconnect -->
+        <transition state="outgoing_call_active" event="maxtime_disconnect" name="evt">
+            <!-- unjoin our connections -->
+            <assign name="mystate" expr="'dialogActive'" />
+            <unjoin id1="in_connectionid" id2="out_connectionid"/>
+            <disconnect connectionid="out_connectionid"/>
+            <!-- rejoin the first connection to the dialog -->
+            <join id1="in_connectionid" id2="dialogid"/>
+
+            <var name="results" expr="'maxtime_disconnect'" />
+            <assign name="transfer_duration_in_millis" expr="session.connections[out_connectionid].duration" />
+            <send data="'dialog.vxml.transfer.complete'"
+                  target="dialogid"
+                  targettype="'dialog'"
+                  namelist="results transfer_duration_in_millis" />
+        </transition>
+
+        <!-- deal with someone disconnecting. -->
+        <transition state="outgoing_call_active" event="connection.disconnected" name="evt">
+            <!-- cancel any maxtime events that are waiting to be fired -->
+            <if cond="maxtime_sendid != null">
+                <cancel sendid="maxtime_sendid"/>
+                <assign name="maxtime_sendid" expr="null"/>
+            </if>
+
+            <!--
+                 branch off based on what call leg this is for and send
+                 the proper event to the dialog.
+                 -->
+            <log expr="'evt.connectionid = '+evt.connectionid"/>
+            <log expr="'out_connectionid = '+out_connectionid"/>
+            <log expr="'dialogid = '+dialogid"/>
+            <if cond="evt.connectionid == out_connectionid">
+
+                <!-- unjoin our connections -->
+                <unjoin id1="in_connectionid" id2="out_connectionid"/>
+                <!-- rejoin the first connection to the dialog -->
+                <join id1="in_connectionid" id2="dialogid"/>
+
+                <var name="results" expr="'far_end_disconnect'" />
+                <assign name="transfer_duration_in_millis" expr="session.connections[out_connectionid].duration" />
+                <send data="'dialog.vxml.transfer.complete'"
+                      target="dialogid"
+                      targettype="'dialog'"
+                      namelist="results transfer_duration_in_millis" />
+
+                <!-- update our state var back to the original state -->
+                <assign name="mystate" expr="'dialogActive'" />
+
+            <else />
+                <!-- disconnect b-leg immediately (on a-leg disconnect) -->
+                <disconnect connectionid="out_connectionid"/>
+                <var name="status" expr="evt.info.status"/>
+                <send data="'connection.disconnect.hangup'"
+                      target="dialogid"
+                      targettype="'dialog'"
+                      namelist="status" />
+
+                <!-- set our state to show that the original caller is disconnected. -->
+                <assign name="mystate" expr="'userDisconnect'" />
+            </if>
+        </transition>
+
+        <!--
+             deal with a "hotword" type event where the dialog
+             requests that we stop the transfer.
+             -->
+        <transition state="outgoing_call_active" event="dialog.terminatetransfer" name="evt">
+            <!-- update our state var back to the dialogActive state
+                 because nothing special needs to be done after this transition -->
+            <assign name="mystate" expr="'dialogActive'" />
+
+            <!-- cancel any maxtime events that are waiting to be fired -->
+            <if cond="maxtime_sendid != null">
+                <cancel sendid="maxtime_sendid"/>
+                <assign name="maxtime_sendid" expr="null"/>
+            </if>
+
+            <!-- unjoin our connections -->
+            <unjoin id1="in_connectionid" id2="out_connectionid"/>
+            <!-- rejoin the first connection to the dialog -->
+            <join id1="in_connectionid" id2="dialogid"/>
+            <!-- disconnect the outbound call -->
+            <disconnect connectionid="out_connectionid"/>
+
+            <!-- build up our event -->
+            <var name="results" expr="'near_end_disconnect'" />
+            <assign name="transfer_duration_in_millis" expr="session.connections[out_connectionid].duration" />
+            <send data="'dialog.vxml.transfer.complete'"
+                  target="dialogid"
+                  targettype="'dialog'"
+                  namelist="results transfer_duration_in_millis" />
+        </transition>
+
+
+        <!-- deal with any extra random events that may come in. -->
+
+        <!--
+             make sure that we deal with any extra dialog events
+             by ending the session. a real ccxml app would do something
+             better here.
+             -->
+        <transition event="dialog.*" name="evt">
+            <exit/>
+        </transition>
+
+        <!-- and do the same for any exit events. -->
+        <transition event="error.*" name="evt">
+            <var name="results" expr="evt.reason"/>
+            <exit expr="'failed'" namelist="results"/>
+        </transition>
+
+
+        <!--
+             and last but not least catch any connection.disconnect
+             events that made it past us.
+             -->
+        <transition event="connection.disconnected" name="evt">
+			<var name="DNIS" expr="''+realDNIS"/>
+			<var name="status" expr="''+evt.info.status"/>
+			<var name="DCEND" expr="evt.reason"/>
+			<send targettype="'basichttp'" target="'http://192.168.100.226:8080/hungama/hangupdetails'" namelist="ANI DNIS status DCEND evt" />
+            <exit/>
+        </transition>
+
+    </eventprocessor>
+
+</ccxml>
