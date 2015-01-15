@@ -1,0 +1,15 @@
+Vodafone server IP - 10.43.248.137
+
+VODA RU:--
+
+//var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_Mu/HUNGAMA_ROOT_54646.ccxml
+
+VH1:-
+//var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_VH1/HUNGAMA_ROOT_54646.ccxml
+
+REDFM:-
+
+//var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_services_54646_546460/HUNGAMA_ROOT_54646.ccxml
+
+54646 :-
+//var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_services_54646_546460/HUNGAMA_ROOT.ccxml

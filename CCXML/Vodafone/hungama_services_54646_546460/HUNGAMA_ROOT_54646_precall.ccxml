@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ccxml version="1.0" xmlns="http://www.w3.org/2002/09/ccxml">  
+  <meta name="HUNGAMA_ROOT.ccxml" content="" />
+  <meta name="Author" content="" />
+  <meta name="Date" content="" />
+  <meta name="Description" content="" />
+  <meta name="Support" content="" />  
+   <!-- Declaration of the state variable. Let's start in the init state. -->
+  <var name="stateVar" expr="'init'"/>
+  <var name="dialogid1" expr="''"/>
+  <var name="connid1" expr="''"/>
+  <var name="CallCount" expr="0"/>
+ 
+  
+  <script>
+	   st=new Object();
+       et=new Object();
+       ani=new Object();
+
+  </script>
+  
+  <var name="ANI" expr="'9999216077'"/>
+  <var name="DNIS" expr="'54646'"/>
+  <var name="ContentTime" expr="'10'"/>
+
+ 
+  
+  
+  <!-- DECLARE TIMER VARIABLES FOR CONFERENCE END -->
+ 
+  
+  
+  
+  <var name="caller1id"/> 
+  <var name="caller2id"/> 
+  <var name="confid"/> 
+  <var name="state0" expr="'not_inited'"/> 
+  <var name="incomingcall"/> 
+  <var name="callcount" expr="0"/>
+  <var name="sendid_as" expr="null"/> 
+  <var name="sessionid" expr="null"/>
+  <var name="ServerIp" expr="'localhost:8080'"/>   
+  
+  <var name="evt_name" expr="null"/>
+ 
+  <!-- var name="local_uri" expr="''"/ -->
+  <!-- var name="local_uri_len" expr="0"/ -->
+  
+  <var name="tmp"/>
+ 
+   <!-- Event processor for stateVar -->
+  <eventprocessor statevariable="stateVar"> 
+    
+	
+  
+    <transition event="connection.alerting" state="init" name="evt">
+		  <log expr="'***** CONNECTION ALERTING *****'" /> 
+		 
+		  <assign name="DNIS" expr="event$.connection.local"/>
+  	      <assign name="ANI" expr="event$.connection.remote"/>		  	
+		 
+	    	  
+	   	  <log expr="'***** SESSION ID = ' + session.id" /> 
+				  	     
+		  <assign name="connid1" expr="event$.connectionid"/>
+              <log expr="'***** connid1 = ' + connid1" />
+              <assign name="stateVar" expr="'alerting'"/>
+		<log expr="'Play Before Answer!'" />
+		  
+<!--		<dialogprepare connectionid="event$.connectionid" dialogid="dialogid1" src="'traiMandate.vxml'"/>-->	
+	<send name="'rejectcall'" target="session.id" targettype="'ccxml'" delay="'3s'" />
+    </transition>
+
+
+	 <transition state="alerting" event="rejectcall" name="evt">
+		<reject connectionid="connid1"/>
+	</transition>
+
+	 <transition state="alerting" event="dialog.prepared" name="evt">
+    		<log expr="'@@@@@@@@@@@@@@@ PLAY BEFORE DIALOG PREPARED @@@@@@@@@@@@@@@@@'" /> 		  
+	<log expr="'dialog prepared'" label="'dialog prepared'"/>
+  	<dialogstart connectionid="connid1" prepareddialogid="dialogid1"/>
+  	<assign name="stateVar" expr="'dlgstart1'"/>
+   </transition>
+    
+    <transition state="dlgstart1" event="dialog.exit">
+    		  <log expr="'Dialog finished, accepting the call now!'" />
+    		  
+    		  <accept/>
+    		  <assign name="stateVar" expr="'dialog_exit'" />
+	</transition>
+  
+    <transition event="connection.connected" state="dialog_exit">
+     
+     <log expr="'***** CALL WAS ANSWERED *****'" /> 
+	 
+	 <assign name="CallCount" expr="CallCount+1"/> 
+     <log expr="'@@@@@@@@@@@@@@ TOTAL CALL IS : @@@@@@@@@@@@@@@@@@' + CallCount"/> 
+						
+	 <log expr="'***** EVENT$.CONNECTION.CONNECTIONID = ' + event$.connection.connectionid" /> 
+	 
+	 <log expr="'***** EVENT$.CONNECTION.STATE = ' + event$.connection.state" /> 
+	 <log expr="'***** EVENT$.CONNECTION.LOCAL = ' + event$.connection.local" /> 
+	 <log expr="'***** EVENT$.CONNECTION.REMOTE = ' + event$.connection.remote" /> 
+	 <log expr="'***** EVENT$.CONNECTION.ORIGINATOR = ' + event$.connection.originator" /> 
+	 <log expr="'Call was answered. We are going to start a dialog.'"/>
+	
+
+  	 <log expr="'Call Connected'" label="'Call Connected'"/>
+  	 <assign name="callcount" expr="callcount+1"/> 
+  	
+	
+	
+	 	<dialogprepare connectionid="event$.connectionid" dialogid="dialogid1" src="'SelectLang.vxml'"/>	
+	 
+	 <assign name="stateVar" expr="'preparing'"/>
+
+   </transition>   
+    
+   <transition state="preparing" event="dialog.prepared" name="evt">
+    <log expr="'@@@@@@@@@@@@@@@ TEST DIALOG PREPARED @@@@@@@@@@@@@@@@@'" /> 		  
+	<log expr="'dialog prepared'" label="'dialog prepared'"/>
+  	<dialogstart connectionid="connid1" prepareddialogid="dialogid1"/>
+  	<assign name="stateVar" expr="'dlgstart'"/>
+   </transition>     
+    
+   <transition state="dlgstart" event="dialog.exit" name="evt">
+    
+    <log expr="'@@@@@@@@@@@@@@@ DIALOG TERMINTED @@@@@@@@@@@@@@@@@'" /> 	 
+  	<log expr="'Dialog Terminated'" label="'Dialog Terminated'"/>
+	<assign name="stateVar" expr="'dlgtrmit'"/>	
+  	<dialogterminate dialogid="dialogid1" immediate="true"/>  	
+			
+   </transition>
+   
+   <transition state="dlgstart" event="dialog.disconnect" name="evt">
+   
+    <log expr="'@@@@@@@@@@@@@@@ DIALOG DISCONNECTED @@@@@@@@@@@@@@@@@'" /> 		  
+  	<log expr="'Dialog Disconnected'" label="'Dialog Disconnected'"/>
+	<assign name="stateVar" expr="'dlgtrmit'"/>	
+  	<dialogterminate dialogid="dialogid1" immediate="true"/>  	
+			
+   </transition>
+   
+    <transition state="dlgtrmit" event="error.dialog" name="evt">  
+    
+        <log expr="'@@@@@@@@@@@@@@@ CALL HANGUP WHEN EVENT error.dialog @@@@@@@@@@@@@@@@@'" /> 		        	
+  	    <log expr="'exit'"/>
+  	    <assign name="stateVar" expr="'dlgtrmit'"/>
+  	   	<exit/>
+	 
+   </transition>
+   
+   
+  
+   <transition state="dlgtrmit" event="connection.disconnected" name="evt">  
+    
+        <log expr="'@@@@@@@@@@@@@@@ CALL HANGUP WHEN EVENT dlgtrmit @@@@@@@@@@@@@@@@@'" /> 		
+		<!-- log expr="'*****evt.values.balance = ' + evt.values.balance" / --> 	        	        	
+  	    <log expr="'exit'"/>
+  	   
+  	 		<exit/>
+ 
+   </transition>  
+  
+  
+   <transition event="connection.disconnected" name="evt">
+        <log expr="'@@@@@@@@@@@@@@@ CALL HANGUP @@@@@@@@@@@@@@@@@'" /> 	
+			        	
+ 	 
+  	  
+       	<exit/>
+	    
+   </transition>
+   
+  
+</eventprocessor>     
+  
+</ccxml>

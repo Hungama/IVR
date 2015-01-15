@@ -117,6 +117,12 @@
 		  <elseif cond="realDNIS=='011546460' ||realDNIS=='0111546460' ||realDNIS=='0110546460'"/>
 			<log expr="'chat code for Tata 546460'"/>
 			<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/>
+		  <elseif cond="realDNIS=='01155001' ||realDNIS=='011155001' ||realDNIS=='011055001'"/>
+			<log expr="'chat code for Tata 55001'"/>
+			<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/>
+		  <elseif cond="realDNIS=='011550011' ||realDNIS=='0111550011' ||realDNIS=='0110550011'"/>
+			<log expr="'chat code for Tata 550011'"/>
+			<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/>
 		  <elseif cond="realDNIS=='66291090'"/>
 			<log expr="'chat code for Aircel 54646'"/>
 			<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/>
@@ -125,9 +131,9 @@
 			<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/>
 		  <elseif cond="realDNIS=='66291004'"/>
 			<log expr="'chat code for Vodafone 546465'"/>
-			<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/>	
-		 <elseif cond="realDNIS=='30781961'"/>
-			<log expr="'chat code for Vodafone 546465'"/>
+			<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/>
+		   <elseif cond="realDNIS=='30781961'"/>
+			<log expr="'chat code for riya'"/>
 			<dialogprepare connectionid="evt.connectionid" src="vxml_url" dialogid="dialogid"/>
 
 		
@@ -254,7 +260,7 @@
 	 <transition state="connected" event="dialog.started" name="evt">
    	    <log expr="'NORMAL CALL'"/>	
         <!--<if cond="realDNIS=='66460001' || realDNIS=='66291428'">-->
-		<if cond="realDNIS=='66460001' || realDNIS=='66291340' || realDNIS=='546460' ||  realDNIS=='30781961' || realDNIS=='66291004' || realDNIS=='66291354' || realDNIS=='0110546460' || realDNIS=='0111546460' || realDNIS=='011546460' || realDNIS=='66291090'">
+		<if cond="realDNIS=='66460001' || realDNIS=='66291340' || realDNIS=='546460' || realDNIS=='66291004' || realDNIS=='66291354' || realDNIS=='0110546460' || realDNIS=='0111546460' || realDNIS=='011546460' || realDNIS=='66291090' || realDNIS=='01155001' ||realDNIS=='011155001' ||realDNIS=='011055001' || realDNIS=='011550011' ||realDNIS=='0111550011' ||realDNIS=='0110550011' ||realDNIS=='30781961'">
 			<assign name="mystate" expr="'connected'" />
 			<assign name="celeb_input_dlg" expr="'1'"/>
 		
