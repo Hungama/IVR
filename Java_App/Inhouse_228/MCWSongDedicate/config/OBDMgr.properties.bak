@@ -1,0 +1,27 @@
+########### database configuration ################
+
+IP=localhost
+DSN=database.voicechat
+USERNAME=root
+PWD=Passw0rd
+DRIVERMGR=jdbc:mysql://197.248.28.246:3306/voicechat
+
+
+########### SendMissCallOBD Query ################
+
+Query=select msisdn,userchatid,gender from tbl_voicechat where id >=1 and id <= 2000
+
+########### Platform Configuration ################
+
+CHANNEL=SIP/1001
+CONTEXT=from-pstn
+EXTEN=45679
+PRIORITY=1
+SLEEPTIME=1000
+CALLERID=123456789
+PORT=5038
+HOST=192.168.4.141
+LOGINNAME=Reejujain
+LOGINPWD=jain
+StartHour=18:00:00
+EndHour=20:00:00
