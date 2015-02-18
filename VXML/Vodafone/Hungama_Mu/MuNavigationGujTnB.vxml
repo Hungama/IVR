@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MuPortalRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="MuNavigationGujTnB.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	
+	<form id="NAV">
+		<block>
+			<prompt bargein="true" timeout="1s" cond="flag_nav!='Gossip'">
+				<audio expr="promptpath+'/'+lang+'/keypad_options_3_tnb.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="flag_nav=='Gossip'">
+				<audio expr="promptpath+'/'+lang+'/keypad_options_gossip1_tnb.wav'"/>
+			</prompt>
+			<assign name="Section_Name" expr="'MUNAVIGATION'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>						 
+						 <item>  7  </item>
+						 <item>  8  </item>
+ 						 <item>  *  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			
+			<filled>
+				<if cond="choice=='3'">
+					<script> unike_play=unike_play+1</script>
+					<goto next="MuPlayContentGujTnb.vxml#next"/>
+				<elseif cond="choice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="MuPlayContentGujTnb.vxml#next"/>
+				<elseif cond="choice=='1'"/>
+					<script> unike_play=unike_play-1</script>
+					<goto next="MuPlayContentGujTnb.vxml#next"/>
+				<elseif cond="choice=='6'"/>
+					<goto next="MuNavigationGujTnB.vxml"/>
+				<elseif cond="choice=='7'"/>
+					<goto next="MuPlayContentGujTnb.vxml#next"/>
+				<elseif cond="choice=='8'"/>
+					<goto next="MuMainMenuGujTnB.vxml"/>
+				<elseif cond="choice=='*'"/>				
+					<goto next="MuCrbtMenuTnB.vxml"/>
+				<!--<elseif cond="choice=='0'"/>
+					<goto next="MuRngMenu.vxml"/>-->
+				</if>
+			</filled>
+		</field>
+		<noinput>
+			<script> unike_play=unike_play</script>
+			<goto next="MuPlayContentGujTnb.vxml#next" />
+		</noinput>
+		<nomatch>
+			<script> unike_play=unike_play</script>
+			<goto next="MuPlayContentGujTnb.vxml#next" />
+		</nomatch>
+	</form>
+</vxml>

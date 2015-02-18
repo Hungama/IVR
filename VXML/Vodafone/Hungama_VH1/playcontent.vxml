@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="vh1Root.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="playcontent.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<var name="splitparam" expr="''"/>
+	<var name="temp" expr="0"/>
+	<var name="logs" expr="1"/>
+	<var name="msisdn" expr="0"/>
+	<var name="PROMO_ID" expr="1"/>
+	<script>
+		var favSongs=new Object();
+	var out_string=new Object();
+	var DC_flag=0;
+	</script>
+	<form id="category">
+		<block>
+			<assign name="program_name" expr="'PlayContent'"/>
+			<!--<assign name="timerflag" expr="1"/>-->
+			<if cond="timerflag=='1'">
+				<assign name="current_balance" expr="start_time()"/>
+				<script>
+					<!--total_used_bal=CheckUserBalance(initial_balance,current_balance);-->
+					total_used_bal=rim(CallTime);
+								     		curbalance=balance-total_used_bal;
+				</script>
+				<script>
+					curbalance=Math.floor(curbalance/60);
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+curbalance"/>
+				<if cond="curbalance &lt;= minbalance">
+					<goto next="TopupRenew.vxml"/>
+				</if>
+			</if>
+			<assign name="playconfig" expr="'mainmenu'"/>
+			<script>
+				i=i+1;
+			</script>
+			<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=vh1config/'+operator+'/songconfig/'+playconfig+'.cfg'"/>
+			<script>
+				movie_idx=0;
+						array.length=0;
+						unike_play=0;
+			</script>
+			<assign name="len" expr="favSongs.length"/>
+			<script>
+<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	   
+								array[k] = favSongs[k];		
+								splitparam=array[k].split("_");
+					  			array1[k]=splitparam[0];
+					  			array2[k]=splitparam[1];		   
+					   }
+
+				]]>			</script>
+			<log>
+				array is
+				<value expr="array"/>
+			</log>
+			<log>
+				array1 is
+				<value expr="array1[0]"/>
+			</log>
+			<log>
+				array2 is
+				<value expr="array2[0]"/>
+			</log>
+		</block>
+		<field name="vh1choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>
+							1
+						</item>
+						<item>
+							2
+						</item>
+						<item>
+							3
+						</item>
+						<item>
+							4
+						</item>
+						<item>
+							7
+						</item>
+						<item>
+							8
+						</item>
+						<item>
+							9
+						</item>
+						<item>
+							#
+						</item>
+						<item>
+							*
+						</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+				<!-- <audio expr="promptpath+LANG_DESCRIPTION+version+'/root_manu.wav'"/>-->
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/select_VH1_cat_1.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/press_dtmf1.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/select_VH1_cat_2.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/press_dtmf2.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/select_VH1_cat_3.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/press_dtmf3.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/select_VH1_cat_4.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/press_dtmf4.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/select_acmanager.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/press_dtmf9.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="vh1choice &lt; len+1">
+					<!--<assign name="temp" expr="vh1choice1"/>-->
+					<if cond="array2[vh1choice]=='1'">
+						<assign name="playconfig" expr="array1[vh1choice]"/>
+						<goto next="#category"/>
+						<else/>
+						<assign name="playconfig" expr="array1[vh1choice]"/>
+						<goto next="#playsongs"/>
+					</if>
+					<elseif cond="vh1choice=='9'"/>
+					<goto next="account.vxml"/>
+					<else/>
+					<clear namelist="vh1choice"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/invalidoption.wav'"/>
+					<goto next="#category"/>
+				</if>
+			</filled>
+			<noinput>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/nodtmf.wav'"/>
+				<script>
+					movie_idx=0;
+				</script>
+				<reprompt/>
+			</noinput>
+			<noinput count="2">
+				<assign name="playconfig" expr="'01'"/>
+				<goto next="#playsongs"/>
+			</noinput>
+		</field>
+	</form>
+	<form id="playsongs">
+		<block>
+			<assign name="ispressedsubdtmf" expr="'YES'"/>
+			<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=vh1config/'+operator+'/songconfig/'+playconfig+'.cfg'"/>
+			<if cond="timerflag=='1'">
+				<assign name="current_balance" expr="start_time()"/>
+				<script>
+					<!--total_used_bal=CheckUserBalance(initial_balance,current_balance);-->
+					total_used_bal=rim(CallTime);
+										curbalance=balance-total_used_bal;
+				</script>
+				<script>
+					curbalance=Math.floor(curbalance/60);
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+curbalance"/>
+				<if cond="curbalance &lt;= minbalance">
+					<goto next="TopupRenew.vxml"/>
+				</if>
+			</if>
+			<log>
+				GOTO..........
+			</log>
+			<assign name="len" expr="favSongs.length"/>
+			<log>
+				GOTO STATEMENT..........
+			</log>
+			<log>
+				LENGTH
+				<value expr="len"/>
+			</log>
+			<script>
+				unike_play=0;
+			</script>
+			<prompt bargein="false">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/welcome_VH1_cat'+playconfig+'.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/keypad.wav'"/>
+			</prompt>
+			<log>
+				GOTO STATEMENT!!!!!!!!!!!!!!!!!!
+			</log>
+			<goto next="#song_detail"/>
+		</block>
+	</form>
+	<form id="song_detail">
+		<block>
+			<if cond="unike_play &lt; '0'">
+				<script>
+					unike_play=len-1;
+				</script>
+				<elseif cond="unike_play &gt; len-1"/>
+				<script>
+					unike_play=0;
+				</script>
+			</if>
+			<log>
+				unlike_play value
+				<value expr="unike_play"/>
+			</log>
+			<script>
+				var songcheck=favSongs[unike_play].split("_");
+						contentdir=songcheck[0]; 
+						song = favSongs[unike_play];
+			</script>
+			<assign name="song_begin" expr="start_time()"/>
+			<assign name="song_listen" expr="'START'"/>
+			<log>
+				favSongs=====
+				<value expr="favSongs"/>
+			</log>
+			<log>
+				SONG CHK=====
+				<value expr="songcheck"/>
+			</log>
+			<log>
+				contentdir=====
+				<value expr="contentdir"/>
+			</log>
+			<log>
+				song=====
+				<value expr="song"/>
+			</log>
+			<log>
+				contentpath=====
+				<value expr="contentpath"/>
+			</log>
+		</block>
+		<field name="choice">
+			<catch event="error.badfetch">
+				<script>
+					unike_play=unike_play+1;
+				</script>
+				<goto next="#song_detail"/>
+			</catch>
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>
+							1
+						</item>
+						<item>
+							2
+						</item>
+						<item>
+							3
+						</item>
+						<item>
+							4
+						</item>
+						<item>
+							5
+						</item>
+						<item>
+							6
+						</item>
+						<item>
+							7
+						</item>
+						<item>
+							8
+						</item>
+						<item>
+							9
+						</item>
+						<item>
+							0
+						</item>
+						<item>
+							#
+						</item>
+						<item>
+							*
+						</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+			</prompt>
+			<filled>
+				<assign name="logs" expr="choice"/>
+				<goto next="#contentlogs"/>
+			</filled>
+			<noinput>
+				<assign name="logs" expr="1"/>
+				<goto next="#contentlogs"/>
+			</noinput>
+			<nomatch>
+				<assign name="logs" expr="1"/>
+				<goto next="#contentlogs"/>
+			</nomatch>
+		</field>
+	</form>
+	<form id="CheckTnbStatus">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+<![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					lang = out_string[j];
+				       if(j==2)
+					balance = out_string[j];
+					
+					if(j==4)
+					TnBStatus= out_string[j];
+					if(j==5)
+					TnBMode= out_string[j];		
+
+
+				  }
+
+			]]>			</script>
+			<log>
+				length of outstring  is
+				<value expr="out_string.length"/>
+			</log>
+			<log>
+				@@@@@@@New usr_status
+				<value expr="usr_status"/>
+			</log>
+			<log>
+				@@@@@@@ lang is
+				<value expr="lang"/>
+			</log>
+			<log>
+				@@@@@@@ balance minutes is
+				<value expr="balance"/>
+			</log>
+			<log>
+				@@@@@@@ TnBMode is
+				<value expr="TnBMode"/>
+			</log>
+			<log>
+				@@@@@@@ TnBStatus is
+				<value expr="TnBStatus"/>
+			</log>
+			<if cond="minbalance &lt;= 0">
+				<assign name="minbalance" expr="'0'"/>
+			</if>
+			<script>
+				balance=balance*60;
+				minbalance=minbalance*60;
+			</script>
+			<assign name="curbalance" expr="balance"/>
+		</block>
+		<field name="tnbstatus">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>
+							1
+						</item>
+						<item>
+							2
+						</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" cond="circle !='del' &amp;&amp; TnBStatus=='1' &amp;&amp; TnBMode=='TIVR' &amp;&amp;DNIS!='5584112'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_30.wav'"/>
+			</prompt>
+			<prompt bargein="true" cond="circle=='del' &amp;&amp;TnBStatus=='1' &amp;&amp; TnBMode=='TIVR'  &amp;&amp; DNIS!='5584112'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_nes_30.wav'"/>
+			</prompt>
+			<prompt bargein="true" cond="circle !='del' &amp;&amp;TnBStatus=='1' &amp;&amp; TnBMode=='TOBD' &amp;&amp;DNIS!='5584112'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_30.wav'"/>
+			</prompt>
+			<prompt bargein="true" cond="circle=='del' &amp;&amp;TnBStatus=='1' &amp;&amp; TnBMode=='TOBD'  &amp;&amp; DNIS!='5584112'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_nes_30.wav'"/>
+			</prompt>
+			<prompt bargein="true" cond="circle !='del' &amp;&amp;TnBStatus=='1' &amp;&amp; TnBMode=='TUSSD' &amp;&amp;DNIS!='5584112'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_30.wav'"/>
+			</prompt>
+			<prompt bargein="true" cond="circle=='del' &amp;&amp;TnBStatus=='1' &amp;&amp; TnBMode=='TUSSD'  &amp;&amp; DNIS!='5584112'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_nes_30.wav'"/>
+			</prompt>
+			<catch event="noinput nomatch">
+				<goto next="#contentlogs"/>
+			</catch>
+			<filled>
+				<if cond="tnbstatus== '1'">
+					<goto next="SelectLang.vxml#double_conf_1"/>
+					<elseif cond="tnbstatus=='2'"/>
+					<goto next="SelectLang.vxml#double_conf_1"/>
+					<else/>
+					<goto next="#contentlogs"/>
+				</if>
+			</filled>
+		</field>
+	</form>
+	<form id="contentlogs">
+		<block>
+			<assign name="song_listen" expr="'END'"/>
+			<assign name="compare_time" expr="time_duration(song_begin)"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+			<assign name="contentlog" expr="contentlog+hash+song+hash+playconfig+hash+compare_time"/>
+			<log>
+				timerflag:
+				<value expr="timerflag"/>
+			</log>
+			<if cond="timerflag=='1'">
+				<assign name="current_balance" expr="start_time()"/>
+				<script>
+					<!--total_used_bal=CheckUserBalance(initial_balance,current_balance);-->
+					total_used_bal=rim(CallTime);
+ 										curbalance=balance-total_used_bal;
+				</script>
+				<script>
+					curbalance=Math.floor(curbalance/60);
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+curbalance"/>
+				<if cond="curbalance &lt;= minbalance">
+					<goto next="TopupRenew.vxml"/>
+				</if>
+			</if>
+			<if cond="logs=='1'">
+				<script>
+					unike_play=unike_play+1;
+				</script>
+				<goto next="#song_detail"/>
+				<elseif cond="logs=='2'"/>
+				<script>
+					unike_play=unike_play;
+				</script>
+				<goto next="#song_detail"/>
+				<elseif cond="logs=='3'"/>
+				<script>
+					unike_play=unike_play-1;
+				</script>
+				<goto next="#song_detail"/>
+				<elseif cond="logs=='8'|| logs=='0'"/>
+				<goto next="playcontent.vxml"/>
+				<elseif cond="logs=='9'"/>
+				<goto next="account.vxml"/>
+				<elseif cond="logs=='7'"/>
+				<goto next="#browsing_opt"/>
+				<elseif cond="logs=='*'"/>
+				<goto next="#crbt"/>
+				<else/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/invalidoption.wav'"/>
+				<script>
+					unike_play=unike_play+1;
+				</script>
+				<goto next="#song_detail"/>
+			</if>
+		</block>
+	</form>
+	<form id="browsing_opt">
+		<field name="mnuopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>
+							1
+						</item>
+						<item>
+							2
+						</item>
+						<item>
+							3
+						</item>
+						<item>
+							8
+						</item>
+						<item>
+							9
+						</item>
+						<item>
+							0
+						</item>
+						<item>
+							*
+						</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/keypad_options.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="mnuopt=='1'">
+					<script>
+						unike_play=unike_play+1;
+					</script>
+					<goto next="#song_detail"/>
+					<elseif cond="mnuopt=='2'"/>
+					<script>
+						unike_play=unike_play;
+					</script>
+					<goto next="#song_detail"/>
+					<elseif cond="mnuopt=='3'"/>
+					<script>
+						unike_play=unike_play-1;
+					</script>
+					<goto next="#song_detail"/>
+					<elseif cond="mnuopt=='*'"/>
+					<goto next="#crbt"/>
+					<elseif cond="mnuopt=='8' ||mnuopt=='0'"/>
+					<goto next="playcontent.vxml"/>
+					<elseif cond="mnuopt=='9'"/>
+					<goto next="account.vxml"/>
+				</if>
+			</filled>
+			<noinput>
+				<goto next="#song_detail"/>
+			</noinput>
+			<nomatch>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/invalidoption.wav'"/>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="vh1_end.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+	<form id="crbt">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_hungama.JBOX_DC_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+<![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+				  {
+				       if(j==0)
+					DC_flag = out_string[j];
+				  }
+			]]>			</script>
+			<log expr="'DC_flag @@@@@@@@@ '+DC_flag"/>
+			<if cond="DC_flag=='1'">
+				<goto next="playcontentCRBT.vxml#crbt"/>
+			</if>
+		</block>
+		<field name="CRBT">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>
+							1
+						</item>
+						<item>
+							2
+						</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/welcome_crbt.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/continue_prompt.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/press_dtmf1.wav'"/>
+				<!--<audio expr="promptpath+LANG_DESCRIPTION+version+'/crbt_option.wav'"/>-->
+			</prompt>
+			<filled>
+				<if cond="CRBT=='1'">
+					<goto next="#conferm"/>
+					<elseif cond="CRBT=='2'"/>
+					<goto next="#song_detail"/>
+				</if>
+			</filled>
+			<noinput>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/nodtmf.wav'"/>
+				<reprompt/>
+			</noinput>
+			<noinput count="3">
+				<goto next="vh1_end.vxml"/>
+			</noinput>
+			<nomatch>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/invalidoption.wav'"/>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="vh1_end.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+	<form id="conferm">
+		<block>
+			<if cond="cirid==1 || cirid==2 ||  cirid==3 || cirid==4 || cirid==5 || cirid==6 || cirid==7 ">
+				<assign name="zone" expr="'north'"/>
+				<elseif cond="cirid==8 || cirid==9 ||  cirid==10 || cirid==11 || cirid==12 "/>
+				<assign name="zone" expr="'west'"/>
+				<elseif cond="cirid==13 || cirid==14 ||  cirid==15 || cirid==16 || cirid==17 || cirid==18 "/>
+				<assign name="zone" expr="'east'"/>
+				<elseif cond="cirid==19 || cirid==20 ||  cirid==21 || cirid==22 || cirid==23 "/>
+				<assign name="zone" expr="'south'"/>
+			</if>
+			<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=vh1_RNGMENU&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+song"/>
+			<!-- <script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/master_dbinteraction?PROCEDURE=CRBT_RNGT_MENU&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0='+song+'&amp;INPARAM[1=CRBT'"/> -->
+			<script>
+				CLIPID=out_string[0];
+			</script>
+			<log expr="'CLIPID=='+CLIPID"/>
+			<if cond="CLIPID=='0'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/nocrbt.wav'"/>
+				</prompt>
+				<goto next="#song_detail"/>
+				<else/>
+				<assign name="msisdn" expr="ANI"/>
+				<assign name="PROMO_ID" expr="CLIPID"/>
+				<!-- <data name="query_sub" src="http://203.199.126.129/VodafoneBilling/VodaCrbt.php" namelist="msisdn PROMO_ID circle" method="get"/>-->
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CRBTRNGREQS&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ ANI + '&amp;INPARAM[1]=' + song + '&amp;INPARAM[2]=' + CLIPID+ '&amp;INPARAM[3]=' + circle + '@' + operator+ '&amp;INPARAM[4]='+DNIS"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VODA_CRBTRNGREQS&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song+'&amp;INPARAM[2]=crbtACTIVATE&amp;INPARAM[3]='+circle"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/thanks_crbt.wav'"/>
+				</prompt>
+				<goto next="#song_detail"/>
+			</if>
+			<goto next="#song_detail"/>
+		</block>
+	</form>
+</vxml>

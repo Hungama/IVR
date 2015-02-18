@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+
+<vxml version="2.0" application="MuPortalRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+<meta name="MuMMainMenu.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />	
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+
+<var name="play" expr="''"/>
+<script>
+	var favSongs=new Object();
+	var out_string=new Object();
+	var dishes=new Array();				
+</script>
+	<form id="WelcomeIntroRandom">
+		<block>
+			<assign name="Section_Name" expr="'ExistingUser'"/>
+			<if cond="circle=='guj'">	  
+				<goto next="MuMMainMenuGuj.vxml"/>
+			</if>
+			<assign name="var_wel" expr="getRandom(0,4)" />				
+			<if cond="var_wel=='2'">
+				<assign name="var_wel" expr="'1'"/>
+			</if>
+			<!--<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+lang+'/welcome_old_3.wav'"/>
+			</prompt>-->			
+			<goto next="#MAINMENU"/>
+		</block>
+	</form>
+	<form id="MAINMENU">
+		<block>	
+			<assign name="Section_Name" expr="'MuMainMenu'"/>
+			<assign name="flag_nav" expr="'false'"/>
+			
+			<!--<if cond="lang=='01' || lang=='02' || lang=='06' || lang=='07' || lang=='08' || lang=='10'">
+				<assign name="lang" expr="lang"/>
+			<elseif cond="lang=='09'"/>
+				<assign name="lang" expr="'02'"/>
+			<else/>
+				<assign name="lang" expr="'01'"/>
+			</if>-->
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Muconfig/'+operator+'/'+circle+'/mainmenuorder.cfg&amp;TOKEN=FREE'"/>
+			<script>
+					array1.length=0;
+					unike_play=0;
+			</script>					
+			<assign name="len" expr="favSongs.length" />					
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					for(j=0; j<len ;  j++)
+					{  	  
+						array1[j] = favSongs[j];						   
+					}
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>			
+        </block>       
+		<field name="choice">			
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>								 							
+								 <item>  0  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  9  </item>
+						    </one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+lang+'/select_contest.wav'"/>
+				<audio expr="promptpath+lang+'/press_dtmf0.wav'"/>			
+				<audio expr="promptpath+lang+'/root_'+circle+'_000.wav'"/>
+				<audio expr="promptpath+lang+'/select_help.wav'"/>
+				<audio expr="promptpath+lang+'/press_dtmf9.wav'"/>
+			</prompt>			
+		<filled>
+			<if cond="timerflag=='1'">
+				<script> 
+						total_used_bal=rim(start_BalenceMinute);
+						bal=balance-total_used_bal;  						  
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+bal"/>
+				<if cond="bal &lt;= '0'">          
+					<goto next="MuEnd.vxml"/>
+				</if> 
+			</if>											
+			<if cond="choice &lt; len+1">
+				<if cond="choice=='0'">
+					<assign name="cat" expr="'Contest'"/>
+					<assign name="subcat" expr="cat"/>
+					<goto next="Hungama_Wmd_Contest_Play.vxml"/>					
+				<else/>
+					<if cond="choice=='7'">
+						<assign name="flag_nav" expr="'Gossip'"/>
+					</if>
+					<assign name="cat" expr="array1[--choice]"/>
+					<assign name="subcat" expr="cat"/>
+					<log expr="'selected cat is '+cat"></log>
+					<assign name="playconfig" expr="cat"></assign>
+					<goto next="#FETCHSONGS"/>
+				</if>				
+			</if>
+			<if cond="choice=='9'">
+				<goto next="MuManageAccount.vxml"/>
+			</if>							
+		</filled>
+			<noinput count="1">
+					<if cond="timerflag=='1'">
+					<script> 
+							total_used_bal=rim(start_BalenceMinute);
+							bal=balance-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="MuEnd.vxml"/>
+					</if> 		
+					</if>		
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+lang+'/nodtmf.wav'"/>
+					</prompt>
+					<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+					<if cond="timerflag=='1'">
+					<script> 
+							total_used_bal=rim(start_BalenceMinute);
+							bal=balance-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="MuEnd.vxml"/>
+					</if> 
+					</if>				
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+lang+'/nodtmf.wav'"/>
+					</prompt>
+					<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+					<if cond="timerflag=='1'">
+					<script> 
+							total_used_bal=rim(start_BalenceMinute);
+							bal=balance-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="MuEnd.vxml"/>
+					</if>
+					</if> 				
+					<assign name="cat" expr="array1[0]"/>
+					<assign name="playconfig" expr="cat"></assign>
+					<goto next="#FETCHSONGS"/>
+			</noinput>
+			<nomatch count="1">
+					<if cond="timerflag=='1'">
+					<script> 
+							total_used_bal=rim(start_BalenceMinute);
+							bal=balance-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="MuEnd.vxml"/>
+					</if>
+					</if> 				
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+					<if cond="timerflag=='1'">
+					<script> 
+							total_used_bal=rim(start_BalenceMinute);
+							bal=balance-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="MuEnd.vxml"/>
+					</if> 	
+					</if>			
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+					<if cond="timerflag=='1'">
+					<script> 
+							total_used_bal=rim(start_BalenceMinute);
+							bal=balance-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="MuEnd.vxml"/>
+					</if>
+					</if> 				
+					<assign name="cat" expr="array1[0]"/>
+					<assign name="playconfig" expr="cat"></assign>
+					<goto next="#FETCHSONGS"/>
+			</nomatch>
+		</field>
+	</form>	
+	<form id="FETCHSONGS">
+		<block>
+			<assign name="Section_Name" expr="'FETCHSONGS'"/>													
+			<assign name="var_wel" expr="getRandom(0,1)" />				
+			<log> fetching songs </log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Muconfig/'+operator+'/songconfig/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+					array1.length=0;
+					unike_play=0;
+			</script>
+			<log> unike_play  is	<value expr="unike_play"/>   </log>			
+			<assign name="len" expr="favSongs.length" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+
+			<assign name="unike_play" expr="getRandom(1,len)" />
+			<log>unike_play random logicccc is	<value expr="unike_play"/>    </log>
+
+			<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+				<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+			</if>
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+						array1[j] = favSongs[j];
+					   }
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  8  </item>
+						 <item>  9  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s" cond="flag_nav=='Gossip'">
+				<audio expr="promptpath+lang+'/keypad1.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="flag_nav!='Gossip'">
+				<audio expr="promptpath+lang+'/keypad1.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='8'">
+					<goto next="#MAINMENU"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="MuManageAccount.vxml"/>	
+				<else/>
+					<goto next="MuPlayContent.vxml#next"/>
+				</if>						
+			</filled>
+			<noinput>
+				<goto next="MuPlayContent.vxml#next"/>
+			</noinput>
+			<nomatch>
+				<goto next="MuPlayContent.vxml#next"/>
+			</nomatch>
+		</field>
+	</form>	
+</vxml>

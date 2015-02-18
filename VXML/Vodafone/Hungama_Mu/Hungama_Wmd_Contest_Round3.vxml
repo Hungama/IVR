@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MuPortalRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_Wmd_Contest_Round3.vxml" content=""/>	
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<property name="documentmaxstale" value="0s"/>
+	<property name="documentmaxage" value="0s"/>
+	
+	<var name="AnswerStatus" expr="'0'"/>
+	<var name="bedge_prompt" expr="''"/>
+	<var name="random" expr="''"/>	
+	<var name="QuestionNo" expr="''"/>	
+	<var name="AnswerKey" expr="''"/>	
+	<var name="diff_level" expr="'1'"/>		
+	<var name="UserScore" expr="'0'"/>
+	<var name="QuestCorrectCount" expr="''"/>
+	<var name="Totalquestionplayed" expr="''"/>
+	<var name="WrongCorrectCount" expr="''"/>
+	<var name="wrong" expr="''"/>
+	<var name="Catchword" expr="''"/>
+
+	<script srcexpr="'PlayNum.es'"/>
+	<script>
+		var out_string=new Object();
+		var QuestionStartTime=0;
+		var playScore=0;
+		var noinputcnt=0;
+		var nomatchcnt=0;
+		var AskedQuestCount;
+		var TScore=0;
+	</script>				
+	<form id="PlayContest">
+		<block>
+			<assign name="program_name" expr="'Question_PlayR3'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.contest_questionstatus&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+diff_level+'&amp;INPARAM[2]='+lang"/>
+			<script>
+				 <![CDATA[
+				    for(j=0; j< out_string.length;  j++)
+					  { 		    
+						if(j==0)
+							Question = out_string[j];
+						if(j==1)
+							QuestionNo = out_string[j];
+						if(j==2)
+							AnswerKey = out_string[j];
+						if(j==3)
+							diff_level = out_string[j];
+						if(j==4)						  
+							UserScore= out_string[j];
+						if(j==5)
+							QuestCorrectCount= out_string[j];
+						if(j==6)
+							Totalquestionplayed = out_string[j];
+					  }
+				]]>
+			</script>
+				<log>Question is <value expr="Question"/></log>
+				<log>QuestionNo  is <value expr="QuestionNo"/></log>
+				<log>AnswerKey is <value expr="AnswerKey"/></log>
+				<log>diff_level is <value expr="diff_level"/></log>
+				<log>UserScore is <value expr="UserScore"/></log>
+				<log>QuestCorrectCount is <value expr="QuestCorrectCount"/></log>
+				<log>Totalquestionplayed is <value expr="Totalquestionplayed"/></log>
+				
+				<script>
+					UserScore=parseInt(UserScore);
+					QuestionStartTime=start_time();
+				</script>
+				 
+				 <assign name="Ques_begin" expr="starttime()"/>
+				 <assign name="Ques_listen" expr="'START'" />
+				 
+				<script>
+					var songcheck1=Question.split("*");
+					Catchword=songcheck1[0];
+					Question=songcheck1[1];
+				</script>	
+
+				<if cond="Question=='hi' || Question=='0'">
+					<goto next="MuEnd.vxml"/>
+				</if>				
+				<if cond="UserScore=='750'">
+					<prompt bargein="false" timeout="3s">
+						<audio expr="promptpath+'/WMD/'+lang+'/welcome_round3.wav'"/>
+					</prompt>										
+				</if>
+				<prompt timeout="5s"  bargein="false">
+					<audio expr="promptpath+'/WMD/'+lang+'/contest_wordcount.wav'"/>
+					<audio expr="contentpath+'/wmd_contest/'+lang+'/'+Catchword+'.wav'"/>
+					<audio expr="promptpath+'/WMD/'+lang+'/contest_wordcount_end.wav'"/>
+				</prompt>
+		</block>			
+		<!--<field name="userdtmf" type="digits?length=2" modal="true">-->		
+		<property name="termtimeout" value="6s" /> 
+		<field name="userdtmf" type="digits?minlength=1;maxlength=2">
+			<!--<grammar mode="dtmf" root="start1" version="1.0">-->
+			<grammar mode="dtmf" root="start1" version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>
+							<item>1</item>
+							<item>2</item>
+							<item>3</item>
+							<item>4</item>
+							<item>5</item>
+							<item>6</item>
+							<item>7</item>
+							<item>8</item>
+							<item>9</item>
+							<item>0</item>
+							<item>11</item>
+						</one-of>
+					</rule>
+				</grammar>
+
+				<prompt bargein="true" timeout="5s">
+					<audio expr="contentpath+'/wmd_contest/'+lang+'/'+Question+'.wav'"/>	
+				</prompt>
+				
+				<filled>
+					<assign name="AskedQuestCount" expr="AskedQuestCount +1"/>
+					<log>userdtmf  is<value expr="userdtmf "/></log>
+					<log>AnswerKey is<value expr="AnswerKey"/></log>
+					<log>UserScore is<value expr="UserScore"/></log>
+
+					<if cond="userdtmf == AnswerKey">
+						<assign name="Ques_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(Ques_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+Question+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+
+						<log>QuestCorrectCount:<value expr="QuestCorrectCount"/></log>						
+						<script>
+							QuestCorrectCount=parseInt(QuestCorrectCount);
+							QuestCorrectCount=QuestCorrectCount+1;
+							UserScore=UserScore+10;
+						</script>
+						<assign name="AnswerStatus" expr="AnswerStatus+1"/>
+						<log>currentscore:<value expr="UserScore"/></log>	
+						
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.contest_questionstatusupdate&amp;INTOKEN=10&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+QuestionNo+'&amp;INPARAM[2]='+AnswerKey+'&amp;INPARAM[3]='+userdtmf+'&amp;INPARAM[4]=1&amp;INPARAM[5]='+diff_level+'&amp;INPARAM[6]='+lang+'&amp;INPARAM[7]='+Question+'&amp;INPARAM[8]='+compare_time+'&amp;INPARAM[9]='+UserScore"/>
+
+						<prompt timeout="2s"  bargein="true">
+							<audio expr="promptpath+'/WMD/'+lang+'/correct_ans1.wav'"/>
+						</prompt>											
+						<goto next="#PlayScore"/>	
+
+					<else/>
+						<assign name="Ques_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(Ques_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+Question+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+
+						<!--<assign name="wrong" expr="getRandom(1,4)" />-->
+						<script>
+							UserScore=UserScore+0;
+						</script>
+
+						<prompt timeout="2s"  bargein="true">
+							<audio expr="promptpath+'/WMD/'+lang+'/wrong_ans1.wav'"/>
+						</prompt>					
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.contest_questionstatusupdate&amp;INTOKEN=10&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+QuestionNo+'&amp;INPARAM[2]='+AnswerKey+'&amp;INPARAM[3]='+userdtmf+'&amp;INPARAM[4]=0&amp;INPARAM[5]='+diff_level+'&amp;INPARAM[6]='+lang+'&amp;INPARAM[7]='+Question+'&amp;INPARAM[8]='+compare_time+'&amp;INPARAM[9]='+UserScore"/>
+						<goto next="#PlayContest"/>
+					</if>
+				</filled>			
+				<nomatch>
+					<assign name="Ques_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(Ques_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+Question+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+
+					<assign name="AskedQuestCount" expr="0"/>
+
+					<prompt>
+						<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<log>nomatchcnt value isssss:<value expr="nomatchcnt"/></log>
+					
+					<if cond="nomatchcnt=='1'">
+						<script>nomatchcnt=0;</script>
+						<script>WrongCorrectCount=WrongCorrectCount+1;</script>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.contest_questionstatusupdate&amp;INTOKEN=10&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+QuestionNo+'&amp;INPARAM[2]='+AnswerKey+'&amp;INPARAM[3]='+userdtmf+'&amp;INPARAM[4]=2&amp;INPARAM[5]='+diff_level+'&amp;INPARAM[6]='+lang+'&amp;INPARAM[7]='+Question+'&amp;INPARAM[8]='+compare_time+'&amp;INPARAM[9]='+UserScore"/>
+						<goto next="#PlayContest"/>
+					<else/>
+						<script>nomatchcnt=nomatchcnt+1;</script>
+						<goto nextitem="userdtmf"/>
+					</if>
+				</nomatch>
+				<noinput>
+					<assign name="Ques_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(Ques_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+Question+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+
+					<assign name="AskedQuestCount" expr="0"/>
+					<prompt>
+						<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>
+					<log>noinputcnt value isssss:<value expr="noinputcnt"/></log>
+					<if cond="noinputcnt=='1'">
+						<script>noinputcnt=0;</script>
+						<script>WrongCorrectCount=WrongCorrectCount+1;</script>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.contest_questionstatusupdate&amp;INTOKEN=10&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+QuestionNo+'&amp;INPARAM[2]='+AnswerKey+'&amp;INPARAM[3]='+userdtmf+'&amp;INPARAM[4]=2&amp;INPARAM[5]='+diff_level+'&amp;INPARAM[6]='+lang+'&amp;INPARAM[7]='+Question+'&amp;INPARAM[8]='+compare_time+'&amp;INPARAM[9]='+UserScore"/>
+						<goto next="#PlayContest"/>
+					<else/>
+						<script>noinputcnt=noinputcnt+1;</script>
+						<goto nextitem="userdtmf"/>
+					</if>
+				</noinput>
+			</field>
+		</form>
+		<form id="NextLevelPlay">
+			<block>
+				<assign name="program_name" expr="'NextLevelPlay'"/>
+				<log>QuestCorrectCount for bedges is<value expr="QuestCorrectCount"/></log>
+			</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start1" version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>
+							<item> 1 </item>
+						</one-of>
+					</rule>
+				</grammar>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/'+bedge_prompt+'.wav'"/>
+					</prompt>
+				<filled>
+					<goto next="#PlayScore"/>
+				</filled>
+				<noinput>
+					<goto next="#PlayScore"/>
+				</noinput>
+				<nomatch>
+					<goto next="#PlayScore"/>
+				</nomatch>
+		</field>
+	</form>
+	
+	<form id="PlayScore">
+		<block>
+			<assign name="program_name" expr="'ScorePlay'"/>
+			<assign name="TScore" expr="UserScore"/>
+			<assign name="UserScore" expr="getPromptCtr(UserScore)"/>
+			<log>UserScore<value expr="UserScore"/></log>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+				<rule id="start1" scope="public">
+					<one-of>
+						<item> 1 </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/WMD/'+lang+'/score_is.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="1s">
+				<foreach item="singledigit" array="num2play_Array">
+					<audio expr="promptpath+'/WMD/'+lang+'/score/'+parseInt(singledigit)+'.wav'"/>
+					<log>	-----------------------
+						<value expr="singledigit"/>
+					</log>
+				</foreach>
+			</prompt>				
+
+			<filled>
+				<!--<if cond="TScore &gt; 1200 || TScore==1200">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.Contest_complete&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+					<goto next="#PlayContest"/>
+				</if>-->
+				<goto next="#PlayContest"/>
+			</filled>
+			<noinput>
+				<!--<if cond="TScore &gt; 1200 || TScore==1200">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.Contest_complete&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>			
+					<goto next="#PlayContest"/>
+				</if>-->
+				<goto next="#PlayContest"/>
+			</noinput>
+			<nomatch>
+				<!--<if cond="TScore &gt; 1200 || TScore==1200">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.Contest_complete&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+					<goto next="#PlayContest"/>
+				</if>-->
+				<goto next="#PlayContest"/>
+			</nomatch>
+		</field>
+	</form>
+</vxml>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="MuPortalRoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="MuRngMenu.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<var name="maxlang" expr="0"/>
+	<script>
+		var out_string=new Object();
+		var temp= new Array();
+	</script>
+	<form id="Menu">
+		<block>
+			<assign name="Section_Name" expr="'RingtoneMenu'"/>
+			<goto next="#FetchTone"/>
+		</block>
+	</form>
+	<form id="FetchTone">
+		<block>
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_rngmenu?SONGID='++'&amp;IN_TYPE=RNG"/>-->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.radio_rngmenu&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+songID+'&amp;INPARAM[1]=RNG'"/>
+			<script>
+					array2.length=0;
+					array3.length=0;
+			</script>
+			<assign name="rng_len" expr="out_string.length"/>
+			<assign name="maxlang" expr="rng_len"/>
+			<assign name="movie_idx" expr="0"/>
+			<assign name="i" expr="0"/>
+			<script>
+				<![CDATA[
+					   for(j=0; j<rng_len ;  j++)
+					   {  	  
+								temp = out_string[j].split("@");						   
+								array2[j] = temp[0];
+								array3[j] = temp[1];
+					   }
+				]]>			
+			</script>
+			<log>
+				Length  is <value expr="rng_len"/>
+			</log>
+			<log>
+				Array2[0]  is<value expr="array2[0]"/>
+			</log>
+			<log>
+				Array3[0]  is<value expr="array3[0]"/>
+			</log>
+			<if cond="array2[0]==''">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/no_ringtone_avail.wav'"/>
+				</prompt>
+				<if cond="flag_wmd_portal=='TRUE'">
+					<goto next="MuPlayContentNew.vxml#next"/>
+				<else/>
+					<goto next="MuPlayContent.vxml#next"/>
+				</if>	
+			</if>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+				<rule id="start1" scope="public">
+					<one-of>
+						<item>1</item>
+						<item>2</item>
+						<item>3</item>
+						<item>4</item>
+						<item>7</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<foreach item="names" array="array2">
+					<log>
+						song is is	<value expr="movie_idx"/>
+					</log>
+					<log>
+						names is is	<value expr="names"/>
+					</log>
+					<audio expr="promptpath+'/'+lang+'/select_'+names+'.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/press_dtmf'+ ++movie_idx+'.wav'"/>
+				</foreach>
+					<audio expr="promptpath+'/'+lang+'/keypad7.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice &lt; rng_len+1">
+					<assign name="rngmenu" expr="array2[--choice]"/>
+					<assign name="rngid" expr="array3[choice]"/>
+					<log expr="'selected rng category is '+rngmenu"/>
+					<log expr="'selected rng id is '+rngid"/>
+					<!--<assign name="END_songID" expr="songID"/>-->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.radio_crbtrngreqs&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+rngid+'&amp;INPARAM[3]='+rngmenu+'&amp;INPARAM[4]='+circle+'@'+operator+'&amp;INPARAM[5]='+DNIS"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/thanks_download.wav'"/>
+					</prompt>
+					<if cond="flag_wmd_portal=='TRUE'">
+						<goto next="MuPlayContentNew.vxml#next"/>
+					<else/>
+						<goto next="MuPlayContent.vxml#next"/>
+					</if>
+				<else/>
+					<if cond="choice=='7'">
+						<if cond="flag_wmd_portal=='TRUE'">
+							<goto next="MuPlayContentNew.vxml#next"/>
+						<else/>
+							<goto next="MuPlayContent.vxml#next"/>
+						</if>	
+					</if>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt/>
+		</noinput>
+		<noinput count="2">
+				<if cond="flag_wmd_portal=='TRUE'">
+					<goto next="MuPlayContentNew.vxml#next"/>
+				<else/>
+					<goto next="MuPlayContent.vxml#next"/>
+				</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt/>
+		</nomatch>
+		<nomatch count="2">
+				<if cond="flag_wmd_portal=='TRUE'">
+					<goto next="MuPlayContentNew.vxml#next"/>
+				<else/>
+					<goto next="MuPlayContent.vxml#next"/>
+				</if>
+		</nomatch>
+	</form>
+</vxml>

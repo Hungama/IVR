@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="checkuserstatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+
+<script>
+		var ciropr1=new Object();
+		var out_string = new Object();
+	</script>
+<error>
+<goto next="end.vxml"/>
+</error>
+
+<form id="checkuserstatus">
+<block>
+
+	<assign name="start_BalenceMinute" expr="start_time()"/>	
+	<!--<assign name = "DNIS" expr="session.connection.local.uri"/>
+	<assign name = "gANI" expr = "session.connection.remote.uri" />	
+	<assign name = "ANI" expr = "session.connection.remote.uri" />	-->
+	<log>Ani value:<value expr="ANI"/></log>
+        <log>DNIS value:<value expr="DNIS"/></log>
+        <log>lastkeyinput:<value expr="lastkeyinput"/></log>
+
+	<log> start time is: <value expr="start_time()"/></log>
+	
+	<assign name="C_Start" expr="start_time()"/>
+	<assign name="initial_balance" expr="start_time()"/>
+	
+			<script>
+				length = ANI.length;
+				if(length == 15)
+					ANI = ANI.substring(5,15);
+				if(length == 14)
+					ANI = ANI.substring(4,14);
+				if(length == 13)
+					ANI = ANI.substring(3,13);
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+			</script>			
+			<log> User ANI  is	<value expr="ANI"/>	</log>			
+			<log> User DNIS  is      <value expr="DNIS"/>     </log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>				
+			<assign name="ciropr" expr="ciropr1.value"/>
+			<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+			<script>
+				var songcheck=ciropr.split("#");
+				operator=songcheck[1];
+				circle=songcheck[2];
+			</script>	       
+			<log>circle  is	<value expr="circle"/>    </log>
+			<log>operator is <value expr="operator"/>    </log>
+		<if cond="circle=='bih'">
+			<assign name="alertCircle" expr="'BIHAR'"/>
+		<elseif cond="circle== 'apd'"/>
+			<assign name="alertCircle" expr="'Andhra Pradesh'"/>
+		<elseif cond="circle== 'guj'"/>
+			<assign name="alertCircle" expr="'GUJARAT'"/>
+		<elseif cond="circle== 'kol'"/>
+			<assign name="alertCircle" expr="'KOLKATA'"/>
+		<elseif cond="circle== 'mum'"/>
+			<assign name="alertCircle" expr="'Mumbai'"/>
+		<elseif cond="circle== 'mah'"/>
+			<assign name="alertCircle" expr="'Maharashtra'"/>
+		<elseif cond="circle== 'upe'"/>
+			<assign name="alertCircle" expr="'UP EAST'"/>
+		<elseif cond="circle== 'wbl'"/>
+			<assign name="alertCircle" expr="'WestBengal'"/>
+		<elseif cond="circle== 'upw'"/>
+			<assign name="alertCircle" expr="'UP WEST'"/>
+		<elseif cond="circle== 'del'"/>
+			<assign name="alertCircle" expr="'Delhi'"/>
+
+		<else/>
+			<assign name="alertCircle" expr="circle"/>
+
+		</if>
+		<log>circle  is <value expr="alertCircle"/>    </log>
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+
+		<!-- <assign name="dbservlet" expr="'voda_jyotsih'"/>-->
+      		<assign name="dbservlet" expr="'vodmhungama_dbinteraction'"/>
+		<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>-->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					lang = out_string[j];
+				       if(j==2)
+					balance = out_string[j];
+						if(j==3)
+					sunsign = out_string[j];
+					if(j==4)
+					sunsignname = out_string[j];
+				  }
+			]]>
+		</script>
+		
+						<script>
+			         		 balance=balance*60;
+					 		 curbalance=balance;
+			         	</script>
+		
+		<log> user status is:<value expr="usr_status"/></log>	         	
+		<log> lang status is:<value expr="lang"/></log>
+		<log> balance status is:<value expr="balance"/></log>
+		<log> sunsign status is:<value expr="sunsign"/></log>
+		<log> sunsignname status is:<value expr="sunsignname"/></log>
+			         	
+		
+		<assign name="LANG_DESCRIPTION" expr="lang"/>
+		
+		<if cond= "usr_status=='1'">
+			  <goto next="ExistingUser.vxml" fetchhint="prefetch" fetchtimeout="10s"/>	
+		<else/>
+			 <goto next="NewUser.vxml" fetchhint="prefetch" fetchtimeout="10s"/>	
+		</if>
+	
+	
+</block>
+</form>
+</vxml>

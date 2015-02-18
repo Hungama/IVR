@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MuPortalRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="MuNavigationRml.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	
+	<form id="NAV">
+		<block>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/keypad_rml.wav'"/>
+			</prompt>
+			<assign name="Section_Name" expr="'MUNAVIGATION'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>						 						 
+					</one-of>
+				</rule>
+			</grammar>
+			
+			<filled>
+				<if cond="choice=='3'">
+					<script> unike_play=unike_play+1</script>
+					<goto next="MuPlayContentRML.vxml#next"/>
+				<elseif cond="choice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="MuPlayContentRML.vxml#next"/>
+				<elseif cond="choice=='1'"/>
+					<script> unike_play=unike_play-1</script>
+					<goto next="MuPlayContentRML.vxml#next"/>
+				</if>
+			</filled>
+		</field>
+		<noinput>
+			<script> unike_play=unike_play</script>
+			<goto next="MuPlayContentRML.vxml#next" />
+		</noinput>
+		<nomatch>
+			<script> unike_play=unike_play</script>
+			<goto next="MuPlayContentRML.vxml#next" />
+		</nomatch>
+	</form>
+</vxml>

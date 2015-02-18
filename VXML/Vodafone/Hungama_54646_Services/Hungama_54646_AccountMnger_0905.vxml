@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_AccountMnger.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+
+	 <form id="AcntOption_check">
+		<block>
+
+   <if cond="ANI=='8586967046'">
+                 <goto next="Hungama_54646_AccountMnger_test.vxml"></goto>
+      </if>
+
+
+
+			<script>
+					 <![CDATA[
+					if(timerflag==1)
+			 start_BalenceMinute=starttime();
+			    ]]>	 	
+			</script>
+		   <if cond="CRBT_FLAG=='TRUE' &amp;&amp; DNIS=='546466'">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+		   </if>
+		
+		   <if cond="DNIS=='54646'">
+			 <goto next="#AcntOption_TOLL"></goto>
+		   </if>
+		   <goto next="#AcntOption"></goto>
+		</block>
+	</form>
+	
+
+	<form id="AcntOption">
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/welcome_acmanager.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/acmanager_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;
+					</script>
+					       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					       <log expr="'@@@@@@ left balance is '+balance"/>
+						<if cond="balance &lt;= '0'">
+							     <goto next="Topup.vxml"/>
+						</if>
+				</if>
+			    <if cond="choice=='1'">
+					<goto next="#AcntBalance"></goto>
+				<elseif cond="choice=='2'"/>
+					<goto next="#AcntLanguage"></goto>
+				<elseif cond="choice=='3'"/>
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='4'"/>
+					<goto next="#AcntHungama54646"></goto>
+				<elseif cond="choice=='8'"/>
+					<goto next="Hungama_54646_MainMenu.vxml" />
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;
+					</script>
+					       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					       <log expr="'@@@@@@ left balance is '+balance"/>
+					<if cond="balance &lt;= '0'">
+						     <goto next="Topup.vxml"/>
+					</if>
+				</if>
+			<goto next="Hungama_54646_MainMenu.vxml" />
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="timerflag=='1'">
+				<script>
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;
+				</script>
+				       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				       <log expr="'@@@@@@ left balance is '+balance"/>
+				<if cond="balance &lt;= '0'">
+					     <goto next="Topup.vxml"/>
+				</if>
+			</if>
+
+			<goto next="Hungama_54646_MainMenu.vxml" />
+		</nomatch>
+	</form>
+	
+	<form id="AcntBalance">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+				 <![CDATA[
+							    for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==2)
+								       	loc_balance = out_string[j];								       							      
+								  }
+		
+					]]>
+				</script>
+			<!-- GET BALANCE -->
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/acmanager_balanceis.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/'+loc_balance+'.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/minutes.wav'"/>
+			</prompt>
+			<goto next="Hungama_54646_MainMenu.vxml"></goto>
+		</block>
+	</form>
+
+	<form id="AcntLanguage">
+		<block>
+			<goto next="Hungama_54646_NewUser.vxml#LANGSEL1"></goto>
+		</block>
+	</form>
+	
+	<form id="AcntUnsubscription">
+			<!-- 	<field name="choice" type="digits?length=1"> -->
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/acmanager_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<!-- UNSUB REQUEST -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+					<goto next="Hungama_54646_End.vxml"></goto>
+				<else/>			
+					<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_54646_MainMenu.vxml" />
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_54646_MainMenu.vxml" />
+		</nomatch>
+	</form>
+	
+	<form id="AcntHungama54646">
+		<block>
+			<!-- prompt missing -->
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/subintro_toll.wav'"/>				
+			</prompt>
+			<goto next="Hungama_54646_MainMenu.vxml"></goto>
+		</block>
+	</form>
+
+	
+	<form id="AcntOption_TOLL">
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/welcome_acmanager.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/acmanager_option_toll.wav'"/>
+			</prompt>
+			<filled>
+			    <if cond="choice=='1'">
+				     <goto next="Hungama_54646_NewUser.vxml#LANGSEL1_TOLL"></goto>
+ 			        <elseif cond="choice=='8'"/>
+				     <goto next="Hungama_54646_MainMenu.vxml" />
+			    </if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_54646_MainMenu.vxml" />
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_54646_MainMenu.vxml" />
+		</nomatch>
+	</form>
+
+
+
+
+</vxml>

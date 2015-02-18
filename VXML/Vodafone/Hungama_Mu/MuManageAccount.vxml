@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="MuPortalRoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="MuManageAccount.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<!--<script>
+		var UserStatus1=new Object();		
+	</script>-->
+	<form id="AcntOption">
+		<block>
+			<assign name="Section_Name" expr="'AcountManager'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+				<rule id="start1" scope="public">
+					<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  8  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/welcome_help.wav'"/>
+				<audio expr="promptpath+'/'+lang+'/help_option.wav'"/>
+			</prompt>
+			<filled>
+					<if cond="timerflag=='1'">
+					<script> 
+							total_used_bal=rim(start_BalenceMinute);
+							bal=balance-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="MuEnd.vxml"/>
+					</if>
+					</if>		
+				<if cond="choice=='1'">
+					<goto next="#AcntLanguage"/>
+				<elseif cond="choice=='2'"/>	
+					<goto next="#AcntUnsubscription"/>
+				<elseif cond="choice=='8'"/>
+					<if cond="flag_wmd_portal=='TRUE'">
+						<goto next="MuMainMenuWmd.vxml#MAINMENU"/>
+					<else/>	
+						<goto next="MuMMainMenu.vxml#MAINMENU"/>
+					</if>
+				<else/>
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+					<goto next="#AcntOption"/>
+				</if>
+			</filled>
+		</field>
+		<noinput>
+			<if cond="timerflag=='1'">
+			<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					bal=balance-total_used_bal;  						  
+			</script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+bal"/>
+			<if cond="bal &lt;= '0'">          
+				<goto next="MuEnd.vxml"/>
+			</if> 	
+			</if>	
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt/>
+		</noinput>
+		<noinput count="3">
+			<if cond="timerflag=='1'">
+			<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					bal=balance-total_used_bal;  						  
+			</script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+bal"/>
+			<if cond="bal &lt;= '0'">          
+				<goto next="MuEnd.vxml"/>
+			</if>		
+			</if>
+			<if cond="flag_wmd_portal=='TRUE'">
+				<goto next="MuMainMenuWmd.vxml#MAINMENU"/>
+			<else/>	
+				<goto next="MuMMainMenu.vxml#MAINMENU"/>
+			</if>	
+		</noinput>
+		<nomatch>
+			<if cond="timerflag=='1'">
+			<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					bal=balance-total_used_bal;  						  
+			</script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+bal"/>
+			<if cond="bal &lt;= '0'">          
+				<goto next="MuEnd.vxml"/>
+			</if>
+			</if>		
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt/>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="timerflag=='1'">
+			<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					bal=balance-total_used_bal;  						  
+			</script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+bal"/>
+			<if cond="bal &lt;= '0'">          
+				<goto next="MuEnd.vxml"/>
+			</if>		
+			</if>
+			<if cond="flag_wmd_portal=='TRUE'">
+				<goto next="MuMainMenuWmd.vxml#MAINMENU"/>
+			<else/>	
+				<goto next="MuMMainMenu.vxml#MAINMENU"/>
+			</if>	
+		</nomatch>
+	</form>
+	<form id="AcntLanguage">
+		<block>
+			<assign name="Section_Name" expr="'AcntLanguageChange'"/>
+			<goto next="MuLangSelectionNew.vxml#EXISITNGLANGSEL1"/>	
+		</block>
+	</form>
+	<form id="AcntUnsubscription">
+		<field name="Option">
+			<grammar mode="dtmf" root="start2" version="1.0">
+				<rule id="start2" scope="public">
+					<one-of>
+						<item>1</item>
+						<item>2</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/help_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="Option=='1'">
+					<!--UNSUB REQUEST-->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.radio_unsub&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+					<goto next="MuEnd.vxml"/>
+				<else/>
+					<if cond="flag_wmd_portal=='TRUE'">
+						<goto next="MuMainMenuWmd.vxml#MAINMENU"/>
+					<else/>	
+						<goto next="MuMMainMenu.vxml#MAINMENU"/>
+					</if>	
+				</if>
+			</filled>
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt/>
+		</noinput>
+		<noinput count="3">
+			<if cond="timerflag=='1'">
+			<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					bal=balance-total_used_bal;  						  
+			</script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+bal"/>
+			<if cond="bal &lt;= '0'">          
+				<goto next="MuEnd.vxml"/>
+			</if>		
+			</if>
+			<if cond="flag_wmd_portal=='TRUE'">
+				<goto next="MuMainMenuWmd.vxml#MAINMENU"/>
+			<else/>	
+				<goto next="MuMMainMenu.vxml#MAINMENU"/>
+			</if>	
+		</noinput>
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt/>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="timerflag=='1'">
+			<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					bal=balance-total_used_bal;  						  
+			</script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+bal"/>
+			<if cond="bal &lt;= '0'">          
+				<goto next="MuEnd.vxml"/>
+			</if>		
+			</if>
+			<if cond="flag_wmd_portal=='TRUE'">
+				<goto next="MuMainMenuWmd.vxml#MAINMENU"/>
+			<else/>	
+				<goto next="MuMMainMenu.vxml#MAINMENU"/>
+			</if>
+		</nomatch>
+		</field>
+	</form>
+</vxml>

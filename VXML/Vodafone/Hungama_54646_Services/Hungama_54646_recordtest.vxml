@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_LoveGuru.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+<var name="record_BalenceMinute" expr="'0'"/>
+<var name="record_BalenceMinute_sec" expr="'0'"/>
+	
+	<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+	</script>	
+
+	
+	
+	<form id="RECORDPROB">	
+	<block>
+	<assign name="Section_Name" expr="'LOVEGURU_RECORDPROB'"/>
+		<script>
+			<![CDATA[
+			   if(timerflag==1)
+			      start_BalenceMinute=starttime();
+			]]>	 	
+		</script>
+	</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/rec_start.wav'"/>
+					
+				</prompt>
+				<filled>
+					<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;
+					</script>
+					       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					       <log expr="'@@@@@@ left balance is '+balance"/>
+						<if cond="balance &lt;= '0'">
+							     <goto next="Topup.vxml"/>
+						</if>
+					</if>
+					<if cond="choice=='1'">
+						<goto next="#RECORD"/>
+					</if>					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+	
+	
+	<form id="RECORD">
+	<block>
+	<assign name="Section_Name" expr="'LOVEGURU_RECORD'"/>
+ <script>
+                        <![CDATA[
+                           
+                              record_BalenceMinute=starttime();
+                        ]]>
+                </script>
+
+	</block>
+	    <record name="recording" beep="true" maxtime="1200s" finalsilence="10s" dtmfterm="true"/>
+<block>
+ <script>
+             record_BalenceMinute_sec=rim(record_BalenceMinute);
+ </script>
+ <log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+</block>
+
+	
+	    <field name="LGRecconfirmopt" type="boolean">
+			 <grammar mode="dtmf" root="start">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>#</item>				  					 			      
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/preview_rec.wav'"/>		
+	   	    </prompt>			
+			<filled>
+		
+			<log expr="'@@@@@@ used duration is  is '+recording.duration"/>
+<!--  <log expr="'@@@@@@ used termchar is  is '+recording$.termchar"/>
+  <log expr="'@@@@@@ used size is  is '+recording$.size"/>	-->
+			    <if cond="LGRecconfirmopt=='1'">
+					 <script>
+                                                record_BalenceMinute_sec=rim(record_BalenceMinute);
+
+                                        </script>
+ <log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+				     <audio expr="recording"/>					 				 			   
+					 <goto nextitem="confirm"/> 				     																																		
+				</if>				
+			</filled>				
+			<noinput>              
+ <script>
+                                                record_BalenceMinute_sec=rim(record_BalenceMinute);
+
+                                        </script>
+ <log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+
+<!--  <log expr="'@@@@@@ used termchar is  is '+recording$.termchar"/>
+  <log expr="'@@@@@@ used size is  is '+recording$.size"/>-->
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </noinput>					
+			<nomatch>              
+ <script>
+                                                record_BalenceMinute_sec=rim(record_BalenceMinute);
+
+                                        </script>
+ <log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+
+<!--  <log expr="'@@@@@@ used termchar is  is '+recording$.termchar"/>
+  <log expr="'@@@@@@ used size is  is '+recording$.size"/>-->
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </nomatch>    
+	  </field>
+	  
+	  <field name="confirm">
+			 <grammar mode="dtmf" root="start">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>
+				  <item>2</item>				  					 			      
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/confirm_rec.wav'"/>		
+	   	    </prompt>			
+			<filled>			
+			    <if cond="confirm=='1'">
+			    	 <assign name="DATE" expr="getcurryyyymmdd()"/>
+			    	 <assign name="TIME" expr="start_time()"/>
+				<assign name="TOKEN" expr="'LOVEPROBLEM'"></assign>
+			    	 <script>RECORD_FILE=DATE+'_'+TIME+'_'+ANI+'_'+record_BalenceMinute_sec</script>			    	 
+				<log expr="'@@@@@RECORD_FILE  is '+RECORD_FILE"/>
+			 <if cond="record_BalenceMinute_sec &gt; '11'">
+			    	 <script srcexpr="'http://'+RECORD_IP+'/'+servlet_path+'/Record?ConfigPath=test&amp;ANI='+RECORD_FILE+'&amp;TOKEN='+TOKEN+'&amp;MSG='+recording"/>				    				 				 			   
+			</if>
+					 <goto next="Hungama_54646_MainMenu.vxml"/>
+				<else/>
+					 <goto next="#RECORDPROB"/>
+				</if>				
+			</filled>				
+			<noinput>              
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </noinput>					
+			<nomatch>              
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </nomatch>    
+	  </field>	 
+   </form>
+   
+  
+</vxml>

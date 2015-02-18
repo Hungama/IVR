@@ -1,0 +1,1076 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Rasoi_root.vxml" 	
+xmlns="http://www.w3.org/2001/vxml" 	
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 	
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">  	
+
+<meta name="playContent.vxml" content="" /> 	
+<meta name="Author" content="" /> 	
+<meta name="Date" content="" /> 	
+<meta name="Description" content="" /> 	
+<meta name="Support" content="" />	
+
+<var name="play" expr="''"/>
+<var name="part" expr="1"/>
+<var name="logs" expr="''"/>
+
+<var name="c" expr="1"/>
+<var name="bad_fetch" expr="'FALSE'"/>
+<var name="start_index_pre" expr="'0'"/>
+<var name="start_index" expr="'0'"/>
+<var name="end_index" expr="'0'"/>
+<var name="OTHER_RECIPES" expr="'0'"/>
+<var name="lenMissing" expr="'0'"/>
+<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var dishes=new Array();
+		var missing=0;	
+		var recipe_start=1;			
+</script>
+
+        <form id="nav">
+            <block>
+		<assign name="program_name" expr="'plyContent-pause'"/>
+                <assign name="play" expr="'content'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/songconfig/'+LANG_DESCRIPTION+'/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+				<script>
+						array1.length=0;
+						array2.length=0;
+						unike_play=0;
+				</script>					
+				<assign name="len" expr="favSongs.length" />					
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				
+				
+				<script>
+					 <![CDATA[
+						for(j=0; j<len ;  j++)
+						{  	  
+							 var temp = favSongs[j].split("/");
+							array1[j] = temp[0];
+							array2[j] = temp[1];						   
+						}
+	
+					]]>		
+				</script> 	       					       
+				
+				
+				
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+				
+				
+				<assign name="start_index_pre" expr="0"/>
+				<assign name="start_index" expr="0"/>
+				
+				
+				<if cond="len &lt; 6 || len==6">
+					<assign name="end_index" expr="len"/>
+					<assign name="OTHER_RECIPES" expr="'FALSE'"/>
+				<else/>
+					<assign name="end_index" expr="6"/>
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+				</if>				
+				
+				<assign name="i" expr="0" />
+
+				<if cond="len &lt; 1">
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/shift_nv.wav'"/>
+					</prompt>
+					<assign name="playconfig" expr="dishname"/>
+					<goto next="playContent-pause.vxml"/>
+
+				</if>
+				<goto next="#playclip" />
+            
+            
+            </block>        	
+    </form>
+        
+    <form id="playclip">
+		<block>
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<script>
+					 <![CDATA[
+						for(j=start_index; j<end_index ;  j++)
+						{  	  
+						dishes[i] = array1[j];
+						i++;													   
+						}
+	
+					]]>		
+				</script>									
+			
+		</block>
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>								 							
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  *  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			
+			<prompt bargein="true" timeout="1s">
+				<foreach item="names" array="dishes">
+					<!--<mark nameexpr="movie_idx++"/>-->
+					<assign name="movie_idx" expr="movie_idx+1" />
+					<log>	song is is    	<value expr="movie_idx"/>  	</log>
+					<log>	names is is    	<value expr="names"/>  	</log>
+					<audio expr="contentpath+'/rasoi/hindi/'+names+'.wav'"/>					
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf'+movie_idx+'_m.wav'"/>			
+				</foreach>													
+			</prompt>
+			
+			
+			<prompt bargein="true" timeout="1s" cond="OTHER_RECIPES=='TRUE'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/others_recipe.wav'"/>
+			</prompt>			
+			
+		<filled>
+				<script>
+					var valid_input=end_index-start_index;
+				</script>	
+				<if cond="choice=='7'">
+					<if cond="OTHER_RECIPES=='FALSE'">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption_m.wav'"/>
+						<throw event="nomatch"/>
+					</if>
+					<script>
+						start_index_pre = start_index;
+						start_index = end_index;
+						end_index = end_index+6;
+					</script>
+					<if cond="len &lt; end_index || len==end_index">					
+						<script>
+							end_index = len;
+							dishes.length=0;
+						</script>
+						<assign name="OTHER_RECIPES" expr="'FALSE'"/>
+						
+					</if>
+					<log expr="'start_index_pre='+start_index_pre"></log>
+					<log expr="'start_index='+start_index"></log>
+					<log expr="'end_index='+end_index"></log>
+					<log expr="'len='+len"></log>
+					<goto next="#playclip"/>
+				</if>
+				<if cond="choice=='*'">
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+					<goto next="Rasoi_MainMenu.vxml#categorymenu"/>
+				</if>				
+				<if cond="choice=='8'">
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+					<goto next="Rasoi_MainMenu.vxml"/>
+				</if>
+				<if cond="choice=='9'">
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+					<goto next="AccountManager.vxml"/>
+				</if>				
+				<if cond="choice &lt; valid_input+1">	
+					<script>
+						choice=choice-1;
+					</script>
+					
+					<assign name="dishname" expr="array1[start_index+choice]"/>					
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_rasoi.RASOI_UpdateMinutes&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+dishname+'&amp;INPARAM[2]='+mainmenu"/>
+					<assign name="ing_repeat" expr="'TRUE'"/>
+
+					<if cond="end_index &lt; 7">
+						<script>unike_play=choice</script>
+					<else/>
+						<script>unike_play=end_index-start_index+start_index_pre+choice</script> 
+					</if>
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/> 
+					
+					<goto next="#keypa"/>
+				<else/>
+				<throw event="nomatch"/>
+				</if>				
+		</filled>
+
+		<noinput>
+		    	<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf_m.wav'"/>
+			</prompt>
+			<goto next="#playclip"/>
+		</noinput>
+		<nomatch>
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption_m.wav'"/>
+			</prompt>
+			<goto next="#playclip"/>
+
+		</nomatch>
+		</field>
+	</form>
+
+<form id="keypa">
+<block>
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_rasoi.RASOI_METADATA&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+dishname+'&amp;INPARAM[1]='+LANG_DESCRIPTION"/>
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					UNIQUE_CODE = out_string[j];
+				       if(j==1)
+					INGRADIENT_PART = out_string[j];
+				       if(j==2)
+					RECIPE_PART = out_string[j];
+				  }
+			]]>
+		</script>
+						<log>$$$$UNIQUE_CODE  is	<value expr="UNIQUE_CODE"/>    </log>
+						<log>$$$$INGRADIENT_PART  is	<value expr="INGRADIENT_PART"/>    </log>
+						<log>$$$$RECIPE_PART  is	<value expr="RECIPE_PART"/>    </log>
+						<log>$$$$dishname  is	<value expr="dishname"/>    </log>		
+		<if cond="UNIQUE_CODE=='-1'">
+			<if cond="isResume=='TRUE'">
+				<assign name="isResume" expr="'FALSE'"/>
+				<goto next="Rasoi_MainMenu.vxml#mainmenu"/>
+			</if>
+		
+			<goto next="Rasoi_MainMenu.vxml#categorymenu"/>
+		
+		</if>			
+		<if cond="key &lt; 4">
+		<script>
+				key=key+1;	
+		</script>
+		</if>
+</block>
+	
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">	
+						<rule id="start" scope="public">
+							<one-of>								 							
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  *  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			
+					
+					
+					<prompt bargein="true" timeout="1s" cond="key &lt; 4 &amp;&amp; isResume=='FALSE'">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/keypad_options'+key+'.wav'"/>
+					</prompt>
+					<prompt bargein="true" timeout="1s" cond="isResume=='FALSE' &amp;&amp;key &gt;= 4 ">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/keypad.wav'"/>
+					</prompt>
+
+					<prompt bargein="true" timeout="1s" cond="isResume=='TRUE'">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/keypad.wav'"/>
+					</prompt>
+					<prompt bargein="true" timeout="1s" cond="LANG_DESCRIPTION=='HIN' &amp;&amp;isResume=='FALSE'">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/chefintro.wav'"/>
+					</prompt>
+
+			
+		<filled>
+		
+				<if cond="choice=='*'">
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+					<goto next="Rasoi_MainMenu.vxml#categorymenu"/>
+				</if>				
+				<if cond="choice=='8'">
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+					<goto next="Rasoi_MainMenu.vxml"/>
+				</if>
+				<if cond="choice=='9'">
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+					<goto next="AccountManager.vxml"/>
+				</if>
+				<if cond="choice=='7'">
+					<goto next="#navigation"/>	
+				</if>	
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_rasoi.RASOI_INGRADENT&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+dishname"/>					
+					<goto next="#ingredient"/>
+							
+		</filled>
+
+		<noinput>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_rasoi.RASOI_INGRADENT&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+dishname"/>
+			<goto next="#ingredient"/>
+		</noinput>
+		<nomatch>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_rasoi.RASOI_INGRADENT&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+dishname"/>
+			<goto next="#ingredient"/>
+		</nomatch>
+</field>
+
+
+
+</form>
+
+
+
+
+<form id="ingredient">
+		<block>
+				
+			<log> fetching songs </log>			
+			
+			
+					<if cond="unike_play &gt; len-1">
+						<assign name="unike_play" expr="0" />
+					<elseif cond="unike_play &lt; 0" />
+						<assign name="unike_play" expr="len-1" />
+					</if>
+			
+			
+			
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="array1[unike_play]"/>    </log>
+			<log>	array2 == <value expr="array2[unike_play]"/>    </log>
+			
+			
+			
+			
+			<if cond="play=='content'">
+				<script>				
+					songID = array1[unike_play];
+				</script>
+			<else/>
+				<script>
+					var path_songid = array1[unike_play].split("/");				
+					songID = path_songid[2];
+					Song_Path1 = path_songid[0];
+				</script>
+			</if>			
+		
+		<!-- missing ingredient -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/songconfig/missing.cfg'"/>
+					<assign name="lenMissing" expr="favSongs.length" />					
+					<log>lenMissing  is	<value expr="lenMissing"/>    </log>
+					<log>dishname  is	<value expr="dishname"/>    </log>
+				<log>missing  is	<value expr="missing"/>    </log>					
+					<script>
+						 <![CDATA[
+							for(j=0; j<lenMissing;  j++)
+							{  	  
+									
+								if(favSongs[j] == dishname)
+								{
+									  missing=1;	
+								}
+								
+							}
+						]]>		
+					</script> 	       
+				<log>missing  is	<value expr="missing"/>    </log>
+					<if cond="missing==1">
+						<goto next="#playcontent"/>
+					</if>
+		</block>
+ 	    <field name="sms_sender">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>  0  </item>								
+				 <item>  1  </item>
+				 <item>  2  </item>
+				 <item>  3  </item>
+				 <item>  4  </item>
+				 <item>  5  </item>
+				 
+				 <item>  7  </item>
+				 <item>  8  </item>
+				 <item>  9  </item>
+				<item>  #  </item>
+				<item>  *  </item>
+				 
+                </one-of>
+              </rule>
+            </grammar>
+            	<prompt bargein="false" timeout="1s" cond="ing_repeat=='TRUE'">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/ingredients.wav'"/>
+						<audio expr="contentpath+'/rasoi/hindi/'+dishname+'.wav'"/>
+						<audio expr="promptpath+'/HIN/Ki.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/pen_paper.wav'"/>
+				</prompt>
+			
+			   <prompt bargein="true" timeout="0s">
+				 <audio expr="contentpath+'/rasoi/'+LANG_DESCRIPTION+'/'+UNIQUE_CODE+'_Ing_'+c+'.wav'"/>
+			   </prompt>			
+			<filled>
+			     <script>
+			    	 c=c+1;
+			     </script>
+			     <assign name="ing_repeat" expr="'FALSE'"/>
+			     <if cond="sms_sender=='7'">
+			     	<goto next="#navigation"/>
+			     <elseif cond="sms_sender=='9'"/>
+			     	<goto next="AccountManager.vxml"/>
+			     <elseif cond="sms_sender=='8'"/>
+			     	<goto next="Rasoi_MainMenu.vxml"/>
+			    
+				<else/>
+					<assign name="logs" expr="sms_sender"/>
+					<goto next="#contentlogs" />
+			     </if>
+			     	<if cond="c &lt; INGRADIENT_PART">  
+	     				<goto next="#ingredient"/>
+	     			 <else/>
+	     		 		<goto next="#concern"/>
+	     			 </if>
+	     		
+			</filled>			 	                             						
+
+	 
+	<noinput>
+	     <script>
+	     	c=c+1;
+	     </script>
+			     <assign name="ing_repeat" expr="'FALSE'"/>	
+			     <if cond="c &lt; INGRADIENT_PART">  
+	     			<goto next="#ingredient"/>
+	     		 <else/>
+	     		 	<goto next="#concern"/>
+	     		 </if> 
+	</noinput>        
+     	        
+    <nomatch>
+		 <script>
+	     	c=c+1;
+	     </script>
+			     <assign name="ing_repeat" expr="'FALSE'"/>
+			      <if cond="c &lt; INGRADIENT_PART">  
+	     			<goto next="#ingredient"/>
+	     		 <else/>
+	     		 	<goto next="#concern"/>
+	     		 </if>
+    </nomatch>
+</field>
+
+	<catch event="error.badfetch">
+		<goto next="#concern"/>
+	</catch>
+	
+	
+</form>
+
+<form id="concern">
+ 	    <field name="choice_con">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>  0  </item>								
+				 <item>  1  </item>
+				 <item>  2  </item>
+				 <item>  3  </item>
+				 <item>  4  </item>
+				 <item>  5  </item>
+				 
+				 <item>  7  </item>
+				 <item>  8  </item>
+				 <item>  9  </item>
+				<item>  #  </item>
+				<item>  *  </item>
+				 
+                </one-of>
+              </rule>
+            </grammar>
+		
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/making_recipe.wav'"/>
+			</prompt>						
+			<filled>
+				<if cond="choice_con == '1'">
+				   <script>
+				   c=1;
+				   </script>
+				   <goto next="#ingredient"/>
+				<elseif cond="choice_con =='9'"/>
+					<goto next="AccountManager.vxml"/>
+				<else/>
+					<assign name="logs" expr="choice_con"/>
+					<goto next="#contentlogs" />
+				</if>
+			</filled>			 	                             						
+
+	  <noinput>
+	     <goto next="#playcontent"/>	
+     </noinput>        
+     	        
+     <nomatch>
+		 <audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption_m.wav'"/>		
+		 <reprompt/>
+     </nomatch>
+
+	  </field>
+</form>
+
+<form id="playcontent">
+		<block>			
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+			</if>	
+			<if cond="timerflag=='1'">
+				<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;  						  
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+balance"/>
+				<if cond="balance &lt;= '0'">          
+					<goto next="Topup.vxml"/>
+				</if>
+			</if>			
+		<if cond="recipe_start=='1'">
+				<script>				
+					var	song = array1[unike_play];
+				</script>												
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_rasoi.RASOI_METADATA&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+song+'&amp;INPARAM[1]='+LANG_DESCRIPTION"/>
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					UNIQUE_CODE = out_string[j];
+				       if(j==1)
+					INGRADIENT_PART = out_string[j];
+				       if(j==2)
+					RECIPE_PART = out_string[j];
+				  }
+			]]>
+		</script>	
+		<if cond="UNIQUE_CODE=='-1'">
+				<assign name="part" expr="1"/>  
+				<script> logs=1</script>
+				<goto next="#contentlogs"/>
+		</if>
+			 <assign name="song_begin" expr="start_time()"/>
+		 	 <assign name="song_listen" expr="'START'" />
+		 	 <assign name="songID" expr="UNIQUE_CODE"/>
+		</if>
+		 
+		</block>
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  0  </item>								
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>								 
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  #  </item>
+								 <item>  *  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			
+			<prompt bargein="true" timeout="1s">
+					<audio expr="contentpath+'/rasoi/'+LANG_DESCRIPTION+'/'+UNIQUE_CODE+'_'+part+'.wav'"/> 							
+			</prompt>
+			
+		<filled>
+
+				<if cond="isResume=='TRUE' &amp;&amp; choice=='8'"> 
+					<script> logs=12</script>
+				<else/>
+					<assign name="logs" expr="choice"/>
+				</if>		
+				<goto next="#contentlogs"/>
+		</filled>
+
+		<noinput>
+			<if cond="part &lt; RECIPE_PART">
+			<log>Pending part play</log>	
+				<script> 
+				part=part+1;
+				recipe_start=0;
+				</script>
+				<goto next="#playcontent" />
+			<else/>
+				<assign name="part" expr="1"/>  
+				<if cond="isResume=='TRUE'"> 
+					<script> logs=12</script>
+				<else/>
+					<script> logs=11</script>
+				</if>
+				<goto next="#contentlogs" />
+			</if>			
+		</noinput>
+		<nomatch>
+			<script> 
+				recipe_start=0;
+			</script>			
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption_m.wav'"/>
+			</prompt>
+			<goto next="#playcontent" />			
+		</nomatch>
+		</field>
+	</form>
+		
+	<form id="contentlogs">
+		<block>
+								 <assign name="song_listen" expr="'END'" />
+								 <log> @@@@@@ content start time  <value expr="song_begin"/> </log>								 
+								 <assign name="compare_time" expr="time_duration(song_begin)"/>
+								 <log>@@@@@@@ content listen time  <value expr="compare_time"/> </log>
+								 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+								 <log>@@@@@@@ content add time  <value expr="ContentTime"/> </log>							 
+								 <assign name="contentlog" expr="contentlog+hash+'744_'+songID+hash+cat+hash+subcat+hash+compare_time"></assign>
+				<if cond="logs=='1'">
+
+               					<assign name="part" expr="1"/>					
+								<script>
+									recipe_start=1;
+               						unike_play=unike_play+1;
+               					</script>
+                   				<goto next="#playcontent" />
+                   				
+				<elseif cond="logs=='2'"/>
+								<assign name="part" expr="1"/>
+				 				<script>
+									recipe_start=1;				 				
+               						unike_play=unike_play;
+               					</script>
+                        		<goto next="#playcontent" />
+				
+				<elseif cond="logs=='3'"/>
+
+								<assign name="part" expr="1"/>
+				 				<script>
+									recipe_start=1;				 				
+               						unike_play=unike_play-1;
+               					</script>
+                        		<goto next="#playcontent" />
+				<elseif cond="logs=='4'"/>
+								<assign name="part" expr="1"/>
+									
+									<script>
+
+
+									var totallength=playconfig.length;
+									var test=playconfig.lastIndexOf("_");
+
+									var mainmenu2=playconfig.substring(0,test);
+									var mainmenu1=playconfig.substring(test+1,totallength);
+										
+
+										<!--var menuchoice1=playconfig.split("_");
+										mainmenu1=menuchoice1[1];
+										mainmenu2=menuchoice1[0];-->
+										
+									</script>
+									<log>PlayConfig mainmenu2:<value expr="mainmenu2"/></log>
+									<log>PlayConfig mainmenu1:<value expr="mainmenu1"/></log>
+
+									<if cond="mainmenu1=='veg'">
+										<assign name="playconfig" expr="''+mainmenu2+'_nonveg'"/>
+									<else/>
+										<assign name="playconfig" expr="''+mainmenu2+'_veg'"/>
+									</if>
+									
+									<if cond="playconfig=='snacks_nonveg' ||playconfig=='raita_nonveg' ||playconfig=='breads_nonveg' ||playconfig=='pasta_nonveg'">
+									
+											<prompt bargein="true" timeout="1s">
+												<audio expr="promptpath+LANG_DESCRIPTION+'/shift_nv.wav'"/>
+											</prompt>
+											
+											<assign name="playconfig" expr="''+mainmenu2+'_veg'"/>
+											
+											<goto next="#playcontent"/>
+									<else/>
+											<goto next="playContent-pause.vxml"/>
+									</if>
+								
+				<elseif cond="logs=='5'"/>
+								<goto next="#pause"/>
+				
+				<elseif cond="logs=='7'"/>
+								<goto next="#navigation"/>
+				
+				<elseif cond="logs=='8'"/>
+								<goto next="Rasoi_MainMenu.vxml"/>
+				
+				<elseif cond="logs=='9'"/>
+								<goto next="AccountManager.vxml"/>
+				
+				<elseif cond="logs=='0'"/>				
+								<goto next="#AddFavorite"/>
+				<elseif cond="logs=='11'"/>											
+								<goto next="#nav-noinput"/>
+				<elseif cond="logs=='12'"/>											
+								<goto next="Rasoi_MainMenu.vxml#mainmenu"/>
+				<elseif cond="logs=='#'"/>										
+								<if cond="mainmenu=='veg'">
+									<!--<assign name="playconfig" expr="songID"/>-->
+									<assign name="playconfig" expr="dishname"/>
+									<goto next="#navsuggestion"/>
+								<else/>
+									<prompt bargein="true" timeout="1s">
+											<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption_m.wav'"/>
+									</prompt>
+											<goto next="#playcontent" />
+								</if>
+
+				<elseif cond="logs=='*'"/>
+								<if cond="play=='content'">
+									<goto next="#nav"/>
+								<else/>
+									<!--<assign name="playconfig" expr="songID"/>-->
+									<assign name="playconfig" expr="dishname"/>									
+									<goto next="#navsuggestion"/>
+								</if>
+				<else/>
+				
+               					<prompt bargein="true" timeout="1s">
+									<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption_m.wav'"/>
+								</prompt>
+								<goto next="#playcontent" />
+                </if>
+
+</block>
+
+</form>
+	
+	
+	<form id="AddFavorite">
+		<block>
+			<if cond="play=='content'">		    
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_rasoi.RASOI_FAVORITE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=ADD&amp;INPARAM[2]='+LANG_DESCRIPTION+'/'+songID"/>
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_rasoi.RASOI_FAVORITE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=ADD&amp;INPARAM[2]='+LANG_DESCRIPTION+'/'+songID"/>
+			</if>
+			<script>
+			<![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+							fav_status = out_string[j];				       
+
+				  }
+
+			]]>
+			</script>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/recipe_add.wav'"/>
+			</prompt>
+			<goto next="#playcontent"/>			
+		</block>
+	</form>
+	
+	<form id="pause">
+			<field name="pause_opt">
+	        	<grammar mode="dtmf" root="start" version="1.0">
+
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  5  </item>							 						
+						</one-of>
+					</rule>
+				</grammar>
+	    		<prompt bargein="true" timeout="5s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/resume_service.wav'"/>				
+			</prompt>
+			<filled>
+				<goto next="#playcontent" />	
+			</filled>
+	        </field>
+	    	<noinput>
+	    		<goto next="#pause" />
+	    	</noinput>
+	    	<nomatch>
+		        <goto next="#pause" />
+	    	</nomatch>
+	</form>
+		
+	<form id="navigation">
+		<field name="nac_opt">
+        	<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  0  </item>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+						 <item>  4  </item>
+						 <item>  5  </item>						 
+						 <item>  7  </item>
+						 <item>  8  </item>
+						 <item>  9  </item>
+						 <item>  #  </item>
+						 <item>  *  </item>						
+					</one-of>
+				</rule>
+			</grammar>
+
+			<prompt bargein="true" timeout="1s" cond="key &lt; '4' &amp;&amp; isResume=='FALSE'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/keypad_options'+key+'a.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/previous_menu.wav'"/>
+			</prompt>
+    			<prompt bargein="true" timeout="1s" cond="key &gt;='4' &amp;&amp; isResume=='FALSE'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/keypad_options.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/previous_menu.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="isResume=='TRUE'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/keypad_options3.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/previous_menu.wav'"/>
+			</prompt>
+
+
+
+		<filled>
+			<if cond="nac_opt=='8'">
+					<goto next="Rasoi_MainMenu.vxml#mainmenu"/>
+			</if>
+			<goto next="#playcontent"/>	
+		</filled>
+        </field>
+    	<noinput>
+    		<goto next="#playcontent"/>
+    	</noinput>
+    	<nomatch>
+	        <goto next="#playcontent"/>
+    	</nomatch>
+	</form>	
+	
+	<form id="navsuggestion">
+            <block>
+		<log>Navigation Suggestion</log>
+            	<assign name="play" expr="'suggestion'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/songconfig/sugconfig/'+LANG_DESCRIPTION + '/' +playconfig+'.cfg'"/>
+
+				<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/songconfig/'+playconfig+'.cfg'"/>-->
+				<script>
+						dishes.length=0;
+						array1.length=0;
+						unike_play=0;
+				</script>					
+				<assign name="len" expr="favSongs.length" />				
+				<if cond="DNIS=='55001555'">	
+					<if cond="len==0">
+						<goto next="Rasoi_MainMenu.vxml#categorymenu"/>
+					</if>			
+					<audio expr="promptpath+LANG_DESCRIPTION+'/recipe_suggestion.wav'"/>
+				</if>
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+					 <![CDATA[
+						for(j=0; j<len ;  j++)
+						{  	  
+							array1[j] = favSongs[j];						   
+						}
+	
+					]]>		
+				</script> 	       					       
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+				<assign name="start_index_pre" expr="0"/>
+				<assign name="start_index" expr="0"/>
+				<if cond="len &lt; 6">
+					<assign name="end_index" expr="len"/>
+					<assign name="OTHER_RECIPES" expr="'FALSE'"/>
+				<else/>
+					<assign name="end_index" expr="6"/>
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+				</if>				
+				<assign name="i" expr="0" />
+				<goto next="#playsuggestion" />
+            </block>        	
+        </form>
+        
+    <form id="playsuggestion">
+		<block>		    
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<script>
+					 <![CDATA[
+						for(j=start_index; j<end_index ;  j++)
+						{  	  						
+							var songcheck=array1[j].split("/");
+							dishes[i] = songcheck[0];
+							 i++;													   
+						}
+	
+					]]>		
+				</script>									
+			
+		</block>
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>								 							
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  *  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="1s">
+				<foreach item="names" array="dishes">
+					<!--<mark nameexpr="movie_idx++"/>-->
+					<assign name="movie_idx" expr="movie_idx+1" />
+					<audio expr="contentpath+'/rasoi/hindi/'+names+'.wav'"/>					
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf'+movie_idx+'.wav'"/>			
+				</foreach>													
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="OTHER_RECIPES=='TRUE'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/others_recipe.wav'"/>
+			</prompt>			
+			
+		<filled>
+				<if cond="choice=='7'">
+					<script>
+						start_index_pre = start_index;
+						start_index = end_index;
+						end_index = end_index+6;
+					</script>
+					<if cond="len &lt; end_index">					
+						<script>
+							end_index = len-end_index;
+						</script>
+						<assign name="OTHER_RECIPES" expr="'FALSE'"/>
+					</if>
+					<log expr="'start_index_pre='+start_index_pre"></log>
+					<log expr="'start_index='+start_index"></log>
+					<log expr="'end_index='+end_index"></log>
+					<goto next="#playsuggestion"/>
+				</if>
+				<if cond="choice=='*'">
+					<goto next="Rasoi_MainMenu.vxml#categorymenu"/>
+				</if>				
+				<if cond="choice=='8'">
+					<goto next="Rasoi_MainMenu.vxml"/>
+				</if>
+				<if cond="choice=='9'">
+					<goto next="AccountManager.vxml"/>
+				</if>				
+				<if cond="choice &lt; len+1">					
+					<script>choice=choice-1</script>
+					<if cond="end_index &lt; 7">
+						<script>unike_play=choice</script>
+					<else/>
+						<script>unike_play=end_index-start_index+start_index_pre+choice</script> 
+					</if>
+					<assign name="dishname" expr="dishes[choice]"/> 
+					<goto next="#keypa"/>
+				<else/>
+				<throw event="nomatch"/>
+				</if>				
+		</filled>
+
+		<noinput>
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf_m.wav'"/>
+			</prompt>
+			<goto next="#playsuggestion"/>
+			<!-- <reprompt></reprompt>-->
+		</noinput>
+		<nomatch>
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption_m.wav'"/>
+			</prompt>
+			<goto next="#playsuggestion"/>			
+		<!--	<reprompt></reprompt>-->
+		</nomatch>
+		</field>
+	</form>
+	
+<form id="nav-noinput">	
+	<block>
+		<if cond="DNIS=='55001555'">
+			<if cond="mainmenu=='veg'">
+				<assign name="playconfig" expr="dishname"/>
+				<goto next="#navsuggestion"/>
+			<else/>
+				<assign name="playconfig" expr="dishname"/>
+				<goto next="#navsuggestion"/>
+				<!--<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption_m.wav'"/>
+					</prompt>
+				<goto next="#playcontent" />-->
+			</if>
+		</if>
+	</block>
+	
+	<field name="choice">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				
+                 	  <item> 1 </item> 
+					  <item> 2 </item>
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt bargein="true" timeout="3s" cond="missing=='0'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/recipe_complete.wav'"/>
+			</prompt>			
+			<prompt bargein="true" timeout="3s" cond="missing=='1'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/recipe_complete1.wav'"/>
+			</prompt>			
+			<filled>
+				<if cond="choice == '2'">
+				    <assign name="part" expr="1"/>
+	 				<script>
+   						unike_play=unike_play;
+   					</script>
+                    <goto next="#playcontent" />
+                <elseif cond="choice=='1'"/>
+                	<script>
+                	c=1;
+                	</script>
+                	<goto next="#ingredient"/>
+				<else/>
+					<goto next="Rasoi_MainMenu.vxml#categorymenu"/>
+				</if>
+			</filled>			 	                             						
+	  </field>
+	  <noinput>
+	     <goto next="Rasoi_MainMenu.vxml#categorymenu"/>
+     </noinput>        
+     	        
+     <nomatch>
+		 <goto next="Rasoi_MainMenu.vxml#categorymenu"/>
+     </nomatch> 	 
+</form>
+
+</vxml>

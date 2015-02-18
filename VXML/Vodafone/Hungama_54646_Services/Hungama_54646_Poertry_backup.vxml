@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_Poertry.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+<var name="record_BalenceMinute" expr="'0'"/>
+<var name="HEARD" expr="'0'"/>
+<var name="record_BalenceMinute_sec" expr="'0'"/>
+<var name="PoetryPath" expr="'http://10.43.248.137:8080/hungama/Content/POETRY/'"/>	
+<var name="promptspath_Poetry" expr="'http://10.43.248.137:8080/hungama/promptFiles/54646_version2_prompts/PoetryPrompts'"/>
+	<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+	</script>
+	<form id="LASTHEARD_PROFILE">
+			<block>
+			<assign name="Section_Name" expr="'EXISITINGUSER'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_POETRY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=GET'"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       	HEARD = out_string[j];
+							  }
+	
+						]]>
+				
+				</script>
+					
+			<!--	<goto next="#WelcomeIntroRandom"/>					-->
+
+<if cond="HEARD=='RECORD' || HEARD=='OTHERRECORD'">
+		<goto next="#WelcomeIntroRandom"/>	
+<else/>
+	<prompt bargein="true" timeout="1s">
+		<audio expr="promptspath_Poetry+'/'+lang+'/tollmodal_3rs_del.wav'"/>
+	</prompt>
+	<goto next="#RECORDPROB"></goto>
+</if>
+			</block>
+	</form>
+	
+	<form id="WelcomeIntroRandom">
+		 <block>
+				<assign name="var_wel" expr="getRandom(0,4)" />	
+				
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptspath_Poetry+'/'+lang+'/welcome_old.wav'"/>
+				</prompt>
+	<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+	
+	 
+			</block> 	
+			<field name="choice">
+			    <grammar mode="dtmf" root="start2" version="1.0">
+						<rule id="start2" scope="public">
+							<one-of>
+								 <item>  0  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								
+							</one-of>
+						</rule>
+				</grammar>
+				
+				<filled>
+				
+				  <if cond="choice &lt; 10">
+					<if cond="HEARD=='0' || HEARD=='00' || HEARD=='' ">
+						<goto next="#RECORDPROB"></goto>
+					<else/>
+						<goto next="#LASTHEARD"></goto>												
+					</if>
+				</if>										
+				</filled>
+			</field>
+			<noinput>
+					<if cond="HEARD=='0' || HEARD=='00' || HEARD=='' ">
+						<goto next="#RECORDPROB"></goto>
+					<else/>
+						<goto next="#LASTHEARD"></goto>												
+					</if>
+			</noinput>
+			<nomatch>
+				<if cond="HEARD=='0' || HEARD=='00' || HEARD=='' ">
+					<goto next="#RECORDPROB"></goto>
+				<else/>
+					<goto next="#LASTHEARD"></goto>												
+				</if>
+			</nomatch>
+		</form>
+	<form id="LASTHEARD">
+		<block>
+		<assign name="Section_Name" expr="'EXISITINGUSER_POETRY'"/>
+		</block>
+			<field name="choice">
+			    <grammar mode="dtmf" root="start3" version="1.0">
+						<rule id="start3" scope="public">
+							<one-of>
+								 <item>  0  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  *  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+	
+					<audio expr="promptspath_Poetry+'/'+lang+'/listening_cat.wav'"/>
+					
+	
+				</prompt>
+				<filled>
+					<goto next="#RECORDPROB"></goto>
+					  
+				</filled>
+			</field>
+			<noinput>
+				<if cond="HEARD=='RECORD'">					
+						<goto next="#RECORDING"/>
+				<elseif cond="HEARD=='OTHERRECORD'"/>
+					<goto next="#LISTEN"/>
+				<else/>                							 				 					 		         
+					<goto next="#RECORDPROB"></goto>
+				</if>
+			</noinput>
+			<nomatch>
+				<if cond="HEARD=='RECORD'">					       
+						<goto next="#RECORDING"/>
+				<elseif cond="HEARD=='OTHERRECORD'"/>
+					<goto next="#LISTEN"/>
+				<else/>                							 				 					 		         
+					<goto next="#RECORDPROB"></goto>
+				</if>
+			</nomatch>
+	</form>
+	
+<form id="RECORDPROB">	
+	<block>
+	<assign name="Section_Name" expr="'POERTRY_SECTION'"/>
+		
+	</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_Poetry+'/'+lang+'/welcome_new.wav'"/>
+				 <audio expr="promptspath_Poetry+'/'+lang+'/root_menu.wav'"/>
+					
+				</prompt>
+				<filled>
+					
+					<if cond="choice=='1'">
+					<assign name="HEARD" expr="'RECORD'" />	
+						<goto next="#RECORDING"/>
+					<elseif cond="choice=='2'"/>
+						<assign name="HEARD" expr="'OTHERRECORD'" />
+						<goto next="#LISTEN"/>
+					</if>					
+				</filled>
+			</field>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_Poetry+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_Poetry+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<goto next="#RECORDING"/>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_Poetry+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_Poetry+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="#RECORDING"/>
+			</nomatch>
+	</form>
+	<form id="RECORDING">	
+		
+				<field name="choice">
+					<grammar mode="dtmf" root="start">
+							<rule id="start" scope="public">
+								<one-of>								 
+									 <item>  1  </item>
+									 <item>  8  </item>
+									
+								</one-of>
+							</rule>
+					</grammar>
+					<prompt bargein="true" timeout="3s">
+						<audio expr="promptspath_Poetry+'/'+lang+'/welcome_recording.wav'"/>
+						
+					</prompt>
+					<filled>
+						
+						<if cond="choice=='1'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_POETRY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+						<script>
+							var res = out_string[0];
+						</script>
+						 <prompt bargein="true" timeout="3s">
+                                               <audio expr="promptspath_Poetry+'/'+lang+'/start_recording.wav'"/>
+	                                        </prompt>
+							<goto next="#RECORD"/>
+						<elseif cond="choice=='8'"/>
+							 <goto next="#RECORDPROB"/>
+						<else/>
+							 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_POETRY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+                                                <script>
+                                                        var res = out_string[0];
+                                                </script>
+                                                 <prompt bargein="true" timeout="3s">
+                                               <audio expr="promptspath_Poetry+'/'+lang+'/start_recording.wav'"/>
+                                                </prompt>
+                                                        <goto next="#RECORD"/>
+							
+
+						</if>					
+					</filled>
+				</field>
+				<noinput>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_POETRY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+				<script>
+					var res = out_string[0];
+				</script>
+			 <prompt bargein="true" timeout="3s">
+        	                      <audio expr="promptspath_Poetry+'/'+lang+'/start_recording.wav'"/>
+                      </prompt>
+		
+		
+					<goto next="#RECORD"/>
+				</noinput>			
+				<nomatch>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_POETRY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+				<script>
+					var res = out_string[0];
+				</script>
+				 <prompt bargein="true" timeout="3s">
+                                      <audio expr="promptspath_Poetry+'/'+lang+'/start_recording.wav'"/>
+	                      </prompt>				
+
+
+					<goto next="#RECORD"/>
+				</nomatch>			
+	</form>
+	
+	<form id="RECORD">
+	<block>
+	<assign name="Section_Name" expr="'POETRY_RECORD'"/>
+ <script>
+                        <![CDATA[
+                           
+                              record_BalenceMinute=starttime();
+                        ]]>
+                </script>
+
+	</block>
+	    <record name="recording" beep="true" maxtime="300s" finalsilence="30s" dtmfterm="true"/>
+<block>
+ <script>
+             record_BalenceMinute_sec=rim(record_BalenceMinute);
+ </script>
+ <log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+</block>
+    <field name="LGRecconfirmopt" type="boolean">
+			 <grammar mode="dtmf" root="start">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>#</item>				  					 			      
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt timeout="3s">
+				<audio expr="promptspath_Poetry+'/'+lang+'/preview_rec.wav'"/>		
+	   	    </prompt>			
+			<filled>
+				<if cond="LGRecconfirmopt=='1'">
+					 <script>
+                                                record_BalenceMinute_sec=rim(record_BalenceMinute);
+
+                                        </script>
+ 				<log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+				     <audio expr="recording"/>					 				 			   
+					 <goto nextitem="confirm"/> 				     																																		
+				</if>				
+			</filled>				
+			<noinput>              
+ 					<script>
+                                                record_BalenceMinute_sec=rim(record_BalenceMinute);
+
+                                        </script>
+ <log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+
+<!--  <log expr="'@@@@@@ used termchar is  is '+recording$.termchar"/>
+  <log expr="'@@@@@@ used size is  is '+recording$.size"/>-->
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_Poetry+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </noinput>					
+			<nomatch>              
+ <script>
+                                                record_BalenceMinute_sec=rim(record_BalenceMinute);
+
+                                        </script>
+ <log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+
+<!--  <log expr="'@@@@@@ used termchar is  is '+recording$.termchar"/>
+  <log expr="'@@@@@@ used size is  is '+recording$.size"/>-->
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_Poetry+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </nomatch>    
+	  </field>
+	  
+	  <field name="confirm">
+			 <grammar mode="dtmf" root="start">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>
+				  <item>2</item>				  					 			      
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt timeout="3s">
+				<audio expr="promptspath_Poetry+'/'+lang+'/confirm_rec.wav'"/>		
+	   	    </prompt>			
+			<filled>			
+			    <if cond="confirm=='1'">
+			    	 <assign name="DATE" expr="getcurryyyymmdd()"/>
+			    	 <assign name="TIME" expr="start_time()"/>
+				<assign name="TOKEN" expr="'LOVEPROBLEM'"></assign>
+			    	 <script>RECORD_FILE=ANI+'_'+record_BalenceMinute_sec</script>			    	 
+				<log expr="'@@@@@RECORD_FILE  is '+RECORD_FILE"/>
+					 <if cond="record_BalenceMinute_sec &gt; '11'">
+						 <script srcexpr="'http://'+RECORD_IP+'/'+servlet_path+'/Record?ConfigPath=POETRY&amp;ANI='+RECORD_FILE+'&amp;TOKEN='+TOKEN+'&amp;MSG='+recording"/>				    				 				 			   
+
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=POETRY_RECORDING&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+circle"/>
+					</if>
+					  <goto next="#RECORDPROB"/>
+				<else/>
+					 <goto next="#RECORDPROB"/>
+				</if>				
+			</filled>				
+			<noinput>              
+				<goto next="#RECORDPROB"/>
+			</noinput>					
+			<nomatch>              
+              			<goto next="#RECORDPROB"/>
+            		</nomatch>    
+	  </field>	 
+   </form>
+   <form id="LISTEN">
+   		<block>
+   		<assign name="Section_Name" expr="'OTHER_POEM'"/>
+   				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_POETRY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+						<script>
+							var res = out_string[0];
+						</script>	
+   																		
+   			<log> fetching songs </log>
+   <script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/'+operator+'/POETRY/otherpoem.cfg&amp;TOKEN=FREE'"/>
+
+   			<script>
+   						array1.length=0;
+   						unike_play=0;
+   			</script>
+   			<assign name="len" expr="favSongs.length" />			
+   		<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+   					<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+   					<goto next="Hungama_54646_End.vxml"></goto>
+   				</if>
+   			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+   			<script>
+   				 <![CDATA[
+   					   for(j=0; j<len ;  j++)
+   					   {  	  
+   								array1[j] = favSongs[j];						   
+   					   }
+   
+   				]]>		
+   			</script> 	       					       
+   			<log>Length  is	<value expr="len"/>    </log>
+   			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+   			<assign name="contentflagsub" expr="'1'"/>						
+   		</block>
+   
+   		<field name="choice">
+   			
+   			<grammar mode="dtmf" root="start">
+   						<rule id="start" scope="public">
+   							<one-of>								 
+   								 <item>  1  </item>
+   								 <item>  2  </item>
+   								 <item>  3  </item>
+   								
+   								 <item>  8  </item>
+   								 <item>  9  </item>								 
+   							</one-of>
+   						</rule>
+   				</grammar>
+   			<prompt bargein="true" timeout="1s">
+   				<audio expr="promptspath_Poetry+'/'+lang+'/keypad_options.wav'"/>
+   				
+   			</prompt>
+   
+   			<filled>
+   				
+   				<if cond="choice=='1'">
+   					<script> unike_play=unike_play-1</script>
+   					<goto next="#next" />
+   				<elseif cond="choice=='2'"/>
+   					<script> unike_play=unike_play</script>
+   					<goto next="#next" />
+   				<elseif cond="choice=='3'"/>
+   					<script> unike_play=unike_play+1</script>
+   					<goto next="#next" />
+   				<elseif cond="choice=='8'"/>
+   					<goto next="#RECORDPROB"/>
+   				</if>				
+   			</filled>
+   
+   			<noinput>
+   				
+   				<script> unike_play=unike_play+1</script>
+   				<goto next="#next" />
+   			</noinput>
+   			<nomatch>
+   				
+   				<script> unike_play=unike_play+1</script>
+   				<goto next="#next" />
+   			</nomatch>
+   		</field>
+   	</form>
+	<form id="next">
+			<block>
+			
+			
+				<if cond="unike_play &gt; len-1">
+					<assign name="unike_play" expr="0" />
+				<elseif cond="unike_play &lt; 0" />
+					<assign name="unike_play" expr="len-1" />
+				</if>
+					<log expr="'@unike_playunike_playunike_playunike_playunike_play name isssssssssssssssssss '+unike_play"/>
+					<!--<script>
+	
+					<![CDATA[
+					     if(array1[unike_play].indexOf("_")>0)
+						    TotalFM=1;
+					     else
+						    TotalFM=0;
+					]]>
+					</script>
+					<if cond="TotalFM=='0'">
+						<log expr="'@in config data havent split name isssssssssssssssssss '+array[unike_play]"/>
+						<goto next="Hungama_54646_End.vxml"></goto>
+					</if>-->
+	
+				<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+				<log>	array == <value expr="array1[unike_play]"/>    </log>
+				<script>
+					
+					songID = array1[unike_play];
+				</script>			
+			</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start">
+							<rule id="start" scope="public">
+								<one-of>								 
+									 <item>  1  </item>
+									 <item>  2  </item>
+									 <item>  3  </item>
+									 <item>  8  </item>
+									 								 
+								</one-of>
+							</rule>
+					</grammar>
+				<prompt bargein="true" timeout="1s">
+				       <audio expr="PoetryPath+songID+'.wav'"/>				
+				</prompt>
+	
+				<filled>
+					
+					<if cond="choice=='1'">
+						<script> unike_play=unike_play-1</script>
+						<goto next="#next" />
+					<elseif cond="choice=='2'"/>
+						<script> unike_play=unike_play</script>
+						<goto next="#next" />
+					<elseif cond="choice=='3'"/>
+						<script> unike_play=unike_play+1</script>
+						<goto next="#next" />
+					<elseif cond="choice=='8'"/>
+						<goto next="#RECORDPROB"/>
+					
+					</if>				
+				</filled>
+				<noinput>
+					
+					<script> unike_play=unike_play+1</script>
+					<goto next="#next" />
+				</noinput>
+				<nomatch>
+					
+					<script> unike_play=unike_play+1</script>
+					<goto next="#next" />
+				</nomatch>
+			</field>
+	</form>
+  </vxml>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="vh1Root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="SelectLang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<var name="temp" expr=""/>
+<var name="subamt" expr="''"/>
+<var name="DC_flag" expr="0" />
+<var name="i" expr="0"/>
+<var name="splitparam" expr="''"/>
+<script>
+	var favSongs=new Object();
+</script>
+
+
+
+	<form id="trans">
+		
+		<block>
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/welcome_old_1.wav'"/>
+			</prompt>
+
+			<assign name ="DC_DNIS" expr="'546460'"/>
+			
+		</block> 
+		<transfer name="mytransfer"  destexpr="DC_DNIS" bridge="true" connecttimeout="2000s" namelist="ANI"> 
+		<filled>
+			<log> transfer done now</log>
+			<clear namelist="mytransfer"/>
+		</filled>
+		</transfer>
+	</form>
+	</vxml>

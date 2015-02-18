@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="MuPortalRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="MuSubscriptionDiwali.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />			
+	
+	<var name="double_switch" expr="0"/>
+	<var name="prompt_switch" expr="0"/> 
+	<var name="switch_type" expr="0"/>	
+	<script>
+		var out_string=new Object();
+		var var_wel=0;
+	</script>
+
+	<form id="WelcomeIntroRandom">
+		<block>
+			<assign name="Section_Name" expr="'NEWUSER'"/>			
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+lang+'/welcome_ru.wav'"/>
+			</prompt>
+			<goto next="#SubOption"></goto>
+		</block>
+	</form>	
+	
+	<form id="SubOption">
+		<block>
+			<!--<if cond="DNIS=='556652' &amp;&amp; (circle=='bih' || circle=='del' || circle=='kol' || circle=='ori' || circle=='upw' || circle=='wbl')">-->				
+			<if cond="DNIS=='556652' || circle=='hay' || circle=='har'">
+				<assign name="sub_prompt_flag" expr="'true'"/>
+				<assign name="amt" expr="'2'"/>
+				<assign name="plan_id" expr="'7'"/>
+				<assign name="service_id" expr="'1301'"/>			
+			<else/>
+				<assign name="amt" expr="'30'"/>
+				<assign name="plan_id" expr="'6'"/>
+				<assign name="service_id" expr="'1301'"/>       	 
+			</if>		
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.VodaRu_Switch&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+					 double_switch=out_string[0];
+					 prompt_switch=out_string[1];
+					 switch_type=out_string[2];
+				</script>					
+				<log>double_switch Sub : <value expr="double_switch"/></log>
+				<log>switch_Tpye Sub : <value expr="switch_type"/></log>
+				<if cond="double_switch=='1'">
+					<assign name="firstconsent" expr="'YY'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="consent_flag" expr="'true'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.radio_sub&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+					<goto next="#DOUBLE_CONSENT"></goto>
+				</if>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>  1  </item>
+					</one-of>
+				</rule>
+			</grammar>
+				<prompt bargein="false" timeout="1s" cond="sub_prompt_flag=='true'">
+					<audio expr="promptpath+lang+'/subintro_rs2.wav'"/>
+				</prompt>
+				<prompt bargein="false" timeout="3s" cond="sub_prompt_flag!='true'">
+					<audio expr="promptpath+lang+'/sub_intro_diwali.wav'"/>						
+				</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="firstconsent" expr="'Y'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="consent_flag" expr="'true'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.radio_sub&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+					<goto next="#DOUBLE_CONSENT"></goto>				
+				</if>
+				<if cond="choice=='2'">
+					<goto next="#NotToSubs"></goto>				
+				</if>
+			</filled>	
+			
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+lang+'/nodtmf.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<goto next="#NotToSubs"/>
+			</noinput>
+			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>
+		</field>
+	</form>
+	
+	<form id="NotToSubs">
+		<block>
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+lang+'/thanks_unsub.wav'"/>
+			</prompt>
+			<goto next="End.vxml"/>	
+		</block>
+	</form>
+	<form id="DOUBLE_CONSENT">
+		<block>
+			<assign name="secondconsent" expr="'Y'"/>
+			<assign name="secondconsenttime" expr="start_time()"/>
+			<if cond="lang=='01'">
+				<assign name="lang_dc" expr="'2'"/>
+			<elseif cond="lang=='02'"/>
+				<assign name="lang_dc" expr="'1'"/>
+			<else/>
+				<assign name="lang_dc" expr="'3'"/>
+			</if>
+			<if cond="sub_prompt_flag=='true'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=master_db.DC_REQS&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]=1702&amp;INPARAM[2]=16&amp;INPARAM[3]='+lang_dc"/>
+			<else/>	
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=master_db.DC_REQS&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]=1701&amp;INPARAM[2]=16&amp;INPARAM[3]='+lang_dc"/>
+			</if>			
+			
+		<script>
+		<![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       	if(j==0)
+						DC_DNIS = out_string[j];				       						      
+				  }
+			]]>
+		</script>
+			<log expr="'DC_DNIS @@@@@@@@@ '+DC_DNIS"></log>
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="consent_flag=='true'">
+				<script srcexpr="'http://'+IP+'/hungama/Voda_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1301&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;redirectdnis='+DC_DNIS"/>
+			</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=MOD&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+		</block> 
+		<transfer name="mytransfer"  destexpr="DC_DNIS" bridge="true" connecttimeout="2000s"> 
+		<filled>
+			<log> transfer done now</log>
+			<!--<clear namelist="mytransfer"/>-->
+		</filled>
+		</transfer>
+	</form>
+	
+	<form id="SubRequest">
+		<block>			
+			<assign name="sub_flag" expr="'1'"/>			
+			<!-- SUB REQUEST -->			
+			<!-- vodafone service id and plan id is defined here -->
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'1'"/>
+			<assign name="service_id" expr="'1301'"/>
+	       	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.radio_sub&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR-9xM&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+lang+'/charging_wait.wav'"/>
+			</prompt>
+			<goto next="#BillStatusChk"/>	
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.radio_query&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						usr_status = out_string[j];
+					       if(j==1)
+						lang = out_string[j];
+					       if(j==2)
+						bal = out_string[j];
+						if(j==3)
+						modesub = out_string[j];
+					  }
+				   ]]>
+			</script>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="MuEnd.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+lang+'/thank_sub.wav'"/>
+				</prompt>		
+				<goto next="MuEnd.vxml"/>
+			<else/>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptpath+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="MuEnd.vxml"/>
+			</if>
+		</block>
+	</form>
+</vxml>

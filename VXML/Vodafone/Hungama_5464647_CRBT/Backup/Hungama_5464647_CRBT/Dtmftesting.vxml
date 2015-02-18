@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Dtmftesting.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="SUBANI" expr="''"/>
+	<var name="TEMPANI" expr="''"/>
+	<var name="SUBDNIS" expr="''"/>
+	<var name="TEMPDNIS" expr="''"/>
+	<var name="ciropr" expr="''"/>
+	<var name="operator2" expr="''"/>
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+
+	
+
+<form id="Welcome">
+	<block>
+		<assign name="C_Start" expr="start_time()"/>
+	    <script>  
+		 realDNIS=session.connection.local.uri;                   
+		 ANI=session.connection.remote.uri;	   
+	    </script>
+	    
+	    	    <script>
+				var length = ANI.length;
+				if(length == 15)
+					ANI = ANI.substring(5,15);
+				if(length == 14)
+					ANI = ANI.substring(4,14);
+				if(length == 13)
+					ANI = ANI.substring(3,13);
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+		   </script>
+			
+				  <assign name="DNIS" expr="realDNIS"/>
+			<if cond="ANI=='7838091548' || ANI == '9999130777'">
+				<submit expr="'../Hungama_VH1/SelectLang.vxml'"/>
+			</if>
+	    		                         
+              	  <log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+              	  <log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/> 
+		  <script srcexpr="'http://10.43.248.137:8080/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+				
+				<assign name="ciropr" expr="ciropr1.value"/>
+				<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+				<script>
+					var songcheck=ciropr.split("#");
+					operator=songcheck[1];
+					circle=songcheck[2];
+				</script>								      					       
+				<log>circle  is	<value expr="circle"/>    </log>
+				<log>operator is <value expr="operator"/>    </log>
+                		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+
+				<assign name="DNIS" expr="realDNIS"/>
+				<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+                		
+                		<assign name="dbservlet" expr="'vodmhungama_dbinteraction'"/>
+				
+
+				<log>operator is <value expr="operator"/>    </log>
+				<log>dbservlet is <value expr="dbservlet"/>    </log>
+			<goto next="#RECORD"/>
+	</block>
+</form>
+
+	
+<form id="RECORD">
+     
+       <field name="choice" type="digits?minlength=1;maxlength=6">
+		 <grammar mode="dtmf" root="start2" version="1.0">
+                   	<rule id="start2" scope="public">
+                     	<one-of>  
+				   <item>{</item> 
+				   <item>1</item>
+				   <item>2</item>
+				   <item>3</item>
+				   <item>4</item>
+				   <item>5</item>
+				   <item>6</item>
+				   <item>7</item>
+				   <item>8</item>
+				   <item>9</item>
+				   <item>0</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+
+       	
+				
+		<filled>
+							
+		     		
+				<log><value expr="realDNIS+'P'+choice"/> 	</log>	
+
+					<script>
+						DNIS=realDNIS+'P'+choice;
+					</script>
+				<log>	DNIS  key iss   <value expr="DNIS"/> 	</log>
+				<!--<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_callertune.wav'"/>
+									
+				</prompt>-->
+
+				 <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+
+		     				<goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+
+		     
+		</filled>	
+			<!-- <noinput>
+			    <audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				<goto next="Hungama_54646_End.vxml"></goto>
+
+             </noinput>        
+             
+	        
+             <nomatch>
+                <audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				<goto next="Hungama_54646_End.vxml"></goto>
+
+             </nomatch> -->	  			
+		
+	  </field> 
+  
+   </form>
+
+
+
+
+
+
+
+
+</vxml>

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Dtmftesting.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="SUBANI" expr="''"/>
+	<var name="TEMPANI" expr="''"/>
+	<var name="SUBDNIS" expr="''"/>
+	<var name="TEMPDNIS" expr="''"/>
+	<var name="ciropr" expr="''"/>
+	<var name="operator2" expr="''"/>
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+
+	
+
+<form id="Welcome">
+	<block>
+				<assign name="C_Start" expr="start_time()"/>
+	    <script>  
+		 realDNIS=session.connection.local.uri;                   
+		 ANI=session.connection.remote.uri;	   
+	    </script>
+	    
+	    	    <script>
+				var length = ANI.length;
+				if(length == 15)
+					ANI = ANI.substring(5,15);
+				if(length == 14)
+					ANI = ANI.substring(4,14);
+				if(length == 13)
+					ANI = ANI.substring(3,13);
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+		   </script>
+			
+				  <assign name="DNIS" expr="realDNIS"/>
+	    		                         
+              	  <log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+              	  <log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/> 
+		  <script srcexpr="'http://192.168.100.227:8082/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+				
+				<assign name="ciropr" expr="ciropr1.value"/>
+				<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+				<script>
+					var songcheck=ciropr.split("#");
+					operator=songcheck[1];
+					circle=songcheck[2];
+				</script>								      					       
+				<log>circle  is	<value expr="circle"/>    </log>
+				<log>operator is <value expr="operator"/>    </log>
+                		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+
+				<if cond="realDNIS=='66291434'">
+					<assign name="DNIS" expr="'5464634'"/>
+					<assign name="operator" expr="'unim'"/>
+				<elseif cond="realDNIS=='5464634'"/>
+					 <assign name="DNIS" expr="'5464634'"/>
+					 <assign name="operator" expr="'relm'"/>
+				<elseif cond="realDNIS=='0115464634'"/>
+					 <assign name="DNIS" expr="'546434'"/>
+					 <assign name="operator" expr="'tatm'"/>		   
+				<elseif cond="realDNIS=='01115464634'"/>
+					 <assign name="DNIS" expr="'5464634'"/>
+					 <assign name="operator" expr="'tatc'"/>
+				<elseif cond="realDNIS=='66291094'"/>
+					 <assign name="DNIS" expr="'5464634'"/>
+					 <assign name="operator" expr="'airc'"/>
+				</if>
+
+				<if cond="operator=='relm' || operator=='relc'">
+					<assign name="dbservlet" expr="'relhungama_dbinteraction'"/>
+				<elseif cond="operator=='unim'"/>
+					<assign name="dbservlet" expr="'unihungama_dbinteraction'"/>
+				<elseif cond="operator=='tatm'"/>
+					<assign name="dbservlet" expr="'tatmhungama_dbinteraction'"/>
+				<elseif cond="operator=='tatc'"/>
+					<assign name="dbservlet" expr="'tatchungama_dbinteraction'"/>
+				<elseif cond="operator=='airc'"/>
+					<assign name="dbservlet" expr="'airchungama_dbinteraction'"/>
+				<else/>
+					<assign name="dbservlet" expr="'unihungama_dbinteraction'"/>
+				</if>
+
+				<log>operator is <value expr="operator"/>    </log>
+				<log>dbservlet is <value expr="dbservlet"/>    </log>
+			<goto next="#RECORD"/>
+	</block>
+</form>
+
+	
+<form id="RECORD">
+     
+       <field name="choice" type="digits?minlength=1;maxlength=6">
+		 <grammar mode="dtmf" root="start2" version="1.0">
+                   	<rule id="start2" scope="public">
+                     	<one-of>     
+				   <item>1</item>
+				   <item>2</item>
+				   <item>3</item>
+				   <item>4</item>
+				   <item>5</item>
+				   <item>6</item>
+				   <item>7</item>
+				   <item>8</item>
+				   <item>9</item>
+				   <item>0</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+
+       	
+				
+		<filled>
+							
+		     		<script>
+					var lastkeyinput=choice.substring(5);
+				</script>
+				<log><value expr="realDNIS+'P'+choice"/> 	</log>	
+				<log>	Last key iss   <value expr="lastkeyinput"/> 	</log>	
+		<script>
+			DNIS=realDNIS+'P'+choice;
+		</script>
+<log>	DNIS key iss   <value expr="DNIS"/> 	</log>	
+
+				<if cond="realDNIS=='5464644' || realDNIS=='0115464644' || realDNIS=='01115464644' || realDNIS=='01105464644' || realDNIS=='66291444' || realDNIS=='66291074'">
+					<submit expr="'../Hungama_54646_Services_MM_MALAV/Hungama_54646_UserStatus.vxml'"/>
+				</if>
+
+
+				<if cond="lastkeyinput=='0'">
+					<submit expr="'../Hungama_54646_Services_MM_MALAV/Hungama_54646_UserStatus.vxml'"/>
+				<elseif cond="lastkeyinput=='1'"/>
+					<!-- <submit expr="'../Hungama_54646_Services_MM_MALAV/Hungama_MM_LoveGuru_546462.vxml'"/>-->
+					<submit expr="'../Hungama_54646_Services_MM_MALAV/Hungama_54646_UserStatus.vxml'"/>
+
+				<elseif cond="lastkeyinput=='2'"/>
+					<!--<submit expr="'../Hungama_54646_Services_MM_MALAV/Hungama_MW_PlayContent_546463.vxml'"/> -->
+					<submit expr="'../Hungama_54646_Services_MM_MALAV/Hungama_54646_UserStatus.vxml'"/>
+
+				<elseif cond="lastkeyinput=='3'"/>
+					<!--<submit expr="'../Hungama_54646_Services_MM_MALAV/Audio_Cinema_MainMenu_546469.vxml'"/> -->
+					<submit expr="'../Hungama_54646_Services_MM_MALAV/Hungama_54646_UserStatus.vxml'"/>
+
+				<elseif cond="lastkeyinput=='4'"/>
+					<!--<submit expr="'../Hungama_54646_Services_MM_MALAV/Hungama_54646_CelebrityWorld.vxml'"/>-->
+					<submit expr="'../Hungama_54646_Services_MM_MALAV/Hungama_54646_UserStatus.vxml'"/>
+
+				<elseif cond="lastkeyinput=='5'"/>
+				
+					<submit expr="'../uni_jotish/checkuserstatus.vxml'"/>
+					<!--<prompt bargein="true" timeout="3s">
+						<audio expr="promptspath_54646+'/'+lang+'/welcome_jad.wav'"/>
+						<audio expr="promptspath_54646+'/'+lang+'/userselectsunsign0.wav'"/>	
+						<audio expr="promptspath_54646+'/'+lang+'/userselectsunsign1.wav'"/>															
+					</prompt>
+					<goto next="Hungama_54646_End.vxml"></goto>-->
+
+				<else/>
+
+					<submit expr="'../Hungama_54646_Services_MM_MALAV/Hungama_54646_UserStatus.vxml'"/>
+				</if>
+		     
+
+		     
+		</filled>				
+		
+	  </field> 
+  
+   </form>
+
+
+
+
+
+
+
+
+</vxml>

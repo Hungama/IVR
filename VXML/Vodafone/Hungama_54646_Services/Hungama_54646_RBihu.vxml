@@ -1,0 +1,751 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_54646_RBihu.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+<var name="record_BalenceMinute" expr="'0'"/>
+<var name="HEARD" expr="'0'"/>
+<var name="record_BalenceMinute_sec" expr="'0'"/>
+<var name="BihuPath" expr="'http://10.43.248.137:8080/hungama/Content/RBIHU/'"/>	
+<var name="promptspath_RBihu" expr="'http://10.43.248.137:8080/hungama/promptFiles/54646_version2_prompts/RBihuPrompts'"/>
+	<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+	</script>
+	
+		
+	<form id="LASTHEARD_PROFILE">
+			<block>
+		<if cond="circle=='asm'">
+			<assign name="lang" expr="'17'"/>	
+		<else/>
+			<assign name="lang" expr="'02'"/>
+		</if>
+			<assign name="Section_Name" expr="'EXISITINGUSER'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_RBIHU&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=GET'"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       	HEARD = out_string[j];
+							  }
+	
+						]]>
+				
+				</script>
+					
+			<!--<goto next="#WelcomeIntroRandom"/>-->
+
+<if cond="HEARD=='RECORD' || HEARD=='OTHERRECORD' || HEARD=='BIHUSONGS'">
+		<goto next="#WelcomeIntroRandom"/>	
+<else/>
+	<prompt bargein="true" timeout="1s">
+		<audio expr="promptspath_RBihu+'/'+lang+'/toll_prompt.wav'"/>
+		<audio expr="promptspath_RBihu+'/'+lang+'/welcome_new.wav'"/>
+	</prompt>
+	<goto next="#MAINMENU"></goto>
+</if>
+			</block>
+	</form>
+	
+	<form id="WelcomeIntroRandom">
+		 <block>
+				<assign name="var_wel" expr="getRandom(0,4)" />	
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptspath_RBihu+'/'+lang+'/welcome_old.wav'"/>
+				</prompt>
+				<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+	
+	 
+			</block> 	
+			<field name="choice">
+			    <grammar mode="dtmf" root="start2" version="1.0">
+						<rule id="start2" scope="public">
+							<one-of>
+								 <item>  0  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								
+							</one-of>
+						</rule>
+				</grammar>
+				
+				<filled>
+				
+				  <if cond="choice &lt; 10">
+					<if cond="HEARD=='0' || HEARD=='00' || HEARD=='' ">
+						<goto next="#MAINMENU"></goto>
+					<else/>
+						<goto next="#LASTHEARD"></goto>												
+					</if>
+				</if>										
+				</filled>
+			</field>
+			<noinput>
+					<if cond="HEARD=='0' || HEARD=='00' || HEARD=='' ">
+						<goto next="#MAINMENU"></goto>
+					<else/>
+						<goto next="#LASTHEARD"></goto>												
+					</if>
+			</noinput>
+			<nomatch>
+				<if cond="HEARD=='0' || HEARD=='00' || HEARD=='' ">
+					<goto next="#MAINMENU"></goto>
+				<else/>
+					<goto next="#LASTHEARD"></goto>												
+				</if>
+			</nomatch>
+		</form>
+	<form id="LASTHEARD">
+		<block>
+		<assign name="Section_Name" expr="'EXISITINGUSER_RBIHU'"/>
+		</block>
+			<field name="choice">
+			    <grammar mode="dtmf" root="start3" version="1.0">
+						<rule id="start3" scope="public">
+							<one-of>
+								
+								 <item>  8  </item>
+								
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+	
+					<audio expr="promptspath_RBihu+'/'+lang+'/listening_cat.wav'"/>
+					
+	
+				</prompt>
+				<filled>
+					<goto next="#MAINMENU"></goto>
+					  
+				</filled>
+			</field>
+			<noinput>
+				<if cond="HEARD=='RECORD'">					
+					<goto next="#RECORDING"/>
+				<elseif cond="HEARD=='OTHERRECORD'"/>
+					<goto next="#LISTEN"/>
+				<elseif cond="HEARD=='BIHUSONGS'"/>
+					<audio expr="promptspath_RBihu+'/'+lang+'/bihu.wav'"/>
+					<goto next="#BIHUSONGS"/>
+				<else/>                							 				 					 		         
+					<goto next="#MAINMENU"></goto>
+				</if>
+			</noinput>
+			<nomatch>
+				<if cond="HEARD=='RECORD'">					       
+					<goto next="#RECORDING"/>
+				<elseif cond="HEARD=='OTHERRECORD'"/>
+					<goto next="#LISTEN"/>
+				<elseif cond="HEARD=='BIHUSONGS'"/>
+					<audio expr="promptspath_RBihu+'/'+lang+'/bihu.wav'"/>
+					<goto next="#BIHUSONGS"/>
+				<else/>                							 				 					 		         
+					<goto next="#MAINMENU"></goto>
+				</if>
+			</nomatch>
+	</form>
+	
+<form id="MAINMENU">	
+	<block>
+		<assign name="Section_Name" expr="'MAINMENU'"/>
+	</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					
+				 	<audio expr="promptspath_RBihu+'/'+lang+'/root_menu.wav'"/>
+					
+				</prompt>
+				<filled>
+					<if cond="choice=='1'">
+						<assign name="HEARD" expr="'RECORD'" />	
+						<goto next="#RECORDING"/>
+					<elseif cond="choice=='2'"/>
+						<assign name="HEARD" expr="'OTHERRECORD'" />
+						<goto next="#LISTEN"/>
+					<elseif cond="choice=='3'"/>
+						<audio expr="promptspath_RBihu+'/'+lang+'/welcome_bihu.wav'"/>
+						<assign name="HEARD" expr="'BIHUSONGS'" />
+						<goto next="#BIHUSONGS"/>
+					</if>					
+				</filled>
+			</field>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_RBihu+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_RBihu+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<goto next="#RECORDING"/>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_RBihu+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_RBihu+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="#RECORDING"/>
+			</nomatch>
+	</form>
+	<form id="RECORDING">	
+		
+				<field name="choice">
+					<grammar mode="dtmf" root="start">
+							<rule id="start" scope="public">
+								<one-of>								 
+									 <item>  1  </item>
+									 <item>  8  </item>
+									
+								</one-of>
+							</rule>
+					</grammar>
+					<prompt bargein="true" timeout="3s">
+						<audio expr="promptspath_RBihu+'/'+lang+'/welcome_recording.wav'"/>
+						
+					</prompt>
+					<filled>
+						
+						<if cond="choice=='1'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_RBIHU&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+						<script>
+							var res = out_string[0];
+						</script>
+							 <prompt bargein="true" timeout="3s">
+								 <audio expr="promptspath_RBihu+'/'+lang+'/start_recording.wav'"/>
+							</prompt>
+							<goto next="#RECORD"/>
+						<elseif cond="choice=='8'"/>
+							 <goto next="#MAINMENU"/>
+						<else/>
+							 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_RBIHU&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+                                                <script>
+                                                        var res = out_string[0];
+                                                </script>
+                                                 <prompt bargein="true" timeout="3s">
+                                               <audio expr="promptspath_RBihu+'/'+lang+'/start_recording.wav'"/>
+                                                </prompt>
+                                                        <goto next="#RECORD"/>
+							
+
+						</if>					
+					</filled>
+				</field>
+				<noinput>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_RBIHU&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+				<script>
+					var res = out_string[0];
+				</script>
+					 <prompt bargein="true" timeout="3s">
+						      <audio expr="promptspath_RBihu+'/'+lang+'/start_recording.wav'"/>
+				      </prompt>
+		
+		
+					<goto next="#RECORD"/>
+				</noinput>			
+				<nomatch>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_RBIHU&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+				<script>
+					var res = out_string[0];
+				</script>
+				 <prompt bargein="true" timeout="3s">
+                                      <audio expr="promptspath_RBihu+'/'+lang+'/start_recording.wav'"/>
+	                      </prompt>				
+
+
+					<goto next="#RECORD"/>
+				</nomatch>			
+	</form>
+	
+	<form id="RECORD">
+	<block>
+	<assign name="Section_Name" expr="'RBIHU_RECORD'"/>
+ <script>
+                        <![CDATA[
+                           
+                              record_BalenceMinute=starttime();
+                        ]]>
+                </script>
+
+	</block>
+	    <record name="recording" beep="true" maxtime="300s" finalsilence="30s" dtmfterm="true"/>
+<block>
+ <script>
+             record_BalenceMinute_sec=rim(record_BalenceMinute);
+ </script>
+ <log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+</block>
+    <field name="LGRecconfirmopt" type="boolean">
+			 <grammar mode="dtmf" root="start">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>#</item>				  					 			      
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt timeout="3s">
+				<audio expr="promptspath_RBihu+'/'+lang+'/preview_rec.wav'"/>		
+	   	    </prompt>			
+			<filled>
+				<if cond="LGRecconfirmopt=='1'">
+					 <script>
+                                                record_BalenceMinute_sec=rim(record_BalenceMinute);
+
+                                        </script>
+ 				<log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+				     <audio expr="recording"/>					 				 			   
+					 <goto nextitem="confirm"/> 				     																																		
+				</if>				
+			</filled>				
+			<noinput>              
+ 					<script>
+                                                record_BalenceMinute_sec=rim(record_BalenceMinute);
+
+                                        </script>
+ <log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+
+<!--  <log expr="'@@@@@@ used termchar is  is '+recording$.termchar"/>
+  <log expr="'@@@@@@ used size is  is '+recording$.size"/>-->
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_RBihu+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </noinput>					
+			<nomatch>              
+ <script>
+                                                record_BalenceMinute_sec=rim(record_BalenceMinute);
+
+                                        </script>
+ <log expr="'@@@@@@ record_BalenceMinute_sec  is '+record_BalenceMinute_sec"/>
+
+<!--  <log expr="'@@@@@@ used termchar is  is '+recording$.termchar"/>
+  <log expr="'@@@@@@ used size is  is '+recording$.size"/>-->
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_RBihu+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </nomatch>    
+	  </field>
+	  
+	  <field name="confirm">
+			 <grammar mode="dtmf" root="start">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>
+				  <item>2</item>				  					 			      
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt timeout="3s">
+				<audio expr="promptspath_RBihu+'/'+lang+'/confirm_rec.wav'"/>		
+	   	    </prompt>			
+			<filled>			
+			    <if cond="confirm=='1'">
+			    	<!-- <assign name="DATE" expr="getcurryyyymmdd()"/>-->
+				<assign name="DATE" expr="Poetrydatetime()"/>
+				<log expr="'@@@@@DATEPOETRY  is '+DATE"/>
+				<assign name="TIME" expr="start_time()"/>
+				<assign name="TOKEN" expr="'BIHUSONGS'"></assign>
+				<!--<script>RECORD_FILE=ANI+'_'+record_BalenceMinute_sec</script> -->
+				<script>RECORD_FILE=ANI+'_'+record_BalenceMinute_sec+'_'+DATE</script>
+				<log expr="'@@@@@RECORD_FILE  is '+RECORD_FILE"/>
+					 <if cond="record_BalenceMinute_sec &gt; '11'">
+						 <script srcexpr="'http://'+RECORD_IP+'/'+servlet_path+'/Record?ConfigPath=RBIHU&amp;ANI='+RECORD_FILE+'&amp;TOKEN='+TOKEN+'&amp;MSG='+recording"/>				    				 				 			   
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RBIHU_RECORDING&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+circle"/>
+							<prompt timeout="3s">
+								<audio expr="promptspath_RBihu+'/'+lang+'/Thanks_recording.wav'"/>
+							 </prompt>
+					</if>
+					  <goto next="#MAINMENU"/>
+				<else/>
+					 <goto next="#MAINMENU"/>
+				</if>				
+			</filled>				
+			<noinput>              
+				<goto next="#MAINMENU"/>
+			</noinput>					
+			<nomatch>              
+              			<goto next="#MAINMENU"/>
+            		</nomatch>    
+	  </field>	 
+   </form>
+   <form id="LISTEN">
+   		<block>
+   		<assign name="Section_Name" expr="'OTHER_POEM'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_RBIHU&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+			<script>
+				var res = out_string[0];
+			</script>	
+
+   			<log> fetching songs </log>
+  			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/'+operator+'/BIHUSONGS/otherrecording.cfg&amp;TOKEN=FREE'"/>
+
+   			<script>
+   						array1.length=0;
+   						unike_play=0;
+   			</script>
+   			<assign name="len" expr="favSongs.length" />			
+   			<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+   					<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+					<goto next="#MAINMENU"/>
+
+   					<goto next="Hungama_54646_End.vxml"></goto>
+   				</if>
+   			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+   			<script>
+   				 <![CDATA[
+   					   for(j=0; j<len ;  j++)
+   					   {  	  
+   								array1[j] = favSongs[j];						   
+   					   }
+   
+   				]]>		
+   			</script> 	       					       
+   			<log>Length  is	<value expr="len"/>    </log>
+   			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+   			<assign name="contentflagsub" expr="'1'"/>						
+   		</block>
+   
+   		<field name="choice">
+   			
+   			<grammar mode="dtmf" root="start">
+   						<rule id="start" scope="public">
+   							<one-of>								 
+   								 <item>  1  </item>
+   								 <item>  2  </item>
+   								 <item>  3  </item>
+   								
+   								 <item>  8  </item>
+   								 <item>  9  </item>								 
+   							</one-of>
+   						</rule>
+   				</grammar>
+   			<prompt bargein="true" timeout="1s">
+   				<audio expr="promptspath_RBihu+'/'+lang+'/keypad_options.wav'"/>
+   				
+   			</prompt>
+   
+   			<filled>
+   				
+   				<if cond="choice=='1'">
+   					<script> unike_play=unike_play-1</script>
+   					<goto next="#next" />
+   				<elseif cond="choice=='2'"/>
+   					<script> unike_play=unike_play</script>
+   					<goto next="#next" />
+   				<elseif cond="choice=='3'"/>
+   					<script> unike_play=unike_play+1</script>
+   					<goto next="#next" />
+   				<elseif cond="choice=='8'"/>
+   					<goto next="#MAINMENU"/>
+   				</if>				
+   			</filled>
+   
+   			<noinput>
+   				
+   				<script> unike_play=unike_play+1</script>
+   				<goto next="#next" />
+   			</noinput>
+   			<nomatch>
+   				
+   				<script> unike_play=unike_play+1</script>
+   				<goto next="#next" />
+   			</nomatch>
+   		</field>
+   	</form>
+	<form id="next">
+			<block>
+				<if cond="unike_play &gt; len-1">
+					<assign name="unike_play" expr="0" />
+				<elseif cond="unike_play &lt; 0" />
+					<assign name="unike_play" expr="len-1" />
+				</if>
+					<log expr="'@unike_playunike_playunike_playunike_playunike_play name isssssssssssssssssss '+unike_play"/>
+					<!--<script>
+	
+					<![CDATA[
+					     if(array1[unike_play].indexOf("_")>0)
+						    TotalFM=1;
+					     else
+						    TotalFM=0;
+					]]>
+					</script>
+					<if cond="TotalFM=='0'">
+						<log expr="'@in config data havent split name isssssssssssssssssss '+array[unike_play]"/>
+						<goto next="Hungama_54646_End.vxml"></goto>
+					</if>-->
+	
+				<log>	unike_play  is ==<value expr="unike_play"/>    </log>
+				<log>	array == <value expr="array1[unike_play]"/>    </log>
+				<script>
+					
+					songID = array1[unike_play];
+				</script>
+				<assign name="song_begin" expr="starttime()"/>
+				<assign name="cat" expr="'recordedbihusongs'"/>
+				 <assign name="song" expr="songID"/>
+				<assign name="subcat" expr="'recordedbihusongs'"/>
+				 <assign name="song_listen" expr="'START'" />
+				<assign name="CALCULATE_TIME" expr="'SET'" />
+			</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start">
+							<rule id="start" scope="public">
+								<one-of>								 
+									 <item>  1  </item>
+									 <item>  2  </item>
+									 <item>  3  </item>
+									 <item>  8  </item>
+									 								 
+								</one-of>
+							</rule>
+					</grammar>
+				<prompt bargein="true" timeout="1s">
+				       <audio expr="BihuPath+songID+'.wav'"/>				
+				</prompt>
+	
+				<filled>
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+					 <log>   songID is ==       <value expr="songID"/>    </log>
+					<if cond="choice=='1'">
+						<log>   content  is == <value expr="contentlog"/>    </log>
+						<script> unike_play=unike_play+1</script>
+						<goto next="#next" />
+					<elseif cond="choice=='2'"/>
+						<script> unike_play=unike_play</script>
+						<goto next="#next" />
+					<elseif cond="choice=='3'"/>
+						<script> unike_play=unike_play-1</script>
+						<goto next="#next" />
+					<elseif cond="choice=='8'"/>
+						<goto next="#MAINMENU"/>
+					
+					</if>				
+				</filled>
+				<noinput>
+					<script> unike_play=unike_play+1</script>
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+					<goto next="#next" />
+				</noinput>
+				<nomatch>
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+					<script> unike_play=unike_play+1</script>
+					<goto next="#next" />
+				</nomatch>
+			</field>
+	</form>
+	 <form id="BIHUSONGS">
+	   		<block>
+	   		<assign name="Section_Name" expr="'BIHUSONGS'"/>
+																
+	   			<log> fetching songs </log>
+	  		 <script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/'+operator+'/BIHUSONGS/bihusongs.cfg&amp;TOKEN=FREE'"/>
+	
+	   			<script>
+	   						array1.length=0;
+	   						unike_play=0;
+	   			</script>
+	   			<assign name="len" expr="favSongs.length" />			
+	   		<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+	   					<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+	   					<goto next="Hungama_54646_End.vxml"></goto>
+	   				</if>
+	   			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+	   			<script>
+	   				 <![CDATA[
+	   					   for(j=0; j<len ;  j++)
+	   					   {  	  
+	   								array1[j] = favSongs[j];						   
+	   					   }
+	   
+	   				]]>		
+	   			</script> 	       					       
+	   			<log>Length  is	<value expr="len"/>    </log>
+	   			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+	   			<assign name="contentflagsub" expr="'1'"/>						
+	   		</block>
+	   
+	   		<field name="choice">
+	   			
+	   			<grammar mode="dtmf" root="start">
+	   						<rule id="start" scope="public">
+	   							<one-of>								 
+	   								 <item>  1  </item>
+	   								 <item>  2  </item>
+	   								 <item>  3  </item>
+	   								
+	   								 <item>  8  </item>
+	   								 <item>  9  </item>								 
+	   							</one-of>
+	   						</rule>
+	   				</grammar>
+	   			<prompt bargein="true" timeout="1s">
+	   				<audio expr="promptspath_RBihu+'/'+lang+'/keypad_options.wav'"/>
+	   				
+	   			</prompt>
+	   
+	   			<filled>
+	   				
+	   				<if cond="choice=='1'">
+	   					<script> unike_play=unike_play-1</script>
+	   					<goto next="#bihunext" />
+	   				<elseif cond="choice=='2'"/>
+	   					<script> unike_play=unike_play</script>
+	   					<goto next="#bihunext" />
+	   				<elseif cond="choice=='3'"/>
+	   					<script> unike_play=unike_play+1</script>
+	   					<goto next="#bihunext" />
+	   				<elseif cond="choice=='8'"/>
+	   					<goto next="#MAINMENU"/>
+	   				</if>				
+	   			</filled>
+	   
+	   			<noinput>
+	   				
+	   				<script> unike_play=unike_play+1</script>
+	   				<goto next="#bihunext" />
+	   			</noinput>
+	   			<nomatch>
+	   				
+	   				<script> unike_play=unike_play+1</script>
+	   				<goto next="#bihunext" />
+	   			</nomatch>
+	   		</field>
+   	</form>
+   	<form id="bihunext">
+				<block>
+					<if cond="unike_play &gt; len-1">
+						<assign name="unike_play" expr="0" />
+					<elseif cond="unike_play &lt; 0" />
+						<assign name="unike_play" expr="len-1" />
+					</if>
+						<log expr="'@unike_playunike_playunike_playunike_playunike_play name isssssssssssssssssss '+unike_play"/>
+						<!--<script>
+		
+						<![CDATA[
+						     if(array1[unike_play].indexOf("_")>0)
+							    TotalFM=1;
+						     else
+							    TotalFM=0;
+						]]>
+						</script>
+						<if cond="TotalFM=='0'">
+							<log expr="'@in config data havent split name isssssssssssssssssss '+array[unike_play]"/>
+							<goto next="Hungama_54646_End.vxml"></goto>
+						</if>-->
+		
+					<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+					<log>	array == <value expr="array1[unike_play]"/>    </log>
+					<script>
+						
+						songID = array1[unike_play];
+					</script>
+					<assign name="song_begin" expr="starttime()"/>
+					<assign name="cat" expr="'bihusongs'"/>
+					 <assign name="song" expr="songID"/>
+					<assign name="subcat" expr="'bihusongs'"/>
+					 <assign name="song_listen" expr="'START'" />
+					<assign name="CALCULATE_TIME" expr="'SET'" />
+				</block>
+				<field name="choice">
+					<grammar mode="dtmf" root="start">
+								<rule id="start" scope="public">
+									<one-of>								 
+										 <item>  1  </item>
+										 <item>  2  </item>
+										 <item>  3  </item>
+										 <item>  8  </item>
+										 								 
+									</one-of>
+								</rule>
+						</grammar>
+					<prompt bargein="true" timeout="1s">
+					       <audio expr="BihuPath+songID+'.wav'"/>				
+					</prompt>
+		
+					<filled>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+						 <log>   songID is == <value expr="songID"/>    </log>
+						<if cond="choice=='1'">
+							<log>   contentis==<value expr="contentlog"/>    </log>
+							<script> unike_play=unike_play+1</script>
+							<goto next="#bihunext" />
+						<elseif cond="choice=='2'"/>
+							<script> unike_play=unike_play</script>
+							<goto next="#bihunext" />
+						<elseif cond="choice=='3'"/>
+							<script> unike_play=unike_play-1</script>
+							<goto next="#bihunext" />
+						<elseif cond="choice=='8'"/>
+							<goto next="#MAINMENU"/>
+						
+						</if>				
+					</filled>
+					<noinput>
+						
+						<script> unike_play=unike_play+1</script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+						<goto next="#bihunext" />
+					</noinput>
+					<nomatch>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+						<script> unike_play=unike_play+1</script>
+						<goto next="#bihunext" />
+					</nomatch>
+				</field>
+	</form>
+  </vxml>

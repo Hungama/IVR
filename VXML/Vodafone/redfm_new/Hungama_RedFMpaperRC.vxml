@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_RedFMpaperRC.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+     	 <var name="mode_sub" expr="''" />
+	 <var name="eusr_status" expr="0"/>
+	 <var name="PIN" expr="''"/>
+	 <var name="NEXT_PLAY" expr="'F'"/>
+	
+	<script>
+		  UserStatus1=new Object();		  
+		  balance1=new Object();
+		  lang1=new Object();
+		  mode_sub1=new Object();
+		  PreviewToPlay1 = new Object();
+	</script>
+	
+	
+	<form id="welcome">		
+		<field name="choice">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'wel-h.wav'" />
+		</prompt>		
+		<filled>
+			<goto next="#userchk"/>
+		</filled>
+		<noinput>			
+	    		<goto next="#userchk"/>
+		</noinput>
+		<nomatch>			
+	    		<goto next="#userchk"/>
+		</nomatch>
+		</field>
+	</form>
+	
+	<form id="userchk">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/Hungama_RedFMQUERY?ANI='+ANI+'&amp;balance='+PIN+'&amp;TOKEN=1'"/>
+			<assign name="usr_status" expr="UserStatus1.value"/>
+			<log>PIN STATUS	<value expr="usr_status"/>  </log>					
+			<if cond="usr_status=='1'">
+				<prompt bargein="false">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'sub-exist-h.wav'" />
+				</prompt>
+				<goto next="End.vxml" />
+			<elseif cond="usr_status == '-1'"/>					
+				<goto next="#enterpin"/>
+			</if>
+		</block>			
+	</form>
+	
+	
+	<form id="enterpin">
+		<field name="choice" type="digits?length=8">
+		<prompt bargein="true" timeout="15s" cond="NEXT_PLAY=='F'">
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'enter-pin-h.wav'" />
+            	</prompt>
+		<prompt bargein="true" timeout="15s" cond="NEXT_PLAY=='T'">
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'enter-pin-h.wav'" />
+            	</prompt>
+		<filled>
+			<assign name="NEXT_PLAY" expr="'T'"></assign>
+			<assign name="PIN" expr="choice"></assign>
+			<log> PIN is <value expr="PIN"/> </log>
+			<script>
+				var  len = PIN.length;
+			</script>
+			<log> Length is <value expr="len"/> </log>
+			<if cond="len &lt; 8">
+				<prompt bargein="false">
+                     			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'invalid-pin-h.wav'" />
+                		</prompt>
+                		<clear namelist="choice"></clear>
+                		<goto next="#enterpin"></goto>
+			<else/>	
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/Hungama_RedFMQUERY?ANI='+ANI+'&amp;balance='+PIN+'&amp;TOKEN=9'"/>
+				<assign name="usr_status" expr="UserStatus1.value"/>
+				<log>PIN STATUS	<value expr="usr_status"/>  </log>
+				<if cond="usr_status=='1'">
+					<prompt bargein="true">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'entered-pin-is-h.wav'"/>
+					</prompt>
+					<script>
+						<![CDATA[
+
+							var array = new Array();
+							for(i=0; i<8; i++)
+							{
+								array[i] = PIN.substring(i,i+1);
+							}								
+						  ]]>
+					</script>
+					<foreach item="names" array="array">
+						<prompt bargein="true">
+							<log>	PIN is <value expr="names"/> </log>
+							<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'number/'+names+'-'+lang+'.wav'"/>								
+						</prompt>
+						<break time="100ms"/>
+					</foreach>
+					<goto next="#Main"></goto>
+					</if>
+				<if cond="usr_status == '-1'">
+					<prompt bargein="false">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'invalid-pin-h.wav'" />
+					</prompt>
+					<goto next="#enterpin"></goto>
+				</if>				
+			</if>
+		</filled>
+		<noinput>
+			<prompt bargein="false">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'no-response-pin-h.wav'" />
+		    	</prompt>
+            <clear namelist="choice"></clear>
+            <goto next="#enterpin"></goto>	
+		</noinput>
+		<nomatch>
+			<prompt bargein="false">
+                 <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'invalid-pin-h.wav'" />
+            </prompt>
+		    <clear namelist="choice"></clear>
+		    <goto next="#enterpin"></goto>
+		</nomatch>
+		</field>
+	</form>
+			
+	<form id="Main">
+		<field name="choice">
+				<grammar mode="dtmf" root="start">
+					<rule id="start" scope="public">
+						<one-of>
+							<item>  1  </item>
+							<item>  #  </item>						
+						</one-of>
+					</rule>
+				</grammar>				
+				<prompt bargein="true" timeout="3s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'confrim-pin-h.wav'" />
+				</prompt>		
+				<filled>
+					<if cond="choice=='1'">						
+						<goto next="#enterpin"></goto>
+					<elseif cond="choice=='#'"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/Hungama_RedFMQUERY?ANI='+ANI+'&amp;balance='+PIN+'&amp;TOKEN=10'"/>
+						<prompt bargein="false">
+							<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'confirmation-sub-h.wav'" />
+							<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'thanks-h.wav'" />
+						</prompt>
+						<goto next="End.vxml" />
+					<else/>
+						<clear namelist="choice"/>
+						<throw event="nomatch"/>
+	     				</if>					
+				</filled>
+				<noinput>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'no-response-h.wav'" />
+			    		<reprompt/>
+				</noinput>
+				<nomatch>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/retailcard/'+'wrong-input-h.wav'" />
+			    		<reprompt/>
+				</nomatch>
+		</field>		
+	</form>
+ </vxml>

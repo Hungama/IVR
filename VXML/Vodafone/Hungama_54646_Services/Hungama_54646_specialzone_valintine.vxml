@@ -1,0 +1,212 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Hungama_54646_specialzone_valintine.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+     <var name="currenttime" expr="0"/>
+ <var name="FilePlay" expr="0"/>
+<var name="delay" expr="0"/>
+<script>
+	var favSongs=new Object();
+	var favLangs=new Object();
+	var out_string=new Object();
+	var eventzone=new Object();
+	var len=0;
+	var movie_idx=0;
+</script>   
+	 	
+	 <form id="loadcliptoplay">
+		  <block>
+		  <assign name="Section_Name" expr="'SPECIALZONE'"/>
+<assign name="cat" expr="'valintine'"/>
+<assign name="subcat" expr="'valintine'"/>
+
+ 
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=master_db.valintine_clip&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+lang"/>
+		  			<script>
+		  			 <![CDATA[
+		  					   for(j=0; j< out_string.length;  j++)
+		  						  {  	  
+		  						       if(j==0)
+		  						       	FilePlay = out_string[j];
+		  						       	if(j==1)
+		  						       	delay= out_string[j];
+		  						  }
+		  
+		  					]]>
+		  			
+		  			</script>
+
+<log expr="'@@@@@@ usedFilePlay   is '+FilePlay"/>
+<log expr="'@@@@@@ used delay is '+delay"/>
+
+		  			<if cond="FilePlay =='0'">
+						<goto next="Hungama_54646_MainMenu.vxml"/>
+
+					</if>
+
+		  			
+				<script>
+					var songcheck=FilePlay.split("_");
+					contentdir=songcheck[0]; 
+					song = FilePlay;
+					
+				</script>
+				
+			
+			<goto next="#StartToPlaysongs"/>					
+		   </block>
+	</form>
+
+	
+        <form id="returnfromcrbt">
+                  <block>
+			<goto next="#loadcliptoplay"/>
+                   </block>
+        </form>
+	
+	<form id="StartToPlaysongs">
+
+
+				<block>
+
+					<script>
+		   		 <![CDATA[
+  		       		if(timerflag==1)
+                 start_BalenceMinute=starttime();
+		    ]]>	 	
+ 		  </script>
+			
+			
+					 <assign name="song_begin" expr="starttime()"/>
+					 <assign name="song_listen" expr="'START'" />
+					 <assign name="CALCULATE_TIME" expr="'SET'" />
+ 
+      </block>
+		   <field name="selectoption">
+
+				    <grammar mode="dtmf" root="start" version="1.0">
+			   		<rule id="start" scope="public">
+			   		  <one-of>
+					    
+						<item>8</item>
+						<item>9</item>
+						
+					 </one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			   <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		      </prompt> 			 
+		  
+		      <filled>
+
+						 <assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;
+					</script>
+					       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					       <log expr="'@@@@@@ left balance is '+balance"/>
+						<if cond="balance &lt;= '0'">
+							     <goto next="Topup.vxml"/>
+						</if>
+				</if>  
+
+				 <if cond="selectoption=='8'">
+				 
+						  <assign name="CALCULATE_TIME" expr="'RESET'" />
+				 <goto next="Hungama_54646_MainMenu.vxml"/>
+				
+				 <elseif cond="selectoption=='9'"/>
+					  <assign name="CALCULATE_TIME" expr="'RESET'" />
+				 <goto next="Hungama_54646_AccountMnger.vxml"/>
+					     <!-- <elseif cond="selectoption=='*'"/>
+				 				 
+					<if cond="timerflag=='1'">
+						<script> 
+							balance=balance-total_used_bal;  						  
+						</script>
+						<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						<log expr="'@@@@@@ left balance is '+balance"/>
+						<if cond="balance &lt;= '0'">          
+							   <goto next="Topup.vxml"/>
+						  </if>     
+					</if>
+					<assign name="CALCULATE_TIME" expr="'RESET'" />
+					<goto next="CRBT.vxml"/>-->
+						
+				 </if>				 
+			  </filled>				  
+		
+		     
+			   <noinput>	
+						 <assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+			        <script> 
+			      		unike_play=unike_play+1;
+			      	</script> 		
+			  	<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;
+					</script>
+					       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					       <log expr="'@@@@@@ left balance is '+balance"/>
+						<if cond="balance &lt;= '0'">
+							     <goto next="Topup.vxml"/>
+						</if>
+				</if>  
+			  	<goto next="#loadcliptoplay"/> 	
+			</noinput>
+			<nomatch>
+						 <assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;
+					</script>
+					       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					       <log expr="'@@@@@@ left balance is '+balance"/>
+						<if cond="balance &lt;= '0'">
+							     <goto next="Topup.vxml"/>
+						</if>
+				</if>  
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<goto next="#loadcliptoplay"/> 
+			</nomatch>	
+			 
+			
+	  </field>
+	  	
+	</form>	
+	
+	
+
+</vxml>
+

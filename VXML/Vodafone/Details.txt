@@ -1,0 +1,42 @@
+path of code on 137 vodafone server
+
+Voda RU -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_Mu
+
+Goodlige -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_goodlife
+
+
+Vh1 -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_VH1
+
+
+RedFM -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/redfm_new
+
+Comedy Portal-
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_5464612_ComedyPortal
+
+
+MND - 
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_MND/vxmlFiles
+
+
+5464681 - 
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_5464681
+
+CRBT - 
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_5464647_CRBT
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_546466
+
+
+Pause code -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_5464634_MM_PauseCode
+
+PKP -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_PKP
+
+
+54646 -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_54646_Services
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_54646_Services_MM 

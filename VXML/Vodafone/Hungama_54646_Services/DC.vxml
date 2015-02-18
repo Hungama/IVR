@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="vin.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+	<var name="conn2" expr="''"/>
+	<var name="conidnewvin" expr="'CONFERENCE1'"/>
+	<var name="conn1" expr="''"/>
+	<var name="j" expr="0"/>
+	<var name="user_value" expr="''"/>
+	<var name="in_out_user" expr="''"/>
+	<var name="user_value_other" expr="''"/>
+	<var name="CheckCelebStatus" expr="''"/>
+	<var name="connection_id" expr="'callleg_dummy'"/>
+	<var name="celeb_rec_fcount" expr="0"/>
+	<var name="celeb_rec_fcount_check" expr="0"/>
+	<var name="celeb_status" expr="''"/>
+	<var name="chat_status" expr="''"/>
+<form id="SendINConf">
+	<block>
+		<log> after assignment <value expr="conn1"/> </log>
+	</block> 
+	<transfer name="mytransfer"  dest="8586967046" bridge="true" connecttimeout="2000s"> 
+	<filled>
+		<log> transfer done now</log>
+		<clear namelist="mytransfer"/>
+	</filled>
+	</transfer>
+</form>
+
+</vxml>

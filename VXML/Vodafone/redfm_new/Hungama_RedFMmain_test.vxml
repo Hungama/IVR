@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="LRADIO_main.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+     	
+	<var name="mode_sub" expr="''" />
+	<var name="eusr_status" expr="0"/>
+	<var name="Time_Left" expr=""></var>	
+	<var name="cmp_time" expr=""></var>
+	<var name="validity_left" expr=""></var>	
+	<var name="FilePlay" expr="''"/>
+	<var name="FilePlay2" expr="''"/>
+	<script>		  
+		  UserStatus1=new Object();
+		  balance1=new Object();
+		  lang1=new Object();
+		  mode_sub1=new Object();
+		  PreviewToPlay1 = new Object();
+		  var daysleft1=new Object();
+		  var time_rem=new Object();
+		  var out_string=new Object();
+		  var favSongs=new Object();
+	    	  var Lang_Array = new Array();
+
+	</script>
+		
+
+	<form id="tryform">
+		<block>
+			<log>  I am in try form</log>
+		</block>
+		<field name="opt" type="digits?length=4">
+		     <grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>{</item>
+						<item>1</item>
+						<item>2</item>
+						<item>3</item>
+						<item>4</item>
+						<item>5</item>
+						<item>6</item>
+						<item>7</item>
+						<item>8</item>
+						<item>9</item>
+						<item>0</item>
+					</one-of>
+				</rule>
+			 </grammar>			
+			<prompt bargein="true" timeout="20s">
+				
+				
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/sil.wav'"/>
+				
+			</prompt>
+			<filled>			
+				<log>
+					i have got
+					<value expr="opt"/>
+				</log>
+				<if cond="opt=='2002'">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/lava.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2003'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/lemon.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2004'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/maxx.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2005'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/videocon.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2006'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/mvl.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2007'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/chaze.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2008'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/intex.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2009'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/iball.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2029'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/fly.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2030'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/karbonn.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2032'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/hitech.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2033'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/mtech.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2034'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/rage.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2035'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/zen.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2036'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/micromax.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2037'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/celkon.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modela.wav'"/>
+					<elseif cond="opt=='2022'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/lava.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2023'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/lemon.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2024'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/maxx.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2025'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/videocon.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2026'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/mvl.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2027'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/chaze.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2028'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/intex.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2039'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/iball.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2049'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/fly.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2050'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/karbonn.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2052'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/hitech.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2053'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/mtech.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2054'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/rage.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2055'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/zen.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2056'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/micromax.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<elseif cond="opt=='2057'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/your_handset_is.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/celkon.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/modelb.wav'"/>
+					<else/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/no_handset_found.wav'"/>
+
+				</if>
+			</filled>
+			<nomatch>
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</nomatch>
+           		<noinput>
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/nodtmf.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</noinput>
+		</field>
+
+	</form>
+	
+
+ </vxml>

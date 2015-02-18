@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="CRBT.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+	<var name="cRBTMODE" expr="''"></var>
+	<var name="CLIPID" expr="''"></var>
+	
+	<script>
+		var UserStatus1=new Object();
+		out_string = new Object();
+	</script>
+	
+	
+	<form id="NO_CRBT">
+		<prompt bargein="true" timeout="0s">
+	            	<audio expr="prompt_CRBT+'/'+lang+'/welcome_CRBT_voda.wav'"/>
+		</prompt>	
+		<field name="wait_input">
+			<grammar mode="dtmf" root="start" version="1.0">
+	                   	<rule id="start" scope="public">
+	                     	<one-of>     
+							<item>1</item>                    
+	                    	</one-of>
+	                	</rule>
+	               	</grammar>
+	               	
+	             
+			
+			<filled>
+			        <goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+			</filled>
+	
+			<noinput>
+				<goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+			</noinput>
+	
+			<nomatch>
+				<goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+			</nomatch>
+		</field>
+</form>
+
+
+	<form id="CRBT">
+		<block>		    
+		    <script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_rngmenu?SONGID='+song+'&amp;IN_TYPE=CRBT&amp;CIRCLE=dig&amp;OPERATOR=DIGM'"/>
+
+		    <log expr="'CLIPID=='+out_string[0]"></log>
+		    <assign name="len_rng" expr="out_string.length" />
+		    <log>previous Array[1]  is	<value expr="CLIPID"/>    </log>
+			
+			<script>
+			 <![CDATA[
+					   for(j=0; j<  out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	CLIPID = out_string[j];						       
+						  }
+
+			]]>
+			
+			</script>
+
+		    <log>after Array[1]  is	<value expr="CLIPID"/>    </log>
+		    <if cond="CLIPID==''">
+				<goto next="#NO_CRBT"/>
+		    <else/>
+				<goto next="#DOWNLOAD"/>
+		    </if>         	
+		</block>
+	</form>
+
+
+<form id="NO_CRBT">
+		
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+						<item>1</item>                    
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	<prompt bargein="true" timeout="0s">
+             		<audio expr="promptspath_54646+'/'+lang+'/nocrbt.wav'"/>
+		</prompt>
+		
+		<filled>
+		        <goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+		</filled>
+
+		<noinput>
+			<goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+		</noinput>
+
+		<nomatch>
+			<goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+		</nomatch>
+	</field>
+</form>
+
+<form id="DOWNLOAD">
+
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptspath_54646+'/'+lang+'/crbt_option.wav'"/>
+			</prompt>
+			
+			<filled>
+				<if cond="choice=='1'">
+				    <script srcexpr="'http://'+IP+'/'+servlet_path+'/vodmhungama_dbinteraction?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtDOWNLOAD&amp;INPARAM[4]=dig&amp;INPARAM[5]='+DNIS"/>
+				    <goto next="#THANKS"/>
+				<else/>
+				    <goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+				</if>
+			</filled>	
+		</field>
+
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			   <goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+		</noinput>
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+		</nomatch>
+
+	</form>
+
+
+<form id="THANKS">
+		
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+						<item>1</item>                    
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	<prompt bargein="true" timeout="0s">
+			<audio expr="promptspath_54646+'/'+lang+'/thanks_crbt.wav'"/>
+		</prompt>
+		
+		<filled>
+		       <goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+		</filled>
+
+		<noinput>
+			<goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+		</noinput>
+
+		<nomatch>
+			<goto next="Hungama_MUSICWORLD_PlayContent.vxml"></goto>
+		</nomatch>
+	</field>
+</form>
+	
+
+</vxml>

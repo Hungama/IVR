@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="MuPortalRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+<meta name="MuTopDecMenu.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />	
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+
+<var name="play" expr="''"/>
+<script>
+	var favSongs=new Object();
+	var out_string=new Object();
+	var dishes=new Array();				
+</script>	
+	<form id="WelcomeIntroRandom">
+		<block>
+			<assign name="Section_Name" expr="'ExistingUser'"/>
+			<assign name="var_wel" expr="getRandom(0,4)" />				
+			<if cond="var_wel=='2'">
+				<assign name="var_wel" expr="'1'"/>
+			</if>
+			<prompt bargein="true" timeout="0s" cond="circle=='guj'">
+				<audio expr="promptpath+lang+'/welcome_old_val.wav'"/>
+			</prompt>				
+			<prompt bargein="true" timeout="0s" cond="circle!='guj'">
+				<audio expr="promptpath+lang+'/welcome_old_3.wav'"/>
+			</prompt>			
+			<goto next="#TOPDEC"/>
+		</block>
+	</form>
+	<form id="TOPDEC">
+		<block>
+			<assign name="Section_Name" expr="'TOPDECMENU'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>  5  </item>
+						<item>  8  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+			
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+lang+'/select_contest.wav'"/>
+				<audio expr="promptpath+lang+'/press_dtmf5.wav'"/>
+				<audio expr="promptpath+lang+'/return_mainmenu.wav'"/>
+			</prompt>
+			
+			<filled>
+				<if cond="choice=='8'">
+					<if cond="circle=='guj'">	  
+						<goto next="MuMMainMenuGuj.vxml#MAINMENU"/>
+					<else/>
+						<goto next="MuMMainMenu.vxml#MAINMENU"/>
+					</if>
+				<elseif cond="choice=='5'"/>
+					<assign name="cat" expr="'Contest'"/>
+					<assign name="subcat" expr="cat"/>
+					<goto next="Hungama_Wmd_Contest_Play.vxml"/>
+
+				<!--<elseif cond="choice=='6'"/>
+					<goto next="MuNavigation.vxml"/>-->					
+				<else/>
+					<assign name="cat" expr="'DEL_TOP20'"/>
+					<assign name="playconfig" expr="cat"></assign>
+					<goto next="#FETCHSONGS"/>
+				</if>
+			</filled>
+
+			<noinput>
+				<assign name="cat" expr="'DEL_TOP20'"/>
+				<assign name="playconfig" expr="cat"></assign>
+				<goto next="MuMMainMenu.vxml#FETCHSONGS"/>
+			</noinput>
+
+			<nomatch>
+				<goto next="Hungama_Wmd_Contest_Play.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+</vxml>

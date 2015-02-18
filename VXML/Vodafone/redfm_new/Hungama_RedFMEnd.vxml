@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="End.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="rem_time" expr="0"/>	
+	<script>
+			var out_string=new Object();
+	</script>
+
+	<form id="EndLogin">
+		<block>
+		    <assign name="C_End" expr="start_time()"/>
+		    <if cond="song_listen=='START'">
+				<if cond="HeardCat=='01'">
+					<assign name="station" expr="'Delhi'"/>
+				<elseif cond="HeardCat=='02'"/>
+					<assign name="station" expr="'Mumbai'"/>
+				<elseif cond="HeardCat=='03'"/>
+					<assign name="station" expr="'Chennai'"/>
+				<elseif cond="HeardCat=='04'"/>
+					<assign name="station" expr="'Kolkata'"/>
+				<elseif cond="HeardCat=='05'"/>
+					<assign name="station" expr="'Kochi'"/>
+				<elseif cond="HeardCat=='06'"/>
+					<assign name="station" expr="'Pune'"/>			
+				</if>
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<log expr="'compare_time=='+compare_time"></log>
+				<log expr="'ContentTime=='+ContentTime"></log>
+				<log expr="'hash=='+hash"></log>
+				<log expr="'FilePlay=='+FilePlay"></log>
+				<log expr="'station=='+station"></log>			
+				<log expr="'contentlog=='+contentlog"></log>
+				<assign name="contentlog" expr="contentlog+station+hash+FilePlay+hash+compare_time+hash"></assign>
+			</if>
+			<script>
+			  	total_used_bal=rim(start_BalenceMinute);
+			  	balance=balance-total_used_bal;  						  
+		 	</script>
+			
+			<log expr="'before total_used_bal=='+total_used_bal"></log>
+			<log expr="'before balance=='+balance"></log>
+
+		 	<if cond="HeardCat!='0'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HeardCat+'&amp;INPARAM[2]=SET'"/>
+			</if>		 	
+			<script> balance=Math.floor(balance/60); </script>
+			<script> total_used_bal=Math.floor(total_used_bal/60); </script>
+
+			<log expr="'After total_used_bal=='+total_used_bal"></log>
+			<log expr="'After balance=='+balance"></log>
+
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/>-->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+total_used_bal+'&amp;INPARAM[2]='+DNIS"/>                 	           		  						
+			<script srcexpr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+drop_point+hash+modeofsub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=REDFM&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<exit/>
+		</block>
+		
+		<catch event="error.*">
+		 								
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      
+		  
+		  <exit/>
+		 								
+      </catch> 
+	    <catch event="error.badfetch">
+		 								
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      
+		  
+		  <exit/>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 
+		  
+		  <exit/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  End4444</log>	
+		   
+		   <exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  End5555</log>	
+		
+		   <exit/>
+		  
+      </catch>
+      
+      <catch event="error.semantic">
+           <log> $$$$$$$$$$$$$$$$ error.semantic $$$$$$$$$$$$$$$$ </log>
+           <exit/>
+    </catch>
+
+	</form>
+</vxml>

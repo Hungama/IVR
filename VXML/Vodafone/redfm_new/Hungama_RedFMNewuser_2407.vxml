@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_RedFMNewuser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="NM_count" expr="1"/>
+	<var name="NI_count" expr="1"/>
+	<var name="planid" expr="'1'"/>
+	<var name="Amt" expr="'2'"/>	
+	<script>
+		var bill_min=new Object();
+    	var billing_code=new Object();
+    	out_string=new Object();	 
+	</script>
+	<form id="Main">
+		<!--<block>
+			
+				<assign name="amt" expr="'30'"/>
+				<assign name="plan_id" expr="'3'"/>
+				<assign name="service_id" expr="'1310'"/>
+				<assign name="dbservlet" expr="'vodmredfm_dbinteraction'"/>	
+
+		</block>-->
+		<field name="opt">
+		     <grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>1</item>
+					</one-of>
+				</rule>
+			 </grammar>			
+			<prompt bargein="true" timeout="3s">
+				<!-- <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/redfm_jingle.wav'" /> -->
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_mt.wav'" />
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf1.wav'" />
+			</prompt>
+			<filled>			
+				<if cond="opt=='1'">
+				<!--	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR-RFM&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>   -->      					
+					<goto next="#DoubleConfirmation"/>										
+				</if>
+			</filled>
+			<nomatch count="1">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</nomatch>
+			<nomatch count="2">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</nomatch>
+			<nomatch count="3">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'" />
+                 		</prompt>
+				<goto next="Hungama_RedFMEnd.vxml"/>
+           		</nomatch>
+
+           		<noinput count="1">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</noinput>
+			<noinput count="2">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</noinput>
+			<noinput count="3">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'" />
+                 		</prompt>
+				<goto next="Hungama_RedFMEnd.vxml"/>
+           		</noinput>
+
+	
+		</field>
+	</form>
+
+<form id="DoubleConfirmation">
+		 <block>
+
+                                <assign name="amt" expr="'30'"/>
+                                <assign name="plan_id" expr="'3'"/>
+                                <assign name="service_id" expr="'1310'"/>
+                                <assign name="dbservlet" expr="'vodmredfm_dbinteraction'"/>
+
+                </block>
+
+		<field name="opt">
+		     <grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>5</item>
+					</one-of>
+				</rule>
+			 </grammar>			
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/confirmation_prompt.wav'" />
+			</prompt>
+			<filled>			
+				<if cond="opt=='5'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         					
+					<goto next="#BillingCheck"/>										
+				</if>
+			</filled>
+			<nomatch count="1">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</nomatch>
+			<nomatch count="2">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</nomatch>
+			<nomatch count="3">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'" />
+                 		</prompt>
+				<goto next="Hungama_RedFMEnd.vxml"/>
+           		</nomatch>
+
+           		<noinput count="1">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</noinput>
+			<noinput count="2">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</noinput>
+			<noinput count="3">
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'" />
+                 		</prompt>
+				<goto next="Hungama_RedFMEnd.vxml"/>
+           		</noinput>
+
+		</field>
+	</form>
+
+	
+	<form id="BillingCheck">
+          <field name="opt" type="digits?length=1">
+	      	<prompt bargein="false">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/charging_wait.wav'" />
+			</prompt>
+			<grammar mode="dtmf" root="start">
+ 		    	<rule id="start" scope="public">
+ 		    		<one-of>
+ 		    			<item>  #  </item>
+					    <item>  *  </item>
+ 		    		</one-of>
+ 		     	</rule>
+   			</grammar>
+   			
+   			<noinput count="1">
+   				<goto next="#bill"/>
+   			</noinput>
+   			<nomatch count="1">
+   				<goto next="#bill"/>
+   			</nomatch>
+   			
+			<filled>
+				<goto next="#bill"/>
+		    </filled>	
+	
+		</field>
+	</form>
+
+	<form id="bill">
+		<block>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];						       						       							      
+						  }
+
+					]]>
+			
+			</script>			
+			<log>Live Radio usr_status is	<value expr="usr_status"/>  </log>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">				    
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_RedFMEnd.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<script>balance=balance*60</script>
+				<script>
+			    	total_used_bal=rim(start_BalenceMinute);
+	             	curbalance=balance-total_used_bal;  						  
+			    </script>
+			   	<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			   	<log expr="'@@@@@@ left balance is '+curbalance"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/thank_sub.wav'"/>
+				</prompt>								
+				<goto next="Hungama_RedFMexisting.vxml"/>
+			<else/>
+				<goto next="Hungama_RedFMEnd.vxml"/>
+			</if>					
+		</block>
+	</form>
+</vxml>

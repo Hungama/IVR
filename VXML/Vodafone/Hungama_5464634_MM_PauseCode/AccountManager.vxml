@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="AccountManager.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+
+	<var name="BalanceLength" expr="0"/>
+	<var name="balancecounter" expr="0"/>
+	<var name="CurrentBalance" expr="0"/>
+<var name="balancecursor" expr="0"/>
+
+
+<error>
+<goto next="end.vxml"/>
+</error>
+
+	<form id="AccountManager">
+		<block>
+			<assign name="LANG_DESCRIPTION" expr="'01'"/>
+			<assign name="dbservlet" expr="'vodmhungama_dbinteraction'"/>	
+		</block>		
+		<field name="account" type="digits?length=1">
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/'+'welcome_acmanager.wav'"/>
+			<catch event="noinput" count="1">
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+					
+				
+					<goto nextitem="account"/>
+			</catch>
+			
+			<catch event="noinput" count="2">
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+					
+				
+					<goto nextitem="account"/>
+			</catch>
+
+		<catch event="noinput" count="3">
+				<exit/>
+			</catch>
+
+			<catch event="nomatch" count="1">
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+					
+				
+					<goto nextitem="account"/>
+			</catch>
+			<catch event="nomatch" count="2">
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+					
+				
+					<goto nextitem="account"/>
+			</catch>
+
+			<catch event="nomatch" count="3">
+				<exit/>
+			</catch>
+
+			
+
+
+			<grammar src="all.grxml" mode="dtmf"/>
+			<filled>
+				<if cond="account == '1'">
+					<!--<goto next="#checkbalance"/>-->
+						<!--<goto next="#unsub"/>-->
+
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQS'"/>
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/'+'thanks_unsub.wav'"/>
+					<goto next="END.vxml"/>
+				<elseif cond="account == '8'"/>
+					<goto next="PlaySunSign.vxml"/>
+
+				
+				<else/>
+						<throw event="nomatch"/>
+
+
+				</if>
+			</filled>
+		</field>
+	</form>
+	<form id="checkbalance">
+		<block>
+
+			<script>
+		    		total_used_bal=chkBalenceMinute(start_BalenceMinute);
+             			curbalance=balance-total_used_bal;
+				curbalance=Math.ceil(curbalance/60);
+				
+
+		    	</script>
+
+				 <assign name ="CurrentBalance"  expr="parseInt(curbalance)"/>
+
+				 <assign name ="BalanceLength"  expr="Minutescount(CurrentBalance.toString())"/>
+
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+curbalance"/>
+				<log expr="'@@@@@@ balance LENGTH is '+BalanceLength"/>
+				<log expr="'@@@@@@ balance COUNTER is '+balancecounter "/>
+
+				<log expr="'@@@@@@ CurrentBalance is '+CurrentBalance"/>
+
+				<log expr="'@@@@@@ CurrentBalance length  is '+CurrentBalance.length"/>
+
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/'+'balanceis.wav'"/>
+			
+				<goto nextitem="balancenumber"/>
+				
+
+		</block>
+
+<block name ="balancenumber">
+      <if cond="balancecounter &lt; BalanceLength">
+        <assign name ="balancecursor"  expr="BalanceSubstring(CurrentBalance.toString(),balancecounter )"/>
+        <assign name ="balancecounter"  expr="balancecounter+1"/>
+
+        <log>
+         balance value  <value expr="balancecursor"/>
+        </log>
+
+        <prompt bargein ="false">
+        	<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/'+balancecursor+'.wav'"/>
+        </prompt>
+        <goto nextitem="balancenumber"/>
+
+      </if>
+    
+			<if cond="curbalance &lt;= '0'">
+				<assign name="backmovepage" expr="'AccountManager.vxml'"/>
+				<goto next="Topup.vxml"/>
+			<else/>
+				
+				<goto next="PlaySunSign.vxml"/>
+			</if>
+
+    </block>
+
+
+
+	</form>
+
+
+
+
+	<form id="unsub">
+		<block>
+			<log>unsub form</log>
+			<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/'+'acmanager_unsub_confirm.wav'"/>
+		</block>
+
+
+
+
+		<field name="unsub" type="digits?length=1">
+			<grammar src="all.grxml" mode="dtmf"/>
+
+
+
+			<catch event="noinput nomatch">
+				<goto next="PlaySunSign.vxml"/>
+			</catch>
+
+
+			<filled>
+				<if cond="unsub == '1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQS'"/>
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/'+'thanks_unsub.wav'"/>
+					<goto next="END.vxml"/>
+
+				<elseif cond="unsub == '2'"/>
+					<goto next="PlaySunSign.vxml"/>
+				<elseif cond="unsub == '8'"/>
+					<goto next="PlaySunSign.vxml"/>
+
+			<!--
+				<elseif cond="unsub == '5'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQS'"/>
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/'+'thanks_unsub.wav'"/>
+					<goto next="END.vxml"/>
+			-->
+
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+		</field>
+	</form>
+</vxml>

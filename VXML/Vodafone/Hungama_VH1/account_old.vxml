@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="vh1Root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="account.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<form id="main">
+
+<block>
+		<if cond="(circle=='nes' || circle=='asm') &amp;&amp; DNIS=='5584112'" >
+			<goto next="#nesa_np"/>
+		</if>
+		<if cond="( circle=='nes' || circle=='asm' || circle=='del' )&amp;&amp;DNIS!='55841000'">
+				<goto next="#nesa_main"/>
+		</if>
+		
+</block>
+
+<field name="opt">
+<grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>
+				  <item>8</item>
+				 </one-of>
+              </rule>
+            </grammar>
+            <prompt bargein="true" timeout="3s">
+			<audio expr="promptpath+LANG_DESCRIPTION+version+'/welcome_acmanager.wav'"/>	
+            </prompt>
+            <filled>
+            	<if cond="opt=='1'">
+            			<goto next="#hungamaunsubmnu"/>
+            	<else/>
+            			<if cond="DNIS=='55841000'">
+				   		<throw event="nomatch"/>
+				   	<else/>
+            			<goto next="playcontent.vxml"/>
+            			</if>
+            	</if> 
+            </filled>
+
+
+				<noinput>
+			        <!--  <audio expr="promptpath+LANG_DESCRIPTION+version+'/nodtmf.wav'"/>-->
+                 <reprompt/> 
+             </noinput>        
+             
+	        <noinput count="3">
+              	<goto next="vh1_end.vxml"/>
+             </noinput>
+             
+             <nomatch>
+                <audio expr="promptpath+LANG_DESCRIPTION+version+'/waiting_response.wav'"/>	
+                <reprompt/>
+             </nomatch>
+             
+             <nomatch count="3">
+              	<goto next="vh1_end.vxml"/>
+             </nomatch> 
+
+</field>
+
+</form>
+
+<form id="nesa_main">
+				<field name="opt">
+							<grammar mode="dtmf" root="start" version="1.0">
+							               <rule id="start" scope="public">
+							                 <one-of>				 
+											  <item>1</item>
+											  <item>2</item>
+											  <item>3</item>
+											  <item>8</item>
+											 </one-of>
+							              </rule>
+							            </grammar>
+							            <prompt bargein="true" timeout="3s">
+										<audio expr="promptpath+LANG_DESCRIPTION+version+'/acmanager_option.wav'"/>	
+							            </prompt>
+							            <filled>
+							            	<if cond="opt=='1'">
+							            			<goto next="#hungamablanceminute"/>
+							            			
+							            	<elseif cond="opt=='2'"/>
+							            			<goto next="#topup"/>
+							            			
+							            	<elseif cond="opt=='3'"/>
+							            			<goto next="#hungamaunsubmnu"/>
+							            			
+							            	<else/>
+							            			<if cond="DNIS=='55841000'">
+											   		<throw event="nomatch"/>
+											   	<else/>
+							            			<goto next="playcontent.vxml"/>
+							            			</if>
+							            	</if> 
+							            </filled>
+							
+							
+											<noinput>
+										        <!--  <audio expr="promptpath+LANG_DESCRIPTION+version+'/nodtmf.wav'"/>-->
+							                 <reprompt/> 
+							             </noinput>        
+							             
+								        <noinput count="3">
+							              	<goto next="vh1_end.vxml"/>
+							             </noinput>
+							             
+							             <nomatch>
+							                <audio expr="promptpath+LANG_DESCRIPTION+version+'/waiting_response.wav'"/>	
+							                <reprompt/>
+							             </nomatch>
+							             
+							             <nomatch count="3">
+							              	<goto next="vh1_end.vxml"/>
+							             </nomatch> 
+				
+				</field>
+</form>
+<form id="nesa_np">
+				<field name="opt">
+							<grammar mode="dtmf" root="start" version="1.0">
+							               <rule id="start" scope="public">
+							                 <one-of>				 
+											  <item>1</item>
+											  <item>8</item>
+											 </one-of>
+							              </rule>
+							            </grammar>
+							            <prompt bargein="true" timeout="3s">
+										<audio expr="promptpath+LANG_DESCRIPTION+version+'/welcome_acmanager.wav'"/>	
+							            </prompt>
+							            <filled>
+							            	<if cond="opt=='1'">
+							            			<goto next="#hungamaunsubmnu"/>
+							            			
+							            	<else/>
+							            			
+							            			<goto next="playcontent.vxml"/>
+							            			
+							            	</if> 
+							            </filled>
+							
+							
+											<noinput>
+										        <!--  <audio expr="promptpath+LANG_DESCRIPTION+version+'/nodtmf.wav'"/>-->
+							                 <reprompt/> 
+							             </noinput>        
+							             
+								        <noinput count="3">
+							              	<goto next="vh1_end.vxml"/>
+							             </noinput>
+							             
+							             <nomatch>
+							                <audio expr="promptpath+LANG_DESCRIPTION+version+'/waiting_response.wav'"/>	
+							                <reprompt/>
+							             </nomatch>
+							             
+							             <nomatch count="3">
+							              	<goto next="vh1_end.vxml"/>
+							             </nomatch> 
+				
+				</field>
+</form>
+
+<form id="topup">
+<block>
+
+							           <assign name="current_balance" expr="start_time()"/>
+								   		<script>
+								     		total_used_bal=CheckUserBalance(initial_balance,current_balance);
+								     		curbalance=balance-total_used_bal;  	
+									    </script>
+								      
+								       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								       <log expr="'@@@@@@ left balance is '+curbalance"/>
+				           <script>
+					     		minbalance=Math.floor(curbalance/60);  	
+						   </script>
+
+		    
+
+<if cond="DNIS=='5584112' &amp;&amp; (circle=='nes' || circle=='asm')">
+	<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=NIGHTPACK_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+minbalance+'&amp;INPARAM[2]=5584112&amp;INPARAM[3]='+timerflag"/>
+<else/>
+	<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+minbalance+'&amp;INPARAM[2]=55841&amp;INPARAM[3]='+timerflag"/>
+</if>
+	<assign name="timerflag" expr="'0'"/>
+</block>
+  <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				   <item>1</item>
+				   <item>2</item>		
+                </one-of>
+              </rule>
+            </grammar>			
+			
+		   
+			<prompt bargein="true" timeout="0s">	
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/topup1.wav'"/>		  	
+		            <audio expr="promptpath+LANG_DESCRIPTION+version+'/press_dtmf1.wav'"/>	
+            </prompt>
+			<prompt bargein="true" timeout="0s" cond="circle=='del'">	
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/topup2.wav'"/>		  	
+		            <audio expr="promptpath+LANG_DESCRIPTION+version+'/press_dtmf2.wav'"/>	
+            </prompt>		    			
+			
+			<filled>
+				<if cond="mnuopt=='1'">
+				     <clear namelist="mnuopt"/> 
+				     <if cond="DNIS=='5584112' &amp;&amp; (circle=='nes' || circle=='asm')">
+				     	<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=NIGHTPACK_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2&amp;INPARAM[1]='+DNIS"/>
+				     <else/>
+				     <script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2&amp;INPARAM[1]='+DNIS"/>
+	  				</if>
+					<goto next="#topupcheck"/>		           	  					
+				<elseif	cond="mnuopt=='2'"/>
+					
+					<if cond="circle!='del'">
+				     <clear namelist="mnuopt"/> 
+				     <throw event="nomatch"/>
+				     <else/>
+				     <clear namelist="mnuopt"/>
+				     <if cond="DNIS=='5584112' &amp;&amp; (circle=='nes' || circle=='asm')"> 
+				     	<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[1]='+DNIS"/>
+				     <else/>
+				        <script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[1]='+DNIS"/>
+				     </if>
+
+					<goto next="#topupcheck"/>		           	  					
+					
+					
+					</if>
+				</if>
+			</filled>		
+			
+			<noinput>
+			   <audio expr="promptpath+LANG_DESCRIPTION+version+'/nodtmf.wav'"/>
+				<reprompt/>
+	        </noinput>
+
+	        <nomatch>
+                <audio expr="promptpath+LANG_DESCRIPTION+version+'/waiting_response.wav'"/>		   
+			<reprompt/>
+            </nomatch>  
+		 			            	
+	  </field>	
+</form>
+
+<form id="topupcheck">
+<field name="wait">
+
+<grammar mode="dtmf" root="start" version="1.0">
+                   <rule id="start" scope="public">
+                     <one-of>
+				          <item>1</item>
+				          <item>2</item>	
+                   </one-of>
+                </rule>
+               </grammar>
+         
+                  <prompt bargein="true" timeout="2s">
+				 	<audio expr="promptpath+LANG_DESCRIPTION+version+'/charging_wait.wav'"/>		  	
+   	             </prompt> 
+				<filled>              
+				<throw event="noinput"/>
+                </filled>              
+			  <noinput>
+			  <if cond="DNIS=='5584112' &amp;&amp; (circle=='nes' || circle=='asm')">
+			  <script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=VH1NIGHTPACK_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			  <else/>
+			<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			</if>
+										
+																	<script>
+																	 usr_status=out_string[0];
+																	 lang=out_string[1];
+										 							 balance=out_string[2]; 
+																	</script>
+    		
+    		<if cond="balance &gt; minbalance">			         			 
+    				<assign name="timerflag" expr="'1'"/>
+    				<script>
+    				 balance=balance*60;
+    				</script>    				
+					<log expr="'@@@@@@ user top up balance is '+balance"/>	
+					<assign name="initial_balance" expr="start_time()"/> 
+					<prompt bargein="true" timeout="0s">	
+							<audio expr="promptpath+LANG_DESCRIPTION+version+'/topup_request.wav'"/>		  	
+		            </prompt>					 	     
+			 	     <goto next="playcontent.vxml"/>					
+			<else/>				  
+			  	<reprompt/>
+			 </if>
+	          </noinput>
+	          <noinput count="3">
+	          <goto next="#cer"/>
+	          </noinput>
+	           <nomatch>	
+	           		<reprompt/>
+	           </nomatch>	
+	           <nomatch count="3">
+	            <goto next="#cer"/>
+	           </nomatch>
+</field>
+</form>
+
+<form id="cer">
+<block>
+	<if cond="DNIS=='5584112' &amp;&amp; (circle=='nes' || circle=='asm')">
+		<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=VH1NIGHTPACK_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+	<else/>
+										<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+	</if>
+																	<script>
+																	 usr_status=out_string[0];
+																	 lang=out_string[1];
+										 							 balance=out_string[2]; 
+										 							
+																	</script>
+    		
+    		<if cond="balance &gt; minbalance">			         			 
+    				<assign name="timerflag" expr="'1'"/>
+    				<script>
+    				 balance=balance*60;
+    				</script>
+					<log expr="'@@@@@@ user top up balance is '+balance"/>	
+					<assign name="initial_balance" expr="start_time()"/> 
+					<prompt bargein="true" timeout="0s">	
+							<audio expr="promptpath+LANG_DESCRIPTION+version+'/topup_request.wav'"/>		  	
+		            </prompt>					 	     
+			 	     <goto next="playcontent.vxml"/>					
+			<else/>	
+			 		 <goto next="vh1_end.vxml"/>
+    		</if>
+
+
+</block>
+
+</form>
+<form id="hungamablanceminute"> 
+	
+	<block>
+	
+	<script>
+		totalbalminute=Math.floor(balance/60);
+	</script>
+	
+			<prompt bargein="true" timeout="0s">	
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/account_balanceis.wav'"/>		  	
+		            <audio expr="promptpath+LANG_DESCRIPTION+version+'/'+totalbalminute+'.wav'"/>	
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/minutes.wav'"/>
+            </prompt>
+	
+              	         <goto next="playcontent.vxml"/>
+	</block>
+	
+	</form>
+<form id="hungamaunsubmnu">
+         
+		<block>
+            <log expr="'welcome to the hungama un sub category main menu '"/>
+        	<log expr="' Server ip is :' + IP"/>
+	  	  	<log expr="'Ani IS : ' + ANI"/> 	
+			<log expr="'DNIS IS : ' + DNIS"/> 			
+		</block> 
+		
+		
+	    <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				   <item>1</item>
+				   <item>2</item>
+				   <item>8</item>
+				   <item>0</item>				  			 				
+                 </one-of>
+               </rule>
+             </grammar>
+			
+		   
+			<prompt bargein="true" timeout="3s">
+			<audio expr="promptpath+LANG_DESCRIPTION+version+'/acmanager_unsub_confirm.wav'"/>	
+            </prompt>
+		    			
+			
+			<filled>
+				<if cond="mnuopt=='1'">
+						<script>
+						Flag=1;
+						</script>
+					<if cond="DNIS=='5584112' &amp;&amp; (circle=='nes' || circle=='asm')">
+						<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=NIGHTPACK_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQS'"/>	
+					<else/>
+					  	 <script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQS'"/>	
+					</if>
+					 <prompt bargein="true" timeout="0s">	
+					 	<audio expr="promptpath+LANG_DESCRIPTION+version+'/thanks_unsub.wav'"/>
+                     		</prompt>				    
+			 	   <goto next="vh1_end.vxml"/> 	
+				<else/>
+				   	<if cond="DNIS=='55841000'">
+				   		<throw event="nomatch"/>
+				   	<else/>				 
+						<goto next="playcontent.vxml"/>						
+					</if>
+				</if>
+			</filled>
+			
+			 <noinput>
+			      <!--  <audio expr="promptpath+LANG_DESCRIPTION+version+'/nodtmf.wav'"/-->
+                 <reprompt/> 
+             </noinput>        
+             
+	        <noinput count="3">
+              	<goto next="vh1_end.vxml"/>
+             </noinput>
+             
+             <nomatch>
+                <audio expr="promptpath+LANG_DESCRIPTION+version+'/waiting_response.wav'"/>	
+                <reprompt/>
+             </nomatch>
+             
+             <nomatch count="3">
+              	<goto next="vh1_end.vxml"/>
+             </nomatch> 
+	  </field>	 
+    </form>
+</vxml>

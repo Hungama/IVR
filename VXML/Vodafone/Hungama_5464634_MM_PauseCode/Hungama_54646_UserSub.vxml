@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_UserSub.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="lang_dc" expr="0" />
+	<var name="DC_DNIS" expr="0" />
+
+    <script>		
+		var out_string=new Object();
+	</script>
+    
+    <form id="SubIntro">
+	<block>	  
+			<assign name="drop_point" expr="'Sub_Menu'"/>
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'1'"/>
+			<assign name="service_id" expr="'1302'"/>
+			<!--<if cond="directact_flag=='1'">
+				 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+				  <goto next="Hungama_54646_NewUser_Directact.vxml#LANGSEL1"></goto>
+			</if>-->
+		
+		<goto next="#SubOption"/>
+	</block>
+     </form>
+	
+	
+	<form id="SubOption">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/subintro.wav'"/>				
+			</prompt>						
+			<filled>
+				<if cond="choice=='1'">
+				    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+				   <!-- <goto next="#SubRequest"></goto>-->
+					<assign name="firstconsent" expr="'Y'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="sub_flag" expr="'true'"/>
+
+					<goto next="#DOUBLE_CONSENT"></goto>
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_54646_End.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_54646_End.vxml"></goto>
+		</nomatch>
+	</form>
+
+<form id="DOUBLE_CONSENT">
+		<block>
+			<assign name="drop_point" expr="'Double_consent'"/>
+			<if cond="lang=='01'">
+				<assign name="lang_dc" expr="'2'"/>
+			<elseif cond="lang=='02'"/>
+				<assign name="lang_dc" expr="'1'"/>
+			<else/>
+				<assign name="lang_dc" expr="'3'"/>
+			</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=master_db.DC_REQS&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]=0367&amp;INPARAM[2]=16&amp;INPARAM[3]='+lang_dc"/>
+			<script>
+			<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						DC_DNIS = out_string[j];
+					  }
+				]]>
+			</script>
+				<log expr="'DC_DNIS @@@@@@@@@ '+DC_DNIS"></log>
+				<assign name="C_End" expr="start_time()"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+drop_point+hash+modeofsub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=54646&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			
+				<assign name="secondconsent" expr="'Y'"/>
+				<assign name="secondconsenttime" expr="start_time()"/>
+
+				<if cond="sub_flag=='true'">
+					<script srcexpr="'http://'+IP+'/hungama/Voda_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1302&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;redirectdnis='+DC_DNIS"/>  
+				</if>
+
+
+
+		</block> 
+		<transfer name="mytransfer"  destexpr="DC_DNIS" bridge="true" connecttimeout="2000s"> 
+		<filled>
+			<log> transfer done now</log>
+			<!--<clear namelist="mytransfer"/>-->
+		</filled>
+		</transfer>
+</form>
+	
+		
+	<form id="SubRequest">
+		<block>			
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/charging_wait.wav'"/>
+			</prompt>
+			<goto next="#BillStatusChk"/>	
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'lang @@@@@@@@@ '+lang"></log>
+			<log expr="'balance @@@@@@@@@ '+balance"></log>
+			<if cond="usr_status=='-1'">
+				<!--<if cond="directact_flag=='1'">
+					<goto next="Hungama_54646_End.vxml"/>
+				</if>-->
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_54646_End.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+					<!--<if cond="directact_flag=='1'">
+						<script>
+							timerflag=1;
+							balance=balance*60;
+						</script>
+						<assign name="start_BalenceMinute" expr="start_time()"/>
+						<goto next="Hungama_54646_MainMenu.vxml"></goto>
+					
+					</if>-->
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/thank_sub.wav'"/>
+				</prompt>
+				<script>
+					timerflag=1;
+					balance=balance*60;
+				</script>
+				<assign name="start_BalenceMinute" expr="start_time()"/>
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>	
+			<else/> 
+				<!--<if cond="directact_flag=='1'">
+					<goto next="Hungama_54646_End.vxml"/>
+				</if>-->
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+</vxml>

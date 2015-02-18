@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_PKP_Root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_PKP_SelectLang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="promptspath_54646" expr="'http://10.43.248.137:8080/hungama/promptFiles/54646_version2_prompts'"/>
+<form id="Main">
+	<block>
+		<assign name="C_Start" expr="start_time()"/>
+
+			<script>  
+				realDNIS=session.connection.local.uri;                   
+				ANI=session.connection.remote.uri;						   
+			</script>
+			<script>
+				length = ANI.length;
+				if(length == 15)
+					ANI = ANI.substring(5,15);
+				if(length == 14)
+					ANI = ANI.substring(4,14);
+				if(length == 13)
+					ANI = ANI.substring(3,13);
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+			</script>  
+			<assign name="DNIS" expr="realDNIS"/>
+
+			
+			<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+			<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+			<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+			<log> operator-circle identification </log>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+
+			<assign name="ciropr" expr="ciropr1.value"/>
+			<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+
+			<script>
+				var songcheck=ciropr.split("#");
+				operator=songcheck[1];
+				circle=songcheck[2];
+			</script>								      					       
+
+			<log>circle  is	<value expr="circle"/>    </log>
+			<log>operator is <value expr="operator"/>    </log>
+			<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>	
+			<if cond="circle=='asm' || circle=='nes'">
+					<assign name="DNIS" expr="'5464669'"/>
+			<elseif cond="circle=='mpd'"/>
+					<assign name="DNIS" expr="'546468'"/>
+			</if>
+			<assign name="operator" expr="'vodm'"/>
+			<assign name="dbservlet" expr="'PKP_dbinteraction'"/>
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+		<log expr="'contentlog=='+contentlog"></log>
+		<prompt bargein="true" timeout="1s">
+			<audio expr="promptspath_54646+'/PrecallPrompts/tollmodal_3rs_hin_pkp.wav'"/>
+		</prompt>
+		<goto next="Hungama_PKP_Userstatus.vxml"/>
+	</block>
+  </form>
+
+</vxml>

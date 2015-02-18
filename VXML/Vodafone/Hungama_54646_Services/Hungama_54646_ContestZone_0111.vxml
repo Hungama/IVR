@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_ContestZone.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var QuestionArray=new Object();
+		var AnswerArray=new Object();
+		var Question=new Array();
+		var Answer=new Array();
+	</script>	
+
+	<form id="MAINMENU">	
+			
+			<field name="choice">
+				<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_rootcat_01.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/rules_contest.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/contest_option.wav'"/>															
+				</prompt>
+				<filled>
+					<assign name="total_used_bal" expr="choice$.promptduration"/>
+					<if cond="choice=='1'">
+						<if cond="timerflag=='1'">
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="#playcontest"/>
+					<elseif cond="choice=='8'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="Hungama_54646_MainMenu.vxml"/>
+					<elseif cond="choice=='9'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="Hungama_54646_AccountMnger.vxml"/>
+					</if>					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+	
+	<form id="playcontest">
+		<block>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/Surtarang_QA?path='+lang"/>
+			<script>
+ 				<![CDATA[
+ 	            		  for(j=0; j<QuestionArray.length; j++){  	  
+ 	                       	  Question[j] = QuestionArray[j];
+ 					 }
+ 				  for(j=0; j<AnswerArray.length; j++){  	  
+ 	                       	  Answer[j] = AnswerArray[j];
+ 					 }
+ 		        ]]>	
+			</script>
+			<assign name="NumberOfQues" expr="QuestionArray.length"/>
+			<assign name="index" expr="1" />
+			<assign name="score" expr="0" />
+			<log> NumberOfQues <value expr="NumberOfQues"/></log>
+			<log> random index is <value expr="index"/></log>
+			<goto next="#GetScoreDetails"/>
+		</block>
+	</form>
+
+	<form id="GetScoreDetails">
+		<block>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CONTEST_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	score = out_string[j];
+						       if(j==1)
+						       	questionnum = out_string[j];							      
+						  }
+
+					]]>
+					
+			</script>
+			<script>
+				score=parseInt(score);
+				questionnum=parseInt(questionnum);
+			</script>
+			<log expr="'score of user @@@@@@@@@ '+score"></log>
+			<log expr="'questionnum of user @@@@@@@@@ '+questionnum"></log>
+
+			<if cond="score=='-1' || score=='0'">
+				<assign name="NumberOfQues" expr="QuestionArray.length"/>
+				<assign name="index" expr="1" />
+				<assign name="score" expr="0" />
+				<log> NumberOfQues <value expr="NumberOfQues"/></log>
+				<log> random index is <value expr="index"/></log>
+				<goto next="#next"/>
+
+			<else/>
+				<assign name="NumberOfQues" expr="QuestionArray.length"/>
+				<assign name="index" expr="questionnum" />
+				<assign name="score" expr="score" />
+				<log> NumberOfQues <value expr="NumberOfQues"/></log>
+				<log> random index is <value expr="index"/></log>
+				<goto next="#next"/>			
+				
+			</if>
+			<goto next="#next"/>
+		</block>
+	</form>
+	
+	<form id="next">
+		<block>
+			<script>
+		   		 <![CDATA[
+  		       			if(timerflag==1)
+					start_BalenceMinute=start_time();
+				]]>	 	
+ 			</script>
+			<assign name="song_begin" expr="start_time()"/>
+			<assign name="song_listen" expr="'START'" />
+			<assign name="CALCULATE_TIME" expr="'SET'" />
+			<assign name="song" expr="'question'"/>
+		  </block>
+		<field name="Play">
+			 <grammar mode="dtmf" root="start">      <!--  inline dtmf grammar    -->
+				<rule id="start" scope="public">
+					<one-of>
+					    <item>1</item>
+					    <item>2</item>
+					    <item>8</item>
+					    <item>9</item>
+					</one-of>
+				</rule>
+			</grammar>
+			
+			<prompt bargein="false" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/question'+index+'.wav'"/>
+			</prompt>
+			<filled>
+				<assign name="total_used_bal" expr="Play$.promptduration"/>
+				<script>ind=index-1</script>
+				<assign name="ans" expr="Answer[ind]"/>													
+				<if cond="Play == ans">
+					<prompt bargein="true" timeout="3s">							
+							<audio expr="promptspath_54646+'/'+lang+'/correct_ans.wav'"/>
+					</prompt>
+					 <if cond="timerflag=='1'">
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="time_duration(song_begin)"/>
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						 <assign name="contentlog" expr="contentlog+hash+song+index+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+								 
+					 <assign name="CALCULATE_TIME" expr="'SET'" />
+					 <assign name="index" expr="index+1"/>
+					   
+					   <if cond="index &gt; NumberOfQues">
+						<assign name="index" expr="1"/>
+						<goto next="#next"/>
+						<!-- <goto next="#MAINMENU"/> -->
+					   <else/>
+						<assign name="SCORE_STATUS" expr="'TRUE'"/>
+						<assign name="score" expr="score+100"/>
+						<assign name="var_wel" expr="getRandom(1,6)" />
+
+						<script>
+													scorepartfirst = score/100;
+													scorepartthird = score/1000;
+																					
+												</script>
+					<assign name="scorepartsecond" expr="''+scorepartthird+''"/>
+
+					<script>
+													var v1=scorepartsecond.split(".");
+													var v2=v1[0];
+													var v3=v1[1];
+													
+												</script>
+
+
+											    	<log> scorepartfirst varible length is  <value expr="scorepartfirst"/></log>
+						
+												<prompt bargein="true" timeout="1s" cond="SCORE_STATUS=='TRUE' &amp;&amp; score &lt; 1000">
+													<audio expr="promptspath_54646+'/'+lang+'/score_update.wav'"/>
+													<audio expr="promptspath_54646+'/'+lang+'/'+scorepartfirst+'.wav'"/>
+													<audio expr="promptspath_54646+'/'+lang+'/100.wav'"/>
+												</prompt>
+						
+												<prompt bargein="true" timeout="1s" cond="SCORE_STATUS=='TRUE' &amp;&amp; score &gt; 900">
+													<audio expr="promptspath_54646+'/'+lang+'/score_update.wav'"/>
+													<audio expr="promptspath_54646+'/'+lang+'/'+v2+'.wav'"/>
+													<audio expr="promptspath_54646+'/'+lang+'/1000.wav'"/>
+													
+												</prompt>
+												
+												<prompt bargein="true" timeout="1s" cond="SCORE_STATUS=='TRUE' &amp;&amp; scorepartthird &gt; 0.9">
+													<audio expr="promptspath_54646+'/'+lang+'/'+v3+'.wav'"/>
+													<audio expr="promptspath_54646+'/'+lang+'/100.wav'"/>
+						</prompt>
+						
+						
+						<prompt bargein="true" timeout="3s">
+							<audio expr="promptspath_54646+'/'+lang+'/pre_question'+var_wel+'.wav'"/>
+						</prompt>
+						<goto next="#next"/>				
+			      		   </if>
+				<elseif cond="Play=='8'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CONTEST_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index"/>
+						
+						<assign name="CALCULATE_TIME" expr="'RESET'" />
+						<goto next="Hungama_54646_MainMenu.vxml"/>
+				<elseif cond="Play=='9'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CONTEST_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index"/>
+						
+						<assign name="CALCULATE_TIME" expr="'RESET'" />
+						<goto next="Hungama_54646_AccountMnger.vxml"/>
+				<else/>	
+					<if cond="timerflag=='1'">
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					 <assign name="CALCULATE_TIME" expr="'SET'" />
+					<goto next="#wrong"/>
+				</if>
+			</filled>		
+		</field>		
+		<noinput>
+			<if cond="timerflag=='1'">
+						   <script>
+					     total_used_bal=chkBalenceMinute(start_BalenceMinute);
+					     balance=balance-total_used_bal;  						  
+					   </script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+					          </if>     
+					 </if>
+			<assign name="CALCULATE_TIME" expr="'SET'" />
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>				
+			<reprompt></reprompt>
+		</noinput>			
+		<nomatch>
+			<if cond="timerflag=='1'">
+						   <script>
+					     total_used_bal=chkBalenceMinute(start_BalenceMinute);
+					     balance=balance-total_used_bal;  						  
+					   </script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+					          </if>     
+					 </if>
+			<assign name="CALCULATE_TIME" expr="'SET'" />
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>				
+			<reprompt></reprompt>
+		</nomatch>	
+	</form>
+	
+	<form id="wrong">
+		<field name="choice">
+			<grammar mode="dtmf" root="start">      
+				<rule id="start" scope="public">
+					<one-of>
+					    <item>1</item>
+					    <item>8</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/wrong_ans.wav'"/>
+			</prompt>
+			<filled>
+				<assign name="total_used_bal" expr="choice$.promptduration"/>
+				<if cond="choice=='1'">
+					<if cond="timerflag=='1'">
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<assign name="index" expr="index+1"/>
+					<assign name="var_wel" expr="getRandom(1,6)" />
+						<script>
+													scorepartfirst = score/100;
+													scorepartthird = score/1000;
+																					
+												</script>
+					<assign name="scorepartsecond" expr="''+scorepartthird+''"/>
+
+					<script>
+													var v1=scorepartsecond.split(".");
+													var v2=v1[0];
+													var v3=v1[1];
+													
+												</script>
+
+
+											    	<log> scorepartfirst varible length is  <value expr="scorepartfirst"/></log>
+						
+												<prompt bargein="true" timeout="1s" cond="SCORE_STATUS=='TRUE' &amp;&amp; score &lt; 1000">
+													<audio expr="promptspath_54646+'/'+lang+'/score_update.wav'"/>
+													<audio expr="promptspath_54646+'/'+lang+'/'+scorepartfirst+'.wav'"/>
+													<audio expr="promptspath_54646+'/'+lang+'/100.wav'"/>
+												</prompt>
+						
+												<prompt bargein="true" timeout="1s" cond="SCORE_STATUS=='TRUE' &amp;&amp; score &gt; 900">
+													<audio expr="promptspath_54646+'/'+lang+'/score_update.wav'"/>
+													<audio expr="promptspath_54646+'/'+lang+'/'+v2+'.wav'"/>
+													<audio expr="promptspath_54646+'/'+lang+'/1000.wav'"/>
+													
+												</prompt>
+												
+												<prompt bargein="true" timeout="1s" cond="SCORE_STATUS=='TRUE' &amp;&amp; scorepartthird &gt; 0">
+													<audio expr="promptspath_54646+'/'+lang+'/'+v3+'.wav'"/>
+													<audio expr="promptspath_54646+'/'+lang+'/100.wav'"/>
+						</prompt>
+						<prompt bargein="true" timeout="3s">
+							<audio expr="promptspath_54646+'/'+lang+'/pre_question'+var_wel+'_w.wav'"/>
+						</prompt>
+					<goto next="#next"/>				
+				<else/>	
+					<if cond="timerflag=='1'">
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CONTEST_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index"/>
+						<goto next="Hungama_54646_MainMenu.vxml"/>
+				</if>
+			</filled>
+		</field>
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>				
+			<reprompt></reprompt>
+		</noinput>			
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>				
+			<reprompt></reprompt>
+		</nomatch>
+	</form>	
+</vxml>

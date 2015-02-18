@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_RedFMtime_check.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<var name="rem_time" expr="0"/>	
+
+	
+	<form id="opt">
+		<block>
+			 <assign name="compare_time" expr="rim(C_Start)"/>
+			 <if cond="compare_time &gt; 900 &amp;&amp; compare_time &lt; 1800 &amp;&amp; spiceaddflag=='F'">
+				<assign name="spiceaddflag" expr="'T1'"/>
+				<goto next="#spiceadd"/>
+			 </if>
+			 <if cond="compare_time &gt; 1799 &amp;&amp; compare_time &lt; 2700 &amp;&amp; spiceaddflag=='T1'">
+				<assign name="spiceaddflag" expr="'T2'"/>
+				<goto next="#spiceadd"/>
+			 </if>
+			 <if cond="compare_time &gt; 2700 &amp;&amp; spiceaddflag=='T2'">
+				<assign name="spiceaddflag" expr="'T3'"/>
+				<goto next="#spiceadd"/>
+			 </if>
+			<script>
+				rem_time = balance - compare_time;
+			</script>
+			 <log>
+			 	Compare time is <value expr="compare_time"/>
+			 	rem_time time is <value expr="rem_time"/>
+			 </log>
+			   <if cond="rem_time &lt; 0 || rem_time == 0">
+						<goto next="Hungama_RedFMTopUpFinish.vxml"/>
+			   <elseif cond="rem_time &lt; 300 &amp;&amp; rem_time &gt; 61"/>
+			  		<if cond="flag_5min == 'F'">
+			  			
+			      		<goto next="Hungama_RedFMTopUp.vxml"/>
+			      	<else/>
+			  			 <script>
+					       var n2= aNavHistory.pop();
+		   			     </script>
+				  		<goto expr="n2+'#next'"/>
+			  		</if>
+			  	<else/>
+			  		 <script>
+				       var n2= aNavHistory.pop();
+	   			     </script>
+	   			     
+			  		<goto expr="n2+'#next'"/>
+		      </if>
+		</block>
+	</form>
+	<form id="Reminder5">
+		<field name="opt">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>  1  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/minutes-reminder-'+lang+'.wav'"/>
+	     	</prompt>
+	     	<filled>
+	     		<if cond="opt == '1'">
+	     			<goto next="Hungama_RedFMTopUp.vxml"/>  
+	     			
+	     		<else/>	
+	     			<script>
+				       var n2= aNavHistory.pop();
+	   			     </script>
+			  		<goto expr="n2+'#next'"/>
+	     		</if>
+	     	</filled>
+		</field>
+	</form>
+	<form id="spiceadd">
+		<field name="add">
+			<prompt bargein="false" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/mirchimobile_sdl.wav'"/>
+	     	</prompt>
+	     	<filled>
+	     		<goto next="#opt"></goto>	
+	     	</filled>	
+		</field>
+		<noinput>
+			<goto next="#opt"></goto>	
+		</noinput>
+		<nomatch>
+			<goto next="#opt"></goto>	
+		</nomatch>
+	</form>
+</vxml>

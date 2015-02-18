@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Rasoi_root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Rasoi_free_recipe_Nu.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+	<var name="type" expr="''"/>	
+	<var name="unike_play" expr="0"/>	
+	<var name="logs" expr="''"/>
+	<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var random=1;
+		var recipe_counter=1;		
+	</script>
+	<form id="FETCHRECIPES">
+		<block>
+			<assign name="Section_Name" expr="'FETCHRECIPES'"/>													
+			<script>
+				array1.length=0;
+				unike_play=0;
+			</script>		
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/songconfig/free.cfg&amp;TOKEN=FREE'"/>
+			<assign name="len" expr="favSongs.length" />
+			<script>
+					<![CDATA[
+					for(j=0; j<len ;  j++)
+					{  	  
+
+						array1[j] = favSongs[j];
+					}
+					]]>		
+			</script> 
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+			<assign name="unike_play" expr="getRandom(1,len)"/>
+			<log>Random Recipe number is <value expr="unike_play"/>    </log>
+			<goto next="#playcontent"/>
+		</block>
+	</form>	
+    	<form id="playcontent">
+		<block>		
+			<assign name="Section_Name" expr="'FREE_RECIPES'"/>
+			<script>
+				songID = array1[unike_play];
+			</script>		 		
+			<assign name="song_begin" expr="start_time()"/>
+			<assign name="song_listen" expr="'START'" />
+		</block>	
+		<field name="choice">			
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>							
+						 <item>  1  </item>
+					</one-of>
+				</rule>
+			</grammar>
+
+			<prompt bargein="true" timeout="1s">
+				<audio expr="contentpath+'/rasoi/'+LANG_DESCRIPTION+'/'+songID+'.wav'"/>
+			</prompt>			
+			<filled>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_rasoi.RASOI_RECIPE_SMS&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID"/>
+				<goto next="Rasoi_Subs.vxml"/>
+			</filled>
+			<noinput>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_rasoi.RASOI_RECIPE_SMS&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID"/>
+				<goto next="Rasoi_Subs.vxml"/> 
+			</noinput>
+			<nomatch>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_rasoi.RASOI_RECIPE_SMS&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID"/>
+				<goto next="Rasoi_Subs.vxml"/>
+			</nomatch>
+		</field>
+	</form>	
+</vxml>

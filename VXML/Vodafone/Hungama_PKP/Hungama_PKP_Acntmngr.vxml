@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_PKP_Root.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_PKP_Acntmngr.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+
+	<script>
+		var recording_status=0;
+		var recordstory=new Array();
+		var recordstory_length=0;
+		var recordunike_play=0;
+	</script>
+
+<form id="WelcomeAcntmngr">
+	<block>
+		<assign name="drop_point" expr="'Help_Menu'"/>
+	</block>
+	<field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+					 <item>  2  </item>
+					 <item>  3  </item>
+					 <item>  8  </item>
+					 <item>  9  </item>
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptpath+'/'+lang+'/common/welcome_acmanager.wav'"/>
+				</prompt>
+		  <filled>
+			  	<if cond="choice=='1'">
+			  		
+			  		<goto next="#Recording_Check"/>
+			  	<elseif cond="choice=='8'"/>
+					<goto next="Hungama_PKP_mainmenu.vxml"/>
+			    <elseif cond="choice=='9'"/>
+					<goto next="Hungama_PKP_Acntmngr.vxml"/>
+				</if>
+	         </filled>				    
+			 <noinput>
+				<audio expr="promptpath+'/'+lang+'/common/nodtmf.wav'"/>
+				<reprompt/> 
+			</noinput>  
+		          
+			<nomatch>
+				<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+				<reprompt/>
+		        </nomatch> 
+         </field>
+</form>
+
+<form id="Recording_Check">
+ 	<block>
+	 		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10'"/>
+	 		<script>
+	 				recording_status=out_string[0];
+	 		</script>
+	 		<log expr="'recording_status issssss   ' +recording_status "/>
+	 		
+	 		<if cond="recording_status=='-1'">
+		 			<prompt bargein="true" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/common/no_topstories.wav'"/>
+					</prompt>
+					<goto next="Hungama_PKP_mainmenu.vxml"/>
+			<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PKP_RECORDING_PLAY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					
+					 <assign name="recordstory_length" expr="out_string.length" />
+					 <script>recordunike_play=0;</script>
+			 		 <script>
+						<![CDATA[
+						   for(k=0; k<recordstory_length ;  k++)
+							  {  	  
+								recordstory[k] = out_string[k];						   
+							  }
+						]]>		
+					 </script> 
+					 <log expr="'recordstory_length issssss   ' +recordstory_length "/>
+			 		 <log expr="'first recordstory issssss   ' +recordstory[0] "/>
+	 		</if>
+	 			<goto next="#Recording_play"/>
+ 	</block>	
+</form>
+
+<form id="Recording_play">
+	<block>
+			<if cond="recordunike_play &gt; recordstory_length-1">
+				<assign name="recordunike_play" expr="0" />
+			<elseif cond="recordunike_play &lt; 0" />
+				<assign name="recordunike_play" expr="recordstory_length-1" /> 
+			</if>
+			
+			<script>
+				song = recordstory[recordunike_play];
+			</script>
+			
+			
+			 <log>	recordunike_play isssss    <value expr="recordunike_play"/> </log>	
+			 <log>	song isssss    <value expr="song"/> 	</log>		
+						 
+	</block>
+	<field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+					 <item>  2  </item>
+					 <item>  3  </item>
+					 <item>  8  </item>
+					 <item>  9  </item>
+				</one-of>
+			</rule>
+		</grammar>
+		
+			<prompt bargein="true"  timeout="1s">			      	 
+			      	 <audio expr="'http://10.43.248.137:8080/hungama/Content/PKP/PKP_RECORD_'+song"/>
+			      	 <audio expr="promptpath+'/'+lang+'/common/mainmenu.wav'"/>
+			</prompt> 
+				
+			<filled>
+					
+   				   
+				 <if cond="choice=='1'">
+				 		<script>recordunike_play=recordunike_play+1</script>
+				 		<goto next="#Recording_play"/>
+				 <elseif cond="choice=='2'"/>
+				 		<script>recordunike_play=recordunike_play</script>				 
+				 		<goto next="#Recording_play"/>
+				 <elseif cond="choice=='3'"/>
+				 		<script>recordunike_play=recordunike_play-1</script>				 
+				 		<goto next="#Recording_play"/>
+				 <elseif cond="choice=='8'"/>				 
+					    <goto next="Hungama_PKP_mainmenu.vxml"/>
+				 <elseif cond="choice=='9'"/>
+						<goto next="Hungama_PKP_Acntmngr.vxml"/>
+				 </if>		
+										
+		    </filled>				    
+			
+			<noinput>
+				
+					  <script>recordunike_play=recordunike_play+1</script>
+					  <goto next="#Recording_play"/>
+			</noinput>  
+			     
+			<nomatch>
+				
+				  	<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+					</prompt>
+					<goto next="#Recording_play"/>
+		    </nomatch> 
+		</field>
+</form>
+
+
+
+</vxml>

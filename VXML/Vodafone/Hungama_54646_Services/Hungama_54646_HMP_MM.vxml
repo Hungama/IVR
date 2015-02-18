@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Hungama_54646_HMP_MM.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+     
+     <script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var len=0;
+	</script>
+<form id="MAINMENU">
+	
+	<block>
+
+	 <assign name="cat" expr="'HMP_MM'"/>
+ 	 <assign name="subcat" expr="'HMP_MM'"/>
+	<assign name="Section_Name" expr="'HMP_MM'"/>
+	<assign name="playconfig" expr="realDNIS"/>
+	<assign name="spzoneflag" expr="'TRUE'" />
+	
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/catname'+realDNIS+'.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_SPZone'+realDNIS+'.wav'"/>
+						 
+				</prompt>
+	 <goto next="#loadcliptoplay"/>
+	</block>
+	</form>
+ <form id="loadcliptoplay">
+		  <block> 
+		   	<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/'+operator+'/HMP_MM/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+						array.length=0;
+						unike_play=0;
+			</script>
+					<assign name="len" expr="favSongs.length" />
+					<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+					<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+					<goto next="Hungama_54646_End.vxml"></goto>
+				</if>
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#PlayFullSongs"/>  					
+		   </block>
+	</form>
+
+<form id="PlayFullSongs"> 
+  <block>
+		<script>
+				 <![CDATA[
+				if(timerflag==1)
+		 		start_BalenceMinute=starttime();
+		    ]]>	 	
+		</script>
+  </block>
+	 <field name="keypadoption">               
+		    	 
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+					    <item>1</item>
+			                    <item>2</item>
+					    <item>3</item>
+			                    <item>6</item>
+			                    <item>7</item>
+					    <item>8</item>
+                          		    <item>9</item>
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+            <prompt bargein="true"  timeout="1s">
+				
+				<audio expr="promptspath_54646+'/'+lang+'/keypad_mw.wav'"/>
+				
+           </prompt> 
+				 
+        <filled>              
+			<if cond="timerflag=='1'">
+				<script>
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;
+				</script>
+				       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				       <log expr="'@@@@@@ left balance is '+balance"/>
+					<if cond="balance &lt;= '0'">
+						     <goto next="Topup.vxml"/>
+					</if>
+			</if>       	
+			<if cond="keypadoption=='6'">	
+				<goto next="#playoption"/>
+    			<elseif cond="keypadoption=='7'"/>
+    				 <goto next="#MAINMENU"/> 
+    			<elseif cond="keypadoption=='8'"/>
+    				<goto next="Hungama_54646_MainMenu.vxml"/>
+			<elseif cond="keypadoption=='9'"/>
+				 <goto next="Hungama_54646_AccountMnger.vxml"/>	 
+			<else/>          
+				<goto next="#StartToPlaysongs"/>
+			</if>	
+         </filled>
+			  
+		<noinput>
+			<if cond="timerflag=='1'">
+				<script>
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;
+				</script>
+				       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				       <log expr="'@@@@@@ left balance is '+balance"/>
+					<if cond="balance &lt;= '0'">
+						     <goto next="Topup.vxml"/>
+					</if>
+			</if>
+	             	<goto next="#StartToPlaysongs"/>	     
+              </noinput>
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>		
+          </field>		
+		
+	</form>
+	<form id="returnfromcrbt">
+                  <block>
+
+                        <!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/'+operator+'/mwconfig/songconfig/specialzone/spzone_'+circle+'.cfg'"/>-->
+                        <script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/'+operator+'/mwconfig/songconfig/specialzone/'+lang+playconfig+'_'+sp_zone+'.cfg'"/>
+                        <script>
+                                                array.length=0;
+                                                unike_play=0;
+                        </script>
+
+                                        <assign name="len" expr="favSongs.length" />
+					<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+					<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+					<goto next="Hungama_54646_End.vxml"></goto>
+				</if>
+                                        <assign name="movie_idx" expr="0" />
+                                        <assign name="i" expr="0" />
+                        <script>
+                                <![CDATA[
+                                           for(k=0; k<len ;  k++)
+                                           {
+                                                                array[k] = favSongs[k];
+                                           }
+
+                                ]]>
+                        </script>
+                        <goto next="#StartToPlaysongs"/>
+                   </block>
+        </form>
+<form id="returnfromring">
+                  <block>
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/'+operator+'/mwconfig/songconfig/specialzone/'+lang+playconfig+'_'+sp_zone+'.cfg'"/>
+                        <script>
+                                                array.length=0;
+                                                unike_play=0;
+                        </script>
+
+                                        <assign name="len" expr="favSongs.length" />
+					<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+					<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+					<goto next="Hungama_54646_End.vxml"></goto>
+				</if>
+                                        <assign name="movie_idx" expr="0" />
+                                        <assign name="i" expr="0" />
+                        <script>
+                                <![CDATA[
+                                           for(k=0; k<len ;  k++)
+                                           {
+                                                                array[k] = favSongs[k];
+                                           }
+
+                                ]]>
+                        </script>
+                        <goto next="#StartToPlaysongs"/>
+                   </block>
+        </form>
+	<form id="StartToPlaysongs">
+
+
+				<block>
+
+					<script>
+		   		 <![CDATA[
+  		       		if(timerflag==1)
+                 start_BalenceMinute=starttime();
+		    ]]>	 	
+ 		  </script>
+					  	<if cond="unike_play &gt; len-1">
+							<assign name="unike_play" expr="0" />
+						<elseif cond="unike_play &lt; 0" />
+							<assign name="unike_play" expr="len-1" />
+						</if>
+				<log expr="'@unike_playunike_playunike_playunike_playunike_play name isssssssssssssssssss '+unike_play"/>
+				<script>
+
+				<![CDATA[
+				     if(array[unike_play].indexOf("_")>0)
+					    TotalFM=1;
+				     else
+					    TotalFM=0;
+				]]>
+				</script>
+				<if cond="TotalFM=='0'">
+					<log expr="'@in config data havent split name isssssssssssssssssss '+array[unike_play]"/>
+					<goto next="Hungama_54646_End.vxml"></goto>
+				</if>
+					<log expr="'@@@@@@ used balance is '+unike_play"/>
+						   <log expr="'@@@@@@ left balance is '+songcheck[0]"/>
+						<script>
+							var songcheck=array[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = array[unike_play];
+							
+						</script>
+			
+					 <assign name="song_begin" expr="starttime()"/>
+					 <assign name="song_listen" expr="'START'" />
+					 <assign name="CALCULATE_TIME" expr="'SET'" />
+ 
+      </block>
+		   <field name="selectoption">
+
+				    <grammar mode="dtmf" root="start" version="1.0">
+			   		<rule id="start" scope="public">
+			   		  <one-of>
+						<item>1</item>
+						<item>2</item>	
+						<item>3</item>
+						<item>4</item>	
+						<item>5</item>
+						<item>6</item>
+						<item>7</item>
+						<item>8</item>
+						<item>9</item>
+						<item>*</item>
+						<item>0</item>
+					 </one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			   <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		      </prompt> 			 
+		  
+		      <filled>
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;
+					</script>
+					       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					       <log expr="'@@@@@@ left balance is '+balance"/>
+						<if cond="balance &lt;= '0'">
+							     <goto next="Topup.vxml"/>
+						</if>
+				</if>
+				 <if cond="selectoption=='1'">
+				 	 <script> 
+				 	         unike_play=unike_play-1;
+				   	 </script>
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+					<goto next="#StartToPlaysongs"/>	
+				 <elseif cond="selectoption=='2'"/>
+					<script> unike_play=unike_play</script>
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 			 	
+					<goto next="#StartToPlaysongs"/> 				 
+				 <elseif cond="selectoption=='3'"/>	
+				 	<script> unike_play=unike_play+1</script>
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 								 
+					<goto next="#StartToPlaysongs"/> 
+			    <elseif cond="selectoption=='6'"/>
+					<assign name="CALCULATE_TIME" expr="'RESET'" />
+				 	<goto next="#playoption"/>
+			     <elseif cond="selectoption=='7'"/>
+					 <assign name="CALCULATE_TIME" expr="'RESET'" />
+				 	<goto next="#MAINMENU"/>
+			     <elseif cond="selectoption=='8'"/>
+				 	<assign name="CALCULATE_TIME" expr="'RESET'" />
+				 	<goto next="Hungama_54646_MainMenu.vxml"/>
+			     <elseif cond="selectoption=='9'"/>
+				 	  <assign name="CALCULATE_TIME" expr="'RESET'" />
+					 <goto next="Hungama_54646_AccountMnger.vxml"/>
+			     <elseif cond="selectoption=='*'"/>
+				 	<assign name="CALCULATE_TIME" expr="'RESET'" />
+					<goto next="CRBT.vxml"/>
+			<elseif cond="selectoption=='0' &amp;&amp; circle=='guj'"/>
+					<assign name="CALCULATE_TIME" expr="'RESET'" />
+					<goto next="Hungama_RngMenu.vxml"/>
+
+			   <else/>	
+				 					 
+				 	<script> unike_play=unike_play+1</script>		
+				    <goto next="#StartToPlaysongs"/> 		
+				 </if>				 
+			  </filled>				  
+		
+		     
+			   <noinput>	
+			        <script> 
+			      		unike_play=unike_play+1;
+			      	</script> 		
+				<if cond="timerflag=='1'">
+					<script>
+					      total_used_bal=rim(start_BalenceMinute);
+					      balance=balance-total_used_bal;
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+balance"/>
+					<if cond="balance &lt;= '0'">
+						     <goto next="Topup.vxml"/>
+					</if>
+				</if>
+			  	<goto next="#StartToPlaysongs"/> 	
+			</noinput>
+			<nomatch>
+				
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>	
+			 
+			
+	  </field>
+	  	
+	</form>	
+	
+	<form id="playoption">
+	        <block>
+			<script>
+				 <![CDATA[
+				if(timerflag==1)
+			start_BalenceMinute=starttime();
+			]]>	 	
+			</script>
+	        </block>
+	        <field name="playclipOptionInfo">
+			<grammar mode="dtmf" root="start" version="1.0">
+               		<rule id="start" scope="public">
+			 <one-of>				 
+					  <item>1</item>
+					  <item>2</item>	
+					  <item>3</item>
+					
+					  <item>6</item>
+					  <item>7</item>
+					  <item>8</item>
+					  <item>9</item>
+					 
+			  	 </one-of>
+              	</rule>
+            </grammar>
+			
+				<prompt bargein="true">
+			     <audio expr="promptspath_54646+'/'+lang+'/keypad_option_mw.wav'"/> 
+	   	        </prompt>
+		   	
+		<filled>
+			<if cond="timerflag=='1'">
+				<script>
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;
+				</script>
+				       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				       <log expr="'@@@@@@ left balance is '+balance"/>
+					<if cond="balance &lt;= '0'">
+						     <goto next="Topup.vxml"/>
+					</if>
+			</if>	
+			<if cond="playclipOptionInfo=='1'">
+			     <script> unike_play=unike_play-1</script> 
+			     <goto next="#StartToPlaysongs"/> 
+			<elseif cond="playclipOptionInfo=='2'"/>
+			     <script> unike_play=unike_play</script>
+			      <goto next="#StartToPlaysongs"/> 
+			<elseif cond="playclipOptionInfo=='3'"/>
+			    <script> unike_play=unike_play+1</script>
+			    <goto next="#StartToPlaysongs"/> 
+			<elseif cond="playclipOptionInfo=='6'"/>
+			   <goto next="#playoption"/> 	     
+			<elseif cond="playclipOptionInfo=='7'"/>
+				<goto next="#MAINMENU"/>
+			<elseif cond="playclipOptionInfo=='8'"/>
+				<goto next="Hungama_54646_MainMenu.vxml"/>
+			<elseif cond="playclipOptionInfo=='9'"/>
+				<goto next="Hungama_54646_AccountMnger.vxml"/>
+			</if>
+			    
+		</filled>		
+			
+		<noinput>
+				<if cond="timerflag=='1'">
+				<script>
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;
+				</script>
+				       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				       <log expr="'@@@@@@ left balance is '+balance"/>
+					<if cond="balance &lt;= '0'">
+						     <goto next="Topup.vxml"/>
+					</if>
+				</if>
+			<goto next="#StartToPlaysongs"/> 	
+		</noinput>
+
+		  <nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+
+	</field>	
+	  	 
+  </form>
+
+</vxml>

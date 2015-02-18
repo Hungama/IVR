@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml>
+
+<script>
+
+function BalanceSubstring(age_id, agecounter) {
+    var count = age_id.substring(agecounter, agecounter + 1);
+    return count;
+}
+
+function Minutescount(age_length) {
+    var count = age_length.length;
+    return count;
+}
+function CurrentDate()
+{
+ 
+ var current = new Date();
+ var month = current.getMonth()+1 ;
+ var day = current.getDate();
+
+
+if (month.toString().length == 1) 
+{
+
+month = "0" + month;
+
+}
+
+if (day.toString().length == 1)
+{
+day = "0" + day; 
+
+}
+ var changedDate =current.getFullYear()+ "" + month+""+ day;
+ return changedDate;
+
+}
+
+function PrevDate()
+{
+ 
+ var current = new Date();
+ var month = current.getMonth()+1 ;
+ var day = current.getDate()-1;
+
+
+if (month.toString().length == 1) 
+{
+
+month = "0" + month;
+
+}
+
+if (day.toString().length == 1)
+{
+day = "0" + day; 
+
+}
+ var changedDate =current.getFullYear()+ "" + month+""+ day;
+ return changedDate;
+ 
+}
+function NextDate()
+{
+ var current = new Date();
+ var month = current.getMonth()+1 ;
+ var day = current.getDate()+1;
+
+
+if (month.toString().length == 1) 
+{
+
+month = "0" + month;
+
+}
+
+if (day.toString().length == 1)
+{
+day = "0" + day; 
+
+}
+ var changedDate =current.getFullYear()+ "" + month+""+ day;
+ return changedDate;
+ 
+}
+function GetFileMS()
+{
+	var currentDT = new Date();
+	var strDT =  currentDT.valueOf() ;
+	return strDT;
+}
+
+function CurrentDateChngFrmt()
+{
+ 
+ var current = new Date();
+ var month = current.getMonth()+1 ;
+ var day = current.getDate();
+
+
+if (month.toString().length == 1) 
+{
+
+month = "0" + month;
+
+}
+
+if (day.toString().length == 1)
+{
+day = "0" + day; 
+
+}
+ var changedDate =day+":"+month+":"+current.getFullYear();
+ return changedDate;
+
+}
+
+</script>
+	<script src="../ECMAScripts/common_files.es"/>	
+
+	<var name="initial_balance" expr="0"/>
+	<var name="contentlog" expr="''"/>
+	<var name="length" expr="0"/>
+	<var name="j" expr="0"/>
+	<var name="alertCircle" expr=" '0' "/>
+
+	<var name="ciropr" expr=" '0' "/>
+	<var name="updatesunsign" expr=" '0' "/>
+
+	<var name="counter" expr="1"/>
+	<!--<var name="DNIS" expr=" '0' "/>
+	<var name="ANI" expr=" '0' "/>-->
+	<var name="gANI" expr=" '0' "/>
+	<var name="ANI" expr=""/>
+	<var name="DNIS" expr=""/>	
+	<var name="gUserCallID" expr=" '0' "/>
+	<var name="IP" expr="'localhost:8080'"/>
+	<var name="servlet_path" expr="'hungama'"/>
+	<var name="dbservlet" expr="''"/>
+
+	<var name="usr_status" expr=" '0' "/>
+	<var name="lang" expr="'01'"/>
+	<var name="balance" expr="0"/>
+	<var name="sunsign" expr="''"/>
+	<var name="LANG_DESCRIPTION" expr="'01'"/>
+	
+	<var name="contentpath" expr="'http://10.43.248.137:8080/hungama_content/uni_jyotish'"/>
+
+	
+	<var name="gSunSign" expr=""/>
+	<var name="curbalance" expr=""/>
+
+	<var name="operator" expr="''"/>
+	<var name="circle" expr="''"/>
+	<var name="filetoplay" expr="'20120812'"/>
+	<var name="sunsignname" expr="''"/>
+	
+	<var name="selectedsunsign" expr="''"/>
+	<var name="userselectsunsign" expr="new Array()"/>
+	<var name="backmovepage" expr="''"/>
+	<var name="PROMPTS_CONTENT" expr="'localhost:8080'"/>
+	<var name="promptpath" expr="'http://localhost:8080/hungama/promptFiles/uni_jyotish'"/>
+
+
+	<var name="realdnis" expr="''"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="C_Start" expr=""/>
+	<var name="C_End" expr=""/>
+	
+		<var name="total_used_bal" expr="'0'"/>
+	<var name="start_BalenceMinute" expr="'0'"/>
+	
+	<var name="CONTENT_PATH" expr="'localhost:8080/hungama_content'"/>
+
+ 	<var name="song_listen" expr="'End'"/>
+	<var name="compare_time" expr="0"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="starting_time" expr="0"/>
+	<var name="ContentTime" expr="0"/>
+	<var name="contentlog" expr="''"/>
+	<var name="song_begin" expr="'0'"/>
+ 	<var name="songID" expr="'0'"/>
+
+    <catch event="connection.disconnected">	
+	
+	 <goto next="end.vxml"/>
+	<exit/>
+    </catch >
+
+ <catch event="connection.disconnect.hangup">	
+	 <goto next="end.vxml"/>
+	<exit/>
+    </catch >
+
+<catch event="error.semantic">
+           <log> $$$$$$$$$$$$$$$$ error.semantic $$$$$$$$$$$$$$$$ </log>
+             <goto next="'end.vxml"/>
+    </catch>
+
+   <!-- <catch event="error.*" >
+      <log expr="'Error : (' + event$.reason + ')'"/>
+	 <goto next="end.vxml"/>
+      <exit/>
+    </catch > -->
+	
+</vxml>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Hungama_MUSICWORLD_PlayContent.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="langnew" expr="0"/>
+
+     
+     <script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var spzone=new Object();
+		var len=0;
+	</script>
+
+ <form id="loadcliptoplay">
+		  <block> 
+		<assign name="cat" expr="0"/>
+		<assign name="subcat" expr="0"/>
+		<assign name="Section_Name" expr="'testing'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=TESTING/content.cfg&amp;TOKEN=FREE'"/>
+			<script>
+						array.length=0;
+						unike_play=0;
+			</script>
+			
+					<assign name="len" expr="favSongs.length" />
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+			<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+				<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#StartToPlaysongs"/>  					
+		   </block>
+	</form>
+
+	
+
+	<form id="StartToPlaysongs">
+
+
+				<block>
+
+					
+					  	<if cond="unike_play &gt; len-1">
+							<assign name="unike_play" expr="0" />
+						<elseif cond="unike_play &lt; 0" />
+							<assign name="unike_play" expr="len-1" />
+						</if>
+
+					<log expr="'@unike_playunike_playunike_playunike_playunike_play name isssssssssssssssssss '+unike_play"/>
+						
+					
+						<!--<script>
+							var songcheck=array[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = array[unike_play];
+							
+						</script>-->
+						<script>
+							song = array[unike_play];
+													
+						</script>
+			
+					<!-- <assign name="song_begin" expr="starttime()"/>
+					 <assign name="song_listen" expr="'START'" />
+					 <assign name="CALCULATE_TIME" expr="'SET'" />
+					 <assign name="contentflagsub" expr="'1'"/>
+<log expr="'@@@@@@ contentflagsubcontentflagsub is '+contentflagsub"/>-->
+ 
+      </block>
+		   <field name="selectoption">
+
+				    <grammar mode="dtmf" root="start" version="1.0">
+			   		<rule id="start" scope="public">
+			   		  <one-of>
+					      <item>1</item>
+					      <item>2</item>	
+					      <item>3</item>
+					     
+					 </one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			   <audio expr="contentpath+'TESTING/'+song+'.wav'"/>
+		      </prompt> 			 
+		  
+		      <filled>
+
+				
+				 <if cond="selectoption=='1'">
+				 	<script> unike_play=unike_play+1</script>
+					<goto next="#StartToPlaysongs"/>	
+				<elseif cond="selectoption=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="#StartToPlaysongs"/> 				 
+				<elseif cond="selectoption=='3'"/>	
+					<script> unike_play=unike_play-1</script>
+					<goto next="#StartToPlaysongs"/> 
+				 <else/>	
+				 	<script> unike_play=unike_play+1</script>		
+				   	 <goto next="#StartToPlaysongs"/> 		
+				 </if>				 
+			  </filled>				  
+		
+		     
+			   <noinput>	
+			        <script> 
+			      		unike_play=unike_play+1;
+			      	</script> 		
+					
+
+			  	<goto next="#StartToPlaysongs"/> 	
+			</noinput>
+			<nomatch>
+				
+				<script> 
+					unike_play=unike_play+1;
+				</script> 		
+
+
+				<goto next="#StartToPlaysongs"/> 
+			</nomatch>	
+			 
+			
+	  </field>
+	  	
+	</form>	
+</vxml>

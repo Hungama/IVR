@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<var name="C_End" expr="''"/>
+	
+
+    <form id="EndLogin">
+		<block>
+<if cond="Ad_switch=='1'">
+		<if cond="block_flag=='0'">
+			<assign name="add_endtime1" expr="rim(add_starttime1)"/>
+			<log>add_endtime for msisdn : <value expr="add_endtime1"/></log>
+		</if>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Vodafone_IVR.ADVERTISMENT_LOG&amp;INTOKEN=9&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+AD_id+'&amp;INPARAM[2]=1302&amp;INPARAM[3]='+circle+'&amp;INPARAM[4]='+operator+'&amp;INPARAM[5]='+add_endtime1+'&amp;INPARAM[6]='+usr_status+'&amp;INPARAM[7]='+DNIS+'&amp;INPARAM[8]='+ADskip_flag"/>
+	</if>
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+
+
+				
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+balance"/>
+				<log expr="'@@@@@@ timerflag is '+timerflag"/>
+			</if>	
+			
+			<if cond="timerflag=='1'">
+				<script> 
+				  balance=Math.floor(balance/60); 
+				  <!-- balance=balance-1; -->
+				</script> 
+				<if cond="balance &lt; 0">
+					<script> balance=0;</script> 
+				</if>
+				
+				<if cond="DNIS=='54646'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=-111&amp;INPARAM[2]='+DNIS"/>			 
+				<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/> 
+				</if>	
+			</if>
+			
+				<if cond="realDNIS=='5464671'">
+					<assign name="DNIS" expr="'5464671'"/>
+				<elseif cond="realDNIS=='5464672'"/>
+					 <assign name="DNIS" expr="'5464672'"/>
+				<elseif cond="realDNIS=='5464673'"/>
+					 <assign name="DNIS" expr="'5464673'"/>
+				</if>	
+<if cond="callcharge!='3' &amp;&amp; sub_flag=='true'">
+<script srcexpr="'http://'+IP+'/hungama/Voda_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1302&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;redirectdnis='+DC_DNIS"/>  
+</if>
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=54646&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<if cond="SCORE_STATUS=='TRUE'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CONTEST_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index"/>
+			</if>
+			<exit/>
+		</block>
+	</form>
+	 <catch event="error.badfetch">		 								
+    	 	 <exit/>
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 	<exit/>
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+		  	<exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+			<exit/>
+      </catch>
+      
+
+
+
+</vxml>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_UserStatus_MM.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<var name="DC_flag" expr="0" />
+
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+
+	<form id="CIRCLEID">
+		<block>
+		<assign name="Section_Name" expr="'USERSTATUS'"/> 
+				<assign name="C_Start" expr="start_time()"/>
+				<script>  
+					realDNIS=session.connection.local.uri;                   
+					ANI=session.connection.remote.uri;						   
+                </script>
+                <script>
+					length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				</script>       
+				
+            			<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+            			<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+        			<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+				<log> operator-circle identification </log>
+				
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+				
+				<assign name="ciropr" expr="ciropr1.value"/>
+				<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+				
+				<script>
+					var songcheck=ciropr.split("#");
+					operator=songcheck[1];
+					circle=songcheck[2];
+				</script>								      					       
+				
+				<log>circle  is	<value expr="circle"/>    </log>
+				<log>operator is <value expr="operator"/>    </log>
+                		
+                		
+                		<assign name="DNIS" expr="realDNIS"/>
+				<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+                		
+                		<assign name="dbservlet" expr="'vodmhungama_dbinteraction'"/>
+				<goto next="#USRSTATUS"></goto>
+							
+		</block>		
+	</form>
+	
+	<form id="USRSTATUS">
+		<block>
+
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=4'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						       if(j==3)
+							moviectr = out_string[j];							      
+							if(j==4)
+							   modesub = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+			<log expr="'contentlog=='+contentlog"></log>
+			<assign name="lang" expr="'08'"/>
+			<if cond="usr_status=='-1'">
+
+				<!-- <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_DC_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+	<script>
+		<![CDATA[
+		   for(j=0; j< out_string.length;  j++)
+			  {
+			       if(j==0)
+				DC_flag = out_string[j];
+			  }
+		]]>
+
+	</script>
+		<log expr="'DC_flag @@@@@@@@@ '+DC_flag"></log>
+	<if cond="DC_flag=='1'">
+		<goto next="Hungama_54646_UserSub_MM.vxml"></goto>
+	</if>-->
+			<assign name="lang" expr="'08'"/>
+				<goto next="Hungama_54646_UserSub_MM.vxml"></goto>
+		<!--	<prompt bargein="true" timeout="0s">
+			<audio expr="'http://10.43.248.137:8080/hungama/promptFiles/doubleconcent/01/HNG.wav'"/>
+		</prompt>	-->
+		<!--<goto next="Hungama_54646_End.vxml"/> -->
+			
+			<elseif cond="usr_status=='1' || usr_status=='2'"/>
+				<script> 					 
+					balance=balance*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+				<if cond="lang=='99'">
+					<assign name="lang" expr="'08'"/>
+					<goto next="Hungama_54646_UserSub_MM.vxml"></goto>	
+				<else/>
+					<if cond="lang=='01'">
+						<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+					<elseif cond="lang=='02'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+					<elseif cond="lang=='06'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+					<elseif cond="lang=='07'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					<elseif cond="lang=='08'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+					<elseif cond="lang=='10'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+					<elseif cond="lang=='17'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'ASM'"/>
+
+					<else/>
+						<assign name="lang" expr="'01'"/>
+                        			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+					</if>
+						<goto next="Hungama_Comedyportal_5464612.vxml"></goto>
+				</if>
+			<elseif cond="usr_status=='5'" />
+					 <prompt bargein="true" timeout="0s">
+                                                <audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+                                        </prompt>
+                               
+                                <goto next="Hungama_54646_End.vxml"></goto>
+
+			<else/>
+				<if cond="lang=='99'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/01/charge_req_recd.wav'"/>
+					</prompt>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/charge_req_recd.wav'"/>
+					</prompt>
+				</if>				
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+
+</vxml>

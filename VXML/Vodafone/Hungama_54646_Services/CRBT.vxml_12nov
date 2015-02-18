@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="CRBT.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+	<var name="cRBTMODE" expr="''"></var>
+	<var name="CLIPID" expr="''"></var>
+	<var name="USONGID" expr="''"></var>
+	<var name="msisdn" expr="''"/>
+	<var name="PROMO_ID" expr="''"/>
+	<var name="j" expr="''"></var>
+	<var name="crbt_status" expr="'0'"></var>
+	<var name="usr_status" expr=" '0' "/>
+	<script>
+		var UserStatus1=new Object();
+		out_string = new Object();
+		var DC_STATUS=0;
+	</script>
+	
+	
+	<form id="CRBTOPTION">
+	
+		<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/vodmhungama_dbinteraction?PROCEDURE=vodafone_hungama.JBOX_DC_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+					<![CDATA[
+						for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							DC_STATUS = out_string[j];
+						  }
+					]]>
+				</script>
+			<if cond="DC_STATUS=='1'">
+				<goto next="CRBT_DC.vxml"/>
+			</if>
+			
+		<assign name="Section_Name" expr="'CRBT'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/vodmhungama_dbinteraction?PROCEDURE=CHECK_CRBT&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+song"/>
+			<log> Out String Lenght <value expr="out_string.length"/> </log>
+			<script>
+			<![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+						crbt_status= out_string[j];
+				       if(j==1)
+						rngID=out_string[j];			
+				  }
+			]]>			
+			</script>
+			<log> Check Song ID <value expr="crbt_status"/></log>
+			 <log>Song ID is <value expr="rngID"/></log>
+			<if cond="crbt_status=='1'">
+				<goto next="#CRBT"/>
+			<else/>
+				<goto next="#NO_CRBT"/>
+			</if>
+		</block>
+		
+</form>
+
+<form id="CRBT">
+		
+		<field name="wait_input">
+			<grammar mode="dtmf" root="start" version="1.0">
+	                   	<rule id="start" scope="public">
+	                     	<one-of>     
+							<item>1</item>
+							<item>2</item>
+							<item>3</item>                    
+							<item>4</item>
+							<item>5</item>
+	                    				<item>6</item>
+							<item>7</item>
+							<item>8</item>                    
+							<item>9</item>
+	                    	
+					</one-of>
+	                	</rule>
+	               	</grammar>
+	              	
+	             <prompt bargein="true" timeout="0s">
+	            		<audio expr="prompt_CRBT+'/'+lang+'/welcome_CRBT_voda.wav'"/>
+			</prompt>
+			 
+			<filled>
+			        <if cond="wait_input=='9'">
+				     <assign name="msisdn" expr="ANI"/>
+				    <assign name="PROMO_ID" expr="rngID"/>	
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/vodmhungama_dbinteraction?PROCEDURE=VODA_CRBTRNGREQS&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song+'&amp;INPARAM[2]=crbtACTIVATE&amp;INPARAM[3]='+circle"/>	
+
+				    <goto next="#THANKS"/>
+				<else/>
+				    <if cond="playconfig=='00'">
+					<goto next="Hungama_54646_regional.vxml#returnfromcrbt"></goto>
+				    <else/>
+				    <goto next="Hungama_MUSICWORLD_PlayContent.vxml#returnfromcrbt"></goto>
+			            </if>
+				</if>
+			</filled>
+	
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>
+				<reprompt></reprompt>			
+			</noinput>
+	
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>
+		</field>	
+	</form>
+
+
+<form id="NO_CRBT">
+		
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+						<item>1</item>                    
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	<prompt bargein="true" timeout="0s">
+			<audio expr="prompt_CRBT+'/'+lang+'/no_crbt.wav'"/>
+
+		</prompt>
+		
+		<filled>
+		         <if cond="playconfig=='00'">
+                                        <goto next="Hungama_54646_regional.vxml#returnfromcrbt"></goto>
+                                    <else/>
+                                    <goto next="Hungama_MUSICWORLD_PlayContent.vxml#returnfromcrbt"></goto>
+                                    </if>
+		</filled>
+
+		<noinput>
+			 <if cond="playconfig=='00'">
+                                        <goto next="Hungama_54646_regional.vxml#returnfromcrbt"></goto>
+                                    <else/>
+                                    <goto next="Hungama_MUSICWORLD_PlayContent.vxml#returnfromcrbt"></goto>
+                                    </if>
+
+		</noinput>
+
+		<nomatch>
+			 <if cond="playconfig=='00'">
+                                        <goto next="Hungama_54646_regional.vxml#returnfromcrbt"></goto>
+                                    <else/>
+                                    <goto next="Hungama_MUSICWORLD_PlayContent.vxml#returnfromcrbt"></goto>
+                                    </if>
+		</nomatch>
+	</field>
+</form>
+
+
+
+<form id="THANKS">
+		
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+						<item>1</item>                    
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	<prompt bargein="true" timeout="0s">
+			<audio expr="prompt_CRBT+'/'+lang+'/thanks_crbt.wav'"/>
+		</prompt>
+		
+		<filled>
+		        <if cond="playconfig=='00'">
+                                        <goto next="Hungama_54646_regional.vxml#returnfromcrbt"></goto>
+                                    <else/>
+                                    <goto next="Hungama_MUSICWORLD_PlayContent.vxml#returnfromcrbt"></goto>
+                                    </if>
+
+		</filled>
+
+		<noinput>
+			 <if cond="playconfig=='00'">
+                                        <goto next="Hungama_54646_regional.vxml#returnfromcrbt"></goto>
+                                    <else/>
+                                    <goto next="Hungama_MUSICWORLD_PlayContent.vxml#returnfromcrbt"></goto>
+                                    </if>
+
+		</noinput>
+
+		<nomatch>
+			<goto next="Hungama_MUSICWORLD_PlayContent.vxml#returnfromcrbt"></goto>
+		</nomatch>
+	</field>
+</form>
+	
+
+</vxml>

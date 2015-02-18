@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="vh1Root.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="Sub_vh1.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<var name="temp" expr=""/>
+	<var name="subamt" expr="''"/>
+	<var name="lang_dc" expr="0"/>
+	<var name="i" expr="0"/>
+	<var name="splitparam" expr="''"/>
+	<script>
+		var favSongs=new Object();
+	</script>
+	<form id="subs">
+		<block>
+			<assign name="subintroRAndom" expr="getRandom(0,3)"/>
+			<assign name="dtmf_check" expr="1"/>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro'+subintroRAndom+'.wav'"/>
+			</prompt>
+			<goto next="#subs_1"/>
+		</block>
+	</form>
+	<form id="TnBSub">
+		<block>
+			<log>
+				Enter in TnB Block
+			</log>
+		</block>
+		<field name="welcome">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>
+							1
+						</item>
+						<item>
+							2
+						</item>
+					</one-of>
+				</rule>
+				<catch event="noinput" count="1">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+version+'/waiting_response.wav'"/>
+					<goto nextitem="welcome"/>
+				</catch>
+				<catch event="noinput" count="2">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+version+'/waiting_response.wav'"/>
+					<goto nextitem="welcome"/>
+				</catch>
+				<catch event="noinput" count="3">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+version+'/waiting_response.wav'"/>
+					<exit/>
+				</catch>
+				<catch event="error.badfetch">
+					<goto nextitem="welcome"/>
+				</catch>
+				<catch event="nomatch" count="1">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+version+'/invalidoption.wav'"/>
+					<goto nextitem="welcome"/>
+				</catch>
+				<catch event="nomatch" count="2">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+version+'/invalidoption.wav'"/>
+					<goto nextitem="welcome"/>
+				</catch>
+				<catch event="nomatch" count="3">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+version+'/invalidoption.wav'"/>
+					<exit/>
+				</catch>
+			</grammar>
+			<prompt bargein="true" timeout="0s" cond="circle=='del' &amp;&amp; TnBStatus=='0' &amp;&amp; DNIS!='5584112' &amp;&amp; TnBMode== 'TIVR'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_Rs2day_15mins.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="circle!='del' &amp;&amp;DNIS!='5584112' &amp;&amp; TnBStatus== '0' &amp;&amp; TnBMode== 'TIVR'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_Rs2day_3paisesec.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="circle=='del' &amp;&amp; TnBStatus=='0' &amp;&amp; DNIS!='5584112' &amp;&amp; TnBMode== 'TOBD'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_Rs2day_15mins.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="circle!='del' &amp;&amp;DNIS!='5584112' &amp;&amp; TnBStatus== '0' &amp;&amp; TnBMode== 'TOBD'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_Rs2day_3paisesec.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="circle=='del' &amp;&amp; TnBStatus=='0' &amp;&amp; DNIS!='5584112' &amp;&amp; TnBMode== 'TUSSD'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_Rs2day_15mins.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="circle!='del' &amp;&amp;DNIS!='5584112' &amp;&amp; TnBStatus== '0' &amp;&amp; TnBMode== 'TUSSD'">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/subintro_Rs2day_3paisesec.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="welcome == '2'">
+					<log>
+						Sub Url:
+						<value expr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=JBOX_SUB_Tnb_LIVE&amp;INTOKEN=7&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=TIVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=2&amp;INPARAM[5]=1307&amp;INPARAM[6]=4'"/>
+					</log>
+					<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=JBOX_SUB_Tnb_LIVE&amp;INTOKEN=7&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=TIVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=2&amp;INPARAM[5]=1307&amp;INPARAM[6]=4'"/>
+					<script>
+<![CDATA[
+												    for(j=0; j< out_string.length;  j++)
+													  {  	  
+														if(j==0)
+														usr_status = out_string[j];
+													       if(j==1)
+														lang = out_string[j];
+													       if(j==2)
+														balance = out_string[j];
+														
+														if(j==4)
+														TnBStatus= out_string[j];
+														if(j==5)
+														TnBMode= out_string[j];		
+
+											
+														  }
+
+													]]>					</script>
+					<log>
+						length of outstring  is
+						<value expr="out_string.length"/>
+					</log>
+					<log>
+						@@@@@@@New usr_status
+						<value expr="usr_status"/>
+					</log>
+					<log>
+						@@@@@@@ lang is
+						<value expr="lang"/>
+					</log>
+					<log>
+						@@@@@@@ balance minutes is
+						<value expr="balance"/>
+					</log>
+					<log>
+						@@@@@@@ TnBMode is
+						<value expr="TnBMode"/>
+					</log>
+					<log>
+						@@@@@@@ TnBStatus is
+						<value expr="TnBStatus"/>
+					</log>
+					<if cond="minbalance &lt;= 0">
+						<assign name="minbalance" expr="'0'"/>
+					</if>
+					<script>
+						balance=balance*60;
+				minbalance=minbalance*60;
+					</script>
+					<assign name="curbalance" expr="balance"/>
+					<goto next="#prompt_play"/>
+					<elseif cond="welcome=='1'"/>
+					<assign name="subamt" expr="'2'"/>
+					<goto next="#double_conf_1"/>
+					<else/>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+		</field>
+	</form>
+	<form id="subs_1">
+		<block>
+			<assign name="dtmfsub" expr="'First_level_input'"/>
+		</block>
+		<field name="submnuopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>
+							1
+						</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/continue_prompt.wav'"/>
+			</prompt>
+			<filled>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+submnuopt"/>
+				<if cond="submnuopt=='1'">
+					<assign name="firstconsent" expr="'Y'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="sub_flag" expr="'true'"/>
+					<assign name="subamt" expr="'30'"/>
+					<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=02&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=30&amp;INPARAM[5]=1307&amp;INPARAM[6]=4'"/>
+					<goto next="#DOUBLE_CONSENT"/>
+					<elseif cond="submnuopt=='2'"/>
+					<assign name="subamt" expr="'2'"/>
+					<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=02&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=2&amp;INPARAM[5]=1307&amp;INPARAM[6]=4'"/>
+					<goto next="#DOUBLE_CONSENT"/>
+					<else/>
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/thank_nosub.wav'"/>
+					<assign name="ispressedsubdtmf" expr="'NO'"/>
+					<throw event="nomatch"/>
+					<!--<goto next="vh1_end.vxml"/>-->
+				</if>
+			</filled>
+			<noinput>
+				<!--<audio expr="promptpath+LANG_DESCRIPTION+version+'/nodtmf.wav'"/>-->
+				<assign name="input_check" expr="'noinput'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"/>
+				<reprompt/>
+			</noinput>
+			<noinput count="3">
+				<assign name="input_check" expr="'noinput'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/thank_nosub.wav'"/>
+				<goto next="vh1_end.vxml"/>
+			</noinput>
+			<nomatch>
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/waiting_response.wav'"/>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/thank_nosub.wav'"/>
+				<goto next="vh1_end.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+	<form id="DOUBLE_CONSENT">
+		<block>
+			<assign name="secondconsent" expr="'Y'"/>
+			<assign name="secondconsenttime" expr="start_time()"/>
+			<if cond="lang=='01'">
+				<assign name="lang_dc" expr="'2'"/>
+				<elseif cond="lang=='02'"/>
+				<assign name="lang_dc" expr="'1'"/>
+				<else/>
+				<assign name="lang_dc" expr="'3'"/>
+			</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=master_db.DC_REQS&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]=1166&amp;INPARAM[2]=16&amp;INPARAM[3]='+lang_dc"/>
+			<script>
+<![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					DC_DNIS = out_string[j];
+				       						      
+				  }
+			]]>			</script>
+			<log expr="'DC_DNIS @@@@@@@@@ '+DC_DNIS"/>
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="sub_flag=='true'">
+				<script srcexpr="'http://'+IP+'/hungama/Voda_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1307&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;redirectdnis='+DC_DNIS"/>
+			</if>
+			<script srcexpr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=vh1&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+		</block>
+		<transfer name="mytransfer" destexpr="DC_DNIS" bridge="true" connecttimeout="2000s">
+			<filled>
+				<log>
+					transfer done now
+				</log>
+			</filled>
+		</transfer>
+	</form>
+	<form id="double_conf_1">
+		<block>
+			<if cond="circle=='nes' ||circle=='asm' || circle=='del'">
+				<prompt bargein="true">
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/confirmation_prompt.wav'"/>
+				</prompt>
+				<else/>
+				<prompt bargein="true">
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/doubleconfirmation.wav'"/>
+				</prompt>
+			</if>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>
+			<goto next="#double_conf"/>
+		</block>
+	</form>
+	<form id="double_conf">
+		<field name="submnuopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>
+							5
+						</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/kofollow.wav'"/>
+			</prompt>
+			<filled>
+				<assign name="ispressedsubdtmf" expr="'YES'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+submnuopt"/>
+				<if cond="submnuopt=='5'">
+					<goto next="#SubRequest"/>
+					<else/>
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/thank_nosub.wav'"/>
+					<!--<goto next="vh1_end.vxml"/>-->
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+			<noinput>
+				<assign name="input_check" expr="'noinput'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/waiting_response.wav'"/>
+				<reprompt/>
+			</noinput>
+			<noinput count="3">
+				<assign name="input_check" expr="'noinput'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/thank_nosub.wav'"/>
+				<goto next="vh1_end.vxml"/>
+			</noinput>
+			<nomatch>
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/waiting_response.wav'"/>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/thank_nosub.wav'"/>
+				<goto next="vh1_end.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+	<form id="SubRequest">
+		<block>
+			<assign name="timerflag" expr="'0'"/>
+			<!-- SUB REQUEST -->
+			<if cond="subamt=='30'">
+				<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=02&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=30&amp;INPARAM[5]=1307&amp;INPARAM[6]=4'"/>
+				<else/>
+				<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=02&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=2&amp;INPARAM[5]=1307&amp;INPARAM[6]=4'"/>
+			</if>
+		</block>
+		<field name="request">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>
+							1
+						</item>
+						<item>
+							2
+						</item>
+						<item>
+							3
+						</item>
+						<item>
+							4
+						</item>
+						<item>
+							5
+						</item>
+						<item>
+							6
+						</item>
+						<item>
+							7
+						</item>
+						<item>
+							8
+						</item>
+						<item>
+							9
+						</item>
+						<item>
+							0
+						</item>
+						<item>
+							*
+						</item>
+						<item>
+							#
+						</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="false" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/charging_wait.wav'"/>
+			</prompt>
+			<filled>
+				<goto next="#billing_check"/>
+			</filled>
+			<noinput>
+				<goto next="#billing_check"/>
+			</noinput>
+		</field>
+	</form>
+	<form id="billing_check">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]='+DNIS"/>
+			<script>
+<![CDATA[
+												    for(j=0; j< out_string.length;  j++)
+													  {  	  
+														if(j==0)
+														usr_status = out_string[j];
+													       if(j==1)
+														lang = out_string[j];
+													       if(j==2)
+														balance = out_string[j];
+														
+														if(j==4)
+														TnBStatus= out_string[j];
+														if(j==5)
+														modesub= out_string[j];		
+											
+														  }
+
+													]]>			</script>
+			<log>
+				length of outstring  is
+				<value expr="out_string.length"/>
+			</log>
+			<log>
+				@@@@@@@New usr_status
+				<value expr="usr_status"/>
+			</log>
+			<log>
+				@@@@@@@ lang is
+				<value expr="lang"/>
+			</log>
+			<log>
+				@@@@@@@ balance minutes is
+				<value expr="balance"/>
+			</log>
+			<log>
+				@@@@@@@ TnBMode is
+				<value expr="TnBMode"/>
+			</log>
+			<log>
+				@@@@@@@ TnBStatus is
+				<value expr="TnBStatus"/>
+			</log>
+			<script>
+				balance=balance*60;
+			</script>
+			<assign name="curbalance" expr="balance"/>
+			<goto next="#prompt_play"/>
+		</block>
+	</form>
+	<form id="prompt_play">
+		<block>
+			<assign name="usr_status" expr="temp"/>
+			<if cond="ANI=='9711071741' || ANI=='9999497837' || ANI=='8334831463' || ANI=='9811795244'">
+				<if cond="usr_status=='1'">
+					<goto nextitem="statuschk"/>
+				</if>
+				<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=vh1config/'+operator+'/songconfig/DelayCharging.cfg'"/>
+				<script>
+					movie_idx=0;
+						array.length=0;
+						unike_play=0;
+				</script>
+				<assign name="len" expr="favSongs.length"/>
+				<script>
+<![CDATA[
+					 
+					   	   
+								array[i] = favSongs[i];		
+								splitparam=array[i].split("_");
+					  			contentdir=splitparam[0];
+					  			song =splitparam[1];		   
+					   
+
+				]]>				</script>
+				<log>
+					contentdir is
+					<value expr="contentdir"/>
+				</log>
+				<log>
+					song is
+					<value expr="song"/>
+				</log>
+				<prompt bargein="true" timeout="0s" cond="i!=2">
+					<audio expr="contentpath+contentdir+'/'+array[i]+'.wav'"/>
+				</prompt>
+				<assign name="i" expr="i=i+1"/>
+				<log>
+					i value is:
+					<value expr="i"/>
+				</log>
+				<if cond="i &lt; 1">
+					<goto next="#billing_check"/>
+					<else/>
+					<log>
+						status chk call
+					</log>
+					<goto nextitem="statuschk"/>
+				</if>
+			</if>
+			<goto nextitem="statuschk"/>
+		</block>
+		<block name="statuschk">
+			<log>
+				status chk call
+			</log>
+			<if cond="usr_status=='1'">
+				<assign name="timerflag" expr="1"/>
+				<assign name="initial_balance" expr="start_time()"/>
+				<script>
+					balance=balance*60;
+				</script>
+				<assign name="curbalance" expr="balance"/>
+				<assign name="dtmfsub" expr="'Billing_status'"/>
+				<assign name="input_check" expr="'SUCCESS'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"/>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/thank_sub.wav'"/>
+				</prompt>
+				<goto next="playcontent.vxml"/>
+				<else/>
+				<assign name="dtmfsub" expr="'Billing_status'"/>
+				<assign name="input_check" expr="'WAIT'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"/>
+				<prompt bargein="false" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="vh1_end.vxml"/>
+			</if>
+		</block>
+	</form>
+</vxml>

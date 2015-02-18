@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="MuPortalRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />		
+	<var name="movie_idx" expr="0"/>
+
+	<form id="WELNEW">
+		<block>
+			<if cond="circle=='apd'">
+				<assign name="lang" expr="'08'"/>
+			<elseif cond="circle=='asm'"/>
+				<assign name="lang" expr="'17'"/>				
+			<elseif cond="circle=='bih'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='chn'"/>
+				<assign name="lang" expr="'07'"/>
+			<elseif cond="circle=='del'"/>
+				<assign name="lang" expr="'01'"/>				
+			<elseif cond="circle=='guj'"/>
+				<assign name="lang" expr="'01'"/>				
+			<elseif cond="circle=='hry'"/>
+				<assign name="lang" expr="'01'"/>				
+			<elseif cond="circle=='hpd'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='jnk'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='kar'"/>
+				<assign name="lang" expr="'10'"/>				
+			<elseif cond="circle=='ker'"/>
+				<assign name="lang" expr="'09'"/>				
+			<elseif cond="circle=='kol'"/>
+				<assign name="lang" expr="'01'"/>				
+			<elseif cond="circle=='mpd'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='mah'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='mum'"/>
+				<assign name="lang" expr="'01'"/>				
+			<elseif cond="circle=='nes'"/>
+				<assign name="lang" expr="'02'"/>								
+			<elseif cond="circle=='ori'"/>
+				<assign name="lang" expr="'13'"/>
+			<elseif cond="circle=='pub'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='raj'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='tnu'"/>
+				<assign name="lang" expr="'07'"/>
+			<elseif cond="circle=='upw'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='upe'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='wbl'"/>
+				<assign name="lang" expr="'01'"/>
+			<else/>
+				<assign name="lang" expr="'01'"/>
+			</if>	
+			<!--<assign name="lang" expr="'01'"/>		
+			<goto next="MuSubscription.vxml"/>-->
+			<if cond="circle=='del' || circle=='guj' || circle=='hry' || circle=='hay' || circle=='raj' || circle=='upe' || circle=='upw'|| circle=='kol' || circle=='wbl' || circle=='mpd' || circle=='pub' || circle=='pun'">
+				<assign name="lang" expr="'01'"/>
+				<goto next="MuSubscription.vxml"/>
+			</if>
+			<if cond="circle=='kar'">
+				<assign name="lang" expr="'10'"/>
+				<goto next="MuSubscription.vxml"/>
+			</if>
+		</block>
+		<field name="nochoice" type="digits?length=1">								
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/welcome_new_1.wav'"/>						
+			</prompt>			
+			<filled>
+				<goto next="#LANGSEL1"></goto>				
+			</filled>
+		</field>
+		<noinput>
+			<goto next="#LANGSEL1"></goto>
+		</noinput>
+		<nomatch>
+			<goto next="#LANGSEL1"></goto>
+		</nomatch>
+	</form>
+			
+	<form id="LANGSEL1">
+		<block>
+			<assign name="Section_Name" expr="'LANG_SELECTION'"/>	
+			<assign name="var_wel" expr="getRandom(1,5)"/>
+			<!--<prompt bargein="true" timeout="2s" cond="usr_status=='-1'">
+				<audio expr="promptpath+'/01/lang_option_'+circle+'_'+var_wel+'.wav'"/>
+			</prompt>-->
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Muconfig/'+operator+'/'+circle+'/langorder.cfg&amp;TOKEN=FREE'"/>
+			<script>
+				array1.length=0;
+			</script>
+			<assign name="movie_idx" expr="0" />
+			<assign name="len" expr="favSongs.length" />
+
+
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j< len ;  j++)
+					   {  	  	
+						array1[j] = favSongs[j];						   
+					   }
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="2s">
+					<foreach item="names" array="array1">
+						<assign name="movie_idx" expr="movie_idx+1" />
+						<log>	song is is    	<value expr="movie_idx"/>  </log>
+						<log>	names is is    	<value expr="names"/>  	</log>
+						<audio expr="promptpath+'/'+names+'/lang'+names+'.wav'"/>
+						<audio expr="promptpath+'/'+names+'/press_dtmf'+movie_idx+'.wav'"/>
+					</foreach>
+				</prompt>
+			<filled>
+				<if cond="choice &lt; len+1">
+						<assign name="lang" expr="array1[--choice]"/>
+						<log expr="'selected language is '+lang"></log>						
+						
+						<if cond="usr_status=='-1'">
+						    <prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+lang+'/thanks.wav'"/>
+							</prompt>
+							<goto next="MuSubscription.vxml"/>
+						<else/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.radio_lang_change&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+lang+'/thanks.wav'"/>
+							</prompt>							
+							<if cond="flag_wmd_portal=='TRUE'">
+								<goto next="MuMainMenuWmd.vxml#MAINMENU"/>
+							<else/>	
+								<goto next="MuMMainMenu.vxml#MAINMENU"/>
+							</if>
+						</if>				
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="MuSubscription.vxml"/>
+			<else/>
+				<if cond="flag_wmd_portal=='TRUE'">
+					<goto next="MuMainMenuWmd.vxml#MAINMENU"/>
+				<else/>	
+					<goto next="MuMMainMenu.vxml#MAINMENU"/>
+				</if>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="MuSubscription.vxml"/>
+			<else/>
+				<if cond="flag_wmd_portal=='TRUE'">
+					<goto next="MuMainMenuWmd.vxml#MAINMENU"/>
+				<else/>	
+					<goto next="MuMMainMenu.vxml#MAINMENU"/>
+				</if>
+			</if>
+		</nomatch>
+	</form>
+	<!--<form id="EXISITNGLANGSEL1">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT_MANAGER_LANGUAGE_CHANGE'"/>				
+			<if cond="circle=='del' || circle=='guj' || circle=='hry' || circle=='mum' || circle=='raj' || circle=='upe' || circle=='upw' || circle=='apd' ||circle=='bih' || circle=='ker' || circle=='kar' ||circle=='kol'|| circle=='mah' || circle=='tnu' ||circle=='wbl'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Muconfig/'+operator+'/'+circle+'/langorder_existing.cfg&amp;TOKEN=FREE'"/>
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Muconfig/'+operator+'/'+circle+'/langorder.cfg&amp;TOKEN=FREE'"/>
+			</if>
+			<script>
+						array1.length=0;
+			</script>
+			<assign name="movie_idx" expr="0" />
+			<assign name="len" expr="6" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j< len ;  j++)
+					   {  	  	
+						array1[j] = favSongs[j];
+					   }
+				]]>
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+		</block>
+			<field name="choice">
+					<grammar mode="dtmf" root="start" version="1.0">
+							<rule id="start" scope="public">
+								<one-of>
+									 <item>  1  </item>
+									 <item>  2  </item>
+									 <item>  3  </item>
+									 <item>  4  </item>
+									 <item>  5  </item>
+									 <item>  6  </item>
+									 <item>  7  </item>
+									 <item>  8  </item>
+									 <item>  9  </item>
+								</one-of>
+							</rule>
+					</grammar>
+					<prompt bargein="true" timeout="1s">
+						<foreach item="names" array="array1">
+							<mark nameexpr="movie_idx++"/>
+							<audio expr="promptpath+'/'+names+'/lang'+names+'.wav'"/>
+							<audio expr="promptpath+'/'+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+						</foreach>
+						<audio expr="promptpath+'/'+lang+'/lang_other_option.wav'"/>																
+					</prompt>
+				<filled>
+					<if cond="choice &lt; len+1">
+							<log expr="'selected language is '+lang"></log>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.radio_lang_change&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+lang+'/lang_thanks_acc.wav'"/>
+							</prompt>							
+							<goto next="MuMMainMenu.vxml"/>
+					<elseif cond="choice == '7'"/>
+							<goto next="MuManageAccount.vxml"></goto>
+					<elseif cond="choice == '8'"/>
+							<goto next="MuMMainMenu.vxml#MAINMENU"/>
+					<elseif cond="choice == '9'"/>
+							<goto next="#LANGSEL2"></goto>
+					</if>
+				</filled>
+			</field>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<if cond="usr_status=='-1'">
+				    <assign name="lang" expr="array1[0]"/>
+					<log expr="'selected language is '+lang"></log>			    
+					<goto next="MuSubscription.vxml"/>
+				<else/>
+					<goto next="MuMMainMenu.vxml"/>
+				</if>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<if cond="usr_status=='-1'">
+				    <assign name="lang" expr="array1[0]"/>
+					<log expr="'selected language is '+lang"></log>			    
+					<goto next="MuSubscription.vxml"/>
+				<else/>
+					<goto next="MuMMainMenu.vxml"/>
+				</if>
+			</nomatch>
+	</form>-->
+	<!--<form id="LANGSEL2">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT_MANAGER_LANGUAGE_CHANGE'"/>
+			<script>
+					    	array1.length=0;
+			</script>
+			<assign name="movie_idx" expr="0" />
+			<assign name="len" expr="6" />
+			<assign name="i" expr="0" />
+			<script>
+				 <![CDATA[
+					   for(j=6; j<12 ;  j++)
+					   {  	  	
+								array1[i++] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  7  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array1">
+						<mark nameexpr="movie_idx++"/>
+
+						<audio expr="promptpath+'/'+names+'/lang'+names+'.wav'"/>
+						<audio expr="promptpath+'/'+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+					</foreach>
+						<audio expr="promptpath+'/'+lang+'/lang_other_option.wav'"/> 	
+						<audio expr="promptpath+'/'+lang+'/lang_prev_option.wav'"/>										
+				</prompt>
+			<filled>
+				<if cond="choice == '7'">
+						<goto next="#EXISITNGLANGSEL1"></goto>
+				<elseif cond="choice &lt; len+1"/>
+						<log expr="'selected language is '+lang"></log>				
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.radio_lang_change&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/'+lang+'/lang_thanks_acc.wav'"/>
+						</prompt>
+						<goto next="MuMMainMenu.vxml"/>
+				 <elseif cond="choice == '9'"/>
+						<goto next="#LANGSEL3"></goto> 
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="MuSubscription.vxml"/>
+			<else/>
+				<goto next="MuMMainMenu.vxml"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="MuSubscription.vxml"/>
+			<else/>
+				<goto next="MuMMainMenu.vxml"/>
+			</if>
+		</nomatch>
+	</form>-->
+	
+	<!--<form id="LANGSEL3">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT_MANAGER_LANGUAGE_CHANGE'"/>	
+			<script>
+			    	array1.length=0;
+			</script>
+			<assign name="movie_idx" expr="0" />
+			<assign name="len" expr="2" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=12; j< 14 ;  j++)
+					   {  	  	
+								array1[i++] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  7  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 								 
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array1">
+						<mark nameexpr="movie_idx++"/>
+						<audio expr="promptpath+'/'+names+'/lang'+names+'.wav'"/>
+						<audio expr="promptpath+'/'+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+					</foreach>	
+						<audio expr="promptpath+'/'+lang+'/lang_prev_option.wav'"/>									
+				</prompt>
+			<filled>
+				<if cond="choice == '7'">
+						<goto next="#LANGSEL2"></goto>
+				<elseif cond="choice &lt; len+1"/>
+
+						<log expr="'selected language is '+lang"></log>	
+
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=vodafone_radio.radio_lang_change&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/'+lang+'/lang_thanks_acc.wav'"/>
+						</prompt>
+						<goto next="MuMMainMenu.vxml"/>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="MuSubscription.vxml"/>
+			<else/>
+				<goto next="MuMMainMenu.vxml"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">			
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="MuSubscription.vxml"/>
+			<else/>			
+				<goto next="MuMMainMenu.vxml"/>
+			</if>
+		</nomatch>
+	</form>-->
+</vxml>

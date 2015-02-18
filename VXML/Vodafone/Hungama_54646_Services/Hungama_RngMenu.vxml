@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_RngMenu.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+<var name="rngid" expr="''"/>
+<var name="rng_len" expr=""/>
+ <var name="rngmenu" expr="''"/>
+ <var name="movie_idx" expr="0"/>
+	<var name="rngid" expr="''"/>
+
+	<script>
+		var out_string=new Object();
+	</script>	
+ <form id="Menu">
+		<block>
+			<assign name="Section_Name" expr="'RINGTONE_REQS'"/>
+			<assign name="movie_idx" expr="0"/>
+
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/AMU_rngmenu?SONGID='+songID+'&amp;IN_TYPE=RNG&amp;CIRCLE='+circle+'&amp;IN_DNIS='+DNIS"/>-->
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/AMU_rngmenu?SONGID='+songID+'&amp;IN_TYPE=RNG&amp;CIRCLE='+circle+'&amp;IN_DNIS='+DNIS+'&amp;TOKEN=FREE'"/>-->
+		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_RNGMENU&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+song+'&amp;INPARAM[1]=RNG&amp;INPARAM[2]='+DNIS"/>
+			<script>
+						array2.length=0;
+			</script>
+			<assign name="rng_len" expr="out_string.length" />
+			<log>previous Array[1]  is	<value expr="array2[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<rng_len ;  j++)
+					   {  	  
+								var temp = out_string[j].split("@");						   
+								array2[j] = temp[0];
+								array3[j] = temp[1];
+					   }
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="rng_len"/>    </log>
+			<log>Array2[1]  is	<value expr="array2[0]"/>    </log>	
+			<log>Array3[1]  is       <value expr="array3[0]"/>    </log>
+
+			<if cond="array2[0]==''">
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptspath_54646+'/'+lang+'/no_ringtone_avail.wav'"/>
+				</prompt>
+				
+				<if cond="spzoneflag=='TRUE'">
+					 <goto next="Hungama_54646_regional.vxml#returnfromring"/>
+				<else/>
+					<if cond="circle=='guj'">	
+					 <goto next="Hungama_MUSICWORLD_PlayContent_RNG.vxml#returnfromring"/>	
+					</if>
+				</if>
+				
+				
+			<else/>
+				<goto next="#RINGTONE"/>
+			</if>			
+			
+		</block>
+   </form>
+
+ <form id="RINGTONE">
+		
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array2">
+						<!--<mark nameexpr="movie_idx++"/>-->
+						<assign name="movie_idx" expr="movie_idx+1" />
+						<audio expr="promptspath_54646+'/'+lang+'/select_'+names+'.wav'"/>
+						<audio expr="promptspath_54646+'/'+lang+'/press_dtmf'+movie_idx+'.wav'"/>			
+					</foreach>	
+				</prompt>
+<!--<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array1">
+						<assign name="movie_idx" expr="movie_idx+1" />
+						<log>	song is is    	<value expr="movie_idx"/>  	</log>
+						<log>	names is is    	<value expr="names"/>  	</log>
+						<audio expr="promptspath_54646+'/'+names+'/lang'+names+'.wav'"/>
+						<audio expr="promptspath_54646+'/'+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+					</foreach>						
+				</prompt>-->
+
+			<!--	<prompt bargein="true" timeout="1s">
+					<audio expr="promptspath_54646+'/'+lang+'/select_rtdownload.wav'"/>			
+				</prompt>-->
+
+			<filled>
+				<script>
+					total_used_bal=rim(start_BalenceMinute);
+				balance=balance-total_used_bal;  						  
+				</script>
+					<log>used balance is <value expr="total_used_bal"/>    </log>
+					<log>left balance is <value expr="balance"/>    </log>
+				<if cond="balance &lt;= '0'">          
+					<goto next="Topup.vxml"/>
+				</if>  
+				<if cond="choice=='7'">
+					<!--<if cond="spzoneflag=='TRUE'">
+						<goto next="SplZone.vxml#StartToPlaysongs"/>
+					<else/>		
+						<goto next="Hungama_AMPlay.vxml#next"/>
+					</if>-->
+					<!--<goto next="Hungama_MUSICWORLD_PlayContent_RNG.vxml#returnfromring"/>-->
+				 <if cond="spzoneflag=='TRUE'">
+                                         <goto next="Hungama_54646_regional.vxml#returnfromring"/>
+                                <else/>
+					 <if cond="circle=='guj'">
+                                         <goto next="Hungama_MUSICWORLD_PlayContent_RNG.vxml#returnfromring"/>
+					</if>
+                                </if>
+
+				<elseif cond="choice=='8'"/>
+					<goto next="Hungama_54646_MainMenu.vxml"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="Hungama_54646_AccountMnger.vxml"/>
+				</if>
+				<if cond="choice &lt; rng_len+1">
+					<assign name="rngmenu" expr="array2[--choice]"/>
+					<assign name="rngid" expr="array3[choice]"/>
+
+					<log>selected rng category is	<value expr="rngmenu"/>    </log>
+					<log>selected rng id is	<value expr="rngid"/>    </log>
+					<if cond="rngmenu=='mt'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_MONOTONE_REQS&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song"/>
+					<elseif cond="rngmenu=='pt'"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CRBTRNGREQS&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song+'&amp;INPARAM[2]='+rngid+'&amp;INPARAM[3]=pt&amp;INPARAM[4]='+circle"/>
+					<else/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CRBTRNGREQS&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song+'&amp;INPARAM[2]='+rngid+'&amp;INPARAM[3]=tt&amp;INPARAM[4]='+circle"/>
+					</if>
+						
+					
+					<prompt bargein="true" timeout="2s">
+						<audio expr="promptspath_54646+'/'+lang+'/thanks_download.wav'"/>
+					</prompt>										
+					<!--<if cond="spzoneflag=='TRUE'">
+						<goto next="SplZone.vxml#StartToPlaysongs"/>
+					<else/>		
+						<goto next="Hungama_AMPlay.vxml#next"/>
+					</if>-->
+					<!--<goto next="Hungama_MUSICWORLD_PlayContent_RNG.vxml#returnfromring"/>-->
+					 <if cond="spzoneflag=='TRUE'">
+        	                                 <goto next="Hungama_54646_regional.vxml#returnfromring"/>
+	                                <else/>
+						 <if cond="circle=='guj'">
+                	                         <goto next="Hungama_MUSICWORLD_PlayContent_RNG.vxml#returnfromring"/>
+						</if>
+                        	        </if>
+
+				<else/>
+					<prompt bargein="true" timeout="2s">
+						<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<goto next="#RINGTONE"/>
+				</if>
+
+
+				
+			</filled>
+		</field>
+		<noinput>
+			<script>
+				total_used_bal=rim(start_BalenceMinute);
+				balance=balance-total_used_bal;  						  
+			</script>
+				<log>used balance is <value expr="total_used_bal"/>    </log>
+				<log>left balance is <value expr="balance"/>    </log>
+			<if cond="balance &lt;= '0'">          
+				<goto next="Topup.vxml"/>
+			</if>  
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptspath_54646+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<script>
+				total_used_bal=rim(start_BalenceMinute);
+			balance=balance-total_used_bal;  						  
+			</script>
+				<log>used balance is <value expr="total_used_bal"/>    </log>
+				<log>left balance is <value expr="balance"/>    </log>
+			<if cond="balance &lt;= '0'">          
+				<goto next="Topup.vxml"/>
+			</if>  
+			<assign name="movie_idx" expr="0"/>
+			<!--<if cond="spzoneflag=='TRUE'">
+				<goto next="SplZone.vxml#StartToPlaysongs"/>
+			<else/>		
+				<goto next="Hungama_AMPlay.vxml#next"/>
+			</if>-->
+			<!--<goto next="Hungama_MUSICWORLD_PlayContent_RNG.vxml#returnfromring"/>-->
+				 <if cond="spzoneflag=='TRUE'">
+                                         <goto next="Hungama_54646_regional.vxml#returnfromring"/>
+                                <else/>
+						 <if cond="circle=='guj'">
+                                         <goto next="Hungama_MUSICWORLD_PlayContent_RNG.vxml#returnfromring"/>
+						</if>
+                                </if>
+
+		</noinput>
+		<nomatch>
+			<script>
+				total_used_bal=rim(start_BalenceMinute);
+				balance=balance-total_used_bal;  						  
+			</script>
+				<log>used balance is <value expr="total_used_bal"/>    </log>
+				<log>left balance is <value expr="balance"/>    </log>
+			<if cond="balance &lt;= '0'">          
+				<goto next="Topup.vxml"/>
+			</if>  
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<script>
+				total_used_bal=rim(start_BalenceMinute);
+				balance=balance-total_used_bal;  						  
+			</script>
+				<log>used balance is <value expr="total_used_bal"/>    </log>
+				<log>left balance is <value expr="balance"/>    </log>
+			<if cond="balance &lt;= '0'">          
+				<goto next="Topup.vxml"/>
+			</if>  
+			<assign name="movie_idx" expr="0"/>
+			<!--<if cond="spzoneflag=='TRUE'">
+				<goto next="SplZone.vxml#StartToPlaysongs"/>
+			<else/>		
+				<goto next="Hungama_AMPlay.vxml#next"/>
+			</if>-->
+			<!--<goto next="Hungama_MUSICWORLD_PlayContent_RNG.vxml#returnfromring"/>-->
+				 <if cond="spzoneflag=='TRUE'">
+                                         <goto next="Hungama_54646_regional.vxml#returnfromring"/>
+                                <else/>
+					 <if cond="circle=='guj'">
+                                         <goto next="Hungama_MUSICWORLD_PlayContent_RNG.vxml#returnfromring"/>
+					</if>
+                                </if>
+
+		</nomatch>
+ </form>
+	
+</vxml>
