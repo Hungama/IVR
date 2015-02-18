@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+
+<vxml version="2.1" application="ComedyPortalRoot.vxml" 	
+xmlns="http://www.w3.org/2001/vxml" 	
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 	
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">  
+
+<meta name="NineXMMainMenu.vxml" content="" /> 	
+<meta name="Author" content="" /> 	
+<meta name="Date" content="" /> 	
+<meta name="Description" content="" /> 	
+<meta name="Support" content="" />	
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="audiofetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+<var name="play" expr="''"/>
+
+<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var dishes=new Array();				
+</script>
+<form id="nav">
+            <block>
+            <assign name="Section_Name" expr="'COMEDYPORTAL_MAINMENU'"/>
+ 		<assign name ="operator" expr="'airm'"/>
+					
+		 </block>        	
+       
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								  <item>  9  </item>
+								
+						    </one-of>
+						</rule>
+				</grammar>
+			 <prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/MainMenu.wav'"/>
+			</prompt>
+		<filled>
+				
+				<if cond="choice=='1'">
+					<goto next="#KitaKitalu"/>
+				</if>
+				<if cond="choice=='2'">
+					<goto next="#parodysongs"/>
+				</if>
+				<if cond="choice=='3'">
+					<goto next="#FolkZone"/>
+				</if>
+				<if cond="choice=='9'">
+					<goto next="ManageAccount.vxml"/>
+				</if>
+		</filled>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/No_Input.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/No_Input.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="3">
+			 <goto next="#KitaKitalu"/>	
+		</noinput>
+
+
+		<nomatch count="1">
+			
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/Wrong_Input.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/Wrong_Input.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="3">
+			<goto next="#KitaKitalu"/>	
+		</nomatch>
+		
+
+		</field>
+	</form>
+	
+	<form id="KitaKitalu">
+	            <block>
+	 		<assign name ="operator" expr="'airm'"/>
+	 		<assign name ="previousmenuflag" expr="'KitaKitalu'"/>
+					
+			 </block>        	
+	       
+			<field name="choice">			
+				<grammar mode="dtmf" root="start" version="1.0">
+							<rule id="start" scope="public">
+								<one-of>								 							
+									<item>  1  </item>
+									<item>  2  </item>
+									<item>  3  </item>
+									<item>  7  </item>
+									<item>  8  </item>
+									<item>  9  </item>
+									
+							    </one-of>
+							</rule>
+					</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/KitaKitalu_Menu.wav'"/>
+				</prompt>
+				
+			<filled>
+					<if cond="choice=='1'">
+						<assign name ="playconfig" expr="'60'"/>
+						<assign name ="catconfig" expr="'Brahmanandam'"/>
+						<goto next="playcontent.vxml"/>
+					</if>
+					<if cond="choice=='2'">
+						<assign name ="playconfig" expr="'61'"/>
+						<assign name ="catconfig" expr="'Navvula'"/>
+						<goto next="playcontent.vxml"/>
+					</if>
+					<if cond="choice=='3'">
+						<assign name ="playconfig" expr="'62'"/>
+						<assign name ="catconfig" expr="'Chilipi'"/>
+						<goto next="playcontent.vxml"/>
+					</if>
+					<if cond="choice=='7'">
+
+						<goto next="#nav"/>
+					</if>
+					<if cond="choice=='8'">
+
+						<goto next="ComedyMainMenu.vxml"/>
+					</if>
+					<if cond="choice=='9'">
+						<goto next="ManageAccount.vxml"/>
+					</if>
+			</filled>
+			
+			
+			<noinput count="1">
+				
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/No_Input.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</noinput>
+	
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/No_Input.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</noinput>
+	
+			<noinput count="3">
+					<assign name ="playconfig" expr="'60'"/>
+					<assign name ="catconfig" expr="'Brahmanandam'"/>
+					<goto next="playcontent.vxml"/>	
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Wrong_Input.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</nomatch>
+	
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Wrong_Input.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</nomatch>
+	
+			<nomatch count="3">
+					<assign name ="playconfig" expr="'60'"/>
+					<assign name ="catconfig" expr="'Brahmanandam'"/>
+					<goto next="playcontent.vxml"/>	
+			</nomatch>
+			
+	
+			</field>
+	</form>
+	<form id="FolkZone">
+		            <block>
+		 		<assign name ="operator" expr="'airm'"/>
+		 		<assign name ="previousmenuflag" expr="'FolkZone'"/>
+							
+				 </block>        	
+		       
+				<field name="choice">			
+					<grammar mode="dtmf" root="start" version="1.0">
+								<rule id="start" scope="public">
+									<one-of>								 							
+										<item>  1  </item>
+										<item>  2  </item>
+										<item>  3  </item>
+										<item>  7  </item>
+										<item>  8  </item>
+										<item>  9  </item>
+										
+								    </one-of>
+								</rule>
+						</grammar>
+					 <prompt bargein="true" timeout="3s">
+							<audio expr="promptpath+LANG_DESCRIPTION+'/FolkZone_Menu.wav'"/>
+					</prompt>
+				<filled>
+						<if cond="choice=='1'">
+							<assign name ="playconfig" expr="'63'"/>
+							<assign name ="catconfig" expr="'PalleJanapadhalu'"/>
+							<goto next="playcontent.vxml"/>
+						</if>
+						<if cond="choice=='2'">
+							<assign name ="playconfig" expr="'64'"/>
+							<assign name ="catconfig" expr="'KidsfolkHungama'"/>
+							<goto next="playcontent.vxml"/>
+						</if>
+						<if cond="choice=='3'">
+							<assign name ="playconfig" expr="'65'"/>
+							<assign name ="catconfig" expr="'BhakthiJanapadhalu'"/>
+							<goto next="playcontent.vxml"/>
+						</if>
+						<if cond="choice=='7'">
+							<goto next="#nav"/>
+						</if>
+						<if cond="choice=='8'">
+							<goto next="ComedyMainMenu.vxml"/>
+						</if>
+						<if cond="choice=='9'">
+							<goto next="ManageAccount.vxml"/>
+						</if>
+				</filled>
+				
+				
+				<noinput count="1">
+					
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/No_Input.wav'"/>
+					</prompt>			
+					<reprompt></reprompt>
+				</noinput>
+		
+				<noinput count="2">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/No_Input.wav'"/>
+					</prompt>			
+					<reprompt></reprompt>
+				</noinput>
+		
+				<noinput count="3">
+					<assign name ="playconfig" expr="'63'"/>
+					<assign name ="catconfig" expr="'PalleJanapadhalu'"/>
+					<goto next="playcontent.vxml"/>	
+				</noinput>
+				<nomatch count="1">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/Wrong_Input.wav'"/>
+					</prompt>			
+					<reprompt></reprompt>
+				</nomatch>
+		
+				<nomatch count="2">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/Wrong_Input.wav'"/>
+					</prompt>			
+					<reprompt></reprompt>
+				</nomatch>
+		
+				<nomatch count="3">
+							<assign name ="playconfig" expr="'63'"/>
+							<assign name ="catconfig" expr="'PalleJanapadhalu'"/>
+							<goto next="playcontent.vxml"/>		
+				</nomatch>
+				
+		
+				</field>
+	</form>
+	
+	<form id="parodysongs">
+			            <block>
+			 		<assign name ="operator" expr="'airm'"/>
+			 		<assign name ="previousmenuflag" expr="'parodysongs'"/>
+								
+					 </block>        	
+			       
+					<field name="choice">			
+						<grammar mode="dtmf" root="start" version="1.0">
+									<rule id="start" scope="public">
+										<one-of>								 							
+											 <item>  1  </item>
+											 <item>  2  </item>
+											 <item>  3  </item>
+											  <item>  7  </item>
+											   <item>  8  </item>
+											   <item>  9 </item>
+										</one-of>
+									</rule>
+							</grammar>
+						 <prompt bargein="true" timeout="3s">
+								<audio expr="promptpath+LANG_DESCRIPTION+'/ParodySection_Menu.wav'"/>
+						</prompt>
+					<filled>
+						<if cond="choice=='1'">
+							<assign name ="playconfig" expr="'66'"/>
+							<assign name ="catconfig" expr="'BaavaMaradala'"/>
+							<goto next="playcontent.vxml"/>
+						</if>
+						<if cond="choice=='2'">
+							<assign name ="playconfig" expr="'67'"/>
+							<assign name ="catconfig" expr="'YenkiTamasha'"/>
+							<goto next="playcontent.vxml"/>
+						</if>
+						<if cond="choice=='3'">
+							<assign name ="playconfig" expr="'68'"/>
+							<assign name ="playconfig" expr="'PalleturiVinodham'"/>
+							<goto next="playcontent.vxml"/>
+						</if>
+						<if cond="choice=='7'">
+							<goto next="#nav"/>
+						</if>
+						<if cond="choice=='8'">
+							<goto next="ComedyMainMenu.vxml"/>
+						</if>
+						<if cond="choice=='9'">
+							<goto next="ManageAccount.vxml"/>
+						</if>
+					</filled>
+					
+					
+					<noinput count="1">
+						
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+LANG_DESCRIPTION+'/No_Input.wav'"/>
+						</prompt>			
+						<reprompt></reprompt>
+					</noinput>
+			
+					<noinput count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+LANG_DESCRIPTION+'/No_Input.wav'"/>
+						</prompt>			
+						<reprompt></reprompt>
+					</noinput>
+			
+					<noinput count="3">
+							<assign name ="playconfig" expr="'66'"/>
+							<assign name ="catconfig" expr="'BaavaMaradala'"/>
+							<goto next="playcontent.vxml"/>
+					</noinput>
+			
+			
+					<nomatch count="1">
+						
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+LANG_DESCRIPTION+'/Wrong_Input.wav'"/>
+						</prompt>			
+						<reprompt></reprompt>
+					</nomatch>
+			
+					<nomatch count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+LANG_DESCRIPTION+'/Wrong_Input.wav'"/>
+						</prompt>			
+						<reprompt></reprompt>
+					</nomatch>
+			
+					<nomatch count="3">
+							 <assign name ="playconfig" expr="'66'"/>
+							  <assign name ="catconfig" expr="'BaavaMaradala'"/>
+							<goto next="playcontent.vxml"/>	
+					</nomatch>
+					
+			
+					</field>
+	</form>
+
+</vxml>

@@ -1,0 +1,902 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="devRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+
+
+	<meta name="devoplaycontent.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+     	<var name="playconfigcattemp" expr="''"/>
+     	<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var len=0;
+		var contentlogging=0;
+	</script>
+	<form id="loadcliptoplay">
+		  <block>  		  	          
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/songconfig/'+playconfig+'.cfg'"/>
+			<script>
+						array.length=0;
+						unike_play=0;
+			</script>
+			<assign name="HEARD" expr="playconfig" />
+					<assign name="len" expr="favSongs.length" />
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#PlayFullSongs"/>  					
+		   </block>
+	</form>
+
+	
+	<form id="PlayFullSongs"> 
+	  <block>
+	  
+		<log expr="'@@@@@@ start_BalenceMinute INSIDE PLAYFULLSONG '+start_time()"/>	
+		<script>
+							var tem=playconfig.split("_");
+							playconfigcattemp=tem[0]; 
+	
+		</script>
+		<log expr="'@@@@@@ MYTH_UNIKE_PLAY '+myth_unlike_play"/>
+
+	 <if cond="playconfigcattemp=='myth' || playconfigcattemp=='temple' || playconfigcattemp=='templejain'">
+		   				<if cond="temple_heard!='0'">
+		   					<if cond="temple_heard==playconfig">
+		   						<assign name="unike_play" expr="myth_unlike_play"/>
+		   					</if>	
+		   				</if>
+		   			</if> 
+	  </block>
+	 <field name="keypadoption">               
+		    	 
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>
+					      	<item>1</item>
+			                    <item>2</item>
+					      	<item>3</item>
+			                    <item>6</item>
+			                    <item>7</item>
+					       <item>8</item>
+                          			<item>9</item>
+                          			<item>0</item>
+								
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             <prompt bargein="true"  timeout="1s">
+                 	<audio expr="promptpath+LANG_DESCRIPTION+'/keypad.wav'"/>
+		   </prompt> 
+				 
+        <filled>              
+        
+			<if cond="keypadoption=='6'">	
+					<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+			  	<script>
+							var tem=playconfig.split("_");
+							playconfigcattemp=tem[0]; 
+				</script>
+				<log>CATEGORY NAME=====	<value expr="playconfigcattemp"/>    </log>
+				<goto next="#playoption"/>
+			<elseif cond="keypadoption=='7'"/>
+					<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		       		<goto next="dev_PlayList.vxml"/> 
+			<elseif cond="keypadoption=='8'"/>
+					 <!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+			  		<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+	  	       <elseif cond="keypadoption=='0'"/>
+		    			<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+					<if cond="playconfig=='hindu_001' || playconfig=='hindu_002' || playconfig=='hindu_003' ||playconfig=='hindu_004' ||playconfig=='hindu_005'||playconfig=='hindu_006' ||playconfig=='hindu_006'">
+						<assign name="cat_flag" expr="'FALSE'" />
+					<else/>
+						<assign name="cat_flag" expr="'TRUE'" />
+					</if>
+					<script>
+							var tem=playconfig.split("_");
+							playconfigcattemp=tem[0]; 
+					</script>
+		    	<if cond="playconfigcattemp=='temple' ||playconfigcattemp=='majid'|| playconfigcattemp=='Church' || playconfigcattemp=='Monestries' || playconfigcattemp=='Gurudwara' ||playconfigcattemp=='templejain'">
+		    		<assign name="playconfigcat" expr="playconfigcattemp+'-'+vinaycat"/>	
+			  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+			  	<elseif cond="playconfigcattemp=='myth'"/>
+			  		<assign name="playconfigcat" expr="playconfigcattemp+'_stories-'+vinaycat"/>	
+			  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+			  	<else/>
+			  		<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+			  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+			  	</if>	
+		    <elseif cond="keypadoption=='9'"/>
+				   <!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					 
+			  		<goto next="dev_ManageAccount.vxml"/>	  
+		   <else/>			
+              		<goto next="#StartToPlaysongs"/>
+		   </if>	
+            </filled>
+			  
+		   <noinput>	
+			<!-- <script>
+				end_BalenceMinute=start_time();
+			</script> -->
+			<assign name="end_BalenceMinute" expr="start_time()"/>
+         
+		   		<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+
+		   			
+	             	<goto next="#StartToPlaysongs"/>	     
+             </noinput>	
+              
+             <nomatch>
+			<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>	-->				
+		 
+				
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+			<!--	<reprompt></reprompt> -->
+				<goto next="#StartToPlaysongs"/>
+			</nomatch>	
+          </field>		
+		
+	</form>
+	
+	<form id="StartToPlaysongs">
+		<block>
+		<!-- <script>
+		   		 <![CDATA[
+  		       			if(timerflag==1)
+					start_BalenceMinute=start_time();
+				]]>	 	
+ 		</script>-->
+	        <assign name="start_BalenceMinute" expr="start_time()"/>
+		<log expr="'@@@@@@ start_BalenceMinute is '+start_BalenceMinute"/>
+
+		<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+		<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+		</if>
+		<log expr="'@@@@@@ UNIKE_PLAY VALUE'+unike_play"/>
+	 <if cond="playconfigcattemp=='myth' || playconfigcattemp=='temple' || playconfigcattemp=='templejain'">						
+						<assign name="myth_unlike_play" expr="unike_play"/>	
+						<assign name="temple_heard" expr="playconfig"/>
+		</if>
+						<script>
+							var songcheck=array[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = array[unike_play];
+						</script>
+			
+					 <assign name="song_begin" expr="starttime()"/>
+					 <assign name="song_listen" expr="'START'" />
+					 <assign name="RatainUnlikePaly" expr="unike_play" />
+					 <assign name="ComingFrom" expr="'devo'" />
+					
+      </block>
+		   <field name="selectoption">
+				
+				    <grammar mode="dtmf" root="start" version="1.0">
+			   		<rule id="start" scope="public">
+			   		  <one-of>
+					      <item>1</item>
+					      <item>2</item>	
+					      <item>3</item>
+						  <item>4</item>
+					      <item>5</item>
+						  <item>6</item>
+						  <item>7</item>
+				       	  <item>8</item>
+					      <item>9</item>
+					      <item>0</item>
+						  
+					 </one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			   
+ 
+			  <audio expr="contentpath+'/'+contentdir+'/'+song+'.wav'"/> 	
+
+
+  	   	      </prompt> 			 
+		  
+		      <filled>
+			<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+		      <assign name="contentlogging" expr="selectoption"/>
+		      <goto next="#contentlogg"/>
+				
+			  </filled>				  
+		
+		     
+			 <noinput>	
+			<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>	-->				
+		 
+				<assign name="contentlogging" expr="'1'"/>
+		      <goto next="#contentlogg"/> 	
+			</noinput>
+
+		<nomatch>
+			<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+	 </field>
+	  	
+	</form>	
+	
+	<form id="contentlogg">
+	<block>
+			 <script>
+		   		 <![CDATA[
+  		       			if(timerflag==1)
+					start_BalenceMinute=start_time();
+				]]>	 	
+			</script>  
+			<script>
+				end_BalenceMinute=start_time();
+			</script>
+
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+cat+hash+compare_time"></assign>					 				 						 								 
+				  <if cond="contentlogging=='1'">
+				   	<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+					 
+					 <script> unike_play=unike_play-1;
+				   	 </script>
+					 <goto next="#StartToPlaysongs"/>	
+				
+				
+				 <elseif cond="contentlogging=='2'"/>
+						<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>		-->			
+		 
+
+						<script> unike_play=unike_play</script>
+					     <goto next="#StartToPlaysongs"/> 				 
+				 
+				 <elseif cond="contentlogging=='3'"/>	
+				    <!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+					 	<script> unike_play=unike_play+1</script>
+						<goto next="#StartToPlaysongs"/> 
+				  <elseif cond="contentlogging=='4'"/>	
+					<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+					<script>
+						var tem=playconfig.split("_");
+						playconfigcattemp=tem[0]; 
+					</script>
+					<if cond="playconfigcattemp=='temple' ||playconfigcattemp=='myth' ||playconfigcattemp=='majid'|| playconfigcattemp=='Church' || playconfigcattemp=='Monestries' || playconfigcattemp=='Gurudwara' || playconfigcattemp=='templejain'">
+						<goto next="#play-pause"/>
+					<else/>
+						<throw event="nomatch"/>
+					</if>					
+				 <elseif cond="contentlogging=='5'"/>	
+						<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>		-->			
+		 
+						<goto next="dev_PlayList.vxml#Add"/>	
+				 <elseif cond="contentlogging=='6'"/>
+				 	 <script>
+							var tem=playconfig.split("_");
+							playconfigcattemp=tem[0]; 
+					</script>
+					 <log>CATEGORY NAME=====	<value expr="playconfigcattemp"/>    </log>
+					 <goto next="#playoption"/>
+				 
+				  <elseif cond="contentlogging=='7'"/>
+				    <!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+					 <goto next="dev_PlayList.vxml"/>
+			 	 
+			 	  <elseif cond="contentlogging=='8'"/>
+				 	<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+					 <!--<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+						<assign name="start_index_1" expr="0"/>				 	 
+			  		 <goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>-->
+			  		 <goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+				  
+				  <elseif cond="contentlogging=='0'"/>
+				    	<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+						<if cond="playconfig=='hindu_001' || playconfig=='hindu_002' || playconfig=='hindu_003' ||playconfig=='hindu_004' ||playconfig=='hindu_005'||playconfig=='hindu_006' ||playconfig=='hindu_006'">
+								<assign name="cat_flag" expr="'FALSE'" />
+						<else/>
+							<assign name="cat_flag" expr="'TRUE'" />
+						</if>
+							
+							<!--<assign name="start_index_1" expr="0"/>
+							<assign name="end_index_1" expr="0"/>
+					      <assign name="start_index" expr="0"/>
+							<assign name="end_index" expr="0"/> -->
+							
+					<!--	<if cond="start_index=='5'">
+							<assign name="start_index_1" expr="0"/>
+							<assign name="end_index_1" expr="0"/>
+							<assign name="start_index" expr="0"/>
+							<assign name="end_index" expr="0"/>
+						<elseif cond="start_index=='10'" />
+							<assign name="start_index_1" expr="5"/>
+					
+						</if> -->	
+							<script>
+									var tem=playconfig.split("_");
+									playconfigcattemp=tem[0]; 
+							</script>
+				    	<if cond="playconfigcattemp=='temple' ||playconfigcattemp=='majid'|| playconfigcattemp=='Church' || playconfigcattemp=='Monestries' || playconfigcattemp=='Gurudwara' ||playconfigcattemp=='templejain'">
+				    		<assign name="playconfigcat" expr="playconfigcattemp+'-'+vinaycat"/>	
+					  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					  	<elseif cond="playconfigcattemp=='myth'"/>
+					  		<assign name="playconfigcat" expr="playconfigcattemp+'_stories-'+vinaycat"/>	
+			  				<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					  	<else/>
+					  		<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+					  		<goto next="DIGI_DEVO.vxml#playcatname"/>
+					  	</if>
+				  <elseif cond="contentlogging=='9'"/>
+				 	 <goto next="dev_ManageAccount.vxml"/> 
+				  
+				  <else/>				 
+				 		<script> unike_play=unike_play+1</script>		
+				        <goto next="#StartToPlaysongs"/> 		
+				 </if>
+	
+		<noinput>
+			<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+			<goto next="#StartToPlaysongs"/> 	
+		</noinput>
+
+		<nomatch>
+			<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<goto next="#StartToPlaysongs"/>
+		</nomatch>
+
+
+	</block>
+</form>
+	
+	
+	
+	<form id="playoption">
+	 <script>
+		   		 <![CDATA[
+  		       			if(timerflag==1)
+					start_BalenceMinute=start_time();
+				]]>	 	
+ 	</script>      
+
+		   <field name="playclipOptionInfo">
+			<grammar mode="dtmf" root="start" version="1.0">
+               	<rule id="start" scope="public">
+                  <one-of>				 
+					  <item>1</item>
+					  <item>2</item>	
+					  <item>3</item>
+					  <item>4</item>
+					  <item>6</item>
+					  <item>7</item>
+					  <item>8</item>
+					  <item>9</item>
+					  <item>0</item>
+			  	 </one-of>
+              	</rule>
+            </grammar>
+			
+				<prompt bargein="true" timeout="0s" cond="playconfigcattemp=='myth'">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/keypad_story.wav'"/>
+	   	        </prompt>
+
+			<prompt bargein="true" timeout="0s" cond="playconfigcattemp=='temple' || playconfigcattemp=='templejain' ">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/keypad_aarti.wav'"/>
+	   	        </prompt>
+				
+				<prompt bargein="true" timeout="0s" cond="playconfigcattemp!='myth' &amp;&amp; playconfigcattemp!='temple'">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/keypad_options_other.wav'"/>
+	   	        </prompt>
+		   	
+		<filled>
+			 <script>
+				end_BalenceMinute=start_time();
+			</script>
+			    <if cond="playclipOptionInfo=='1'">
+			    	<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+				     <script> unike_play=unike_play-1</script> 
+				     
+				     <goto next="#StartToPlaysongs"/> 
+				     
+			   <elseif cond="playclipOptionInfo=='2'"/>
+					<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+			   	
+				     <script> unike_play=unike_play</script>
+				     
+				      <goto next="#StartToPlaysongs"/> 
+				     
+			   <elseif cond="playclipOptionInfo=='3'"/>
+					<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+
+					<script> unike_play=unike_play+1</script>
+				     <goto next="#StartToPlaysongs"/> 
+				     
+			 <elseif cond="contentlogging=='4'"/>	
+				<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+					
+					<script>
+						var tem=playconfig.split("_");
+						playconfigcattemp=tem[0]; 
+					</script>
+					<if cond="playconfigcattemp=='temple' ||playconfigcattemp=='myth' ||playconfigcattemp=='majid'|| playconfigcattemp=='Church' || playconfigcattemp=='Monestries' || playconfigcattemp=='Gurudwara' ||playconfigcattemp=='templejain'">
+						<goto next="#play-pause"/>
+					<else/>
+						<throw event="nomatch"/>
+					</if>		  
+			 <elseif cond="playclipOptionInfo=='6'"/>
+				    <!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+					 
+					 <goto next="#playoption"/> 	     
+			
+			   <elseif cond="playclipOptionInfo=='7'"/>
+			   		 <goto next="dev_PlayList.vxml"/>
+
+			   
+			   <elseif cond="playclipOptionInfo=='8'"/>
+			    	<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+					
+					<!-- <assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+			  		 <goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>-->
+			  		 <goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+			   
+			   <elseif cond="playclipOptionInfo=='0'"/>
+				   <!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+						
+						<assign name="start_index_1" expr="0"/>
+							<assign name="end_index_1" expr="0"/>
+					      <assign name="start_index" expr="0"/>
+							<assign name="end_index" expr="0"/> 
+							
+					<!--	<if cond="start_index=='5'">
+							<assign name="start_index_1" expr="0"/>
+							<assign name="end_index_1" expr="0"/>
+							<assign name="start_index" expr="0"/>
+							<assign name="end_index" expr="0"/>
+						<elseif cond="start_index=='10'" />
+							<assign name="start_index_1"	expr="5"/>	
+						</if>	-->
+							
+							<script>
+									var tem=playconfig.split("_");
+									playconfigcattemp=tem[0]; 
+							</script>
+				    	<if cond="playconfigcattemp=='temple' ||playconfigcattemp=='majid'|| playconfigcattemp=='Church' || playconfigcattemp=='Monestries' || playconfigcattemp=='Gurudwara'||playconfigcattemp=='templejain'">
+				    		<assign name="playconfigcat" expr="playconfigcattemp+'-'+vinaycat"/>	
+					  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					  	<elseif cond="playconfigcattemp=='myth'"/>
+					  		<assign name="playconfigcat" expr="playconfigcattemp+'_stories-'+vinaycat"/>	
+			  				<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					  	<else/>
+					  		<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+					  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					  	</if>
+			   <elseif cond="playclipOptionInfo=='9'"/>
+			         <goto next="dev_ManageAccount.vxml"/>
+			    </if>
+			    
+		</filled>		
+			
+		
+		<noinput>
+			<script>
+				end_BalenceMinute=start_time();
+		</script>         
+			<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+			<goto next="#StartToPlaysongs"/> 	
+		</noinput>
+
+		<nomatch>
+			<script>
+				end_BalenceMinute=start_time();
+		</script>         
+			<!--<if cond="timerflag=='1'">
+						 <assign name="current_balance" expr="start_time()"/>
+						 <script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						 </script>
+						 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						 <log expr="'@@@@@@ left balance is '+curbalance"/>
+				               <if cond="curbalance &lt;= '0'">          
+				                     <goto next="TopupRenew.vxml"/>
+				               </if>     
+					</if>-->					
+		 
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<goto next="#StartToPlaysongs"/>
+		</nomatch>
+		
+	</field>	
+	  	 
+</form>
+
+<form id="play-pause">
+	   <field name="pauseopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+               	<rule id="start" scope="public">
+                  <one-of>				 
+					  <item>4</item>
+			  	 </one-of>
+              	</rule>
+            </grammar>
+			
+				<prompt bargein="true">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/play_pause.wav'"/>
+	   	        </prompt>
+		   	
+		<filled>
+			<if cond="pauseopt=='4'">
+				<goto next="#StartToPlaysongs"/>
+			</if>
+			
+		</filled>
+
+		<noinput>
+			<reprompt/>
+		</noinput>
+		
+		<nomatch>
+			<reprompt/>
+		</nomatch>
+    </field>
+</form>
+
+
+</vxml>

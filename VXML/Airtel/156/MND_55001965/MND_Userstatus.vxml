@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MND_Userstatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="random" expr="'1'"/>
+
+<form id="Welcome">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LASTCAT_ALLCH_TOLL&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]=2'"/>
+		<script>
+			<![CDATA[
+				for(j=0; j< out_string.length;  j++)
+					{  	
+						playconfig = out_string[j];
+					}
+			]]>
+		</script>
+
+		<if cond="playconfig=='-1'">
+			<assign name="playconfig" expr="'ch4'" />
+			<assign name="dtmfsub" expr="'Old_User'"/>
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+playconfig"></assign>
+			<prompt bargein="false" timeout="1s" cond="lang!='10'">
+				<audio expr="promptpath+'/'+lang+'/ch4/welcome_old.wav'"/>
+			</prompt>
+
+			<prompt bargein="false" timeout="1s" cond="lang=='10'">
+				<audio expr="promptpath+'/'+lang+'/ch5/welcome_old.wav'"/>
+			</prompt>
+			
+			
+			<goto next="MND_mainmenu.vxml"/>
+		<else/>
+			<assign name="drop_point" expr="'LAST_CAT'"/>
+			<assign name="dtmfsub" expr="'last_cat'"/>
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+playconfig"></assign>
+			<prompt bargein="false" timeout="1s" cond="lang!='10'">
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/repeat_'+playconfig+'.wav'"/>
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/last_cat.wav'"/>
+			</prompt>
+			
+			<prompt bargein="false" timeout="1s" cond="lang=='10'">
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/last_cat.wav'"/>
+			</prompt>
+
+			<goto next="MND_mainmenu.vxml#loadcliptoplay"/>
+		</if>
+	
+	</block>
+</form>
+
+</vxml>

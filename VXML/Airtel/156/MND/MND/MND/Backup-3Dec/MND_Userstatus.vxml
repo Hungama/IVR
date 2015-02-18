@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MND_Userstatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+  <script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var ciropr1=new Object();
+		var len=0;
+ </script>
+ 
+ <form id="Starting">
+ 	<block>
+		<if cond="ANI=='8527000779' || ANI=='9999130777'">
+			<submit expr="'../MND-TEST/MND_SelectLang.vxml'"/> 
+		</if>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LISTEN_STORY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+ 		<goto next="#Menu"/>
+ 	</block>
+ </form>
+ 
+ <form id="Menu">
+    <block>
+     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>
+           <script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	
+
+					      if(j==0)
+						  usr_status = out_string[j];
+					      if(j==1)
+						  lang = out_string[j];
+					      if(j==2)
+						  balance = out_string[j]; 
+					  }
+
+				]]>
+			</script>
+			<log expr="'Balance isss'+balance"/>
+			<log>Balance isss  <value expr="balance"/>    </log>
+
+
+			
+
+			<if cond="usr_status=='1'">
+				<script>
+					balance=balance*60;
+					timerflag=1;
+				</script>
+				<script>
+				<![CDATA[
+				  if(timerflag==1)
+				      start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+
+				<goto next="#Checkuser"/>
+			<elseif cond="usr_status=='-1'"/>
+				<goto next="MND_Subscription.vxml"/> 	     	
+			<else/>   
+				<goto next="MND_Subscription.vxml"/>
+			</if>
+   </block>
+</form>
+
+<form id="Checkuser">
+	<block>
+		<if cond="ANI=='9999130777' || ANI=='8527000779'">
+			<goto next="MND_mainmenu_malav.vxml"/>	
+		</if>
+ 		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LASTCAT_ALLCHARACTER&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]=2'"/>
+		<script>
+			<![CDATA[
+				for(j=0; j< out_string.length;  j++)
+					{  	
+						playconfig = out_string[j];
+					}
+			]]>
+		</script>
+		
+		<if cond="playconfig=='-1'">
+			<assign name="playconfig" expr="'ch1'" />
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/ch1/welcome_old.wav'"/>
+				<audio expr="promptpath+'/01/mainmenu.wav'"/>
+			</prompt>
+			
+			<goto next="MND_mainmenu.vxml"/>
+		<else/>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+playconfig+'/last_cat.wav'"/>
+			</prompt>
+			<goto next="MND_mainmenu.vxml#loadcliptoplay"/>
+		</if>
+	
+	</block>
+</form>
+
+</vxml>

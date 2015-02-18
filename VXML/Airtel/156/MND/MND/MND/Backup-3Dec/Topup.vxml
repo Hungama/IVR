@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Topup.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+<form id="topup">   
+          <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				   <item>1</item>		
+				   <item>2</item>		
+				   <item>3</item>
+				   <item>8</item>
+				   <item>9</item>
+                </one-of>
+              </rule>
+            </grammar>			
+					
+	<prompt bargein="true" timeout="3s">
+	       <audio expr="promptpath+'/01/topup1.wav'"/>
+	       <audio expr="promptpath+'/01/press_dtmf1.wav'"/>
+	       <audio expr="promptpath+'/01/topup2.wav'"/>
+	       <audio expr="promptpath+'/01/press_dtmf2.wav'"/>
+	       <audio expr="promptpath+'/01/topup3.wav'"/>
+	       <audio expr="promptpath+'/01/press_dtmf3.wav'"/>
+       </prompt>			
+		    			
+	<filled>
+		<if cond="mnuopt=='1'">		
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/> 					
+		<elseif cond="mnuopt=='2'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/> 
+		<elseif cond="mnuopt=='3'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/> 
+		<elseif cond="mnuopt=='8'"/>
+			<goto next="MND_mainmenu.vxml"/>
+		<elseif cond="mnuopt=='9'"/>
+			<goto next="MND_Acntmngr.vxml"/>
+		</if>
+		  <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/> 
+          <goto next="#BillingWaitTopup"/>
+	</filled>		
+	
+	<noinput count="1">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath+'/01/nodtmf.wav'"/>
+		</prompt>				
+		<reprompt></reprompt>
+	</noinput>
+	<noinput count="2">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath+'/01/nodtmf.wav'"/>
+		</prompt>				
+		<reprompt></reprompt>
+	</noinput>
+	<noinput count="3">
+		<if cond="balance &lt;= '0'">          
+			<goto next="MND_end.vxml"/>
+		</if>
+		      <goto next="MND_mainmenu.vxml"/>
+	</noinput>			
+	<nomatch count="1">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath+'/01/invalidoption.wav'"/>
+		</prompt>				
+		<reprompt></reprompt>
+	</nomatch>
+	<nomatch count="2">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath+'/01/invalidoption.wav'"/>
+		</prompt>				
+		<reprompt></reprompt>
+	</nomatch>
+	<nomatch count="3">
+		<if cond="balance &lt;= '0'">          
+			<goto next="MND_end.vxml"/>
+		</if>
+		      <goto next="MND_mainmenu.vxml"/>
+	</nomatch>		 			            	
+    </field>	 
+</form> 
+
+
+
+<form id="BillingWaitTopup">
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+						  <item>1</item>
+			            </one-of>
+                	</rule>
+               	</grammar>
+               	
+             	 <prompt bargein="false" timeout="2s">
+				<audio expr="promptpath+'/01/wait_charge.wav'"/>
+	       </prompt>
+		<filled>
+			<goto next="#billingchk"/>
+		</filled>
+
+		<noinput>
+			<goto next="#billingchk"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#billingchk"/>
+		</nomatch>
+
+	
+	</field>
+</form>
+
+<form id="billingchk">
+        <block>
+		  <assign name="TOPUP" expr="'TRUE'"/>
+	          <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>
+					<script>
+					 <![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+								       	usr_status = out_string[j];
+								       if(j==1)
+								       	usrlang = out_string[j];
+								       if(j==2)
+								       	usrbalance = out_string[j];
+								       								       							      
+								  }
+		
+							]]>
+					
+					</script>        
+		                		
+				<script> 					 
+				    bal=usrbalance.value;	
+				    bal=bal*60;			   
+				</script>	
+				 	
+				<if cond="bal &gt; '0'">	
+				     <script>balance=bal*60;</script>	
+				     <assign name="TOPUP" expr="'FALSE'"/>
+		         			 
+				     <log expr="'@@@@@@ user top up balance is '+balance"/>
+				     <prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/01/thanks_topup.wav'"/>
+				     </prompt>
+				      <script> timerflag=1;</script>
+			 	     <goto next="MND_mainmenu.vxml"/>				
+				<else/>	
+				      <prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/01/wait_charge.wav'"/>
+				     </prompt>
+				      <goto next="MND_end.vxml"></goto>										 	    			   	
+   			      </if>	
+	   </block>	
+	  
+	 
+   </form>
+
+
+
+
+</vxml>

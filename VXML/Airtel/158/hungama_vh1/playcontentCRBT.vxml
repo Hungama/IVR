@@ -1,0 +1,1170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<vxml version="2.0" application="vh1Root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="playcontentCRBT.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />			
+			
+	<var name="song" expr="1"/>			
+	<var name="splitparam" expr="''"/>
+	<var name="temp" expr="0"/>
+	<var name="logs" expr="1"/>
+	<var name="query_sub1" expr="''"/>
+	<var name="CallUrl" expr="''"/>
+	
+	<var name="ulink" expr="''"/>
+	<var name="responce" expr="''"/>
+	<var name="transID" expr="''"/>
+	<var name="htlang" expr="'1'"/>	
+	<var name="stype" expr="1"/>
+	<var name="htlang" expr="'1'"/>	
+	<var name="subscriptionClass" expr="''"/>	
+	<var name="chargeClass" expr = "''"/>
+	<var name="consentparam" expr = "'C'"/>	
+	
+<script>
+	var favSongs=new Object();
+	var UserStatus1=new Object();
+
+</script>
+
+
+<form id="category">
+								
+
+			<block>
+				<assign name="program_name" expr="'playcontent'"/>
+				<if cond="DirectAccess=='55841741' &amp;&amp; (circle== 'del' || circle== 'mum')">
+					 <assign name="playconfig" expr="'SwedishHouse'"/>
+					 <goto next="#playsongs"/>
+				<elseif cond="DirectAccess=='55841007'"/>
+					 <assign name="playconfig" expr="'JamesBond'"/>
+					 <goto next="#playsongs"/>
+				</if> 
+
+
+				 <if cond="timerflag=='1'">
+					<assign name="current_balance" expr="start_time()"/>
+							<script>
+							total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							curbalance=balance-total_used_bal;  	
+						   </script>
+					       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					       <log expr="'@@@@@@ left balance is '+curbalance"/>
+				   <if cond="curbalance &lt;= minbalance"> 
+						 <if cond="DNIS=='5584112'">
+							<prompt bargein="true">
+								<audio expr="promptpath+LANG_DESCRIPTION+version+'/timing_nightpack'"></audio>
+							</prompt>
+							<goto next="vh1_end.vxml"/>
+						 </if>
+				     <goto next="TopupRenew.vxml"/>
+				   </if>     
+				 </if>								
+					<assign name="playconfig" expr="'mainmenu'"/>
+					<script>
+						i=i+1;
+					</script>
+
+ 			<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=vh1config/'+operator+'/songconfig/'+playconfig+'.cfg'"/>
+			<script>	movie_idx=0;
+						array.length=0;
+						unike_play=0;
+						
+						
+			</script>
+			
+			<assign name="len" expr="favSongs.length"/>
+		
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	   
+								array[k] = favSongs[k];		
+								splitparam=array[k].split("_");
+					  			array1[k]=splitparam[0];
+					  			array2[k]=splitparam[1];		   
+					   }
+
+				]]>		
+			</script> 
+		
+					<log>	array is	<value expr="array"/>  </log>
+					<log>	array1 is	<value expr="array1[0]"/>  </log>
+					<log>	array2 is	<value expr="array2[0]"/>  </log>
+				</block>
+	
+	<field name="vh1choice">               
+		    	 
+		<grammar mode="dtmf" root="start" version="1.0">
+                   <rule id="start" scope="public">
+                     <one-of>
+				          <item>1</item>
+				          <item>2</item>	
+                          <item>3</item>	
+                          <item>4</item>	
+                          <item>7</item>	
+                          <item>8</item>	
+                          <item>9</item>	
+			 <item>0</item>	
+				          <item>#</item>
+				          <item>*</item>			      
+                    </one-of>
+                </rule>
+               </grammar>
+         
+                  <prompt bargein="true" timeout="2s">
+
+				<!--<audio expr="promptpath+LANG_DESCRIPTION+version+'/select_catname00.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/press_dtmf0.wav'"/>-->
+
+
+				 <audio expr="promptpath+LANG_DESCRIPTION+version+'/root_manu.wav'"/>
+    	         </prompt> 
+	   	 	     
+				<filled>              
+                     	
+				 <if cond="vh1choice &lt; len+1">	
+							 <!--<assign name="temp" expr="vh1choice-1"/>-->
+									 <if cond="array2[vh1choice]=='1'">
+											  <assign name="playconfig" expr="array1[vh1choice]"/>
+											  <goto next="#category"/>
+									 
+									 <else/>
+									 
+										 	 <assign name="playconfig" expr="array1[vh1choice]"/>
+											 <goto next="#playsongs"/>
+				
+									 </if>		 
+					    
+    			 <elseif cond="vh1choice=='9'"/>
+				     			<goto next="account.vxml"/>		
+				 <else/>                    
+				    			<clear namelist="vh1choice"/> 				    		
+								<audio expr="promptpath+LANG_DESCRIPTION+version+'/invalidoption.wav'"/>			 					 		         
+                    			<goto next="#category"/>
+				 </if>	
+              </filled>
+			  
+			  <noinput>
+			  		 <audio expr="promptpath+LANG_DESCRIPTION+version+'/nodtmf.wav'"/>  
+					<script>			  		 
+			  		 	movie_idx=0;
+					</script>
+	             	<reprompt/>
+	          </noinput>
+	          <noinput count="2">
+		         <assign name="playconfig" expr="'01'"/>
+		        	  
+		         
+	          	  <goto next="#playsongs"/>
+	          
+	          </noinput>		
+          </field>	
+
+
+</form>
+
+
+<form id="playsongs">
+<block>
+ <log>Play Song Section</log>
+							<if cond="DirectAccess=='55841741' &amp;&amp; (circle== 'del' || circle== 'mum')">
+								 <assign name="playconfig" expr="'SwedishHouse'"/>
+							<else/>
+								<if cond="DirectAccess=='55841007'">	
+									 <assign name="playconfig" expr="'JamesBond'"/>
+								</if>
+							</if> 
+ <log>Play Song Section start</log>
+ 
+<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=vh1config/'+operator+'/songconfig/'+playconfig+'.cfg'"/>
+
+
+
+							 <if cond="timerflag=='1'">
+							        <assign name="current_balance" expr="start_time()"/>
+								   		<script>
+								     		total_used_bal=CheckUserBalance(initial_balance,current_balance);
+								     		curbalance=balance-total_used_bal;  	
+									   </script>
+								       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								       <log expr="'@@@@@@ left balance is '+curbalance"/>
+				                           <if cond="curbalance &lt;= minbalance">
+				                           		<if cond="DNIS=='5584112'">
+				                           	         	<prompt bargein="true">
+				                           	         		<audio expr="promptpath+LANG_DESCRIPTION+version+'/timing_nightpack'"></audio>
+				                           	         	</prompt>
+				                           	         	<goto next="vh1_end.vxml"/>
+				                           	         </if>          
+				                             <goto next="TopupRenew.vxml"/>
+				                           </if>     
+							 </if>									
+	
+	
+			<log>	GOTO..........	  </log>
+
+
+
+			<assign name="len" expr="favSongs.length"/>
+	
+	
+	
+			<log>	GOTO STATEMENT..........	  </log>
+			<log>	LENGTH	<value expr="len"/>  </log>
+
+			<script>
+						unike_play=0;
+			</script> 
+				<log>Start Song</log>
+
+			<prompt bargein="false" cond="(DirectAccess!='55841741' &amp;&amp; DirectAccess!='55841007')">
+                 		<audio expr="promptpath+LANG_DESCRIPTION+version+'/welcome_VH1_cat'+playconfig+'.wav'"/>			
+                 		<audio expr="promptpath+LANG_DESCRIPTION+version+'/keypad.wav'"/>
+                  	</prompt>
+
+			<prompt bargein="false" cond="DirectAccess=='55841007'">
+                 					
+                 		<audio expr="promptpath+LANG_DESCRIPTION+version+'/keypad_mm.wav'"/>
+                  	</prompt>
+
+			<prompt bargein="false" cond="DirectAccess=='55841741'">
+                 					
+                 		<audio expr="promptpath+LANG_DESCRIPTION+version+'/keypad_mm.wav'"/>
+                  	</prompt>
+
+			<log>	GOTO STATEMENT!!!!!!!!!!!!!!!!!!	  </log>
+
+
+			<goto next="#song_detail"/>
+			
+
+</block>
+</form> 
+
+<form id="song_detail">
+<block>			
+
+<log>Song details start</log>
+
+			<if cond="unike_play &lt; '0'">
+				<script>	
+					unike_play=len-1;
+               	</script>
+			<elseif cond="unike_play &gt; len-1"/>
+				<script>
+               		unike_play=0;
+               	</script>
+			</if>
+			
+			<log>	unlike_play value	<value expr="unike_play"/>  </log>	
+			
+			
+			<script>
+						var songcheck=favSongs[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = favSongs[unike_play];
+			</script>
+		   
+		   
+		   <assign name="song_begin" expr="start_time()"/>
+		   <assign name="song_listen" expr="'START'" />
+		   <log>	favSongs=====	<value expr="favSongs"/>  </log>
+		   <log>	SONG CHK=====	<value expr="songcheck"/>  </log>
+		    <log>	contentdir=====	<value expr="contentdir"/>  </log>
+		    <log>	song=====	<value expr="song"/>  </log>
+		    <log>	contentpath=====	<value expr="contentpath"/>  </log>
+		   	
+</block>
+<field name="choice">               
+		    	 
+		<grammar mode="dtmf" root="start" version="1.0">
+                   <rule id="start" scope="public">
+                     <one-of>
+				          <item>1</item>
+				          <item>2</item>	
+                          <item>3</item>
+                          <item>4</item>
+                          <item>5</item>
+                          <item>6</item>
+                          <item>7</item>	
+                          <item>8</item>	
+                          <item>9</item>
+                          <item>0</item>
+                          <item>#</item>	
+                          <item>*</item>			      
+                    </one-of>
+                </rule>
+               </grammar>
+         
+                  <prompt bargein="true" timeout="0s">
+                 <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+                  </prompt>
+               <filled>
+               	<assign name="logs" expr="choice"/>
+               	<goto next="#contentlogs"/>
+               	
+              
+               </filled>
+                
+                
+                <noinput>	
+                
+						 	    <assign name="logs" expr="1"/>
+								 <goto next="#contentlogs"/>	  
+	            
+	            </noinput>		
+              	 
+              	 <nomatch>	
+				<assign name="logs" expr="1"/>
+  
+                   	<goto next="#contentlogs"/>	  
+              	 </nomatch>
+          </field>	
+
+</form>
+
+
+
+<form id="contentlogs">
+<block>
+					<if cond="DNIS=='55841'  &amp;&amp; (circle=='nes' || circle=='asm')">
+							<assign name="vh1nphour" expr="call_time_hr()"/>
+						<if cond="vh1nphour &gt;= 5 &amp;&amp; vh1nphour &lt;= 21">
+						<!--<if cond="vh1nphour &lt;= 5 || vh1nphour &gt;= 21">-->
+
+						<else/>
+							<if cond="songcounter &gt;= 2">
+								<assign name="songcounter" expr="1" />
+								<prompt bargein="true">
+									<audio expr="promptpath+LANG_DESCRIPTION+version+'/timing_nightpack.wav'"/>
+								</prompt>
+								<else/>
+								<assign name="songcounter" expr="songcounter + 1" />
+							</if>
+						</if>	
+					</if>
+								 <assign name="song_listen" expr="'END'" />
+								 <assign name="compare_time" expr="time_duration(song_begin)"/>
+								 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								 <assign name="contentlog" expr="contentlog+hash+song+hash+playconfig+hash+compare_time"></assign> 
+
+
+							 <if cond="timerflag=='1'">
+							        <assign name="current_balance" expr="start_time()"/>
+								   		<script>
+								     		total_used_bal=CheckUserBalance(initial_balance,current_balance);
+								     		curbalance=balance-total_used_bal;  	
+									   </script>
+								       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								       <log expr="'@@@@@@ left balance is '+curbalance"/>
+				                           <if cond="curbalance &lt;= minbalance">
+				                           		<if cond="DNIS=='5584112'">
+				                           	         	<prompt bargein="true">
+				                           	         		<audio expr="promptpath+LANG_DESCRIPTION+version+'/timing_nightpack'"></audio>
+				                           	         	</prompt>
+				                           	         	<goto next="vh1_end.vxml"/>
+				                           	         </if>          
+				                             <goto next="TopupRenew.vxml"/>
+				                           </if>     
+							 </if>								
+
+
+				<if cond="logs=='1'">
+						 	    
+               					<script>
+               					unike_play=unike_play+1;
+               					</script>
+                          		 
+								 <goto next="#song_detail"/>
+				
+				<elseif cond="logs=='2'"/>
+				 				
+						 	    
+               					<script>
+               					unike_play=unike_play;
+               					</script>
+                        		  
+								 <goto next="#song_detail"/>
+				
+				<elseif cond="logs=='3'"/>
+				 				
+						 	    <script>
+               					unike_play=unike_play-1;
+               					</script>
+                        		 
+								 <goto next="#song_detail"/>
+				
+				<elseif cond="logs=='8'"/>
+
+				 	 <assign name="DirectAccess" expr="''"/>
+                        		 <goto next="playcontent.vxml"/>
+
+				<elseif cond="logs=='0'"/>
+
+				 	 <assign name="DirectAccess" expr="''"/>
+                        		 <goto next="playcontent.vxml"/>
+
+				
+				<elseif cond="logs=='9'"/>
+				 				
+						 	     <goto next="account.vxml"/>
+				
+				<elseif cond="logs=='7'"/>
+				 	<if cond="DirectAccess=='55841741' &amp;&amp; (circle== 'del' || circle== 'mum')">
+							
+               					<goto next="#song_detail"/>
+					<elseif cond="DirectAccess=='55841007'"/>
+							<goto next="#song_detail"/>
+					<else/>
+			
+                        		 	<goto next="#browsing_opt"/>
+					</if>
+				
+				<elseif cond="logs=='*'"/>
+				 				
+					<if cond="DirectAccess=='55841741' &amp;&amp; (circle== 'del' || circle== 'mum')">
+									 					 		         
+                            		<goto next="#song_detail"/>
+					<elseif cond="DirectAccess=='55841007'"/>
+										 					 		         
+               					
+               					<goto next="#song_detail"/>
+					<else/>
+							<goto next="#crbt"/>
+					</if> 
+
+					
+																		 
+               <else/>
+
+					<if cond="DirectAccess=='55841741' &amp;&amp; (circle== 'del' || circle== 'mum')">
+								<goto next="#song_detail"/>
+					<elseif cond="DirectAccess=='55841007'"/>
+						<goto next="#song_detail"/>
+					<else/>
+						<audio expr="promptpath+LANG_DESCRIPTION+version+'/invalidoption.wav'"/>			 					 		         
+                           			<goto next="#song_detail"/>
+					</if> 
+
+
+               					
+               </if>
+
+</block>
+
+</form>
+
+<form id="browsing_opt">
+ <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				   <item>1</item>
+				   <item>2</item>
+				   <item>3</item>
+				   <item>8</item>
+				   <item>9</item>
+				   <item>0</item>
+	            </one-of>
+               </rule>
+             </grammar>
+			
+		   
+			<prompt bargein="true" timeout="3s">
+			<audio expr="promptpath+LANG_DESCRIPTION+version+'/keypad_options.wav'"/>
+            </prompt>
+            <filled>
+            	<if cond="mnuopt=='1'">
+            					 		
+            	  				  <script>
+               						unike_play=unike_play+1;
+               					  </script>
+                        		 
+								 <goto next="#song_detail"/>
+                <elseif cond="mnuopt=='2'"/>
+                					
+            					  <script>
+               						unike_play=unike_play;
+               					 </script>
+                        		 
+								 <goto next="#song_detail"/>
+				<elseif cond="mnuopt=='3'"/>
+                				
+            					 <script>
+               						unike_play=unike_play-1;
+               					 </script>
+                        		 
+								 <goto next="#song_detail"/>
+				<elseif cond="mnuopt=='8' ||mnuopt=='0'"/>
+                				
+								<goto next="playcontent.vxml"/>
+				
+				<elseif cond="mnuopt=='9'"/>
+							 
+								<goto next="account.vxml"/>
+				</if>
+				
+            </filled>
+             
+             <noinput>
+			  		 <goto next="#song_detail"/>	         </noinput>	
+		    
+		    
+		    <nomatch>
+		     <audio expr="promptpath+LANG_DESCRIPTION+version+'/invalidoption.wav'"/>	
+           	 <reprompt/>
+		    </nomatch>
+		    
+		     <nomatch count="3">
+              	<goto next="vh1_end.vxml"/>
+             </nomatch>
+</field>		    
+</form>
+
+<form id="crbt">
+<field name="CRBT">
+
+<grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				   <item>1</item>
+				   <item>2</item>
+				    </one-of>
+               </rule>
+             </grammar>
+             <prompt bargein="true" timeout="3s">
+			<audio expr="promptpath+LANG_DESCRIPTION+version+'/welcome_crbt.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+version+'/continue_prompt.wav'"/>
+            </prompt>
+            
+            <filled>
+            
+            <if cond="CRBT=='1'">
+            <goto next="#conferm"/>
+            
+            <elseif cond="CRBT=='2'"/>
+            <goto next="#song_detail"/>
+            
+            </if>
+            
+            </filled>
+            
+            <noinput>
+            <audio expr="promptpath+LANG_DESCRIPTION+version+'/nodtmf.wav'"/>  
+	         <reprompt/>
+            </noinput> 
+            
+             <noinput count="3">
+              	<goto next="vh1_end.vxml"/>
+             </noinput>
+            
+            <nomatch>
+             <audio expr="promptpath+LANG_DESCRIPTION+version+'/invalidoption.wav'"/>	
+           	 <reprompt/>
+            </nomatch>
+            
+             <nomatch count="3">
+              	<goto next="vh1_end.vxml"/>
+             </nomatch>
+</field>
+</form>
+<form id="conferm">
+<block>
+
+			<if cond="cirid==1 || cirid==2 ||  cirid==3 || cirid==4 || cirid==5 || cirid==6 || cirid==7 ">
+	 			<assign name="zone" expr="'north'"/>
+	 		<elseif cond="cirid==8 || cirid==9 ||  cirid==10 || cirid==11 || cirid==12 " />
+	 			<assign name="zone" expr="'west'"/>
+	 		<elseif cond="cirid==13 || cirid==14 ||  cirid==15 || cirid==16 || cirid==17 || cirid==18 "/>
+	 			<assign name="zone" expr="'east'"/>
+	 		<elseif cond="cirid==19 || cirid==20 ||  cirid==21 || cirid==22 || cirid==23 "/>
+	 			<assign name="zone" expr="'south'"/>
+	 		</if>
+	 		 
+	 		 <script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/master_dbinteraction?PROCEDURE=CRBT_RNGT_MENU&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+song+'&amp;INPARAM[1]=CRBT'"/>
+			<script>
+				CLIPID=out_string[0];
+
+			</script>   		    
+		    
+		    <log expr="'CLIPID=='+CLIPID"></log>
+		    
+			<if cond="CLIPID==''">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/nocrbt.wav'"/>
+				</prompt>
+				<goto next="#song_detail"/>
+			<else/>
+
+				<log>crbt chk request</log>
+				<!--<if cond="ANI=='8527000779'">
+					<assign name="circle" expr="'ker'"/>
+					<assign name="zone" expr="'south'"/>
+				</if>-->
+				
+				<!--<assign name="ChargeAmount2" expr="'15.0'"/>
+				<assign name="Validity2" expr="90"/>
+				<assign name="ChargeAmount1" expr="'30.0'"/>
+				<assign name="Validity1" expr="30"/>
+				<assign name="CpId" expr="4001"/>
+				<assign name="ProductID" expr="500649"/>
+				<assign name="ApplicationType" expr="'NON_HT_SUB'"/>-->
+
+
+
+
+			<if cond="circle=='mpd' || circle=='guj'">
+				<assign name="ChargeAmount2" expr="'15.0'"/>
+				<assign name="Validity2" expr="90"/>
+				<assign name="ChargeAmount1" expr="'36.0'"/>
+				<assign name="Validity1" expr="30"/>
+				<assign name="CpId" expr="1003"/>
+				<assign name="ProductID" expr="501095"/>
+				<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+				<assign name="stype" expr="27"/>				
+			<elseif cond="zone=='north'"/>	
+				<assign name="ChargeAmount2" expr="'15.0'"/>
+				<assign name="Validity2" expr="90"/>
+				<assign name="ChargeAmount1" expr="'30.0'"/>
+				<assign name="Validity1" expr="30"/>
+				<assign name="CpId" expr="1002"/>
+				<assign name="ProductID" expr="128"/>
+				<assign name="ApplicationType" expr="'NON_HT_SUB'"/>				
+				<assign name="stype" expr="1"/>
+			<elseif cond="zone=='east'"/>	
+				<assign name="ChargeAmount2" expr="'15.0'"/>
+				<assign name="Validity2" expr="90"/>
+				<assign name="ChargeAmount1" expr="'30.0'"/>
+				<assign name="Validity1" expr="30"/>
+				<assign name="CpId" expr="1001"/>
+				<assign name="ProductID" expr="500834"/>
+				<assign name="ApplicationType" expr="'NON_HT_SUB'"/>			
+				<assign name="stype" expr="1"/>				
+			<elseif cond="zone=='west'"/>	
+				<assign name="ChargeAmount2" expr="'15.0'"/>
+				<assign name="Validity2" expr="90"/>
+				<assign name="ChargeAmount1" expr="'30.0'"/>
+				<assign name="Validity1" expr="30"/>
+				<assign name="CpId" expr="501163"/>
+				<assign name="ProductID" expr="128"/>
+				<assign name="ApplicationType" expr="'NON_HT_SUB'"/>			
+				<assign name="stype" expr="1"/>				
+			<else/>
+				<assign name="ChargeAmount2" expr="'15.0'"/>
+				<assign name="Validity2" expr="90"/>
+				<assign name="ChargeAmount1" expr="'30.0'"/>
+				<assign name="Validity1" expr="30"/>
+				<assign name="CpId" expr="1002"/>
+				<assign name="ProductID" expr="128"/>
+				<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+				<assign name="stype" expr="1"/>				
+			</if>
+
+
+
+				<if cond="zone=='north'">
+					<!--<assign name="CallUrl" expr="'http://10.2.89.202/URLIntegration/profile_check.jsp&amp;API=RealNetwork&amp;MSISDN='+ANI+'&amp;uid=HUN_IVR&amp;pass=hun_ivr'"/>-->
+					<assign name="CallUrl" expr="'http://10.2.96.114:9080/CWM/helloTune.jsp&amp;API=RealNetwork&amp;MSISDN='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;FLAG=10'"/>
+					<goto next="#NEWRegions"/>
+
+				<elseif cond="zone=='east'"/>
+					<!--<assign name="CallUrl" expr="'http://10.133.23.190/URLIntegration/profile_check.jsp&amp;API=RealNetwork&amp;MSISDN='+ANI+'&amp;uid=HUN_IVR&amp;pass=hun_ivr'"/>-->
+					<assign name="CallUrl" expr="'http://10.133.27.101:9080/CWM/helloTune.jsp&amp;API=RealNetwork&amp;MSISDN='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;FLAG=10'"/>
+					<goto next="#NEWRegions"/>
+
+				<elseif cond="zone=='west'"/>
+					<!--<assign name="CallUrl" expr="'http://10.49.5.90/URLIntegration/profile_check.jsp&amp;API=RealNetwork&amp;MSISDN='+ANI+'&amp;uid=HUN_IVR&amp;pass=hun_ivr'"/>-->
+					<assign name="CallUrl" expr="'http://10.49.7.86:9080/CWM/helloTune.jsp&amp;API=RealNetwork&amp;MSISDN='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;FLAG=10'"/>
+					<goto next="#NEWRegions"/>
+
+				<else/>
+						<if cond="circle=='kar'">
+							<assign name="ChargeAmount2" expr="'15.0'"/>
+							<assign name="Validity2" expr="90"/>
+							<assign name="ChargeAmount1" expr="'35.0'"/>
+							<assign name="Validity1" expr="30"/>
+							<assign name="CpId" expr="4001"/>
+							<assign name="ProductID" expr="500761"/>
+							<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+							<assign name="CallUrl" expr="'http://10.89.8.73:8080/rbt/rbt_promotion.jsp&amp;API=OnMobile&amp;MSISDN='+ANI+'&amp;REQUEST=STATUS&amp;MODE=STS'"/>
+
+
+						<elseif cond="circle=='apd'"/>
+							<assign name="ChargeAmount2" expr="'15.0'"/>
+							<assign name="Validity2" expr="90"/>
+							<assign name="ChargeAmount1" expr="'30.0'"/>
+							<assign name="Validity1" expr="30"/>
+
+							<assign name="CpId" expr="4001"/>
+							<assign name="ProductID" expr="500649"/>
+							<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+							<assign name="CallUrl" expr="'http://10.105.55.36:8080/rbt/rbt_promotion.jsp&amp;API=OnMobile&amp;MSISDN='+ANI+'&amp;REQUEST=STATUS&amp;MODE=STS'"/>
+
+		
+						<elseif cond="circle=='tnu'"/>
+							<assign name="ChargeAmount2" expr="'15.0'"/>
+							<assign name="Validity2" expr="90"/>
+							<assign name="ChargeAmount1" expr="'30.0'"/>
+							<assign name="Validity1" expr="30"/>
+							
+							<assign name="CpId" expr="4001"/>
+							<assign name="ProductID" expr="500649"/>
+							<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+							<assign name="CallUrl" expr="'http://10.111.15.46:8080/rbt/rbt_promotion.jsp&amp;API=OnMobile&amp;MSISDN='+ANI+'&amp;REQUEST=STATUS&amp;MODE=STS'"/>
+
+
+						<elseif cond="circle=='ker'"/>
+							
+							<assign name="CpId" expr="4001"/>
+							<assign name="ProductID" expr="500649"/>
+
+							<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+
+							<assign name="ChargeAmount2" expr="'15.0'"/>
+							<assign name="Validity2" expr="90"/>
+							<assign name="ChargeAmount1" expr="'30.0'"/>
+							<assign name="Validity1" expr="30"/>
+
+							<assign name="CallUrl" expr="'http://10.127.7.4:8080/rbt/rbt_promotion.jsp&amp;API=OnMobile&amp;MSISDN='+ANI+'&amp;REQUEST=STATUS&amp;MODE=STS'"/>
+
+						<else/>
+							<assign name="ChargeAmount2" expr="'15.0'"/>
+							<assign name="Validity2" expr="90"/>
+							<assign name="ChargeAmount1" expr="'30.0'"/>
+							<assign name="Validity1" expr="30"/>
+
+							<assign name="CpId" expr="4001"/>
+							<assign name="ProductID" expr="500649"/>
+
+							<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+
+							<assign name="CallUrl" expr="'http://10.105.55.36:8080/rbt/rbt_promotion.jsp&amp;API=OnMobile&amp;MSISDN='+ANI+'&amp;REQUEST=STATUS&amp;MODE=STS'"/>
+
+						</if>
+						<goto next="#CheckCrbtStatus"/>
+				</if>						
+						
+						
+						
+
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/thanks_crbt.wav'"/>
+				</prompt>
+				<goto next="#song_detail"/>
+			</if>
+			<goto next="#song_detail"/>
+</block>
+</form>
+
+<form id="NEWRegions">
+	<block>
+		<log>call url:<value expr="CallUrl"/></log>
+		<script srcexpr="'http://10.2.73.156:8080/'+SERVLETPATH+'/Eu_ChechApi?ulink='+CallUrl"/>
+		<log>UserStatus1.value is:<value expr="UserStatus1.value"/></log>
+
+		<assign name="query_sub1" expr="UserStatus1.value"/>
+		<log>Chk CRBT status:<value expr="CallUrl"/></log>
+		<log>Subdialog url:<value expr="CallUrl"/></log>
+		<log>subdialog Response:<value expr="query_sub1"/></log>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1507&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=profilechek&amp;response_code='+query_sub1+'&amp;sessonid='+sessionId"/>
+
+		<!--<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_UPDATECRBTRESPONSE&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+zone+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+query_sub1"/>
+		<script>
+			var usr_status=out_string[0];
+		</script>-->
+
+
+
+		<if cond="query_sub1=='2'">
+			<log>passing paaremeter MSISDN:<value expr="ANI"/></log>
+			<log>passing paaremeter Lang:<value expr="LANG_DESCRIPTION"/></log>
+			<log>passing paaremeter ChargeAmount2 :<value expr="ChargeAmount2"/></log>
+			<log>passing paaremeter Validity2:<value expr="Validity2"/></log>
+			<log>passing paaremeter ApplicationType:<value expr="ApplicationType"/></log>
+			<log>passing paaremeter ProductID:<value expr="ProductID"/></log>
+			<log>passing paaremeter CpId :<value expr="CpId"/></log>
+			<log>passing paaremeter sessionId :<value expr="sessionId"/></log>
+			
+			
+			<!-- Hitting the comviva Activation URL Start  -->
+			
+			<if cond="zone=='north'">
+				<assign name="ulink" expr="'http://10.2.96.114:9080/CWM/Hungama_ASYNC.jsp'"/>
+			<elseif cond="zone=='east'"/>
+				<assign name="ulink" expr="'http://10.133.27.101:9080/CWM/Hungama_ASYNC.jsp'"/>
+			<elseif cond="zone=='west'"/>
+				<assign name="ulink" expr="'http://10.49.7.86:9080/CWM/Hungama_ASYNC.jsp'"/>
+			</if>
+				
+			<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype='+stype+'&amp;rentType=0&amp;vcode='+CLIPID+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>
+			<script>
+					responce=out_string[0];
+					cpTransactionID=out_string[1];
+					subProdID=out_string[2];
+					songProdID=out_string[3];
+					songVCode=out_string[4];
+			</script> 
+
+			<log>responce:<value expr="responce"/></log>
+			<log>cpTransactionID:<value expr="cpTransactionID"/></log>
+			<log>subProdID:<value expr="subProdID"/></log>
+			<log>songProdID:<value expr="songProdID"/></log>
+			<log>songVCode:<value expr="songVCode"/></log>
+
+			<if cond="responce=='0'">
+				<if cond="zone=='north' || zone=='west'">
+					<log>North API call</log>
+					<goto next="#NewuserAirtelApiNorth"/>
+				<else/>
+					<log>REST REGION API call</log>
+					<goto next="#NewuserAirtelApiREST"/>
+				</if>
+			<else/>
+				<goto next="#song_detail"/>
+			</if>
+
+			<!-- Hitting the comviva Activation URL End  -->
+			
+
+			<log>zone:<value expr="zone"/></log>
+			<if cond="zone=='north' || zone=='west'">
+				<log>North API call</log>
+				<goto next="#AirtelApiNorth"/>
+			<else/>
+				<log>REST REGION API call</log>
+				<goto next="#AirtelApiREST"/>
+			</if>
+
+		<else/>			
+			<!--<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/airtel_crbt?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+CLIPID+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+song+'&amp;flag=0&amp;DNIS=VH1'"/>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/thanks_crbt.wav'"/>
+			</prompt>
+			<goto next="#song_detail"/>-->
+			<if cond="zone=='north'">
+				<assign name="CpId" expr="1002"/>
+				<assign name="ProductID" expr="81"/>
+				<assign name="ApplicationType" expr="'HT_SUB'"/>
+			<elseif cond="zone=='east'"/>
+				<assign name="CpId" expr="1003"/>
+				<assign name="ProductID" expr="501198"/>
+				<assign name="ApplicationType" expr="'HT_SUB'"/>
+			<elseif cond="zone=='west'"/>
+				<assign name="CpId" expr="1001"/>
+				<assign name="ProductID" expr="500887"/>
+				<assign name="ApplicationType" expr="'HT_SUB'"/>
+			<else/>
+				<assign name="CpId" expr="1002"/>
+				<assign name="ProductID" expr="81"/>
+				<assign name="ApplicationType" expr="'HT_SUB'"/>
+			</if>
+			<if cond="zone=='north' || zone=='west'">
+				<log>North API call</log>
+				<goto next="#AirtelApiNorth"/>
+			<else/>
+				<log>REST REGION API call</log>
+				<goto next="#AirtelApiREST"/>
+			</if>			
+			
+
+		</if>
+	</block>
+
+</form>
+
+
+<form id="CheckCrbtStatus">
+	<block>
+		<log>call url:<value expr="CallUrl"/></log>
+
+		<script srcexpr="'http://10.2.73.156:8080/'+SERVLETPATH+'/airtel_CallServlet?ulink='+CallUrl"/>
+		<log>UserStatus1.value is:<value expr="UserStatus1.value"/></log>
+
+		<assign name="query_sub1" expr="UserStatus1.value"/>
+
+		<log>Chk CRBT status:<value expr="CallUrl"/></log>
+		<log>Subdialog url:<value expr="CallUrl"/></log>
+		<log>subdialog Response:<value expr="query_sub1"/></log>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1507&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=profilechek&amp;response_code='+query_sub1+'&amp;sessonid='+sessionId"/>
+
+		<!--<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATECRBTRESPONSE&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+zone+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+query_sub1"/>
+		<script>
+			var usr_status=out_string[0];
+		</script>-->
+
+
+		<if cond="query_sub1=='DEACTIVE' || query_sub1=='DEACT_PENDING' || query_sub1=='NEW_USER' || query_sub1=='INVALID_PREFIX'">
+			<log>passing paaremeter MSISDN:<value expr="MSISDN"/></log>
+			<log>passing paaremeter Lang:<value expr="LANG_DESCRIPTION"/></log>
+			<log>passing paaremeter ChargeAmount2 :<value expr="ChargeAmount2"/></log>
+			<log>passing paaremeter Validity2:<value expr="Validity2"/></log>
+			<log>passing paaremeter ApplicationType:<value expr="ApplicationType"/></log>
+			<log>passing paaremeter ProductID:<value expr="ProductID"/></log>
+			<log>passing paaremeter CpId :<value expr="CpId"/></log>
+			<log>passing paaremeter sessionId :<value expr="sessionId"/></log>
+			
+			<!-- Hitting the OnmobileHelloTunes Activation URL Start  -->
+
+			<if cond="circle=='kar'">
+				<assign name="subscriptionClass" expr="'DEFAULT35'"/>
+				<assign name="chargeClass" expr="'DEFAULT_R15'"/>
+				<assign name="subProdID" expr="500761"/>
+				<assign name="songProdID" expr="500998"/>
+				<assign name="ulink" expr="'http://10.89.8.73:8080/rbt/Selection.do'"/>	
+			<elseif cond="circle=='apd'"/>
+				<assign name="subscriptionClass" expr="'DEFAULT'"/>
+				<assign name="chargeClass" expr="'DEFAULT_R15'"/>
+				<assign name="subProdID" expr="500649"/>
+				<assign name="songProdID" expr="500998"/>
+				<assign name="ulink" expr="'http://10.105.55.36:8080/rbt/Selection.do'"/>
+			<elseif cond="circle=='tnu' || circle=='chn'"/>
+				<assign name="subscriptionClass" expr="'DEFAULT'"/>
+				<assign name="chargeClass" expr="'DEFAULT_R15'"/>
+				<assign name="subProdID" expr="500649"/>
+				<assign name="songProdID" expr="500998"/>
+				<assign name="ulink" expr="'http://10.111.15.46:8080/rbt/Selection.do'"/>
+			<elseif cond="circle=='ker'"/>
+				<assign name="subscriptionClass" expr="'DEFAULT'"/>
+				<assign name="chargeClass" expr="'DEFAULT_R15'"/>
+				<assign name="subProdID" expr="500649"/>
+				<assign name="songProdID" expr="500998"/>
+				<assign name="ulink" expr="'http://10.127.7.4:8080/rbt/Selection.do'"/>
+			<else/>
+				<assign name="subProdID" expr="500649"/>
+				<assign name="songProdID" expr="500998"/>
+				<assign name="subscriptionClass" expr="'DEFAULT'"/>
+				<assign name="chargeClass" expr="'DEFAULT_R15'"/>
+				<assign name="ulink" expr="'http://10.105.55.36:8080/rbt/Selection.do'"/>
+			</if>
+
+			<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_SouthActivationApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;vcode='+CLIPID+'&amp;mode=IVR_1&amp;dnis='+DNIS+'&amp;subscriptionClass='+subscriptionClass+'&amp;chargeClass='+chargeClass+'&amp;zone='+zone+'&amp;circle='+circle"/>
+			<script>
+				responce=out_string[0];
+				cpTransactionID=out_string[1];
+			</script> 
+
+			<log>responce:<value expr="responce"/></log>
+			<log>cpTransactionID:<value expr="cpTransactionID"/></log>
+
+			<if cond="responce=='success'">
+				<if cond="zone=='north' || zone=='west'">
+					<log>North API call</log>
+					<goto next="#NewuserAirtelApiNorth"/>
+				<else/>
+					<log>REST REGION API call</log>
+					<goto next="#NewuserAirtelApiREST"/>
+				</if>
+			<else/>
+				<goto next="#song_detail"/>
+			</if>
+			<!-- Hitting the OnmobileHelloTunes Activation URL Start  -->
+			
+			
+	
+			<log>zone:<value expr="zone"/></log>
+			<if cond="zone=='north' || zone=='west'">
+				<log>North API call</log>
+				<goto next="#AirtelApiNorth"/>
+			<else/>
+				<log>REST REGION API call</log>
+				<goto next="#AirtelApiREST"/>
+			</if>
+		<else/>
+			<assign name="ProductID" expr="500998"/>			
+			<assign name="ApplicationType" expr="'HT_SUB'"/>
+			<!--<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/airtel_crbt?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+CLIPID+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+song+'&amp;DNIS=VH1'"/>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+version+'/thanks_crbt.wav'"/>
+			</prompt>
+			<goto next="#song_detail"/>-->
+			
+			<log>zone:<value expr="zone"/></log>
+			<if cond="zone=='north' || zone=='west'">
+				<log>North API call</log>
+				<goto next="#AirtelApiNorth"/>
+			<else/>
+				<log>REST REGION API call</log>
+				<goto next="#AirtelApiREST"/>
+			</if>						
+		</if>
+
+	</block>
+
+</form>
+
+<form id="AirtelApiNorth">
+
+	<subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+MSISDN+'&amp;Lang=ENG&amp;ChargeAmount2='+ChargeAmount2+'&amp;Validity2='+Validity2+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">
+	<filled>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1507&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=HTsecondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>
+
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					<goto next="vh1_end.vxml"/>
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/airtel_crbt?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+CLIPID+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+song+'&amp;flag=8&amp;DNIS=VH1'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+version+'/thanks_crbt.wav'"/>
+					</prompt>
+						<goto next="#song_detail"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<goto next="playcontent.vxml"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+                                   <goto next="vh1_end.vxml"/>
+
+				<else/>
+					<goto next="playcontent.vxml"/>				
+				</if>			
+
+		</filled>
+	</subdialog>
+
+</form>
+
+<form id="AirtelApiREST">
+	<subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+MSISDN+'&amp;Lang=ENG&amp;ChargeAmount2='+ChargeAmount2+'&amp;Validity2='+Validity2+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">
+		
+	<filled>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1507&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=HTsecondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>
+
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					<goto next="vh1_end.vxml"/>
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/airtel_crbt?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+CLIPID+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+song+'&amp;flag=8&amp;DNIS=VH1'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+version+'/thanks_crbt.wav'"/>
+					</prompt>
+						<goto next="#song_detail"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<goto next="playcontent.vxml"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+                                   <goto next="vh1_end.vxml"/>
+
+				<else/>
+					<goto next="playcontent.vxml"/>				
+				</if>				
+		</filled>
+	</subdialog>
+
+</form>
+
+<form id="NewuserAirtelApiNorth">
+	    <subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/SecondConsentHandler.vxml'" method = "post" namelist = "MSISDN Lang ChargeAmount1 ChargeAmount2 Validity1 Validity2 ApplicationType ProductID CpId sessionId channelName cpName centralIVRPwd aocMessage1 aocMessage2 cpTransactionID subProdID songProdID songVCode msisdnGiftReceiver msisdnDedicatee msisdnStarCopy param1 param2 param3 param4 param5">
+	<filled>
+				<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1501&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=secondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>
+
+			<!-- Comviva conset API for acceptance and rejection Start   -->
+				<if cond="(zone=='north' || zone=='east' || zone=='west')">
+					<if cond="confirmUserChoice.userInput=='submitPackChosen'">
+						<assign name="consentparam" expr="'A'"/>
+					<else/>
+						<assign name="consentparam" expr="'R'"/>
+					</if>
+					<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype='+stype+'&amp;rentType=0&amp;vcode='+CLIPID+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>
+					<script>
+							responce=out_string[0];
+							cpTransactionID=out_string[1];
+							subProdID=out_string[2];
+							songProdID=out_string[3];
+							songVCode=out_string[4];
+					</script> 
+
+					<log>responce:<value expr="responce"/></log>
+					<log>cpTransactionID:<value expr="cpTransactionID"/></log>
+					<log>subProdID:<value expr="subProdID"/></log>
+					<log>songProdID:<value expr="songProdID"/></log>
+					<log>songVCode:<value expr="songVCode"/></log>
+				</if>
+
+			<!-- Comviva conset API for acceptance and rejection END   -->
+
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					<goto next="vh1_end.vxml"/>
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+version+'/thanks_crbt.wav'"/>
+					</prompt>
+						<goto next="#song_detail"/>
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<goto next="playcontent.vxml"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+                                   <goto next="vh1_end.vxml"/>
+
+				<else/>
+					<goto next="playcontent.vxml"/>				
+				</if>		
+		</filled>
+	</subdialog>
+
+</form>
+
+<form id="NewuserAirtelApiREST">
+	    <subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/SecondConsentHandler.vxml'" method = "post" namelist = "MSISDN Lang ChargeAmount1 ChargeAmount2 Validity1 Validity2 ApplicationType ProductID CpId sessionId channelName cpName centralIVRPwd aocMessage1 aocMessage2 cpTransactionID subProdID songProdID songVCode msisdnGiftReceiver msisdnDedicatee msisdnStarCopy param1 param2 param3 param4 param5">
+		<filled>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1501&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=secondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>
+
+			<!-- Comviva conset API for acceptance and rejection Start   -->
+				<if cond="(zone=='north' || zone=='east' || zone=='west')">
+					<if cond="confirmUserChoice.userInput=='submitPackChosen'">
+						<assign name="consentparam" expr="'A'"/>
+					<else/>
+						<assign name="consentparam" expr="'R'"/>
+					</if>
+					<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype='+stype+'&amp;rentType=0&amp;vcode='+CLIPID+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>
+					<script>
+							responce=out_string[0];
+							cpTransactionID=out_string[1];
+							subProdID=out_string[2];
+							songProdID=out_string[3];
+							songVCode=out_string[4];
+					</script> 
+
+					<log>responce:<value expr="responce"/></log>
+					<log>cpTransactionID:<value expr="cpTransactionID"/></log>
+					<log>subProdID:<value expr="subProdID"/></log>
+					<log>songProdID:<value expr="songProdID"/></log>
+					<log>songVCode:<value expr="songVCode"/></log>
+				</if>
+
+			<!-- Comviva conset API for acceptance and rejection END   -->
+
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					<goto next="vh1_end.vxml"/>
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+version+'/thanks_crbt.wav'"/>
+					</prompt>
+						<goto next="#song_detail"/>
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<goto next="playcontent.vxml"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+                                   <goto next="vh1_end.vxml"/>
+
+				<else/>
+					<goto next="playcontent.vxml"/>				
+				</if>					
+		</filled>
+	</subdialog>
+</form>
+
+</vxml>

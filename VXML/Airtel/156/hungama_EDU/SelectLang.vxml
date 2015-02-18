@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">      
+<meta name="SelectLang.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<property name="documentmaxage" value="3600"></property>
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+<property name="audiofetchhint" value="safe"/>
+<var name="song" expr="''" />
+<var name="VDay_Date" expr="''" />
+<var name="Song_Type" expr="''" />
+<var name="Song_Path" expr="''" />
+<var name="sessionid" expr="''" />
+<var name="wellang" expr="'HIN'" />
+	<script>
+				var Lang_Array=new Object();
+				var Language=new Object();
+				var song1 = new Object();
+				var DateResponse=new Object();
+				  var CDSIP=0;
+	</script>
+<form id="Main">	
+   
+			  <block>
+			  			<assign name="C_Start" expr="call_time()"/>
+			    <script>  
+                      			      realDNIS=session.connection.local.uri;                   
+			        		   ANI=session.connection.remote.uri;								  
+						var invalidani=ANI.indexOf('@');      
+						var invaliddni=realDNIS.indexOf('@');           					      
+				</script>		  
+			 
+			 <script>
+					var length = ANI.length;
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+			</script>
+			
+	   <log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+              <log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>   
+                
+              <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/>
+              
+	 
+   			  <assign name="operator" expr="'airm'"/>
+		  	  <assign name="dbservlet" expr="'EDU_dbinteraction'"/>
+              <assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 		
+			 
+    
+			 <log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+			 <log> @@@@DNI is <value expr="session.connection.local.uri"/> </log>	
+			 <log> @@@@ANI is <value expr="session.connection.remote.uri"/> </log>	
+			
+		
+			<script>
+		  					var splitparam=sessionid.split("_");
+		  					cirid=splitparam[1];
+		  					
+		  	</script>
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@operator is <value expr="operator"/> </log>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Airtel_IVR.CDS_IP_CIR&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+cirid+'&amp;INPARAM[1]='+ANI"/>
+				<script>
+				  <![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+							CDSIP = out_string[j];
+					       if(j==1)
+							circle = out_string[j];
+					       if(j==2)
+							zone = out_string[j];
+					  }
+				  ]]>
+				</script>
+
+				<log> @@@@circleid is <value expr="cirid"/> </log>
+				<log> @@@@CDSIP is <value expr="CDSIP"/> </log>
+				<log> @@@@circle name is <value expr="circle"/> </log>
+				<log> @@@@zone name is <value expr="zone"/> </log>
+				
+				<assign name ="promptpath" expr="'http://'+CDSIP+':8088/CDS/hungama/EDU/'"/>
+				<assign name="contentpath" expr="'http://'+CDSIP+':8088/CDS/hungama/content/'" /> 
+				<log> Prompt_Path issss is <value expr="promptpath"/> </log>
+				<log> contentpath isssss is <value expr="contentpath"/> </log>
+				
+	  </block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<filled>
+					<goto next="Hungama_EDU_Userstatus.vxml"/>
+				</filled>
+			</field>
+		<noinput>
+					<goto next="Hungama_EDU_Userstatus.vxml"/>
+		</noinput>
+		<nomatch>
+					<goto next="Hungama_EDU_Userstatus.vxml"/>
+		</nomatch>
+	  </form>
+	
+	</vxml>

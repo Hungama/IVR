@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="devRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">	
+
+	<meta name="Deity_Spl.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>	
+	<property name="caching" value="fast"/>
+	<property name="documentfetchhint" value="safe"/>
+	<property name="grammarfetchhint" value="safe"/>
+	<meta http-equiv="Cache-control" content="max-age=7200"/> 
+	<property name="fetchminimumbuffersize" value="54272"/>
+	<property name="fetchhint" value="safe"/>
+	<property name="audiofetchhint" value="safe"/>
+	<property name="timeout" value="1s" />
+	<property name="maxage" value="1800s"/>
+
+	<var name="movie_idx" expr="0"/>
+	<var name="specialdate" expr="0"/>	
+	<var name="dayspl" expr="0"/>
+	
+	<script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var dishes=new Array();		
+	</script>	
+	<form id="Welcome">
+           <block>
+			<if cond="lang=='10'">
+				<goto next="Deity_Spl_KK.vxml"></goto>
+			</if>
+			<assign name="prompt_name" expr="'DEITY_SPL'"/>
+			<assign name="HEARD" expr="'mainmenu'" />
+			<prompt bargein="false" timeout="0s" cond="RELIGION=='hindu' &amp;&amp; lang=='10'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_hindu_'+day+'_10.wav'"/>
+			</prompt>
+			
+			<prompt bargein="false" timeout="0s" cond="RELIGION=='hindu' &amp;&amp; lang=='08'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_hindu_'+day+'_08.wav'"/>
+			</prompt>
+			<if cond="lang=='10'">
+				<if cond="day=='mon'">
+					<assign name="var_wel" expr="getRandom(56,60)" />
+				<elseif cond="day=='tue'"/>
+					<assign name="var_wel" expr="getRandom(11,15)" />
+				<elseif cond="day=='wed'"/>
+					<assign name="var_wel" expr="getRandom(61,65)" />		  	
+				<elseif cond="day=='thu'"/>
+					<assign name="var_wel" expr="getRandom(30,32)" />
+				<elseif cond="day=='fri'"/>
+					<assign name="var_wel" expr="getRandom(24,28)" />
+				<elseif cond="day=='sat'"/>
+					<assign name="var_wel" expr="getRandom(72,75)" />
+				<elseif cond="day=='sun'"/>
+					<assign name="var_wel" expr="getRandom(73,77)" />
+				</if>			
+
+				<prompt bargein="true" timeout="1s" cond="day =='mon'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-09-579'+var_wel+'.wav'"/>
+				</prompt>		
+				<prompt bargein="true" timeout="1s" cond="day =='tue'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-09-150'+var_wel+'.wav'"/>
+				</prompt>				
+				<prompt bargein="true" timeout="1s" cond="day =='wed'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-09-150'+var_wel+'.wav'"/>			
+				</prompt>						
+				<prompt bargein="true" timeout="1s" cond="day =='thu'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-09-713'+var_wel+'.wav'"/>
+				</prompt>				
+				<prompt bargein="true" timeout="1s" cond="day =='fri'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-09-150'+var_wel+'.wav'"/>
+				</prompt>						
+				<prompt bargein="true" timeout="1s" cond="day =='sat'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-13-983'+var_wel+'.wav'"/>
+				</prompt>								
+				<prompt bargein="true" timeout="1s" cond="day =='sun'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-09-711'+var_wel+'.wav'"/>
+				</prompt>
+			<elseif cond="lang=='08'"/>
+				<if cond="day=='mon'">
+					<assign name="var_wel" expr="getRandom(63,67)" />
+				<elseif cond="day=='tue'"/>
+					<assign name="var_wel" expr="getRandom(65,69)" />
+				<elseif cond="day=='wed'"/>
+					<assign name="var_wel" expr="getRandom(35,39)" />		  	
+				<elseif cond="day=='thu'"/>
+					<assign name="var_wel" expr="getRandom(95,98)" />
+				<elseif cond="day=='fri'"/>
+					<assign name="var_wel" expr="getRandom(10,14)" />
+				<elseif cond="day=='sat'"/>
+					<assign name="var_wel" expr="getRandom(81,85)" />
+				<elseif cond="day=='sun'"/>
+					<assign name="var_wel" expr="getRandom(73,77)" />
+				</if>	
+				
+				<prompt bargein="true" timeout="1s" cond="day =='mon'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-09-149'+var_wel+'.wav'"/>
+				</prompt>		
+				<prompt bargein="true" timeout="1s" cond="day =='tue'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-09-148'+var_wel+'.wav'"/>
+				</prompt>				
+				<prompt bargein="true" timeout="1s" cond="day =='wed'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-09-146'+var_wel+'.wav'"/>			
+				</prompt>						
+				<prompt bargein="true" timeout="1s" cond="day =='thu'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-13-880'+var_wel+'.wav'"/>
+				</prompt>				
+				<prompt bargein="true" timeout="1s" cond="day =='fri'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-09-149'+var_wel+'.wav'"/>
+				</prompt>						
+				<prompt bargein="true" timeout="1s" cond="day =='sat'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/IN-S18-97-102'+var_wel+'.wav'"/>
+				</prompt>								
+				<prompt bargein="true" timeout="1s" cond="day =='sun'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Hun-09-149'+var_wel+'.wav'"/>
+				</prompt>			
+			</if>
+			
+			<!--<if cond="playconfigcat=='hindu08' || playconfigcat=='hindu10'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/songconfig/'+playconfigcat+'_'+day+'.cfg&amp;TOKEN=FREE'"/>
+			</if>-->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/devo_dbinteraction?PROCEDURE=DEVO_DAYSPL&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+lang+'&amp;INPARAM[1]='+day"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	dayspl = out_string[j];			
+						  }
+					]]>			
+			</script>
+			<log expr="'Day special is @@@@@@@@@ '+dayspl"></log>				
+			<goto next="#TOPMENU"/>
+            </block>
+	</form>	
+	
+	<form id="TOPMENU">
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">	
+						<one-of>
+							 <item>  1  </item>
+							 <item>  8  </item>
+						</one-of>
+					</rule>
+				</grammar>								
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/select_'+dayspl+'.wav'"/>					
+						<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>			
+						<audio expr="promptpath+LANG_DESCRIPTION+'/main_menu.wav'"/>
+					</prompt>				
+				<filled>						
+					<if cond="choice=='1'">
+						<assign name="OTHER_lang" expr="'TRUE'"/>
+						<assign name="cat" expr="dayspl"/>
+						<assign name="playconfig" expr="cat"/>
+						<assign name="HEARD" expr="cat" />
+						<goto next="devoplaycontent.vxml"/>
+					<elseif cond="choice=='8'"/>
+						<assign name="OTHER_lang" expr="'TRUE'"/>
+						<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+						
+					<elseif cond="choice=='9'"/>
+						<assign name="previous_page" expr="'New_MainMenu.vxml'"/>
+						<goto next="dev_ManageAccount.vxml"/>					
+						
+					<else/>
+						<assign name="OTHER_lang" expr="'TRUE'"/>
+						<assign name="cat" expr="dayspl"/>
+						<assign name="playconfig" expr="cat"/>
+						<assign name="HEARD" expr="cat" />									
+						<goto next="devoplaycontent.vxml"/>
+					</if>
+				</filled>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		
+		<noinput count="3">
+			<assign name="OTHER_lang" expr="'TRUE'"/>
+			<assign name="cat" expr="dayspl"/>
+			<assign name="playconfig" expr="cat"/>
+			<assign name="HEARD" expr="cat" />									
+			<goto next="devoplaycontent.vxml"/>
+		</noinput>		
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		
+		<nomatch count="3">
+			<assign name="OTHER_lang" expr="'TRUE'"/>
+			<assign name="cat" expr="dayspl"/>
+			<assign name="playconfig" expr="cat"/>
+			<assign name="HEARD" expr="cat" />									
+			<goto next="devoplaycontent.vxml"/>
+		</nomatch>		
+		</field>
+	</form>	
+</vxml>

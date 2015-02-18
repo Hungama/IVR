@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="devRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="ExistingUser.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	<property name="caching" value="fast"/>
+	<property name="documentfetchhint" value="safe"/>
+	<property name="grammarfetchhint" value="safe"/>
+	<meta http-equiv="Cache-control" content="max-age=7200"/> 
+	<property name="fetchminimumbuffersize" value="54272"/>
+	<property name="fetchhint" value="safe"/>
+	<property name="audiofetchhint" value="safe"/>
+	<property name="timeout" value="1s" />
+	<property name="maxage" value="1800s"/>
+	
+	<script>
+		var out_string=new Object();
+		var length=0;		
+	</script>
+	
+	<form id="LASTHEARD_PROFILE">
+		<block>
+			<assign name="prompt_name" expr="'EXISTING_USER'"/>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/devo_dbinteraction?PROCEDURE=DEVO_USERPROFILE&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=NA&amp;INPARAM[3]=NA&amp;INPARAM[4]=GET'"/>
+			<script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						HEARD = out_string[j];
+					       if(j==1)
+						myth_unlike_play =  out_string[j];
+					       if(j==2)
+						temple_heard =  out_string[j];
+					  }
+				]]>			
+			</script>
+			<script>
+				out_string.length=0;
+			</script>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/devo_dbinteraction?PROCEDURE=DEVO_USERRELIGION&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=NA&amp;INPARAM[3]=GET'"/>
+			<script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						RELIGION = out_string[j];
+					       if(j==1)
+						vinaycat = out_string[j];
+					  }
+				]]>			
+			</script>
+			
+			<!--<assign name="var_wel" expr="getRandom(1,50)" />-->
+			<log expr="'HEARD @@@@@@@@@ '+HEARD"></log>	
+			<log expr="'RELIGION @@@@@@@@@ '+RELIGION"></log>				
+			<if cond="DNIS=='510168'">			
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<script>
+				  <![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					{  	  
+					       if(j==0)
+							usr_statustoll = out_string[j];
+					 }
+					]]>
+				</script>
+				<log>length of outstring  is	<value expr="out_string.length"/></log>
+				<log>user status is <value expr="usr_statustoll"/></log>
+			</if>			
+			<if cond="DNIS=='510168' &amp;&amp; circle=='apd' &amp;&amp; RELIGION=='0'">
+				<assign name="RELIGION" expr="'hindu'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/devo_dbinteraction?PROCEDURE=DEVO_USERRELIGION&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+RELIGION+'&amp;INPARAM[2]=08&amp;INPARAM[3]=SET'"/>
+			</if>			
+			<if cond="circle=='upw'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_UPWBASE_CHK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+					  <![CDATA[
+						for(j=0; j< out_string.length;  j++)
+						{  	  
+						       if(j==0)
+							count = out_string[j];
+						 }
+						]]>
+				</script>
+				<log>count in DB is  <value expr="count"/></log>					
+				<if cond="count=='1' &amp;&amp; RELIGION=='0'">
+					<assign name="RELIGION" expr="'sikh'"/>
+				</if>
+				<if cond="count=='1' &amp;&amp; lang==''">			
+					<assign name="lang" expr="'03'"/>
+					<assign name="LANG_DESCRIPTION" expr="'03'"/>
+				</if>
+			</if>			
+			<if cond="LANG_DESCRIPTION=='01'">
+				<assign name="usr_rel" expr="'muslim'"/>
+			<else/>
+				<assign name="usr_rel" expr="'islam'"/>
+			</if>
+			<!--<if cond="(lang=='10' || lang=='08') &amp;&amp; RELIGION=='hindu' &amp;&amp; (ANI=='8693945793' || ANI=='8008055588')">-->
+			<if cond="(lang=='10' || lang=='08') &amp;&amp; RELIGION=='hindu'">
+				<goto next="Deity_Spl.vxml"></goto>
+			</if>	
+			<if cond="(lang=='09' || lang=='07') &amp;&amp; RELIGION=='hindu'">
+				<goto next="Deity_Spl_TNKR.vxml"></goto>
+			</if>				
+			<if cond="lang=='01' &amp;&amp; RELIGION=='hindu'">
+				<goto next="Hindu_Deity_Spl.vxml"></goto>
+			</if>
+			<if cond="DirectMM=='true'">
+					<if cond="DNIS=='510501'">
+				 		<assign name="RELIGION" expr="'hindu'"/>
+					<elseif cond="(DNIS=='510502' || DNIS=='51050786')"/>
+						<assign name="RELIGION" expr="'muslim'"/>
+					<elseif cond="(DNIS=='510503' || DNIS=='5105025')"/>
+						<assign name="RELIGION" expr="'christian'"/>
+					<elseif cond="DNIS=='510504'"/>
+						<assign name="RELIGION" expr="'sikh'"/>
+					<elseif cond="DNIS=='510505'"/>
+						<assign name="RELIGION" expr="'jainism'"/>
+					<elseif cond="DNIS=='510506'"/>
+						<assign name="RELIGION" expr="'buddhism'"/>
+					</if>
+					<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+			<else/>
+				<!--<goto next="#WelcomeIntroRandom"/>-->
+				<prompt bargein="false" timeout="0s" cond="RELIGION=='hindu'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_hindu_'+day+'.wav'"/>
+				</prompt>
+				<if cond="RELIGION=='0' || RELIGION=='undefined' || RELIGION==0">
+						<goto next="New_MainMenu.vxml"></goto>
+				</if>					
+				<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+			</if>	
+		</block>
+	</form>
+	<form id="WelcomeIntroRandom">
+		<block>
+			<assign name="k" expr="getRandom(1,50)" />
+		</block>	
+		<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="false" timeout="0s" cond="circle=='upw' &amp;&amp; RELIGION=='hindu' &amp;&amp; LANG_DESCRIPTION=='01'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_mm_upu.wav'"/>
+			</prompt>
+
+			<prompt bargein="false" timeout="0s" cond="RELIGION=='0' &amp;&amp; HEARD=='0' &amp;&amp; HEARD=='undefined'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_new.wav'"/>
+			</prompt>
+			<prompt bargein="false" timeout="0s" cond="RELIGION!='0' &amp;&amp; HEARD=='0' &amp;&amp; HEARD=='undefined'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_new.wav'"/>
+			</prompt>
+			
+			<prompt bargein="false" timeout="0s" cond="RELIGION=='hindu' &amp;&amp; lang=='01'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_'+RELIGION+'_'+day+'.wav'"/>
+			</prompt>
+			
+			<prompt bargein="false" timeout="0s" cond="RELIGION=='hindu' &amp;&amp; lang=='10'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_hindu_'+day+'_10.wav'"/>
+			</prompt>
+			
+			<prompt bargein="false" timeout="0s" cond="RELIGION=='hindu' &amp;&amp; lang=='08'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_hindu_'+day+'_08.wav'"/>
+			</prompt>
+			
+			<prompt bargein="false" timeout="0s" cond="RELIGION=='hindu' &amp;&amp; lang!='01' &amp;&amp; lang!='08' &amp;&amp; lang!='10'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_new.wav'"/>
+			</prompt>			
+			
+			<prompt bargein="false" timeout="0s" cond="RELIGION=='sikh' || RELIGION=='christian'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_'+RELIGION+'.wav'"/>				
+			</prompt>
+			
+			<prompt bargein="false" timeout="0s" cond="RELIGION=='muslim'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_'+usr_rel+'.wav'"/>				
+			</prompt>
+			
+			<filled>
+				<if cond="choice=='9'">
+					<goto next="dev_ManageAccount.vxml"/>	
+				 </if> 
+				<if cond="choice=='7'">
+					<goto next="dev_PlayList.vxml"/>	
+				 </if> 
+				 
+				  <if cond="choice &lt; 10">
+				  		<if cond="DNIS=='510168' &amp;&amp; circle=='apd'">
+							<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"></goto>
+						</if>
+				  		<if cond="circle=='kar' &amp;&amp; (HEARD=='hindu_001'|| HEARD=='hindu_002' || HEARD=='hindu_003' || HEARD=='hindu_004' || HEARD=='hindu_005' || HEARD=='hindu_006' || HEARD=='hindu_007')">
+							<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"></goto>
+						</if>						
+						<if cond="RELIGION=='0' || RELIGION=='undefined' || RELIGION==0">
+								<goto next="New_MainMenu.vxml"></goto>
+						</if>	
+						<if cond="RELIGION=='muslim' || DNIS=='51050' || lang=='19'">
+								<goto next="New_MainMenu.vxml"></goto>
+						</if>
+				  
+							<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined' || HEARD==''">
+											<log expr="'inside HEARD @@@@@@@@@ '+HEARD"></log>	
+											<log expr="'religion @@@@@@@@@ '+RELIGION"></log>
+											<log expr="'vianycat  @@@@@@@@@ '+vinaycat"></log>
+											<if cond="vinaycat=='0' &amp;&amp; RELIGION=='0'">
+												<goto next="New_MainMenu.vxml"></goto>
+											
+									<!--		<elseif cond="vinaycat=='0'&amp;&amp; RELIGION!='0' "/>
+												<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"></goto>
+											
+											 <elseif cond="vinaycat!='0' &amp;&amp; RELIGION!='0' "/>
+													<log expr="'inside vianycat and religion @@@@@@@@@ '+RELIGION"></log>	
+													<assign name="cat" expr="vinaycat"/>
+													<assign name="playconfigcat" expr="RELIGION+cat"/>
+													<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>-->
+											<else/>
+											<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+											<!--		<goto next="New_MainMenu.vxml"></goto>-->
+													
+											</if>
+										
+								<else/>
+												<!--<assign name="cat" expr="vinaycat"/>
+												<assign name="playconfigcat" expr="RELIGION+cat"/>
+												<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>-->
+								</if>
+					<else/>
+						<script>
+							length = HEARD.length;
+							cat = HEARD;
+							<!-- subcat = HEARD.substring(2,4); -->
+						</script>
+						<assign name="playconfig" expr="HEARD"></assign>					
+						<goto next="#LASTHEARD"></goto>												
+					</if>							
+			</filled>
+		</field>
+		<noinput>
+			<if cond="DNIS=='510168' &amp;&amp; circle=='apd'">
+				<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"></goto>
+			</if>		
+			<if cond="circle=='kar' &amp;&amp; (HEARD=='hindu_001'|| HEARD=='hindu_002' || HEARD=='hindu_003' || HEARD=='hindu_004' || HEARD=='hindu_005' || HEARD=='hindu_006' || HEARD=='hindu_007')">
+				<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"></goto>
+			</if>									
+			<if cond="RELIGION=='0' || RELIGION=='undefined' || RELIGION==00">
+				<goto next="New_MainMenu.vxml"></goto>
+			</if>
+			<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined' || HEARD==''">
+							<if cond="vinaycat=='0' &amp;&amp; RELIGION=='0'">
+								<goto next="New_MainMenu.vxml"></goto>
+							
+							<!--
+							<elseif cond="vinaycat=='0'&amp;&amp;RELIGION!='0'"/>
+								<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"></goto>
+							
+							<elseif cond="vinaycat!='0'&amp;&amp;RELIGION!='0'"/>
+												<assign name="cat" expr="vinaycat"/>
+												<assign name="playconfigcat" expr="RELIGION+cat"/>
+												<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+																							-->
+							<else/>
+								<!--<goto next="New_MainMenu.vxml"></goto>-->
+								<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+							</if>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD;
+				       <!-- subcat = HEARD.substring(2,4); -->
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>	
+		</noinput>
+		
+		<nomatch>
+			<if cond="DNIS=='510168' &amp;&amp; circle=='apd'">
+				<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"></goto>
+			</if>	
+			<if cond="circle=='kar' &amp;&amp; (HEARD=='hindu_001'|| HEARD=='hindu_002' || HEARD=='hindu_003' || HEARD=='hindu_004' || HEARD=='hindu_005' || HEARD=='hindu_006' || HEARD=='hindu_007')">
+				<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"></goto>
+			</if>									
+			<if cond="RELIGION=='0' || RELIGION=='undefined' || RELIGION==00">
+				<goto next="New_MainMenu.vxml"></goto>
+			</if>		
+			<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined' || HEARD==''">
+				<if cond="vinaycat=='0' &amp;&amp; RELIGION=='0'">
+						<goto next="New_MainMenu.vxml"></goto>
+					
+							<!--
+							<elseif cond="vinaycat=='0'&amp;&amp;RELIGION!='0'"/>
+								<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"></goto>
+							
+							<elseif cond="vinaycat!='0'&amp;&amp;RELIGION!='0'"/>
+								<assign name="cat" expr="vinaycat"/>
+								<assign name="playconfigcat" expr="RELIGION+cat"/>
+								<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>																					-->
+					<else/>
+								<!--<goto next="New_MainMenu.vxml"></goto>-->
+								<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>								
+					</if>
+
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD;
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>
+		</nomatch>
+	</form>
+	
+	<form id="LASTHEARD">		
+	<block>
+		<assign name="prompt_name" expr="'LASTHEARD'"/>	
+		<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"></goto>
+		<if cond="HEARD=='mainmenu'"> 
+			<assign name="cat" expr="vinaycat"/>
+			<assign name="playconfigcat" expr="RELIGION+cat"/>
+			<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+		</if>
+	</block>
+		<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+
+				<audio expr="promptpath+LANG_DESCRIPTION+'/listining_cat.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+HEARD+'.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/main_menu.wav'"/>
+
+			</prompt>
+			<filled>			
+				<if cond="choice=='8'">
+					<assign name="cat" expr="vinaycat"/>
+					<assign name="playconfigcat" expr="RELIGION+cat"/>
+					<log expr="'PLAYINF CONFIG @@@@@@@@@ '+playconfigcat"></log>
+					<if cond="playconfigcat=='hindu01'">
+						<assign name="cat_flag" expr="'FALSE'"/>
+					<else/>
+						<assign name="cat_flag" expr="'TRUE'"/>
+					</if>	
+					<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+					<!--<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>-->
+								
+			    	<elseif cond="choice=='7'"/>
+					<goto next="dev_PlayList.vxml"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="dev_ManageAccount.vxml"/>
+				<else/>	
+					<goto next="devoplaycontent.vxml"/>
+		   		</if>				  
+			</filled>
+		</field>
+		<noinput>
+				<goto next="devoplaycontent.vxml"/>
+		</noinput>
+		<nomatch>
+				<goto next="devoplaycontent.vxml"/>
+		</nomatch>
+	</form>
+
+</vxml>

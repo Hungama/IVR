@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="devRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="devoplaycontent.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+     <var name="playconfigcattemp" expr="''"/>
+     <script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var len=0;
+		var contentlogging=0;
+	</script>
+	
+<form id="MM_Menu">
+<block>
+	<assign name="LANG_DESCRIPTION" expr="'01'" />
+</block>
+<field name="optionMM">
+	 <grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>						
+						<item>1</item>
+						<item>8</item>	
+					</one-of>
+				</rule>
+	</grammar>
+
+
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/Welcome_catname_'+DNIS+'.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/select_catname_'+DNIS+'.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/main_menu.wav'"/>
+		</prompt>
+		
+		 <filled>		      
+			<if cond="optionMM=='1'">
+				<goto next="#loadcliptoplay"/>		
+			<else/>
+			   <goto next="New_MainMenu.vxml"/>	
+			</if>
+		</filled>
+	
+	<noinput  count="1">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+		</prompt>
+		<reprompt></reprompt>
+	</noinput>
+
+	<noinput  count="2">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+		</prompt>
+		<reprompt></reprompt>
+	</noinput>
+	
+	<noinput count="3">
+					
+		<goto next="#loadcliptoplay"/>	
+	</noinput>
+
+
+	<nomatch count="1">
+		<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+		</prompt>			
+		<reprompt></reprompt>
+	</nomatch>
+	<nomatch count="2">
+		<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+		</prompt>			
+		<reprompt></reprompt>
+	</nomatch>
+	<nomatch count="3">
+					
+		<goto next="#loadcliptoplay"/>
+	</nomatch>	
+		
+		
+</field>
+</form>		
+	
+	<form id="loadcliptoplay">
+		  <block>  		  	          
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/songconfig/'+DNIS+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+						array.length=0;
+						unike_play=0;
+			</script>
+			<assign name="HEARD" expr="playconfig" />
+					<assign name="len" expr="favSongs.length" />
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#StartToPlaysongs"/>  					
+		   </block>
+	</form>
+
+	
+	
+<form id="StartToPlaysongs">
+		<block>
+		<script>
+		   		 <![CDATA[
+  		       			if(timerflag==1)
+					start_BalenceMinute=start_time();
+				]]>	 	
+ 		</script>
+	
+		<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+		<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+		</if>
+		
+					<script>
+							var songcheck=array[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = array[unike_play];
+					</script>
+					 <assign name="song_begin" expr="start_time()"/>
+					 <assign name="song_listen" expr="'START'" />
+					 <assign name="RatainUnlikePaly" expr="unike_play" />
+					 <assign name="ComingFrom" expr="'devo'" />
+					
+      </block>
+		   <field name="selectoption">
+				<grammar mode="dtmf" root="start" version="1.0">
+			   		<rule id="start" scope="public">
+			   		  <one-of>
+					      <item>1</item>
+					      <item>2</item>	
+					      <item>3</item>
+				       	  <item>8</item>
+						  
+					 </one-of>
+			   		</rule>
+		       	</grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			  <audio expr="contentpath+contentdir+'/'+song+'.wav'"/> 	
+  	   	      </prompt> 			 
+		  
+		      <filled>
+			 	<script>
+					end_BalenceMinute=start_time();
+				</script>
+		      <assign name="contentlogging" expr="selectoption"/>
+		      <goto next="#contentlogg"/>
+				
+			  </filled>				  
+		
+		     
+			 <noinput>	
+			 	<script>
+						end_BalenceMinute=start_time();
+				</script>
+				<assign name="contentlogging" expr="'1'"/>
+		      <goto next="#contentlogg"/> 	
+			</noinput>
+
+		<nomatch>
+			<script>
+				end_BalenceMinute=start_time();
+			</script>
+		
+			<reprompt></reprompt>
+		</nomatch>
+	 </field>
+	  	
+	</form>	
+	
+	<form id="contentlogg">
+	<block>
+			 <script>
+		   		 <![CDATA[
+  		       			if(timerflag==1)
+					start_BalenceMinute=start_time();
+				]]>	 	
+			</script>  
+			<script>
+				end_BalenceMinute=start_time();
+			</script>
+
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 								 
+				  <if cond="contentlogging=='1'">
+					 <script> unike_play=unike_play-1;
+				   	 </script>
+					 <goto next="#StartToPlaysongs"/>	
+				 <elseif cond="contentlogging=='2'"/>
+						<script> unike_play=unike_play</script>
+					     <goto next="#StartToPlaysongs"/> 				 
+				 
+				 <elseif cond="contentlogging=='3'"/>	
+					 	<script> unike_play=unike_play+1</script>
+						<goto next="#StartToPlaysongs"/> 
+			 	  <elseif cond="contentlogging=='8'"/>
+			  		 <goto next="New_MainMenu.vxml"/>
+				  <else/>				 
+				 		<script> unike_play=unike_play+1</script>		
+				        <goto next="#StartToPlaysongs"/> 		
+				 </if>
+	
+		<noinput>
+			<script>
+				end_BalenceMinute=start_time();
+		</script>         
+			<goto next="#StartToPlaysongs"/> 	
+		</noinput>
+
+		<nomatch>
+			<script>
+				end_BalenceMinute=start_time();
+		</script>         
+		
+			<goto next="#StartToPlaysongs"/>
+		</nomatch>
+
+
+	</block>
+</form>
+	
+
+</vxml>

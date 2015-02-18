@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="SelectLang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+		
+	<var name="wellang" expr="''" />
+	<var name="Six_Digit" expr="0" />
+	<var name="ciropr" expr="''" />
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="audiofetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+
+	<script>
+	   var	ciropr1 = new Object();	
+	   var CDSIP=0;
+		var eummdnis=0;
+	</script>
+
+	
+<form id="Main">
+	<block>
+	<assign name="Section_Name" expr="'CONTENTCDS'"/>
+		<assign name="C_Start" expr="call_time()"/>
+		
+		
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+	    </script>
+	    
+
+	    <script>
+         		var	length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		</script>
+			
+		<assign name="DNIS" expr="realDNIS"/>
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+			 <assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 
+
+			 <log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+			 <log> @@@@DNI is 		<value expr="session.connection.local.uri"/> </log>	
+			 <log> @@@@ANI is 		<value expr="session.connection.remote.uri"/> </log>
+
+			<script>
+					var splitparam=sessionid.split("_");
+					cirid=splitparam[1]; 
+			</script>
+
+			 <assign name ="operator" expr="'airm'"/>
+			 <assign name="dbservlet" expr="'airtel_dbinteraction'"/>
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@operator is <value expr="operator"/> </log>
+		
+			<script>
+				eummdnis = realDNIS.match(546469);
+			</script>
+			
+			<if cond="realDNIS=='546469'">
+				<submit expr="'../hungama_EU/hungama_circle.vxml'"/>
+			<elseif cond="realDNIS=='54646910' &amp;&amp; (cirid=='10' || ANI=='8527000779')"/>
+				<submit expr="'../hungama_EU/hungama_circle.vxml'"/>
+			<elseif cond="realDNIS=='5464692' &amp;&amp; (cirid=='13' || cirid=='14')"/>
+				<submit expr="'../hungama_EU_Bengali/hungama_circle.vxml'"/>
+			<elseif cond="(realDNIS=='54646912' || realDNIS=='54646948' || realDNIS=='54646917' || realDNIS=='54646920')"/>
+				<submit expr="'../hungama_AM_54646911/hungama_circle.vxml'"/>
+			</if>
+
+			<if cond="eummdnis=='546469'">
+				<submit expr="'../hungama_EU/hungama_circle.vxml'"/>	
+			</if>
+
+			<if cond="realDNIS=='5464645'">
+				<submit expr="'../Hungama_BNB/vxmlFiles/Hungama_BNB_Play.vxml'"/>
+			</if>
+
+ 			<if cond="realDNIS=='54646196' &amp;&amp; (cirid==2 || cirid==3 || cirid==19)">
+				<submit expr="'../MND/MND_SelectLang.vxml'"/>
+			 </if>
+			  <if cond="realDNIS=='5464613' &amp;&amp; cirid=='20'">
+				<submit expr="'../PKFLOW/Hungama_pk_SelectLang.vxml'"/>
+			 </if>
+			<if cond="(realDNIS=='5464614' || realDNIS=='54646141' || realDNIS=='54646142' || realDNIS=='54646143' || realDNIS=='54646144') &amp;&amp; (cirid=='19' || cirid=='23' || cirid=='21') ">
+				<submit expr="'../Hungama_ARM_5464614/Hungama_ARM_SelectLang.vxml'"/>
+			 </if>
+ 			 <if cond="realDNIS=='54646169' &amp;&amp; cirid=='19'">
+				<!-- <submit expr="'../ManchalaPremRiyaSub/SelectLang.vxml'"/>-->
+				<submit expr="'../MND/MND_SelectLang.vxml'"/>
+			 </if>
+
+			
+
+		
+
+			
+	<if cond="realDNIS=='5464612' &amp;&amp; cirid=='20'">
+			<submit expr="'../comedyportal_5464612/hungama_circle.vxml'"/>
+	<elseif cond="cirid=='20' &amp;&amp; realDNIS=='5464640'"/>
+			<submit expr="'../comedyportal_5464640_TOLLMODEL/hungama_circle.vxml'"/>
+	<elseif cond="cirid=='19' &amp;&amp; realDNIS=='5464643'"/>
+		<submit expr="'../Hungama_ARM_5464614/Hungama_ARM_SelectLang.vxml'"/>
+	<else/>
+			<script>var length = realDNIS.length;</script>
+				<if cond="length &gt; 6">
+					<script>Six_Digit= realDNIS.substring(5,6);</script>
+					<if cond="(Six_Digit &gt; 3 &amp;&amp; Six_Digit &lt; 9)">
+						<assign name="pricepoint" expr="'3'" />
+						<assign name="DNIS" expr="'54646'"/>
+						<!--<goto next="#USRSTATUS_TOLL"></goto>-->
+					</if>
+				</if>
+
+
+	</if>
+
+		<!--<if cond="DNIS=='546461'">
+			<submit expr="'../mtv/SelectLang.vxml'"/>
+		<elseif cond="realDNIS=='5464612' &amp;&amp; cirid=='20'"/>
+			<submit expr="'../comedyportal_5464612/hungama_circle.vxml'"/>
+		<elseif cond="realDNIS=='546462' || realDNIS=='546463'"/>
+			<submit expr="'../hungama_54646v2_service_MM/Hungama_54646_SelectLang_MM.vxml'"/> 
+		<elseif cond="ANI=='9910040744' &amp;&amp; (realDNIS=='5464630' || realDNIS=='5464631' || realDNIS=='5464632' || realDNIS=='5464637' || realDNIS=='5464638' || realDNIS=='5464635' || realDNIS=='5464635' || realDNIS=='5464636')"/>
+			<submit expr="'../hungama_54646v2_service_MM/Hungama_54646_SelectLang_MM.vxml'"/>
+    		<elseif cond="realDNIS=='546469'"/>
+			<submit expr="'../hungama_EU/hungama_circle.vxml'"/> 
+		<elseif cond="(realDNIS=='54646912' || realDNIS=='54646948' || realDNIS=='54646917' || realDNIS=='54646920')"/>
+			<submit expr="'../hungama_AM_54646911/hungama_circle.vxml'"/>
+		<elseif cond="realDNIS=='546469155'"/>
+			<submit expr="'../hungama_EU_Test/hungama_circle.vxml'"/>
+		<elseif cond="realDNIS=='5464634' || realDNIS=='5464644'"/>
+			<submit expr="'../hungama_5464634_pausecode/Dtmftesting.vxml'"/>
+		<elseif cond="realDNIS=='5464637'"/>
+			<submit expr="'../hungama_livearti/SelectLang.vxml'"/>
+		<elseif cond="realDNIS=='5464647'"/>
+			<submit expr="'../Hungama_5464647_CRBT/Dtmftesting.vxml'"/> 
+		<elseif cond="realDNIS=='5464642'"/>
+			<submit expr="'../Bol_Baby_Bol/BolBabyBol_SelectLang.vxml'"/>
+		<elseif cond="realDNIS=='54646333'"/>
+			<submit expr="'../hungama_devotional/SelectLang.vxml'"/>
+		<else/>
+				<script>var length = realDNIS.length;</script>
+				<if cond="length &gt; 6">
+					<script>Six_Digit= realDNIS.substring(5,6);</script>
+					<if cond="(Six_Digit &gt; 3 &amp;&amp; Six_Digit &lt; 9)">
+						<assign name="DNIS" expr="'54646'"/>
+						
+					</if>
+				</if>
+		</if>-->
+
+		<if cond="realDNIS=='54646' || realDNIS=='546464' ||realDNIS=='546466' || realDNIS=='546467' || realDNIS=='546468'">
+			<assign name="pricepoint" expr="'3'" />
+			<script>DNIS=54646;</script>
+		</if>
+	<if cond="realDNIS=='54646009' &amp;&amp; (ANI=='99100407441' || ANI=='9004039752' || ANI=='9871452276')">
+				<submit expr="'../Hungama_SpkEng/SelectLang.vxml'"/>
+    	</if>
+
+	<if cond="ANI=='99100407441' &amp;&amp; (realDNIS=='5464630' || realDNIS=='5464631' || realDNIS=='5464632' || realDNIS=='5464633' || realDNIS=='5464634' || realDNIS=='5464635' || realDNIS=='5464635' || realDNIS=='5464636')">
+				<submit expr="'../hungama_54646v2_service_MM/Hungama_54646_SelectLang_MM.vxml'"/>
+    	</if>
+
+
+         	        
+			 
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Airtel_IVR.CDS_IP_CIR&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+cirid+'&amp;INPARAM[1]='+ANI"/>
+			<script>
+			  <![CDATA[
+				for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+						CDSIP = out_string[j];
+				       if(j==1)
+						circle = out_string[j];
+				       if(j==2)
+						zone = out_string[j];
+				  }
+			  ]]>
+			</script>
+
+			<log> @@@@circleid is <value expr="cirid"/> </log>
+			<log> @@@@CDSIP is <value expr="CDSIP"/> </log>
+			<log> @@@@circle name is <value expr="circle"/> </log>
+			<log> @@@@zone name is <value expr="zone"/> </log>
+			<assign name ="promptspath_54646" expr="'http://'+CDSIP+':8088/CDS/hungama/54646V2/'"/>
+			<assign name="contentpath" expr="'http://'+CDSIP+':8088/CDS/hungama/content/'" /> 
+			<log> promptpath issss is <value expr="promptspath_54646"/> </log>
+			<log> contentpath isssss is <value expr="contentpath"/> </log>
+			 
+			
+		<if cond="realDNIS=='5464646'">
+				<!--<if cond="ANI=='8527000779'">-->
+					<submit expr="'../Hungama_Krish/SelectLang.vxml'"/>
+				<!--<else/>
+					<goto next="Hungama_Fukrey.vxml"></goto>
+				</if>-->
+		</if>
+	
+					
+		<goto next="Hungama_54646_UserStatus.vxml"/> 
+		
+	</block>
+  </form>
+
+</vxml>

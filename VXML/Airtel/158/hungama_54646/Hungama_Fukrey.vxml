@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+<meta name="Hungama_Fukrey.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<var name="length" expr="0"/>
+	<var name="day" expr="''"/>
+	<var name="month" expr="''"/>
+	<var name="UploadFileName" expr="''"/>
+	<var name="ans_key" expr="''"/>
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="audiofetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+
+	
+	<script>
+		var out_string=new Object();
+	</script>
+	
+<form id="START">
+	<block>
+	<assign name="Section_Name" expr="'FUKERY'"/>
+		<assign name="DNIS" expr="'5464646'"/>
+		<assign name="promptspath_54646" expr="promptspath_54646+'/FUKREY'" />     
+		<assign name="lang" expr="'01'" />     
+		<assign name="var_wel" expr="getRandom(0,4)" />	
+		<log expr="'IN FUKREY'+lang"></log>	
+		<prompt bargein="true">
+<audio expr="promptspath_54646+'/'+lang+'/tollmodal_3rs_del.wav'"/>
+
+			<audio expr="promptspath_54646+'/'+lang+'/welcome.wav'"/>
+		</prompt>
+		<!--<prompt bargein="true">
+			<audio expr="promptspath_54646+'/'+lang+'/character_intro'+var_wel+'.wav'"/>
+		</prompt>-->
+		<prompt bargein="true">
+			<audio expr="promptspath_54646+'/'+lang+'/contest_info.wav'"/>
+		</prompt>		
+		<goto next="#firstque"></goto>
+	</block> 	
+</form>
+<form id="firstque">
+	<block>
+		<log expr="'first question'+lang"></log>	
+	</block> 	
+		<field name="choice">
+		    <grammar mode="dtmf" root="start2" version="1.0">
+				<rule id="start2" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+					</one-of>
+				</rule>
+		   </grammar>
+		   <prompt bargein="true">
+			<audio expr="promptspath_54646+'/'+lang+'/fukrey_question_1.wav'"/>
+		   </prompt>			
+			<filled>
+				<assign name="ans_key" expr="choice"/>
+<!--				<if cond="choice='1' || choice='2' || choice='3'">-->
+					<prompt bargein="true">
+						<audio expr="promptspath_54646+'/'+lang+'/fukrey_question_2.wav'"/>
+					</prompt>				
+					<goto next="#RECORD"></goto>												
+				<!--</if>										-->
+			</filled>
+		</field>
+		<noinput>
+			<prompt bargein="true">
+				<audio expr="promptspath_54646+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<goto next="#firstque"></goto>
+		</noinput>
+		<nomatch>
+			<prompt bargein="true">
+				<audio expr="promptspath_54646+'/'+lang+'/invalid.wav'"/>
+			</prompt>
+			<goto next="#firstque"></goto>
+		</nomatch>
+</form>
+	
+<form id="RECORD">
+	<block>
+		<assign name="DATE_NEW" expr="getcurryyyymmdd()"/>
+		<assign name="TIME_NEW" expr="call_time()"/>
+		
+		<log>	DATE  isssss    <value expr="DATE_NEW"/> 	</log>
+		<log>	ans key  isssss    <value expr="ans_key"/> 	</log>
+		
+		
+<!--		<assign name="ConfigPath" expr="'fukrey'"/>-->
+		<assign name="day" expr="'fukrey'"/>
+		<assign name="month" expr="'fukrey'"/>
+		<log>	month isssss    <value expr="month"/> 	</log>
+		<log>	day isssss    <value expr="day"/> 	</log>
+		<script>UploadFileName=ANI+'_'+DATE_NEW+'_'+TIME_NEW+'.wav'</script>
+		<log>RECORD_FILE  ISSS	<value expr="UploadFileName"/>    </log>
+
+	</block>
+	   <record name="recording" beep="true" maxtime="60s" finalsilence="600000ms" dtmfterm="true" type="audio/wav;codec=alaw"/>
+	   
+	   <subdialog name="messageUpload" srcexpr="'http://10.2.73.156:8080/hungama/air_recording_bolbabybol'" enctype="multipart/form-data" method="post" namelist="ANI UploadFileName month day recording">	    	    							
+	   </subdialog>
+
+	    <field name="LGRecconfirmopt" type="boolean">
+	    <grammar mode="dtmf" root="start22" version="1.0">
+               <rule id="start22" scope="public">
+                 <one-of>				 
+				  <item>#</item>				  					 			      
+                </one-of>
+              </rule>
+            </grammar>
+		
+		<filled>			
+			<script srcexpr="'http://10.2.73.156:8080/hungama/Record_bolbabybol?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;month='+month+'&amp;day='+day+'&amp;MSG='+recording"/> 				
+			<prompt bargein="true">
+				<audio expr="promptspath_54646+'/'+lang+'/contest_thanks.wav'"/>
+			</prompt>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=FUKREY&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+ans_key+'&amp;INPARAM[2]='+UploadFileName"/>
+			<goto next="Hungama_54646_End.vxml"></goto>
+		</filled>				
+	    <noinput>              
+			<script srcexpr="'http://10.2.73.156:8080/hungama/Record_bolbabybol?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;month='+month+'&amp;day='+day+'&amp;MSG='+recording"/> 				
+			<prompt bargein="true">
+				<audio expr="promptspath_54646+'/'+lang+'/contest_thanks.wav'"/>
+			</prompt>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=FUKREY&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+ans_key+'&amp;INPARAM[2]='+UploadFileName"/>
+			<goto next="Hungama_54646_End.vxml"></goto>
+            </noinput>					
+	    <nomatch>              
+			<script srcexpr="'http://10.2.73.156:8080/hungama/Record_bolbabybol?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;month='+month+'&amp;day='+day+'&amp;MSG='+recording"/> 				              		
+			<prompt bargein="true">
+				<audio expr="promptspath_54646+'/'+lang+'/contest_thanks.wav'"/>
+			</prompt>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=FUKREY&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+ans_key+'&amp;INPARAM[2]='+UploadFileName"/>
+			<goto next="Hungama_54646_End.vxml"></goto>
+            </nomatch>    
+	  </field>
+  
+</form>
+	
+</vxml>

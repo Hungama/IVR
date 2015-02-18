@@ -1,0 +1,154 @@
+
+<vxml version="2.0" application="rasio_root.vxml">      
+    
+   <var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="true"/>		
+   <var name="names"/> 
+   <var name="tottopup" expr="''"/>	
+   <var name="topup11" expr="''"/>	
+   <var name="topup12" expr="''"/>	
+   <var name="topup13" expr="''"/>	
+   <var name="topupmnu" expr="''"/>	
+   <var name="balupdatestatus" expr="'1'"/>	
+   
+   <form id="hungamatopupmnu">
+<block>
+		<assign name="Section_Name" expr="'TOPUP'"/>
+		<log>s_flag Array[1]  is	<value expr="s_flag"/>    </log>
+
+    <if cond="s_flag=='LIFE'">
+		<assign name="promptpath" expr="promptpath_lifestyle" />
+		<assign name="LANG_DESCRIPTION" expr="lang" />
+		<log>promptpath Array[1]  is	<value expr="promptpath"/>    </log>
+    </if>
+</block>
+	 
+	    <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				   <item>1</item>		
+				   <item>2</item>		
+                </one-of>
+              </rule>
+            </grammar>			
+			
+		   
+		<prompt bargein="true" timeout="2s">			  	
+			    <audio expr="promptpath+LANG_DESCRIPTION+'/'+'topup1.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'press_dtmf1.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'topup2.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'press_dtmf2.wav'"/>
+		</prompt>
+			
+			    			
+			
+			<filled>
+				<if cond="mnuopt=='1'">
+				     <clear namelist="mnuopt"/> 
+
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2&amp;INPARAM[2]='+DNIS"/>
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_UPDATETIME&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]=1&amp;INPARAM[4]=0'"/>
+
+					 <goto next="#topupstatus"/> 		           	  					
+				<elseif cond="mnuopt=='2'"/>
+				     <clear namelist="mnuopt"/> 
+
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]='+DNIS"/>
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_UPDATETIME&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]=1&amp;INPARAM[4]=0'"/>
+					 <goto next="#topupstatus"/>				
+				</if>
+			</filled>	
+		
+			
+		
+			
+			<noinput timeout="3s">
+			      <audio expr="promptpath+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>                
+         <reprompt/> 
+             </noinput>
+	        
+             <noinput count="3">		  
+                <goto next="end.vxml"/>
+              </noinput>
+	        
+             <nomatch>
+               <audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption_m.wav'"/>		
+		 <reprompt/>
+             </nomatch> 
+	
+	         <nomatch count="3">
+                <goto next="end.vxml"/>
+	         </nomatch> 		 
+			            
+
+						
+	  </field>	 
+	  		
+    </form> 
+    
+   <form id="topupstatus">
+   	<block>
+   	 	
+		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					lang = out_string[j];
+				       if(j==2)
+					balance = out_string[j];
+
+				  }
+
+			]]>
+		</script>
+		
+		
+	
+	<if cond="balance &lt;= 0">
+	<assign name="timerflag" expr="'0'"/>
+		<if cond="count==3">
+			<prompt bargein="false">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/topup_sorry.wav'"/>
+			</prompt>
+			<exit/>
+		<else/>
+			<script>count=count+1; </script>
+			<prompt bargein="false">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/wait.wav'"/>
+			</prompt>
+		<goto next="#topupstatus"/>
+		</if>
+	<else/>
+		<assign name="timerflag" expr="'1'"/>
+		<script>
+		balance=balance*60;
+		curbalance=balance;
+		</script>
+		<assign name="initial_balance" expr="call_time()"/>
+
+		<if cond="s_flag=='LIFE'">
+			<goto next="Hungama_Lifestyle_Mainmenu.vxml"></goto>					
+		<else/>
+			<goto next="Rasoi_MainMenu.vxml"></goto>
+		</if>			
+	</if>	
+				
+				
+   </block>
+   </form>
+</vxml>
+
+
+
+   

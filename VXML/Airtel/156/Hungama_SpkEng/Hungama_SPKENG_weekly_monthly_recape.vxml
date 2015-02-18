@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+<property name="timeout" value="2s"/>
+<meta name="Hungama_SPKENG_weekly_monthly_recape.vxml" content=""/>
+<meta name="Author" content=""/>
+<meta name="Date" content=""/>
+<meta name="Description" content=""/>
+<meta name="Support" content=""/>  
+<var name="p_index" expr="'0'"/>
+
+<form id="new_one">
+		<block>
+		<assign name="Section_Name" expr="'SPKENG_WMRECAPE'"/>
+			<assign name="pre_heard" expr="'true'"></assign>
+		</block>
+			
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+					                <audio expr="promptpath+'/'+lang+'/recap_menu.wav'"/>	
+						</prompt>
+
+
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="Hungama_SPKENG_weeklyrecape.vxml"/>	
+				<elseif cond="choice=='2'"/>
+					<goto next="#Main_Menu"/>
+				<elseif cond="choice=='8'"/>
+					<if cond="MENU_bar=='MainMenu_Basic'">
+						<goto next="Hungama_SPKENG_MainMenu_Basic.vxml#Main_Menu"></goto>
+					<elseif cond="MENU_bar=='MainMenu_Advanced'"/>
+						<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#Main_Menu"></goto>
+					</if>
+					
+				</if>
+				
+								
+			</filled>
+			<noinput>
+					<goto next="#Main_Menu"/>
+			</noinput>
+			<nomatch>
+					<goto next="#Main_Menu"/>
+			</nomatch>
+		</field>
+</form>
+<form id="Main_Menu">
+	<block>
+	
+	
+	
+	<assign name="last_heard" expr="'false'"></assign>	
+		<log> @@@@ BEFORRRHEARD VALUEEEEEEEEEEEEEEEEE is  <value expr="HEARD"/> </log>	
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_MONTHLYHEARD&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=GET'"/>
+			<script>
+						array1.length=0;
+			</script>
+			<assign name="len" expr="out_string.length" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+								array1[j] = out_string[j];						   
+					   }
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+	</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">	
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+						 <item>  4  </item>
+						 <item>  5  </item>
+						 <item>  8 </item>
+					</one-of>
+				</rule>
+			</grammar>
+					
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array1">
+					     <mark nameexpr="p_index++"/>
+						<log>	index isss    	<value expr="p_index"/>  	</log>
+							<log>	names is is    	<value expr="names"/>  	</log>
+							<audio expr="promptpath+'/'+lang+'/select_'+names+'.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/press_dtmf'+p_index+'.wav'"/>
+
+					</foreach>													
+				</prompt>
+								
+		  <filled>
+			<if cond="choice=='8'">
+			<assign name="pre_heard" expr="'false'"></assign>
+				<if cond="MENU_bar=='MainMenu_Basic'">
+					<goto next="Hungama_SPKENG_MainMenu_Basic.vxml#Main_Menu"></goto>
+				<elseif cond="MENU_bar=='MainMenu_Advanced'"/>
+					<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#Main_Menu"></goto>
+				</if>
+			</if>
+		  	<if cond="choice &lt; len+1">
+		  		<assign name="module" expr="array1[--choice]"/>
+		  		<log>	SELECTED  is is    	<value expr="module"/> </log>
+				<if cond="MENU_bar=='MainMenu_Basic'">
+					<goto next="Hungama_SPKENG_MainMenu_Basic.vxml#fetch_module"></goto>
+				<elseif cond="MENU_bar=='MainMenu_Advanced'"/>
+					<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+				</if>
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="p_index" expr="0"/>
+				<goto next="#Main_Menu"></goto>
+
+		  	</if>
+			
+		  </filled>
+	        <noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="p_index" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="p_index" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+
+	</field>	  
+	
+</form>
+
+</vxml>

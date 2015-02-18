@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MND_Subscription.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="random" expr="'1'"/>
+<var name="double_switch" expr="-1"/>
+
+
+
+<form id="DirectSub">
+	<block>
+		<!--<assign name="dtmf_check" expr="'1'"/>
+		<assign name="dtmf_log" expr="ANI+hash+circle"/>-->
+
+		<if cond="lang=='01'">
+			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+		<elseif cond="lang=='07'"/>
+			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+		<elseif cond="lang=='09'"/>
+			<assign name="LANG_DESCRIPTION" expr="'MAL'"/>
+		<elseif cond="lang=='08'"/>
+			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+		<elseif cond="lang=='10'"/>
+			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+		<elseif cond="lang=='06'"/>
+			<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+		<elseif cond="lang=='13'"/>
+			<assign name="LANG_DESCRIPTION" expr="'ORI'"/>					
+		<else/>
+			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>				
+		</if>
+		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CHKDIRECTSUB&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+		<script>
+			var DirectSub=out_string[0];
+		</script>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_DOUBLECONSENT&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+				 double_switch=out_string[0];
+		</script>
+		<log>Direct Sub : <value expr="DirectSub"/></log>
+		<log>double_switch Sub : <value expr="double_switch"/></log>
+		
+		<if cond="DirectSub== '1'">
+			<if cond="circle=='mum' || circle=='mah' || circle=='guj'">	
+				<assign name="index" expr="0" />
+	       			<assign name="amt" expr="'2'" />
+				<assign name="service_id" expr="'1513'" />
+				<assign name="plan_id" expr="'35'" />
+				<log>circle  isss  <value expr="circle"/>    </log>
+			<elseif cond="circle=='kar' &amp;&amp; realDNIS=='54646196'"/>	
+				<assign name="index" expr="0" />
+	       		<assign name="amt" expr="'30'" />
+				<assign name="service_id" expr="'1513'" />
+				<assign name="plan_id" expr="'81'" />
+				<log>circle  isss  <value expr="circle"/>    </log>
+			<else/>		
+				<assign name="index" expr="0" />
+	       			<assign name="amt" expr="'30'" />
+				<assign name="service_id" expr="'1513'" />
+				<assign name="plan_id" expr="'51'" />
+				<log>circle  isss  <value expr="circle"/>    </log>
+			</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+			<goto next="#BillStatusChk"></goto>
+		<else/>
+	    	      <goto next="#SubMainmenu"></goto>
+		</if>
+	</block>
+
+</form>
+
+
+<form id="SubMainmenu">
+	 <block>
+		<assign name="doc_menu" expr="doc_menu+'@'+'Submenu'"></assign>		
+		
+		<if cond="circle=='mum' || circle=='mah' || circle=='guj'">	
+				<assign name="index" expr="0" />
+	       			<assign name="amt" expr="'2'" />
+				<assign name="service_id" expr="'1513'" />
+				<assign name="plan_id" expr="'35'" />
+				<log>circle  isss  <value expr="circle"/>    </log>
+
+				<assign name="SubAmount" expr="2"/>
+				<assign name="SubPlanId" expr="35"/>
+				<assign name="ChargeAmount1" expr="2.0"/>
+				<!--<assign name="ProductID" expr="30288"/>-->
+				<assign name="ProductID" expr="1509137"/>
+				<assign name="Validity1" expr="1"/>
+		<elseif cond="circle=='kar' &amp;&amp; realDNIS=='54646196'"/>	
+				<assign name="index" expr="0" />
+	       		<assign name="amt" expr="'30'" />
+				<assign name="service_id" expr="'1513'" />
+				<assign name="plan_id" expr="'81'" />
+				<log>circle  isss  <value expr="circle"/>    </log>
+
+				<assign name="SubAmount" expr="30"/>
+				<assign name="SubPlanId" expr="81"/>
+				<assign name="ChargeAmount1" expr="30.0"/>
+				<!--<assign name="ProductID" expr="61934"/>-->
+				<assign name="ProductID" expr="1508486"/>
+				<assign name="Validity1" expr="30"/>
+
+		<else/>		
+				<assign name="index" expr="0" />
+	       			<assign name="amt" expr="'30'" />
+				<assign name="service_id" expr="'1513'" />
+				<assign name="plan_id" expr="'51'" />
+				<log>circle  isss  <value expr="circle"/>    </log>
+				<assign name="SubAmount" expr="2"/>
+				<assign name="SubPlanId" expr="51"/>
+				<assign name="ChargeAmount1" expr="30.0"/>
+				<!--<assign name="ProductID" expr="40096"/>-->
+				<assign name="ProductID" expr="1509074"/>
+				<assign name="Validity1" expr="30"/>
+		</if>
+ 	        
+		<if cond="circle=='del'">
+			<assign name="random" expr="getRandom(0,15)" />
+			<if cond="random=='1' || random=='3' || random=='5' || random=='7'">
+				<assign name="random" expr="'1'" />
+			<elseif cond="random=='2' || random=='4' || random=='9' || random=='11'"/>
+				<assign name="random" expr="'2'" />
+			<else/>
+				<assign name="random" expr="'3'" />
+			</if>
+		<else/>
+			<assign name="random" expr="getRandom(0,10)" />
+			<if cond="random=='1' || random=='3' || random=='5' || random=='7'">
+				<assign name="random" expr="'1'" />
+			<else/>
+				<assign name="random" expr="'2'" />
+			</if>
+		</if>
+		
+		<if cond="double_switch=='1'">
+		<!--<if cond="ANI=='8527000779' || ANI=='9910040744' || ANI=='9938049108'">-->
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/01/subintro_new_4.wav'"/>
+			</prompt>
+			<goto next="#Doublecheck"></goto>
+		</if>	
+
+
+		
+		<log>Random Value  isss  <value expr="random"/>    </log>
+	 </block>
+	 <field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="false" timeout="1s" cond="circle=='kar' &amp;&amp; realDNIS=='54646196'">
+			   		<audio expr="promptpath+'/'+lang+'/common/subintro_other_'+random+'.wav'"/>
+				</prompt>
+
+				<prompt bargein="false" timeout="1s" cond="circle=='del'">
+			   		<audio expr="promptpath+'/'+lang+'/common/subintro_'+random+'.wav'"/>
+				</prompt>
+				<prompt bargein="false" timeout="1s" cond="circle=='guj' || circle=='mum' || circle=='mah'">
+			   		<audio expr="promptpath+'/'+lang+'/common/subintro_other_Guj_'+random+'.wav'"/>
+				</prompt>
+
+
+				<prompt bargein="false" timeout="1s" cond="circle!='del' &amp;&amp; circle!='raj' &amp;&amp; circle!='guj' &amp;&amp; circle!='mum' &amp;&amp; circle!='mah' &amp;&amp; realDNIS!='54646196'">
+			   		<audio expr="promptpath+'/'+lang+'/common/subintro_other_'+random+'.wav'"/>
+				</prompt>
+				<prompt bargein="true" timeout="1s" cond="circle=='raj'">
+			   		<audio expr="promptpath+'/'+lang+'/common/subintro_other_'+random+'.wav'"/>
+				</prompt>
+			      			      
+		  <filled>
+
+			         <if cond="choice=='1'">
+					<assign name="dtmfsub" expr="'First_level_input'"/>
+					<assign name="dtmf_input" expr="dtmf_input+'@'+choice"></assign>
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+choice"></assign>
+				  	<goto next="#Doublecheck"></goto>
+			        </if>
+		 </filled>				    
+			
+			<noinput count="1">
+				<assign name="input_check" expr="'noinput'"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/nodtmf.wav'"/>
+				<goto next="#SubMainmenu"/>
+			</noinput>  
+
+			<noinput count="2">
+				<assign name="input_check" expr="'noinput'"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/nodtmf.wav'"/>
+				<goto next="#SubMainmenu"/>
+			</noinput>  
+			<noinput count="3">
+				<goto next="MND_end.vxml"></goto>
+			</noinput>  
+		    
+          
+			<nomatch count="1">
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/invalidoption.wav'"/>
+				<goto next="#SubMainmenu"/>
+		      </nomatch> 
+			<nomatch count="2">
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/invalidoption.wav'"/>
+				<goto next="#SubMainmenu"/>
+		      </nomatch> 
+			<nomatch count="3">
+				<goto next="MND_end.vxml"></goto>
+		      </nomatch> 
+
+		      
+
+		</field>
+</form>
+
+<!--
+<form id="Doublecheck">
+	<block>
+		<assign name="doc_menu" expr="doc_menu+'@'+'Doublecheck'"></assign>
+	</block>
+	 <field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  5  </item>
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="false" timeout="2s" cond="circle=='del'">
+					<audio expr="promptpath+'/'+lang+'/'+playconfig+'/confirm_sub.wav'"/>
+			       </prompt>
+				<prompt bargein="false" timeout="2s" cond="circle!='del'">
+					<audio expr="promptpath+'/'+lang+'/common/confirm_sub_other.wav'"/>
+			       </prompt> 
+
+								
+		  <filled>
+		            <if cond="choice=='5'">
+				<assign name="dtmfsub" expr="'Second_level_input'"/>
+				<assign name="dtmf_input" expr="dtmf_input+'@'+choice"></assign>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+choice"></assign>
+			    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+			    	<goto next="#BillStatusChk"></goto>
+			    </if>
+						
+	          </filled>				    
+			
+			 <noinput>
+				<assign name="input_check" expr="'noinput'"/>
+				<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/nodtmf.wav'"/>
+				<goto next="#Doublecheck"/>
+			</noinput>  
+			
+			<nomatch>
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/invalidoption.wav'"/>
+				<goto next="#Doublecheck"/>
+		      </nomatch> 
+		</field>
+</form>
+-->
+
+<form id="Doublecheck">
+	<block>
+		<log expr = "'since user has selected a pack to subscribe to, taking him to the central confirmation app for second confirmation'"/>
+		<log>passing paaremeter MSISDN:<value expr="ANI"/></log>
+		<log>passing paaremeter Lang:<value expr="Lang"/></log>
+		<log>passing paaremeter ChargeAmount1 :<value expr="ChargeAmount1"/></log>
+		<log>passing paaremeter Validity1:<value expr="Validity1"/></log>
+		<log>passing paaremeter ApplicationType:<value expr="ApplicationType"/></log>
+		<log>passing paaremeter ProductID:<value expr="ProductID"/></log>
+		<log>passing paaremeter CpId :<value expr="CpId"/></log>
+		<log>passing paaremeter sessionId :<value expr="sessionId"/></log>
+
+		<log>zone:<value expr="zone"/></log>
+
+		<if cond="zone=='north' || zone=='west'">
+			<log>North API call</log>
+			<goto next="#AirtelApiNorth"/>
+		<else/>
+			<log>REST REGION API call</log>
+			<goto next="#AirtelApiREST"/>
+		</if>
+	</block> 
+ </form>
+
+
+<form id="AirtelApiNorth">
+	<subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DESCRIPTION+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">
+	<filled>
+				<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					<goto next="MND_end.vxml"></goto>
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<goto next="#BillStatusChk"/>
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<goto next="#SubMainmenu"/>
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+					<goto next="MND_end.vxml"></goto>
+
+				<else/>
+					<goto next="#SubMainmenu"/>
+				</if>			
+		</filled>
+	</subdialog>
+
+</form>
+
+<form id="AirtelApiREST">
+	<subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DESCRIPTION+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">
+		<filled>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+			<if cond="confirmUserChoice.userInput=='maxError'">
+				<goto next="MND_end.vxml"></goto>
+			<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+				<goto next="#BillStatusChk"/>
+			<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+				<goto next="#SubMainmenu"/>
+			<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+					<goto next="MND_end.vxml"></goto>
+
+			<else/>
+				<goto next="#SubMainmenu"/>
+			</if>			
+		</filled>
+	</subdialog>
+
+</form>
+
+
+
+<form id="BillStatusChk">
+	<block>
+		<assign name="dtmfsub" expr="'Second_level_input'"/>
+		<assign name="dtmf_input" expr="dtmf_input+'@'+choice"></assign>
+		<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+choice"></assign>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+	</block>
+	<field name="choice">
+		<prompt bargein="true" timeout="2s">
+			<audio expr="promptpath+'/'+lang+'/'+playconfig+'/delay_charge.wav'"/>
+		</prompt>
+				
+		<filled>
+			<goto next="#BillStatusChkAgain"></goto>					
+		</filled>
+				
+		<nomatch>
+		   <goto next="#BillStatusChkAgain"></goto>	
+		</nomatch>
+		
+		<noinput>
+		   <goto next="#BillStatusChkAgain"></goto>	
+		</noinput>
+	</field>
+</form>
+
+<form id="BillStatusChkAgain">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+			<log>	usr_status isssss    <value expr="usr_status"/> 	</log>
+			<if cond="usr_status=='-1'">
+				<assign name="dtmfsub" expr="'Billing_status'"/>
+			        <assign name="input_check" expr="'WAIT'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/'+playconfig+'/delay_charge.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/'+playconfig+'/thanks_nosub.wav'"/>
+				</prompt>
+				<goto next="MND_end.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<assign name="dtmfsub" expr="'Billing_status'"/>
+			        <assign name="input_check" expr="'SUCCESS'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/'+playconfig+'/thanks_sub.wav'"/>
+				</prompt>
+				<goto next="MND_mainmenu.vxml"/>	
+			<else/> 
+				<assign name="dtmfsub" expr="'Billing_status'"/>
+			        <assign name="input_check" expr="'WAIT'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/'+playconfig+'/delay_charge.wav'"/>
+				</prompt>
+				<goto next="MND_end.vxml"></goto>
+			</if>
+		</block>
+	</form>
+
+
+</vxml>

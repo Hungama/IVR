@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="Hungama_PauseCodeRoute.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+		
+	<var name="wellang" expr="''" />
+	<var name="Six_Digit" expr="0" />
+	<var name="ciropr" expr="''" />
+	<property name="caching" value="fast"/>
+	<property name="documentfetchhint" value="safe"/>
+	<property name="grammarfetchhint" value="safe"/>
+	<meta http-equiv="Cache-control" content="max-age=7200"/> 
+	<property name="fetchminimumbuffersize" value="54272"/>
+	<property name="fetchhint" value="safe"/>
+	<property name="audiofetchhint" value="safe"/>
+	<property name="timeout" value="1s" />
+	<property name="maxage" value="1800s"/>
+
+	<script>
+		 var ciropr1 = new Object();	
+		 var CDSIP=0;
+	</script>
+
+	
+<form id="Main">
+	<block>
+		<assign name="Section_Name" expr="'CONTENTCDS'"/>
+		<assign name="C_Start" expr="call_time()"/>
+		
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+		</script>
+	    
+
+		<script>
+         		var	length = ANI.length;
+			ANI = ANI.substring(length-10,length);
+		</script>
+			
+			 <assign name="DNIS" expr="realDNIS"/>
+			 <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+			 <assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 
+
+			 <log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+			 <log> @@@@DNI is 		<value expr="session.connection.local.uri"/> </log>	
+			 <log> @@@@ANI is 		<value expr="session.connection.remote.uri"/> </log>
+
+			 <script>
+					var splitparam=sessionid.split("_");
+					cirid=splitparam[1]; 
+			 </script>
+
+			 <assign name ="operator" expr="'airm'"/>
+			 <assign name="dbservlet" expr="'airtel_dbinteraction'"/>
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@operator is <value expr="operator"/> </log>
+
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Airtel_IVR.CDS_IP_CIR&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+cirid+'&amp;INPARAM[1]='+ANI"/>
+			 <script>
+			   <![CDATA[
+				for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+						CDSIP = out_string[j];
+				       if(j==1)
+						circle = out_string[j];
+				       if(j==2)
+						zone = out_string[j];
+				  }
+			   ]]>
+			 </script>
+
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@CDSIP is <value expr="CDSIP"/> </log>
+			 <log> @@@@circle name is <value expr="circle"/> </log>
+			 <log> @@@@zone name is <value expr="zone"/> </log>
+	
+			<assign name ="promptspath_54646" expr="'http://'+CDSIP+':8088/CDS/hungama/54646V2/'"/>
+			<assign name="contentpath" expr="'http://'+CDSIP+':8088/CDS/hungama/content/'" /> 
+			<log> promptpath issss is <value expr="promptspath_54646"/> </log>
+			<log> contentpath isssss is <value expr="contentpath"/> </log>					
+	</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<filled>
+				<goto next="Hungama_54646_UserStatus.vxml"/> 
+			</filled>
+		</field>
+	<noinput>
+		<goto next="Hungama_54646_UserStatus.vxml"/> 
+	</noinput>
+	<nomatch>
+		<goto next="Hungama_54646_UserStatus.vxml"/> 
+	</nomatch>
+  </form>
+
+</vxml>

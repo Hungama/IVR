@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="Hungama_54646_UserSub_MM.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="audiofetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+
+
+    <script>		
+		var out_string=new Object();
+	</script>
+    
+    <form id="SubIntro">
+	<block>	
+			<if cond="ANI=='8527000779' || ANI=='9910883325'">
+					<goto next="Hungama_54646_UserSub_MM_TEST.vxml"></goto>
+				</if>	 
+	<assign name="Section_Name" expr="'SUBSCRIPTION'"/>
+				  
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'26'"/>
+			<assign name="service_id" expr="'1502'"/>
+		
+		<goto next="#SubOption"/>
+	</block>
+     </form>
+	
+	
+	<form id="SubOption">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/subintro_'+DNIS+'.wav'"/>				
+			</prompt>						
+			<filled>
+				<if cond="choice=='1'">
+				    <goto next="#Doubleconfirm"></goto>
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			 <goto next="Hungama_54646_End.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_54646_End.vxml"></goto>	
+		</nomatch>
+	</form>
+	
+	<form id="Doubleconfirm">
+		<block>
+				<if cond="lang=='01'">
+					<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+				<elseif cond="lang=='07'"/>
+					<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+				<elseif cond="lang=='09'"/>
+					<assign name="LANG_DESCRIPTION" expr="'MAL'"/>
+				<elseif cond="lang=='08'"/>
+					<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+				<elseif cond="lang=='10'"/>
+					<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+				<elseif cond="lang=='06'"/>
+					<assign name="LANG_DESCRIPTION" expr="'BEN'"/>	
+				<elseif cond="lang=='02'"/>
+					<assign name="LANG_DESCRIPTION" expr="'ENG'"/>				
+				<else/>
+					<assign name="LANG_DESCRIPTION" expr="'HIN'"/>				
+				</if>
+				<assign name="planid" expr="'26'"/>
+				<assign name="Amt" expr="'30'"/>
+				<assign name="serviceid" expr="'1502'"/>
+				<assign name="SubAmount" expr="30"/>
+				<assign name="SubPlanId" expr="26"/>
+				<assign name="ChargeAmount1" expr="30.0"/>
+				<assign name="ProductID" expr="22839"/>
+			<assign name="Validity1" expr="30"/>
+			
+			<log expr = "'since user has selected a pack to subscribe to, taking him to the central confirmation app for second confirmation'"/>
+			<log>passing paaremeter MSISDN:<value expr="ANI"/></log>
+			<log>passing paaremeter Lang:<value expr="Lang"/></log>
+			<log>passing paaremeter ChargeAmount1 :<value expr="ChargeAmount1"/></log>
+			<log>passing paaremeter Validity1:<value expr="Validity1"/></log>
+			<log>passing paaremeter ApplicationType:<value expr="ApplicationType"/></log>
+			<log>passing paaremeter ProductID:<value expr="ProductID"/></log>
+			<log>passing paaremeter CpId :<value expr="CpId"/></log>
+			<log>passing paaremeter sessionId :<value expr="sessionId"/></log>
+			<log>zone:<value expr="zone"/></log>
+	
+			<if cond="zone=='north' || zone=='west'">
+				<log>North API call</log>
+				<goto next="#AirtelApiNorth"/>
+			<else/>
+				<log>REST REGION API call</log>
+				<goto next="#AirtelApiREST"/>
+			</if>
+		</block> 
+	 </form>
+	
+	<form id="AirtelApiNorth">
+		<subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DESCRIPTION+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">
+		<filled>
+					<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+	
+					<if cond="confirmUserChoice.userInput=='maxError'">
+						<goto next="Hungama_54646_End.vxml"></goto>
+					<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+						<goto next="#SubOptionDoubleconfirm"/>
+					<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+						<goto next="#SubOption"/>
+					<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+					<goto next="Hungama_54646_End.vxml"></goto>
+
+					<else/>
+						<goto next="#SubOption"/>
+					</if>			
+			</filled>
+		</subdialog>
+	
+	</form>
+	
+	<form id="AirtelApiREST">
+		<subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DESCRIPTION+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">
+			<filled>
+				<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					<goto next="Hungama_54646_End.vxml"></goto>
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<goto next="#SubOptionDoubleconfirm"/>
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<goto next="#SubOption"/>
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+					<goto next="Hungama_54646_End.vxml"></goto>
+
+				<else/>
+					<goto next="#SubOption"/>
+				</if>			
+			</filled>
+		</subdialog>
+	
+	</form>	
+	
+	<form id="SubOptionDoubleconfirm">
+		<block>
+		    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+		    <goto next="#SubRequest"></goto>
+		</block>
+	</form>
+
+
+		
+	<form id="SubRequest">
+		<block>			
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/charging_wait.wav'"/>
+			</prompt>
+			<goto next="#BillStatusChk"/>	
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'lang @@@@@@@@@ '+lang"></log>
+			<log expr="'balance @@@@@@@@@ '+balance"></log>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_54646_End.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/thank_sub.wav'"/>
+				</prompt>
+				<script>
+					timerflag=1;
+					balance=balance*60;
+				</script>
+				<assign name="start_BalenceMinute" expr="call_time()"/>
+				
+				<if cond="DNIS=='546462'">
+					 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+				<elseif cond="DNIS=='546463'"/>
+					<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+				<elseif cond="DNIS=='546469'"/>
+					<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+				<elseif cond="(DNIS=='5464631' || DNIS=='5464632' || DNIS=='5464637' || DNIS=='5464638' || DNIS=='5464635' || DNIS=='5464636' || DNIS=='5464630') &amp;&amp; lang=='01'"/>
+						<goto next="Hungama_MW_PlayContent_546463_MM.vxml"></goto>
+
+				</if>
+				
+			<else/> 
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+</vxml>

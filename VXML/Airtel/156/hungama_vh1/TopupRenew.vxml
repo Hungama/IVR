@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="vh1Root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="TopupRenew.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+<var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="true"/>		
+   <var name="names"/> 
+   <var name="tottopup" expr="''"/>	
+   <var name="topup11" expr="''"/>	
+   <var name="topup12" expr="''"/>	
+   <var name="topup13" expr="''"/>	
+   <var name="topupmnu" expr="''"/>	
+   <var name="balupdatestatus" expr="'1'"/>	
+   
+   <form id="hungamatopupchk">
+   
+       <block>
+ <assign name="program_name" expr="'TopUpRenew'"/>
+	          <if cond="balupdatestatus == '1'">			     
+	            <script> 
+	            	total_used_bal=chkBalenceMinute(start_BalenceMinute);
+                  	balance=balance-total_used_bal;
+	            	balance=Math.floor(balance/60);	
+	            </script>
+	        
+				<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+curbalance+'&amp;INPARAM[2]=55841&amp;INPARAM[3]='+timerflag"/>
+  	        
+				<script>balupdatestatus=0; </script>
+			  </if>	
+			  <script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS"/>
+            
+		                		
+				<script> 					 
+				    balance=usrbalance.value;	
+					balance=balance*60;			   
+				</script>	
+				 	
+							      
+					  
+				      	 
+				      
+					  <goto next="#hungamatopupmnu"/>						 	    			   	
+   			    	
+	   </block>	
+	  
+	 
+   </form> 
+	
+   <form id="hungamatopupmnu">
+   
+      <block>
+		    <script>
+		            <![CDATA[
+        		       if(timerflag==1)
+                         start_BalenceMinute=start_time();
+		           ]]>
+		           	 	
+		           timerflag=0;
+		          </script>
+         
+		<log expr="'welcome to the hungama topups main menu '"/>       
+      </block>		
+		 
+	    <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				   <item>1</item>		
+				   <item>2</item>						   
+                </one-of>
+              </rule>
+            </grammar>			
+			
+		   
+			<prompt bargein="true" timeout="1s">	
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/balance_less_0.wav'"/>
+            </prompt>
+		    			
+			<prompt bargein="true" timeout="1s" cond="circle=='del'">	
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/topup2.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+version+'/press_dtmf2.wav'"/>
+            </prompt>
+			
+			<filled>
+				<if cond="mnuopt=='1'">
+				     <clear namelist="mnuopt"/> 
+				     <script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2&amp;INPARAM[1]='+DNIS"/>
+					<goto next="#wait"/>		           	  					
+				<elseif	cond="mnuopt=='2'"/>
+					<if cond="circle!='del'">
+							<throw event="nomatch"/>
+					 <else/>
+							 <clear namelist="mnuopt"/> 
+						     <script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[1]='+DNIS"/>
+							  <goto next="#wait"/>		           	  					
+					</if>
+				</if>
+			</filled>		
+			
+			<noinput>
+			   <audio expr="promptpath+LANG_DESCRIPTION+version+'/nodtmf.wav'"/>
+				<reprompt/>
+	        </noinput>
+		
+		
+
+
+	        <nomatch>
+	        <audio expr="promptpath+LANG_DESCRIPTION+version+'/invalidoption.wav'"/>			   
+			<reprompt/>
+						
+            </nomatch>  
+
+		
+		 			            	
+	  </field>	 
+    </form> 
+    
+    <form id="update_topup">
+    	<block>
+			
+			
+			  <script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS"/>
+            	<script> 					 
+				    balance=usrbalance.value;	
+					balance=balance*60;			   
+				</script>
+    		
+    		
+    		<if cond="balance &gt; '0'">			         			 
+    				<assign name="timerflag" expr="'1'"/>
+					 <log expr="'@@@@@@ user top up balance is '+balance"/>	
+					 <assign name="initial_balance" expr="start_time()"/>					 
+					<prompt bargein="true" timeout="0s">	
+							<audio expr="promptpath+LANG_DESCRIPTION+version+'/topup_request.wav'"/>		  	
+		            </prompt>					 	     
+			 	     <goto next="playcontent.vxml"/>					
+			<else/>	
+			 		 <goto next="#wait"/>
+    		</if>
+    	</block>
+    </form>
+
+
+<form id="wait">
+			    <field name="waitopt">
+					 <grammar mode="dtmf" root="start" version="1.0">
+		               <rule id="start" scope="public">
+		                 <one-of>				 
+						   <item>1</item>		
+		                </one-of>
+		              </rule>
+		            </grammar>			
+					
+				   
+					<prompt bargein="false" timeout="1s">	
+							<audio expr="promptpath+LANG_DESCRIPTION+version+'/charging_wait.wav'"/>		  	
+		            </prompt>
+				    			
+					
+					<filled>
+						<if cond="waitopt=='1'">
+							<goto next="#update_topup"/>
+						</if>
+					</filled>		
+					
+					<noinput>
+					<goto next="#update_topup"/>
+			        </noinput>
+		
+			        <nomatch>
+					<goto next="#update_topup"/>			        
+		            </nomatch>  
+	  </field>	 
+</form>
+</vxml>

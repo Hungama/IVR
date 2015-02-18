@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="Hungama_54646_MainMenu.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="audiofetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+	
+
+    <form id="MAINMENU">
+    
+		<block>
+		 <if cond="DNIS=='5464648'">
+			<goto next="Hungama_54646_MainMenu_MM.vxml"></goto>
+		</if>
+		<assign name="Section_Name" expr="'MAINMENU'"/>
+			<assign name="var_wel" expr="getRandom(1,50)" />
+		</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<!--<audio expr="promptspath_54646+'/'+lang+'/welcome_old_'+var_wel+'.wav'"/>-->
+					<!-- <audio expr="promptspath_54646+'/'+lang+'/select_rootcat_01.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/press_dtmf1.wav'"/> -->
+					<audio expr="promptspath_54646+'/'+lang+'/select_rootcat_new.wav'"/>
+				</prompt>
+				<filled>					
+					<if cond="choice=='9'">
+					    	<goto next="Hungama_54646_AccountMnger.vxml"/>
+					<else/>
+						<script>choice++;</script> 
+						<assign name="cat" expr="choice"/>
+						<log expr="'selected cat is '+cat"></log>
+						<if cond="cat=='2'">
+							<goto next="Hungama_54646_LoveGuru.vxml"/>
+						<elseif cond="cat=='3'"/>
+							<goto next="Hungama_MUSICWORLD_PlayContent.vxml"/>
+						<elseif cond="cat=='4'"/>
+							<goto next="Hungama_54646_CelebrityWorld.vxml"/>
+						<elseif cond="cat=='5'"/>
+							<goto next="Audio_Cinema_MainMenu.vxml"/>
+						</if>
+					</if>					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+	
+</vxml>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="checkuserstatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+
+<script>
+		var ciropr1=new Object();
+		var out_string = new Object();
+	</script>
+<error>
+<goto next="end.vxml"/>
+</error>
+
+<form id="checkuserstatus">
+<block>
+		<assign name="prompt_name" expr="'JAD_USERSTATUS'"/>
+		  <assign name="start_BalenceMinute" expr="start_time()"/>	
+		<assign name = "gANI" expr = "session.connection.remote.uri" />	
+		<assign name = "ANI" expr = "session.connection.remote.uri" />	
+		<log> start time is: <value expr="start_time()"/></log>
+	
+		<assign name="C_Start" expr="start_time()"/>
+	
+		<assign name="initial_balance" expr="start_time()"/>
+		<assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 
+				    	
+			 <log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+			 <log> @@@@ANI is 		<value expr="session.connection.remote.uri"/> </log>
+			<log> @@@@DNIS is 		<value expr="DNIS"/> </log>
+
+
+			<script>
+		  		var splitparam=sessionid.split("_");
+		  		cirid=splitparam[1]; 
+		  	</script>
+
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@operator is <value expr="operator"/> </log>
+
+		  	<assign name ="operator" expr="'airm'"/>
+			
+			  <if cond="cirid==1">
+			 	<!--DL -->
+			 	<assign name ="circle" expr="'del'"/>
+			 	<assign name ="promptpath1" expr="'http://10.2.87.32:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.2.87.32:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==2"/>
+			 	<!--UPE -->
+			 	<assign name ="circle" expr="'upe'"/>
+				<assign name ="promptpath1" expr="'http://10.34.24.176:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.34.24.176:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==3"/>
+			 	<!--UPW -->
+			 	<assign name ="circle" expr="'upw'"/>
+				<assign name ="promptpath1" expr="'http://10.31.5.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.31.5.182:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==4"/>
+			 	<!--PJ -->
+			 	<assign name ="circle" expr="'pub'"/>
+				<assign name ="promptpath1" expr="'http://10.20.23.102:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.20.23.102:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==5"/>
+			 	<!--HR -->
+			 	<assign name ="circle" expr="'har'"/>
+				<assign name ="promptpath1" expr="'http://10.25.7.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.25.7.182:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==6"/>
+			 	<!--HP -->
+			 	<assign name ="circle" expr="'hpd'"/>
+				<assign name ="promptpath1" expr="'http://10.41.7.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.41.7.182:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==7"/>
+			 	<!--JK -->
+			 	<assign name ="circle" expr="'jnk'"/>
+				<assign name ="promptpath1" expr="'http://10.28.6.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.28.6.182:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==8"/>
+			 	<!--MB -->
+			 	<assign name ="circle" expr="'mum'"/>
+				<assign name ="promptpath1" expr="'http://10.49.9.32:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.49.9.32:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==9"/>
+			 	<!--MP -->
+			 	<assign name ="circle" expr="'mpd'"/>
+				<assign name ="promptpath1" expr="'http://10.73.25.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.73.25.182:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==10"/>
+			 	<!--MH -->
+			 	<assign name ="circle" expr="'mah'"/>
+				<assign name ="promptpath1" expr="'http://10.65.5.184:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.65.5.184:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==11"/>
+			 	<!--GJ -->
+			 	<assign name ="circle" expr="'guj'"/>
+				<assign name ="promptpath1" expr="'http://10.81.36.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.81.36.182:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==12"/>
+			 	<!--RJ -->
+			 	<assign name ="circle" expr="'raj'"/>
+				<assign name ="promptpath1" expr="'http://10.45.57.183:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.45.57.183:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==13"/>
+			 	<!--KC -->
+			 	<assign name ="circle" expr="'kol'"/>
+				<assign name ="promptpath1" expr="'http://10.133.24.185:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.133.24.185:8088/CDS/hungama/content/jyotish'" />
+			 <elseif cond="cirid==14"/>
+			 	<!--WB -->
+			 	<assign name ="circle" expr="'wbl'"/>
+				<assign name ="promptpath1" expr="'http://10.131.5.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.131.5.182:8088/CDS/hungama/content/jyotish'" />
+			 <elseif cond="cirid==15"/>
+			 	<!--AS -->
+			 	<assign name ="circle" expr="'asm'"/>
+				<assign name ="promptpath1" expr="'http://10.142.5.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.142.5.182:8088/CDS/hungama/content/jyotish'" />
+			 <elseif cond="cirid==16"/>
+			 	<!--NE -->
+			 	<assign name ="circle" expr="'nes'"/>
+				<assign name ="promptpath1" expr="'http://10.142.35.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.142.35.182:8088/CDS/hungama/content/jyotish'" />
+			 <elseif cond="cirid==17"/>
+			 	<!--OR -->
+			 	<assign name ="circle" expr="'ori'"/>
+				<assign name ="promptpath1" expr="'http://10.140.24.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.140.24.182:8088/CDS/hungama/content/jyotish'" />
+			 <elseif cond="cirid==18"/>
+			 	<!--BH -->
+			 	<assign name ="circle" expr="'bih'"/>
+				<assign name ="promptpath1" expr="'http://10.137.24.183:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.137.24.183:8088/CDS/hungama/content/jyotish'" />
+			 <elseif cond="cirid==19"/>
+			 	<!--KN -->
+			 	<assign name ="circle" expr="'kar'"/>
+				<assign name ="promptpath1" expr="'http://10.89.48.42:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.89.48.42:8088/CDS/hungama/content'" />
+			 <elseif cond="cirid==20"/>
+			 	<!--AP -->
+			 	<assign name ="circle" expr="'apd'"/>
+				<assign name ="promptpath1" expr="'http://10.105.8.42:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.105.8.42:8088/CDS/hungama/content/jyotish'" />
+			 <elseif cond="cirid==21"/>
+			 	<!--CN -->
+			 	<assign name ="circle" expr="'chn'"/>
+				<assign name ="promptpath1" expr="'http://10.111.14.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.111.14.182:8088/CDS/hungama/content/jyotish'" />
+			 <elseif cond="cirid==22"/>
+			 	<!--KL -->
+			 	<assign name ="circle" expr="'ker'"/>
+				<assign name ="promptpath1" expr="'http://10.127.5.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.127.5.182:8088/CDS/hungama/content/jyotish'" />
+			 <elseif cond="cirid==23"/>
+			 	<!--TN -->
+			 	<assign name ="circle" expr="'tnu'"/>
+				<assign name ="promptpath1" expr="'http://10.121.14.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.121.14.182:8088/CDS/hungama/content/jyotish'" />
+			 <else/>
+			 	<!--DL -->
+			 	<assign name ="circle" expr="'ker'"/>
+				<assign name ="promptpath1" expr="'http://10.127.5.182:8088/CDS/hungama/jyotish/'"/>
+			 	<assign name="contentpath1" expr="'http://10.127.5.182:8088/CDS/hungama/content/jyotish'" />
+			 </if>
+
+
+
+			<assign name="promptpath1" expr="'http://10.89.48.212:8088/CDS/hungama/jyotish/'"/>
+			<assign name="contentpath1" expr="'http://10.89.48.212:8088/CDS/hungama/content/jyotish'" />
+
+	 
+	
+			<script>
+				length = ANI.length;
+				if(length == 15)
+					ANI = ANI.substring(5,15);
+				if(length == 14)
+					ANI = ANI.substring(4,14);
+				if(length == 13)
+					ANI = ANI.substring(3,13);
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+			</script>			
+			<log> User ANI  is	<value expr="ANI"/>	</log>			
+			<log>circle  is	<value expr="circle"/>    </log>
+			<log>operator is <value expr="operator"/>    </log>
+		
+		
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+
+		 <!--<assign name="dbservlet" expr="'airtel_jyotish'"/>-->
+	  	 <assign name="dbservlet" expr="'airtel_dbinteraction'"/>	
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					lang = out_string[j];
+				       if(j==2)
+					balance = out_string[j];
+						if(j==3)
+					sunsign = out_string[j];
+					if(j==4)
+					sunsignname = out_string[j];
+				  }
+			]]>
+		</script>
+		
+						<script>
+			         		 balance=balance*60;
+					 		 curbalance=balance;
+			         	</script>
+		
+		<log> user status is:<value expr="usr_status"/></log>	         	
+		<log> lang status is:<value expr="lang"/></log>
+		<log> balance status is:<value expr="balance"/></log>
+		<log> sunsign status is:<value expr="sunsign"/></log>
+		<log> sunsignname status is:<value expr="sunsignname"/></log>
+			         	
+		
+		<assign name="LANG_DESCRIPTION" expr="lang"/>
+		<log> @@@@DNIS is 		<value expr="DNIS"/> </log>
+		<if cond= "usr_status=='1'">
+			  <goto next="ExistingUser.vxml" fetchhint="prefetch" fetchtimeout="10s"/>	
+		<else/>
+				<goto next="NewUser.vxml" fetchhint="prefetch" fetchtimeout="10s"/>	
+		</if>
+	
+	
+</block>
+</form>
+
+</vxml>

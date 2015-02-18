@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+<property name="timeout" value="2s"/>
+<meta name="Hungama_SPKENG_ExistUser_load.vxml" content=""/>
+<meta name="Author" content=""/>
+<meta name="Date" content=""/>
+<meta name="Description" content=""/>
+<meta name="Support" content=""/>  
+<!--*********************************************CHARGINGCHECK BASED ON DAYS********************************************************************************-->
+<form id="Existing_menu">
+	<block>
+		<prompt bargein="true" timeout="1s">
+			<audio expr="promptpath+'/'+lang+'/intro_mod1.wav'"/>	
+		</prompt>
+		<goto next="Hungama_SPKENG_End.vxml"/>	
+	</block>
+	
+</form>			
+</vxml>

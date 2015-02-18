@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="MSDRoot.vxml">
+	
+<meta name="Hungama_EDU_End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<property name="caching" value="fast"/>
+	<property name="documentfetchhint" value="safe"/>
+	<property name="grammarfetchhint" value="safe"/>
+	<property name="documentmaxage" value="3600"></property>
+	<property name="fetchminimumbuffersize" value="54272"/>
+	<property name="fetchhint" value="safe"/>
+	<property name="timeout" value="1s" />
+	<property name="maxage" value="1800s"/>
+	<property name="audiofetchhint" value="safe"/>
+
+	<script>
+			var out_string=new Object();
+	</script>
+
+	<form id="EndLogin">
+		<block>
+		    <assign name="C_End" expr="call_time()"/>
+		   <if cond="test_complete=='true'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TEST_UPDATETIME&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+score+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+module"/>
+		    </if>
+   			<log> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!value of song_listen is <value expr="song_listen"/>     </log> 
+		    <if cond="song_listen=='START'">
+				<if cond="con_data!='0'">
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>		
+				</if>
+			</if>
+			<log> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!value of heard is <value expr="HEARD"/>     </log>  
+			<if cond="HEARD!='0'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]='+lastplay_index+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]=SET'"/>
+			</if>
+			<log>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! value of heard is <value expr="HEARD"/>     </log>
+			<if cond="timerflag=='1'">
+				<script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				 <script>
+			    	 total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+			     </script>
+					   
+				<if cond="curbalance=='NaN'">
+						<assign name="current_balance" expr="start_time()"/>
+					   <script>
+					     total_used_bal=CheckUserBalance(initial_balance,current_balance);
+					     curbalance=balance-total_used_bal;  						  
+					   </script>
+				</if>		   
+			  <script> curbalance=Math.floor(curbalance/60); </script>
+			
+			 </if>
+			 <if cond="curbalance &lt; 0">
+			 	<script>curbalance=0;</script>
+			 </if>
+			<if cond="dtmf_check=='1'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/dtmf_logs?service=EDU&amp;SONG='+dtmf_log"/>
+			</if>
+			
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+curbalance+'&amp;INPARAM[2]='+timerflag"/>
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=EDU&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>			
+			<!--<script srcexpr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=EDU&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>-->
+			<throw event="connection.disconnect.hangup"/>
+		</block>
+	  <catch event="error.badfetch">
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      
+		  <exit/>
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+	      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 
+		  <exit/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+		   <log>Inside Telephonet Disconnected catch  End4444</log>	
+		   <exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+		   <log>Inside connection.disconnect.hangup catch  End5555</log>	
+		   <exit/>
+      </catch>
+	</form>
+</vxml>

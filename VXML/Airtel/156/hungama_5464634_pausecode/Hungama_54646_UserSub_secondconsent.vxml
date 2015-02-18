@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_UserSub.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+    <form id="SubIntro">
+	<block>	  
+		<assign name="prompt_name" expr="'SUBSCRIPTION'"/>
+
+		 <!--<assign name="direct_status" expr="'1'" />
+		  <if cond="circle=='upe' &amp;&amp; operator=='tatm'">
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_NODIRECTACT_UPE_54646&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<script>
+				 <![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						      	direct_status = out_string[j];									      								       							      
+					   }
+					]]>
+			 </script>
+			 <if cond="direct_status=='-1'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+				<goto next="#SubRequest"></goto>
+			 </if>
+                  </if> -->
+
+
+		<goto next="#SubOption"/>
+	</block>
+     </form>
+	
+	
+	<form id="SubOption">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start34" version="1.0">
+						<rule id="start34" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+
+			<prompt bargein="true" timeout="3s" cond="operator!='relc' &amp;&amp; operator!='relm'">
+				<audio expr="promptspath_54646+'/'+lang+'/subintro_new.wav'"/>	
+				<audio expr="promptspath_54646+'/'+lang+'/tosub_press1.wav'"/>				
+			</prompt>
+
+			<prompt bargein="true" timeout="3s" cond="(operator=='relc' &amp;&amp;(circle!='upe'&amp;&amp;circle!='upw')) || (operator=='relm' &amp;&amp;(circle!='upe'&amp;&amp;circle!='upw'))">
+				<audio expr="promptspath_54646+'/'+lang+'/subintro_new.wav'"/>	
+				<audio expr="promptspath_54646+'/'+lang+'/tosub_press1.wav'"/>				
+			</prompt>									
+
+			<prompt bargein="true" timeout="3s" cond="(operator=='relc' &amp;&amp;(circle=='upe'||circle=='upw')) || (operator=='relm' &amp;&amp;(circle=='upe'||circle=='upw'))">
+				<audio expr="promptspath_54646+'/'+lang+'/subscriptionpack_details_UPU.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/press_dtmf1.wav'"/>
+			</prompt>									
+
+			<filled>
+				<if cond="choice=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1502&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=firstconsent&amp;response_code=OK&amp;sessonid='+sessionId"/>
+					<goto next="#Doubleconfirm"></goto>
+				    
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+				<script> 					 
+					balance=500*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>	
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>
+			</if>
+
+			<goto next="Hungama_54646_End.vxml"></goto>
+						
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+				<script> 					 
+					balance=500*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>	
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>
+			</if>
+			<goto next="Hungama_54646_End.vxml"></goto>
+		</nomatch>
+	</form>
+<!--*****************************************************DOUBLE CONSENT **************************************************************-->
+	
+<form id="Doubleconfirm">
+	<block>
+			<if cond="lang=='01'">
+				<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+			<elseif cond="lang=='07'"/>
+				<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+			<elseif cond="lang=='09'"/>
+				<assign name="LANG_DESCRIPTION" expr="'MAL'"/>
+			<elseif cond="lang=='08'"/>
+				<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+			<elseif cond="lang=='10'"/>
+				<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+			<elseif cond="lang=='06'"/>
+				<assign name="LANG_DESCRIPTION" expr="'BEN'"/>	
+			<elseif cond="lang=='02'"/>
+				<assign name="LANG_DESCRIPTION" expr="'ENG'"/>				
+			<else/>
+				<assign name="LANG_DESCRIPTION" expr="'HIN'"/>	
+						
+			</if>
+			
+			<assign name="MSISDN" expr="ANI"/>
+			<assign name="Lang" expr="LANG_DESCRIPTION"/>
+			
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'26'"/>
+			<assign name="service_id" expr="'1502'"/>
+			<assign name="planid" expr="'26'"/>
+			<assign name="Amt" expr="'30'"/>
+			<assign name="serviceid" expr="'1502'"/>
+			<assign name="SubAmount" expr="'30'"/>
+			<assign name="SubPlanId" expr="'26'"/>
+			<assign name="ChargeAmount1" expr="'30.0'"/>
+			
+			<!--<assign name="ProductID" expr="'22839'"/>-->
+			<assign name="Validity1" expr="'30'"/>
+			<assign name="ProductID" expr="'1508450'"/>
+
+		
+		<log expr = "'since user has selected a pack to subscribe to, taking him to the central confirmation app for second confirmation'"/>
+		<log>passing paaremeter MSISDN:<value expr="ANI"/></log>
+		<log>passing paaremeter Lang:<value expr="Lang"/></log>
+		<log>passing paaremeter ChargeAmount1 :<value expr="ChargeAmount1"/></log>
+		<log>passing paaremeter Validity1:<value expr="Validity1"/></log>
+		<log>passing paaremeter ApplicationType:<value expr="ApplicationType"/></log>
+		<log>passing paaremeter ProductID:<value expr="ProductID"/></log>
+		<log>passing paaremeter CpId :<value expr="CpId"/></log>
+		<log>passing paaremeter sessionId :<value expr="sessionId"/></log>
+		<log>zone:<value expr="zone"/></log>
+
+		<if cond="zone=='north' || zone=='west'">
+			<log>North API call</log>
+			<goto next="#AirtelApiNorth"/>
+		<else/>
+			<log>REST REGION API call</log>
+			<goto next="#AirtelApiREST"/>
+		</if>
+	</block> 
+ </form>
+
+<form id="AirtelApiNorth">
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DESCRIPTION+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">-->
+	
+	    <subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/SecondConsentHandler.vxml'" method = "post" namelist = "MSISDN Lang ChargeAmount1 ChargeAmount2 Validity1 Validity2 ApplicationType ProductID CpId sessionId channelName cpName centralIVRPwd aocMessage1 aocMessage2 cpTransactionID subProdID songProdID songVCode msisdnGiftReceiver msisdnDedicatee msisdnStarCopy param1 param2 param3 param4 param5">
+	
+	<filled>
+				<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1502&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=secondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>
+
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					
+					<goto next="Hungama_54646_End.vxml"></goto>
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<goto next="#SubOptionDoubleconfirm"/>
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					
+					<goto next="#SubOption"/>
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+					
+					<goto next="Hungama_54646_End.vxml"></goto>
+
+				<else/>
+					<goto next="#SubOption"/>
+				</if>			
+		</filled>
+	</subdialog>
+
+</form>
+
+<form id="AirtelApiREST">
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DESCRIPTION+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">-->
+	    <subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/SecondConsentHandler.vxml'" method = "post" namelist = "MSISDN Lang ChargeAmount1 ChargeAmount2 Validity1 Validity2 ApplicationType ProductID CpId sessionId channelName cpName centralIVRPwd aocMessage1 aocMessage2 cpTransactionID subProdID songProdID songVCode msisdnGiftReceiver msisdnDedicatee msisdnStarCopy param1 param2 param3 param4 param5">
+		<filled>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1502&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=secondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>
+
+			<if cond="confirmUserChoice.userInput=='maxError'">
+				
+				<goto next="Hungama_54646_End.vxml"></goto>
+			<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+				<goto next="#SubOptionDoubleconfirm"/>
+			<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+				
+				<goto next="#SubOption"/>
+			<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+				
+					<goto next="Hungama_54646_End.vxml"></goto>
+			<else/>
+				<goto next="#SubOption"/>
+			</if>			
+		</filled>
+	</subdialog>
+
+</form>	
+	
+	
+<form id="SubOptionDoubleconfirm">
+			<block>
+				<assign name="prompt_name" expr="'SUBSCRIPTION_OPT'"/>
+			   <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+			
+				    <goto next="#SubRequest"></goto>
+			</block>			
+
+	</form>	
+	
+	
+<form id="SubRequest">
+		<block>			
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/charging_wait.wav'"/>
+			</prompt>
+			<goto next="#BillStatusChk"/>	
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'lang @@@@@@@@@ '+lang"></log>
+			<log expr="'balance @@@@@@@@@ '+balance"></log>
+			<if cond="usr_status=='-1'">
+				<assign name="prompt_name" expr="'BILLING_FAIL'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+			
+				<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+					<script> 					 
+						balance=500*60;
+					        timerflag=1;      
+				        </script>							
+			                <script>
+						<![CDATA[
+			     				if(timerflag==1)
+							start_BalenceMinute=starttime();
+						]]>	 	
+					</script>
+					<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				</if>
+
+				<goto next="Hungama_54646_End.vxml"/>
+
+			<elseif cond="usr_status=='1'"/>
+				<assign name="prompt_name" expr="'BILLING_SUCCESS'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/thank_sub.wav'"/>
+				</prompt>
+
+				<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+					<script> 					 
+						balance=500*60;
+					        timerflag=1;      
+				        </script>							
+			                <script>
+						<![CDATA[
+			     				if(timerflag==1)
+							start_BalenceMinute=starttime();
+						]]>	 	
+					</script>
+					<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				</if>
+
+				<script>
+					timerflag=1;
+					balance=balance*60;
+				</script>
+				<assign name="start_BalenceMinute" expr="starttime()"/>
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>	
+			<else/> 
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				
+				<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+					<script> 					 
+						balance=500*60;
+					        timerflag=1;      
+				        </script>							
+			                <script>
+						<![CDATA[
+			     				if(timerflag==1)
+							start_BalenceMinute=starttime();
+						]]>	 	
+					</script>
+					<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				</if>
+
+
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+</vxml>

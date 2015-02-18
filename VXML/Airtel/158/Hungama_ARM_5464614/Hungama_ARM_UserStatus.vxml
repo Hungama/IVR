@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_ARM_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="Hungama_ARM_UserStatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+
+	
+	<form id="USRSTATUS">
+		<block>
+			<assign name="Section_Name" expr="'ChkUserStatus'"/>
+			<if cond="ANI=='9790924124' || ANI=='8527000779'">
+				<assign name="circle" expr="'tnu'"/>
+			</if>
+			<if cond="ANI=='9900014500' || ANI=='9535661775' || ANI=='8527000779'">
+				<assign name="circle" expr="'kar'"/>
+			</if>
+			<if cond="DNIS=='5464643' &amp;&amp; circle=='kar'">
+				<assign name="lang" expr="'10'"/>
+                      	<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+                      	<assign name="usr_status" expr="'3'"/>
+				<script> 					 
+				        timerflag=0;      
+			        </script>							
+		                <script>
+					<![CDATA[
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>   
+				<goto next="Hungama_ARM_MainMenu.vxml"></goto>
+			</if>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=ARM_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=1&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+DNIS"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						       if(j==3)
+								modesub = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+
+					<if cond="circle=='tnu' || circle=='chn'">						
+						<assign name="lang" expr="'07'"/>
+	                        		<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					<elseif cond="circle=='kar'" />						
+                        			<assign name="lang" expr="'10'"/>
+	                        		<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+					<else/>						
+                        			<assign name="lang" expr="'07'"/>
+	                        		<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					</if>
+
+				<log>usr_status   is	<value expr="usr_status"/></log>
+
+			
+ 
+			
+			
+			<if cond="usr_status=='-1'">
+				<assign name="dtmf_check" expr="1"/>
+				<assign name="dtmf_log" expr="ANI+hash+circle"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/>
+				
+				<goto next="Hungama_ARM_UserSub.vxml"></goto>
+			<elseif cond="usr_status=='1'"/>
+				<script> 					 
+					balance=balance*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log>usr_status   is	<value expr="usr_status"/></log>	
+				<log expr="'balance @@@@@@@@@ '+balance"></log>	
+				<log>balance   is	<value expr="balance"/></log>	
+				
+				<if cond="lang=='99'">
+					<goto next="Hungama_ARM_UserSub.vxml"></goto>	
+				<else/>
+					<if cond="lang=='01'">
+						<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+					<elseif cond="lang=='02'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+					<elseif cond="lang=='06'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+					<elseif cond="lang=='07'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					<elseif cond="lang=='08'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+					<elseif cond="lang=='10'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+					<else/>
+                        			<assign name="lang" expr="'07'"/>
+                        			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					</if>
+					<if cond="circle=='tnu' || circle=='chn'">
+						<assign name="lang" expr="'07'"/>
+	                        		<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					<elseif cond="circle=='kar'" />
+                        			<assign name="lang" expr="'10'"/>
+	                        		<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+					<else/>
+                        			<assign name="lang" expr="'07'"/>
+	                        		<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					</if>
+					
+					<goto next="Hungama_ARM_MainMenu.vxml"></goto>
+				</if>
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/07/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_ARM_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+
+</vxml>

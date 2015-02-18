@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="PlaySunSign.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+ 	<var name="song_listen" expr="'End'"/>
+	<var name="compare_time" expr="0"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="starting_time" expr="0"/>
+	<var name="ContentTime" expr="0"/>
+	<var name="contentlog" expr="''"/>
+	<var name="song_begin" expr="'0'"/>
+ 	<var name="songID" expr="'0'"/>
+	<var name="content_time" expr="0"/>
+	<var name="realDNIS" expr="0"/>
+<var name="RepeatName" expr="'selsunsign'"/>
+<var name="content_play" expr="0"/>
+<error>
+<goto next="end.vxml"/>
+</error>
+
+
+	<form id="checkMinStatus">
+		<block>
+			<assign name="prompt_name" expr="'SUNSIGN'"/>
+			<goto next="#PlaySunSign"/>
+		</block>
+	</form>
+	<form id="PlaySunSign">
+		<block>
+			<log>Play Sun Sign Section</log>
+			<assign name="counter" expr="0"/>
+			
+			<assign name="userselectsunsign" expr="new Array('select_sunsign1','select_sunsign2','select_sunsign3','select_sunsign4','select_sunsign5','select_sunsign6','select_sunsign7','select_sunsign8','select_sunsign9','select_sunsign10','select_sunsign11','select_sunsign12')"/>
+				
+		</block>
+
+
+		<field name="selsunsign" type="digits?length=1">
+			<grammar src="all.grxml" mode="dtmf"/>
+			
+
+			<catch event="error.badfetch" count="1">
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				
+				<assign name="counter" expr="6"/>
+
+				<goto nextitem="selsunsign"/>
+			</catch>
+
+
+			<catch event="error.badfetch" count="2">
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="counter" expr="6"/>
+
+
+				<goto nextitem="selsunsign"/>
+			</catch>
+
+			<catch event="error.badfetch" count="3">
+				<exit/>
+			</catch>
+
+			<catch event="noinput" count="1" >
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+					<assign name="counter" expr="0"/>
+					<goto nextitem="selsunsign"/>
+			</catch>
+			
+			<catch event="noinput" count="2" >
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+					<assign name="counter" expr="0"/>
+					<goto nextitem="selsunsign"/>
+			</catch>
+				
+			<catch event="noinput" count="3" >
+				<exit/>
+			</catch>
+
+				
+			<prompt bargein="true" timeout="0s" cond="content_play==0">
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/userselectsunsign0.wav'"/>
+				
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="content_play==1">
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/userselectsunsign1.wav'"/>
+				
+			</prompt>
+	
+			<prompt timeout="3s" cond="content_play &lt;=0">
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/sign_other_option.wav'"/>
+	
+			</prompt>
+
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/select_acmanager.wav'"/>
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/press_dtmf9.wav'"/>
+			
+			<filled>
+				<if cond="selsunsign == '1'">
+					<assign name="gSunSign" expr="counter+1"/>
+					
+					<assign name="updatesunsign" expr="sunsign+gSunSign"/>
+
+
+					<assign name="selectedsunsign" expr="userselectsunsign[counter+1]"/>
+					
+				<elseif cond="selsunsign == '2'"/>
+					<assign name="gSunSign" expr="counter+2"/>
+					<assign name="updatesunsign" expr="sunsign+gSunSign"/>
+
+					<assign name="selectedsunsign" expr="userselectsunsign[counter+1]"/>
+					
+				<elseif cond="selsunsign == '3'"/>
+					<assign name="gSunSign" expr="counter+3"/>
+					<assign name="updatesunsign" expr="sunsign+gSunSign"/>
+
+					<assign name="selectedsunsign" expr="userselectsunsign[counter+2]"/>
+					
+				<elseif cond="selsunsign == '4'"/>
+					<assign name="gSunSign" expr="counter+4"/>
+					<assign name="updatesunsign" expr="sunsign+gSunSign"/>
+					<assign name="selectedsunsign" expr="userselectsunsign[counter+3]"/>
+					
+				<elseif cond="selsunsign == '5'"/>
+					<assign name="gSunSign" expr="counter+5"/>
+					<assign name="updatesunsign" expr="sunsign+gSunSign"/>
+					<assign name="selectedsunsign" expr="userselectsunsign[counter+4]"/>
+					
+				<elseif cond="selsunsign == '6'"/>
+					<assign name="gSunSign" expr="counter+6"/>
+					<assign name="updatesunsign" expr="sunsign+gSunSign"/>
+					<assign name="selectedsunsign" expr="userselectsunsign[counter+5]"/>
+					
+				<elseif cond="selsunsign == '7'"/>
+					
+					<assign name="counter" expr="counter + 6"/>
+					<assign name="content_play" expr="content_play + 1"/>
+					
+					<log>content_playt<value expr="content_play"/></log>
+
+					<log>new count<value expr="counter"/></log>
+					<log>More Sun Sign</log>
+					
+					<goto nextitem="selsunsign"/>
+					
+				<elseif cond="selsunsign == '9'"/>
+					<goto next="AccountManager.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+				
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+
+
+				<goto next="#confirmation"/>
+			</filled>
+
+				<nomatch count="1">
+					<prompt timeout="5s">
+						<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+						
+					</prompt>
+						<goto nextitem="selsunsign"/>
+				</nomatch>
+			
+				<nomatch count="2">
+					<prompt timeout="5s">
+						<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+						
+					</prompt>
+						<goto nextitem="selsunsign"/>
+				</nomatch>
+
+				<nomatch count="3">
+					<exit/>
+				</nomatch>		
+
+		</field>
+		
+	</form>
+
+	
+
+
+<form id="confirmation">
+		<block>
+			<log>Confirmation</log>
+			<assign name="content_time" expr="start_time()"/>
+		</block>
+		<field name="welsunsign" type="digits?length=1">
+			<prompt bargein="true" timeout="1s">
+		        		<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/mainmenu.wav'"/>
+					
+		        </prompt>
+
+			<catch event="noinput">
+				<goto nextitem="keypadnavigation"/>
+			</catch>
+			<grammar src="all.grxml" mode="dtmf"/>
+			<filled>
+				<if cond="welsunsign == '8'">
+					<goto next="#PlaySunSign"/>
+				<else/>
+					<goto nextitem="keypadnavigation"/>
+				</if>
+			</filled>
+		</field>
+		<field name="keypadnavigation" type="digits?length=1">
+			<grammar src="all.grxml" mode="dtmf"/>
+
+			<prompt bargein="true" timeout="2s">
+
+		        	<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/keypad.wav'"/>
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/Keypad_1.wav'"/>
+
+		        </prompt>
+
+			
+			<catch event="noinput">
+				<assign name="filetoplay" expr="CurrentDate()"/>
+				<goto nextitem="contentplay"/>
+			</catch>
+			<filled>
+				<if cond="keypadnavigation== '7'">
+					<goto nextitem="playkeypad"/>
+				<elseif cond="keypadnavigation == '8'"/>
+					<goto next="#PlaySunSign"/>
+				<elseif cond="keypadnavigation == '#'"/>
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/thanks_alarm.wav'"/>
+					<assign name="songID" expr="'sunsign'+gSunSign"/>
+					<assign name="content_time" expr="start_time()"/>
+
+					<assign name="contentlog" expr="CurrentDateChngFrmt().toString().slice(2)+':'+C_Start+hash+'91'+ANI+hash+alertCircle+hash+songID+hash+'09:00:00#14:00:00#'"></assign>
+
+					<log><value expr="'http://192.168.100.227:8080/hungama/alert_log?starttime='+C_Start+'&amp;endtime='+content_time+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime=1&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=JYOTISHAlARMALERT&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/></log>
+					
+					<script srcexpr="'http://192.168.100.227:8080/hungama/alert_log?starttime='+C_Start+'&amp;endtime='+content_time+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime=1&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=JYOTISHAlARMALERT&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+
+					<assign name="filetoplay" expr="CurrentDate()"/>
+					<goto nextitem="contentplay"/>
+
+
+				<else/>
+					<assign name="filetoplay" expr="CurrentDate()"/>
+					<goto nextitem="contentplay"/>
+				</if>
+			</filled>
+		</field>
+		<block name="playfeed">
+			<assign name="filetoplay" expr="CurrentDate()"/>
+			<goto nextitem="confirm"/>
+		</block>
+		
+
+<field name="confirm">
+			<catch event="noinput" count="1">
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				<goto nextitem="confirm"/>
+			</catch>
+			<catch event="noinput" count="1">
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				<goto nextitem="confirm"/>
+			</catch>
+
+			<catch event="noinput" count="3">
+				<goto next="#PlaySunSign"/>
+			</catch>
+			<catch event="nomatch" count="1">
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				<goto nextitem="contentplay"/>
+			</catch>
+			<catch event="nomatch" count="2">
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				<goto nextitem="contentplay"/>
+			</catch>
+
+			<catch event="nomatch" count="3">
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				<goto next="#PlaySunSign"/>
+			</catch>
+
+			<catch event="error.badfetch">
+				<goto next="#PlaySunSign"/>
+			</catch>
+			<prompt timeout="5s">
+				<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/day_options.wav'"/>
+			</prompt>
+			
+			<grammar src="all.grxml" mode="dtmf"/>
+			<filled>
+				<if cond="confirm == '1'">
+					
+					<assign name="filetoplay" expr="PrevDate()"/>
+					<goto nextitem="contentplay"/>
+				<elseif cond="confirm == '2'"/>
+					<assign name="filetoplay" expr="NextDate()"/>
+					<goto nextitem="contentplay"/>
+				<elseif cond="confirm == '4'"/>
+					<goto nextitem="contentplay"/>
+
+				<elseif cond="confirm == '7'"/>
+					<goto nextitem="playkeypad"/>
+				<elseif cond="confirm == '8'"/>
+					<goto next="#PlaySunSign"/>
+				<elseif cond="confirm == '9'"/>
+					<goto next="AccountManager.vxml"/>
+				<else/>
+					<goto nextitem="contentplay"/>
+				</if>
+			</filled>
+
+			
+		</field>
+
+		<block name="contentplay">
+			
+			 <assign name="song_begin" expr="start_time()"/>
+			
+			 <log> @@@@@@ content start time  <value expr="song_begin"/> </log>	
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_UpdateMinutes&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=sunsign'+gSunSign + '&amp;INPARAM[2]=sunsign'+gSunSign"/>
+			<goto nextitem="contentconfirm"/>
+		</block>
+		
+
+
+	<field name="contentconfirm" type="digits?length=1">
+			<prompt timeout="1s">
+				<audio expr="contentpath1+'/'+LANG_DESCRIPTION+'/sunsign'+gSunSign+'_'+filetoplay+'.wav'"/>
+
+					<!--<audio expr="'http://192.168.100.212:6666/hungama/jyotish/'+LANG_DESCRIPTION+'/sunsign'+gSunSign+'_'+filetoplay+'.wav'"/>-->
+			</prompt>
+			<grammar src="all.grxml" mode="dtmf"/>
+			<filled>
+				<if cond="contentconfirm== '1'">
+					<assign name="filetoplay" expr="PrevDate()"/>
+					<goto nextitem="contentplay"/>
+				<elseif cond="contentconfirm== '2'"/>
+					<assign name="filetoplay" expr="NextDate()"/>
+					<goto nextitem="contentplay"/>
+				<elseif cond="contentconfirm== '7'"/>
+					<goto nextitem="playkeypad"/>
+				<elseif cond="contentconfirm== '8'"/>
+					<goto next="#PlaySunSign"/>
+				<elseif cond="contentconfirm== '9'"/>
+					<goto next="AccountManager.vxml"/>
+				<elseif cond="contentconfirm== '#'"/>
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/thanks_alarm.wav'"/>
+					<assign name="songID" expr="'sunsign'+gSunSign"/>
+					<assign name="content_time" expr="start_time()"/>
+
+						<!--<assign name="contentlog" expr="content_time+hash+ANI+hash+circle+hash+songID+hash+start_time()"></assign>-->
+					
+					<assign name="contentlog" expr="CurrentDateChngFrmt().toString()+':'+C_Start+hash+'91'+ANI+hash+alertCircle+hash+songID+hash+'09:00:00'+hash+'14:00:00'+hash"></assign>
+
+					<log><value expr="'http://192.168.100.227:8080/hungama/alert_log?starttime='+C_Start+'&amp;endtime='+content_time+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime=1&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=JYOTISHAlARMALERT&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/></log>
+					
+					<script srcexpr="'http://192.168.100.227:8080/hungama/alert_log?starttime='+C_Start+'&amp;endtime='+content_time+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime=1&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=JYOTISHAlARMALERT&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+
+					<assign name="filetoplay" expr="CurrentDate()"/>
+					<goto nextitem="contentplay"/>
+
+				<else/>
+					<goto nextitem="playfeed"/>
+				</if>
+			
+			 	<assign name="song_listen" expr="'END'" />							 
+				 <assign name="compare_time" expr="time_duration(song_begin)"/>
+				 <log>@@@@@@@ content listen time  <value expr="compare_time"/> </log>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log>@@@@@@@ content add time  <value expr="ContentTime"/> </log>
+				  <assign name="songID" expr="'sunsign'+gSunSign"/>
+				
+				 <assign name="contentlog" expr="contentlog+hash+songID+hash+compare_time"></assign>
+
+			</filled>
+			<catch event="nomatch noinput" count="1">
+				<assign name="song_listen" expr="'END'" />							 
+				 <assign name="compare_time" expr="time_duration(song_begin)"/>
+				 <log>@@@@@@@ content listen time  <value expr="compare_time"/> </log>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log>@@@@@@@ content add time  <value expr="ContentTime"/> </log>
+				  <assign name="songID" expr="'sunsign'+gSunSign"/>
+				
+				 <assign name="contentlog" expr="contentlog+hash+songID+hash+compare_time"></assign>
+
+				<goto nextitem="playfeed"/>
+			</catch>
+			<catch event="nomatch noinput" count="2">
+				 <assign name="song_listen" expr="'END'" />							 
+				 <assign name="compare_time" expr="time_duration(song_begin)"/>
+				 <log>@@@@@@@ content listen time  <value expr="compare_time"/> </log>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log>@@@@@@@ content add time  <value expr="ContentTime"/> </log>
+				  <assign name="songID" expr="'sunsign'+gSunSign"/>
+				
+				 <assign name="contentlog" expr="contentlog+hash+songID+hash+compare_time"></assign>
+
+				<goto next="#PlaySunSign"/>
+			</catch>
+			<catch event="error.badfetch">
+				<goto nextitem="playfeed"/>
+			</catch>
+		</field>
+
+		
+		<block name="chkMin">
+
+		<!--
+			<script>
+				total_used_bal=chkBalenceMinute(start_BalenceMinute);
+             			curbalance=balance-total_used_bal;
+			</script>
+		
+			<if cond="curbalance &lt;= '0'">
+				<assign name="backmovepage" expr="'PlaySunSign.vxml'"/>
+				
+			<else/>
+				<goto nextitem="contentplay"/>
+			</if>
+		-->
+			<goto next="#PlaySunSign"/>
+		</block>
+		<block name="playkeypad">
+			
+			<goto nextitem="confirmkeypad"/>
+		</block>
+		<field name="confirmkeypad" type="digits?length=1">
+			<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/keypad_options.wav'"/>
+			<grammar src="all.grxml" mode="dtmf"/>
+			<catch event="noinput" count="1">
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+				<goto nextitem="playkeypad"/>
+			</catch>
+			<catch event="noinput" count="2">
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+				<goto nextitem="playkeypad"/>
+			</catch>
+			<catch event="noinput" count="3">
+				<exit/>
+			</catch>
+			<filled>
+				<log>Confirm Keypad:<value expr="confirmkeypad"/></log>
+
+				<if cond="confirmkeypad== '1'">
+					<goto nextitem="contentplay"/>
+				<elseif cond="confirmkeypad== '3'"/>
+					<goto nextitem="contentplay"/>
+				<elseif cond="confirmkeypad== '8'"/>
+					<goto next="#PlaySunSign"/>
+				<elseif cond="confirmkeypad== '9'"/>
+					<goto next="AccountManager.vxml"/>
+				<elseif cond="confirmkeypad== '#'"/>
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/thanks_alarm.wav'"/>
+					<assign name="songID" expr="'sunsign'+gSunSign"/>
+					<assign name="content_time" expr="start_time()"/>
+
+					<!--<assign name="contentlog" expr="content_time+hash+ANI+hash+circle+hash+songID+hash+start_time()"></assign>-->
+					<assign name="contentlog" expr="CurrentDateChngFrmt()+':'+C_Start+hash+'91'+ANI+hash+alertCircle+hash+songID+hash+'09:00:00'+hash+'14:00:00'+hash'"></assign>
+
+					
+					<log><value expr="'http://192.168.100.227:8084/hungama/alert_log?starttime='+C_Start+'&amp;endtime='+content_time+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime=1&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=JYOTISHAlARMALERT&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/></log>
+					
+					<script srcexpr="'http://192.168.100.227:8084/hungama/alert_log?starttime='+C_Start+'&amp;endtime='+content_time+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime=1&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=JYOTISHAlARMALERT&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+
+					<goto nextitem="contentplay"/>
+
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+			<nomatch count="1">
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				<goto nextitem="confirmkeypad"/>
+			</nomatch>
+			<nomatch count="2">
+				<prompt timeout="5s">
+					<audio expr="promptpath1+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				<goto nextitem="confirmkeypad"/>
+			</nomatch>
+			<nomatch count="3">
+				<exit/>
+			</nomatch>
+		</field>
+	</form>
+
+</vxml>

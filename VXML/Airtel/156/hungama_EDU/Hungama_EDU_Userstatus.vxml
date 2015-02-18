@@ -1,0 +1,157 @@
+<vxml version="2.0" application="MSDRoot.vxml">   
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<property name="documentmaxage" value="3600"></property>
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+<property name="audiofetchhint" value="safe"/>
+
+    
+   <var name="len" expr="''"/>
+
+<!-- ################################## USERSTATUS ################################################## -->
+
+  
+<form id="USERSTATUS">
+	<block>  
+	<assign name="Section_Name" expr="'PD_USERSTATUS'"/>
+				<assign name="initial_balance" expr="call_time()"/>	
+			<log>ccxml_session   is	<value expr="ccxml_session"/></log>
+			<log>dialogid1   is	<value expr="dialogid1"/></log>	
+	        	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=1&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+DNIS"/>
+		   		<script>
+		 			<![CDATA[
+		   				for(j=0; j< out_string.length;  j++)
+			 		 		{  	  
+			      				if(j==0)
+			      			 	usr_status = out_string[j];
+						        if(j==1)
+						       	lang = out_string[j];
+						        if(j==2)
+						       	balance = out_string[j];	
+							 if(j==3)
+								modesub = out_string[j];						      
+			  				}
+					]]>
+				</script>
+			<!-- <assign name="lang" expr="'01'"/>-->
+			<log>usr_status   is	<value expr="usr_status"/></log>			 	
+			<if cond="usr_status == '1'">						    
+				         <script> 	
+				         	balance=balance*60;
+						    timerflag=1;      
+						 </script>	
+ 						 <if cond="realDNIS=='532223459'">
+					 		<goto next="Hungama_EDU_Help.vxml#directunsub"/>
+						 </if>
+
+						 <if cond="timerflag=='1'">                       						   
+							 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+							 <script>
+						    	 total_used_bal=dur;
+							     curbalance=balance-total_used_bal;  						  
+						     </script>
+						   
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		                     <if cond="curbalance &lt;= '0'">          
+		                         <goto next="TopupRenew.vxml"/>
+		                    </if>
+		                  </if>  
+						<assign name="repeat_flag" expr="'1'" />
+				 	     	<goto next="Hungama_EDU_ExistUser.vxml"/>
+				 	     	
+	   			<elseif cond="usr_status=='-1'"/>
+						 <log>usr_status   is	<value expr="usr_status"/>    </log>
+						 <assign name="dtmf_check" expr="1"/>
+  				         <assign name="dtmf_log" expr="ANI+hash+circle"/>
+						 <assign name="dtmfsub" expr="'First_level_input'"/>  
+				 	     <goto next="Hungama_EDU_sub.vxml"/>
+				<!--<elseif cond="usr_status=='5'"/>
+						 <log>usr_status   for tnb user	<value expr="usr_status"/>    </log>
+						 <goto next="#trynbuystatus"/>-->
+				<else/>
+						<prompt bargein="false">					 	
+								<audio expr="promptpath+'/'+lang+'/charging_wait.wav'"/>
+			   	        </prompt>
+						<goto next="Hungama_EDU_End.vxml"/>	
+				</if>				
+	</block>
+	
+</form>
+
+<form id="trynbuystatus">
+	<block>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=3&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+DNIS"/>
+	<script>
+		var days = out_string[0];
+	</script>
+		 <log>days   is	<value expr="days"/>    </log>
+		<if cond="days &gt; 3">
+		         <goto next="#trynbuyend"/>
+		<else/>
+			<assign name="tnb_flag" expr="'1'"/>
+			 <script> 	
+				balance=balance*60;
+				timerflag=1;      
+			 </script>
+			 <if cond="timerflag=='1'">                       						   
+				 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				 <script>
+					total_used_bal=dur;
+					curbalance=balance-total_used_bal;  						  
+				 </script>
+						   
+			         <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			         <log expr="'@@@@@@ left balance is '+curbalance"/>
+			         <if cond="curbalance &lt;= '0'">          
+				     <goto next="TopupRenew.vxml"/>
+			         </if>
+		         </if> 
+			<assign name="repeat_flag" expr="'1'"/>
+			<goto next="Hungama_EDU_ExistUser.vxml"/>
+
+		</if>
+       </block>
+</form>
+
+<form id="trynbuyend">
+    <field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				   <item>1</item>		
+		   </one-of>
+               </rule>
+             </grammar>			
+
+			<prompt bargein="false" timeout="2s">
+				   <audio expr="promptpath+'/'+lang+'/thanks_trial.wav'"/>		
+	   	       </prompt>
+            
+			<filled>
+				<if cond="choice=='1'">
+				     <clear namelist="choice"/> 
+				     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=4&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+DNIS"/>
+				     <goto next="Hungama_EDU_sub.vxml#reconfirm_subs"/>
+				</if>
+			</filled>		
+			
+			<noinput>
+			     <audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>                                 
+				 <goto next="#trynbuyend"/>		
+            </noinput>
+	        <nomatch>			   
+                <audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>		
+    			<goto next="#trynbuyend"/>		
+            </nomatch>  		 
+ 	 </field>	 
+</form>
+
+
+</vxml>
+
+

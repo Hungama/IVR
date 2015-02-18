@@ -1,0 +1,809 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="devRoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">	
+	<meta name="SelectLang.vxml" content="" />
+	<meta name="Author" content="anita " />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />		
+	<property name="caching" value="fast"/>
+	<property name="documentfetchhint" value="safe"/>
+	<property name="grammarfetchhint" value="safe"/>
+	<meta http-equiv="Cache-control" content="max-age=7200"/> 
+	<property name="fetchminimumbuffersize" value="54272"/>
+	<property name="fetchhint" value="safe"/>
+	<property name="audiofetchhint" value="safe"/>
+	<property name="timeout" value="1s" />
+	<property name="maxage" value="1800s"/>
+	<var name="wellang" expr="''" />
+	<var name="c_test" expr="''"/>
+	<var name="c_test_day" expr="1"/>			
+	<script>
+		var ciropr1 = new Object();		
+		var out_string=new Object();
+		var CDSIP=0;
+	</script>	
+<form id="Main">
+	<block>
+		<assign name="prompt_name" expr="'USER_STATUS_CHECK'"/>		
+		<assign name="C_Start" expr="call_time()"/>
+ 		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+		</script>
+	     	<script>
+		  <![CDATA[
+			 c_test=new Date();
+		      ]]>
+		</script>		
+		<log>hello              $$$$$$$$$$$$$$$$$$$$$$$$ c_test  is$$$$$$$$$$$$$$$$$$$$$	<value expr="c_test"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>	    		
+	        <script>
+			var length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);					
+		</script>
+		<script>
+	     		c_test_day=c_test.getDay();
+	     	</script>			
+		<log>helow              $$$$$$$$$$$$$$$$$$$$$$$$ c_test_day  is$$$$$$$$$$$$$$$$$$$$<value expr="c_test_day"/>$$$$$$$$$$$$$$$$$$$$$$$$$$   </log>	    				 
+		<if cond="c_test_day==1">
+		 	<assign name="day" expr="'mon'"/>
+		<elseif cond="c_test_day==2"/>
+		  	<assign name="day" expr="'tue'"/>
+		<elseif cond="c_test_day==3"/>
+		  	<assign name="day" expr="'wed'"/>				  	
+		<elseif cond="c_test_day==4"/>
+		  	<assign name="day" expr="'thu'"/>				  	
+		<elseif cond="c_test_day==5"/>
+		  	<assign name="day" expr="'fri'"/>				  	
+		<elseif cond="c_test_day==6"/>
+		  	<assign name="day" expr="'sat'"/>				  	
+		<elseif cond="c_test_day==0"/>
+		  	<assign name="day" expr="'sun'"/>				  	
+		</if>				  
+		<assign name="DNIS" expr="realDNIS"/>	    		  
+                <log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+              	<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>  
+              	  
+		<if cond="DNIS=='54321057' || DNIS=='54321052' || DNIS=='5432105786' || DNIS=='54321053' || DNIS=='54321054' || DNIS=='54321055' || DNIS=='54321056'">
+			  <submit expr="'../hungama_devotional_MM/SelectLang.vxml'"/>		
+		</if>				  
+              	<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/>               				 
+		<assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 
+				    	
+		<log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+		<log> @@@@DNI is 		<value expr="session.connection.local.uri"/> </log>	
+		<log> @@@@ANI is 		<value expr="session.connection.remote.uri"/> </log>			 
+		<script>
+			var splitparam=sessionid.split("_");
+				cirid=splitparam[1]; 
+		</script>
+		<if cond="realDNIS=='5500169'">
+			<submit expr="'../ManchalaPremRiyaSub/SelectLang.vxml'"/>
+		</if>
+		 <if cond="DNIS=='55001000'">
+			<submit expr="'../UnSubApp/manchalaRoot.vxml'"/>
+		</if> 	
+		<assign name ="operator" expr="'airm'"/>
+		<assign name="dbservlet" expr="'devo_dbinteraction'"/>
+		 <log> @@@@circleid is <value expr="cirid"/> </log>
+		 <log> @@@@operator is <value expr="operator"/> </log>	
+		 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Airtel_IVR.CDS_IP_CIR&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+cirid+'&amp;INPARAM[1]='+ANI"/>
+		       <script>
+			       <![CDATA[
+				    for(j=0; j< out_string.length;  j++)
+				      {      
+					   if(j==0)
+						  CDSIP = out_string[j];
+					   if(j==1)
+						  circle = out_string[j];
+					   if(j==2)
+						  zone = out_string[j];
+				      }
+			       ]]>
+			</script>
+		       	<log> @@@@circleid is <value expr="cirid"/> </log>
+		       	<log> @@@@CDSIP is <value expr="CDSIP"/> </log>
+		       	<log> @@@@circle name is <value expr="circle"/> </log>
+		       	<log> @@@@zone name is <value expr="zone"/> </log>
+		      	<if cond="ANI=='8527000779'">	  
+				<assign name="circle" expr="'tnu'"/>
+			</if>
+
+			<assign name ="promptpath" expr="'http://'+CDSIP+':8088/CDS/hungama/dev/'"/>
+			<assign name="contentpath" expr="'http://'+CDSIP+':8088/CDS/hungama/content/'" /> 					   					             		  
+			<assign name="ADPrompt_Path" expr="'http://'+CDSIP+':8088/CDS/hungama/ADVERTISMENT/'"/>
+			
+     <!--*************************************Advertisment switch functionality ****************************************************-->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Airtel_IVR.AD_Switch&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]=1515'"/>
+		<script>
+			 Ad_switch=out_string[0];
+			 AD_id=out_string[1];
+			  AD_name=out_string[2];
+			  ADskip_flag=out_string[3];
+		</script>
+			<log>Ad_switch  : <value expr="Ad_switch"/></log>
+			<log>AD_id for msisdn : <value expr="AD_id"/></log>
+			<log>AD_name for msisdn : <value expr="AD_name"/></log>
+			<log>ADskip_flag for msisdn : <value expr="ADskip_flag"/></log>
+
+     <!--****************************************************************************************************************************-->			
+		<if cond="DNIS=='510168'">			
+			<assign name="usr_status" expr="'3'"/>
+			<assign name="pricepoint" expr="'6'"/>
+		  	<assign name="initial_balance" expr="start_time()"/>
+			<assign name="toll_starttime" expr="starttime()"/>			
+			<if cond="circle=='ker'">
+				<prompt bargein="false" timeout="0s">
+					<audio expr="promptpath+'/02/Toll_info6.wav'"/>
+				</prompt>
+			<elseif cond="circle=='kol' || circle=='wbl'"/>
+				<prompt bargein="false" timeout="0s">
+					<audio expr="promptpath+'/06/Toll_info6.wav'" />
+				</prompt>
+			<elseif cond="circle=='tnu' || circle=='chn'"/>
+				<prompt bargein="false" timeout="0s">
+					<audio expr="promptpath+'/07/Toll_info6.wav'" />
+				</prompt>
+			<elseif cond="circle=='apd'"/>
+				<prompt bargein="false" timeout="0s">
+					<audio expr="promptpath+'/08/Toll_info6.wav'" />
+				</prompt>		
+			<elseif cond="circle=='kar'"/>
+				<prompt bargein="false" timeout="0s">
+					<audio expr="promptpath+'/10/Toll_info6.wav'" />
+				</prompt>			
+			<else/>
+				<prompt bargein="false" timeout="0s">
+					<audio expr="promptpath+'/01/toll_info6.wav'"/>
+				</prompt>
+			</if>
+			<script> 					 
+				timerflag=0;      
+			</script>				
+			<goto next="#USRSTATUSTOLL"/>
+		</if>
+
+		<if cond="circle=='ker'">
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+'/01/start_english.wav'"/>
+			</prompt>
+		<elseif cond="circle=='kar'"/>
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+'/01/start_kannada.wav'" />
+			</prompt>
+		<elseif cond="circle=='tnu' || circle=='chn'"/>
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+'/01/start_tamil.wav'" />
+			</prompt>
+		<else/>
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+'/01/start_hindi.wav'"/>
+			</prompt>
+		</if>		
+		<goto next="#USRSTATUS"/>
+	</block>
+</form>		
+<!--***************************************************USER STATUS CHECK API FOR 510168 TOLL MODEL BLOCK**********************************-->		
+	<form id="USRSTATUSTOLL">
+		<block>		
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_LANG_TOLL_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+				  <![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					{  	  
+					       if(j==0)
+							lang = out_string[j];
+					 }
+					]]>
+			</script>
+			<log>lang is  <value expr="lang"/></log>
+			<if cond="lang=='-1'">
+				<goto next="#New_User_Toll"/>				
+			<else/>
+				<if cond="circle=='pub' || circle=='pun'">
+					<assign name="lang" expr="'01'"/>
+				</if>
+				<assign name="LANG_DESCRIPTION" expr="lang"/>	
+				<goto next="ExistingUser.vxml"></goto>
+			</if>					
+		</block>
+	</form>
+<!--***************************************************USER STATUS CHECK API BLOCK**********************************-->	
+	<form id="USRSTATUS">
+		<block>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			  <![CDATA[
+				for(j=0; j< out_string.length;  j++)
+				{  	  
+				       if(j==0)
+					       	usr_status = out_string[j];
+				       if(j==1)
+					       	lang = out_string[j];
+				       if(j==2)
+					       	balance = out_string[j];
+				       if(j==3)
+					       	modesub = out_string[j];
+				 }
+				]]>
+			</script>				
+			<log>length of outstring  is	<value expr="out_string.length"/></log>
+			<log>user status is <value expr="usr_status"/></log>
+			<log>user language is <value expr="lang"/></log>
+
+			<if cond="Ad_switch=='1' &amp;&amp; Ad_flag=='0' &amp;&amp; (ANI=='85270007791')">
+				<script>
+					Ad_flag=Ad_flag+1;
+				</script>
+				<assign name="add_starttime" expr="starttime()"/>
+				<log>add_starttime for msisdn : <value expr="add_starttime"/></log>
+				<goto next="#ADDUSERSTAUS"></goto>
+			</if>			
+			<if cond="ANI=='85270007791'">	  
+				<assign name="circle" expr="'tnu'"/>
+				<assign name="lang" expr="'07'"/>
+			</if>				
+         		 <if cond="usr_status=='1'">
+				<assign name="timerflag" expr="1"/>
+		  		<assign name="initial_balance" expr="start_time()"/>
+				<assign name="balanceminutes" expr="balance"/>
+				<script> 					 
+					balance=balance*60;     
+				</script>
+				<if cond="DNIS=='51050' &amp;&amp; lang=='19'">
+					<assign name="lang" expr="'01'"/>
+				</if>
+				<if cond="circle=='pub' || circle=='pun'">
+					<assign name="lang" expr="'01'"/>
+				</if>
+		 		<assign name="wellang" expr="lang"/>
+				<assign name="LANG_DESCRIPTION" expr="wellang"/>
+				<log>lang Description is <value expr="LANG_DESCRIPTION"/></log>
+
+				<if cond="DNIS=='5105012'">
+					<assign name="DevoMM" expr ="'true'"/>
+				</if>
+				<if cond="DevoMM=='true'">
+					<goto next="Hungama_5105011_MainMenu.vxml"/>
+				<elseif cond="DNIS=='5105011'"/>
+					<goto next="Hungama_5105011_MainMenuOld.vxml"/>
+				<elseif cond="DNIS=='510508'"/>
+					<goto next="Hungama_5105011_MainMenuOld.vxml"/>
+				<else/>
+					<log>DNIS is <value expr="DNIS"/></log>
+					<if cond="(DNIS=='510501' || DNIS=='510502' || DNIS=='510503' || DNIS=='510504' || DNIS=='510505' || DNIS=='510506' || DNIS=='51050786' || DNIS=='5105025')">
+				 		<assign name="DirectMM" expr="'true'"/>					
+					</if>
+					<goto next="ExistingUser.vxml"/>
+				</if>
+        		<elseif cond="usr_status == '-1'"/>
+				<assign name="dtmf_check" expr="1"/>
+				<assign name="dtmf_log" expr="ANI+hash+circle"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/> 
+				<if cond="DNIS=='5105011' || DNIS=='5105012'">
+					<assign name="DevoMM" expr ="'true'"/>
+				</if>	
+				<if cond="circle=='jnk' || circle=='ori' || circle=='del' || circle=='upe' || circle=='upw' || circle=='pub' || circle=='hay' || circle=='hpd' || circle=='kol' || circle=='wbl'|| circle=='nes'|| circle=='asm' || circle=='mpd'">
+					 <!--<assign name="price_point" expr="'ten'"/>-->
+					 <assign name="price_point" expr="'30'"/>
+				</if>
+				<if cond="circle=='tnu'">	  
+					<assign name="price_point" expr="'ten'"/>
+					<assign name="lang" expr="'07'"/>
+					<assign name="LANG_DESCRIPTION" expr="'07'"/>		
+					<goto next="Subscription_clips.vxml"/>
+				</if>				
+				<if cond="circle=='raj'">	  
+					<assign name="price_point" expr="'30'"/>
+					<assign name="lang" expr="'01'"/>
+					<assign name="LANG_DESCRIPTION" expr="'01'"/>		
+					<goto next="Subscription_Raj.vxml"/>
+				</if>
+				<if cond="circle=='upw'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_UPWBASE_CHK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					<script>
+						  <![CDATA[
+							for(j=0; j< out_string.length;  j++)
+							{
+							       if(j==0)
+									count = out_string[j];
+							 }
+							]]>
+					</script>
+					<log>count in DB is  <value expr="count"/></log>
+					<if cond="count=='1'">
+						<assign name="lang" expr="'03'"/>
+						<assign name="LANG_DESCRIPTION" expr="'03'"/>
+						<assign name="RELIGION" expr="'sikh'"/>
+						<goto next="Subscription_Raj.vxml"/>
+					</if>	
+				</if>
+				<goto next="#New_User"/>
+        		<else/>
+		        	<assign name="wellang" expr="lang"/>
+		        	<assign name="LANG_DESCRIPTION" expr="lang"/>
+			 	<prompt bargein="true" timeout="3s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+				</prompt>
+			</if>
+	</block>
+</form>
+<form id="New_User">
+	<block>
+		<assign name="prompt_name" expr="'NEW_USER'"/>	
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/'+circle+'/navlang_new.cfg&amp;TOKEN=FREE'"/>
+		 <script>
+			array1.length=0;
+			dishes.length=0;		
+		</script>	
+		<assign name="len" expr="favSongs.length" />
+		<assign name="i" expr="0" />
+		<script>
+			 <![CDATA[
+				   for(j=0; j<len ;  j++)
+				   {  	  
+					array1[j] = favSongs[j];						   
+				   }
+			     ]]>		
+		</script> 	       					       
+		<if cond="circle=='ori'">
+			<if cond="len &lt; 4 || len==4">
+				<assign name="end_index" expr="len"/>
+				<assign name="OTHER_lang" expr="'FALSE'"/>
+			<else/>
+				<assign name="end_index" expr="4"/>
+				<assign name="OTHER_lang" expr="'TRUE'"/>
+			</if>
+		<else/>     		  					       
+			<if cond="len &lt; 8 || len==8">
+				<assign name="end_index" expr="len"/>
+				<assign name="OTHER_lang" expr="'FALSE'"/>
+			<else/>
+				<assign name="end_index" expr="8"/>
+				<assign name="OTHER_lang" expr="'TRUE'"/>
+			</if>
+		</if>
+		<assign name="start_index_pre" expr="0"/>
+		<assign name="start_index" expr="0"/>
+		<assign name="movie_idx" expr="0" />
+		<assign name="i" expr="0" />
+
+		<if cond="circle=='del' || circle=='hpd' || circle=='hay' || circle=='jnk' || circle=='mum' || circle=='raj' || circle=='upw' || circle=='upe' || circle=='bih' || circle=='mah' || circle=='guj' || circle=='ori' || circle=='mpd'">
+			<assign name="LANG_DESCRIPTION" expr="'01'"/> 	
+			<assign name="lang" expr="'01'"/>
+			<goto next="Subscription_Raj.vxml"/> 		
+		<elseif cond="circle=='pub' || circle=='pun'"/>
+			<assign name="LANG_DESCRIPTION" expr="'03'"/> 	
+			<assign name="lang" expr="'03'"/>
+			<goto next="Subscription_Raj.vxml"/>
+		<elseif cond="circle=='kol' || circle=='wbl'"/>
+			<assign name="LANG_DESCRIPTION" expr="'06'"/> 	
+			<assign name="lang" expr="'06'"/>
+			<goto next="Subscription_Raj.vxml"/>					
+		<elseif cond="circle=='asm' || circle=='nes'"/>
+			<assign name="LANG_DESCRIPTION" expr="'02'"/> 		
+			<assign name="lang" expr="'02'"/>
+			<goto next="Subscription_Raj.vxml"/>
+		<elseif cond="circle=='ker'"/>	
+			<assign name="LANG_DESCRIPTION" expr="'09'"/> 	
+			<assign name="lang" expr="'09'"/>
+			<goto next="Subscription_Raj.vxml"/>
+		<elseif cond="circle=='apd'"/>	
+			<assign name="LANG_DESCRIPTION" expr="'08'"/> 	
+			<assign name="lang" expr="'08'"/>
+			<goto next="Subscription_Raj.vxml"/>
+		<elseif cond="circle=='chn' || circle=='tnu'"/>			
+			<assign name="LANG_DESCRIPTION" expr="'07'"/> 	
+			<assign name="lang" expr="'07'"/>
+			<goto next="Subscription_Raj.vxml"/>
+		<elseif cond="circle=='kar'"/>	
+			<assign name="LANG_DESCRIPTION" expr="'10'"/> 	
+			<assign name="lang" expr="'10'"/>
+			<goto next="Subscription_Raj.vxml"/>
+		<else/>		
+			<prompt bargein="true" timeout="0s" cond="circle=='tnu' || circle=='chn'">
+				<audio expr="promptpath+'/07/lang_option_'+circle+'.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="circle!='tnu' &amp;&amp; circle!='chn'">
+				<audio expr="promptpath+'/01/lang_option_'+circle+'.wav'"/>
+			</prompt>
+		</if>	
+		<goto next="#select_lang"/>
+	</block>
+</form>
+<form id="New_User_Toll">
+	<block>
+		<assign name="prompt_name" expr="'NEW_USER'"/>	
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/'+circle+'/navlang_new.cfg&amp;TOKEN=FREE'"/>
+		 <script>
+			array1.length=0;
+			dishes.length=0;		
+		</script>	
+		<assign name="len" expr="favSongs.length" />
+		<assign name="i" expr="0" />
+		<script>
+			 <![CDATA[
+				   for(j=0; j<len ;  j++)
+				   {  	  
+					array1[j] = favSongs[j];						   
+				   }
+			     ]]>		
+		</script> 	       					       
+		<if cond="circle=='ori'">
+			<if cond="len &lt; 4 || len==4">
+				<assign name="end_index" expr="len"/>
+				<assign name="OTHER_lang" expr="'FALSE'"/>
+			<else/>
+				<assign name="end_index" expr="4"/>
+				<assign name="OTHER_lang" expr="'TRUE'"/>
+			</if>
+		<else/>     		  					       
+			<if cond="len &lt; 8 || len==8">
+				<assign name="end_index" expr="len"/>
+				<assign name="OTHER_lang" expr="'FALSE'"/>
+			<else/>
+				<assign name="end_index" expr="8"/>
+				<assign name="OTHER_lang" expr="'TRUE'"/>
+			</if>
+		</if>
+		<assign name="start_index_pre" expr="0"/>
+		<assign name="start_index" expr="0"/>
+		<assign name="movie_idx" expr="0" />
+		<assign name="i" expr="0" />
+		
+		<if cond="circle=='del' || circle=='hpd' || circle=='hay' || circle=='jnk' || circle=='mpd' || circle=='mum' || circle=='raj' || circle=='upw' || circle=='upe' || circle=='bih' || circle=='mah' || circle=='guj' || circle=='ori'">
+			<assign name="LANG_DESCRIPTION" expr="'01'"/>
+			<assign name="lang" expr="'01'"/>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_LANG_TOLL_SET&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=510168&amp;INPARAM[2]='+lang"/>
+			<goto next="ExistingUser.vxml"/>
+			
+		<elseif cond="circle=='pub' || circle=='pun'"/>
+			<assign name="LANG_DESCRIPTION" expr="'03'"/>
+			<assign name="lang" expr="'03'"/>	
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_LANG_TOLL_SET&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=510168&amp;INPARAM[2]='+lang"/>
+			<goto next="ExistingUser.vxml"/>
+			
+		<elseif cond="circle=='kol' || circle=='wbl'"/>	
+			<assign name="LANG_DESCRIPTION" expr="'06'"/>
+			<assign name="lang" expr="'06'"/>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_LANG_TOLL_SET&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=510168&amp;INPARAM[2]='+lang"/>
+			<goto next="ExistingUser.vxml"/>
+			
+		<elseif cond="circle=='asm' || circle=='nes'"/>	
+			<assign name="LANG_DESCRIPTION" expr="'02'"/>
+			<assign name="lang" expr="'02'"/>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_LANG_TOLL_SET&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=510168&amp;INPARAM[2]='+lang"/>
+			<goto next="ExistingUser.vxml"/>			
+			
+		<elseif cond="circle=='ker'"/>
+			<assign name="LANG_DESCRIPTION" expr="'09'"/>
+			<assign name="lang" expr="'09'"/>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_LANG_TOLL_SET&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=510168&amp;INPARAM[2]='+lang"/>
+			<goto next="ExistingUser.vxml"/>					
+		<elseif cond="circle=='chn' || circle=='tnu'"/>		
+			<assign name="LANG_DESCRIPTION" expr="'07'"/>
+			<assign name="lang" expr="'07'"/>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_LANG_TOLL_SET&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=510168&amp;INPARAM[2]='+lang"/>
+			<goto next="ExistingUser.vxml"/>					
+		<elseif cond="circle=='apd'"/>	
+			<assign name="LANG_DESCRIPTION" expr="'08'"/> 	
+			<assign name="lang" expr="'08'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_LANG_TOLL_SET&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=510168&amp;INPARAM[2]='+lang"/>
+			<goto next="ExistingUser.vxml"/>			
+		<elseif cond="circle=='kar'"/>	
+			<assign name="LANG_DESCRIPTION" expr="'10'"/> 	
+			<assign name="lang" expr="'10'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_LANG_TOLL_SET&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=510168&amp;INPARAM[2]='+lang"/>			
+			<goto next="ExistingUser.vxml"/>
+		<else/>		
+			<prompt bargein="true" timeout="0s" cond="circle=='tnu' || circle=='chn'">
+				<audio expr="promptpath+'/07/lang_option_'+circle+'.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="circle!='tnu' &amp;&amp; circle!='chn'">
+				<audio expr="promptpath+'/01/lang_option_'+circle+'.wav'"/>
+			</prompt>
+		</if>
+		<goto next="#select_lang_Toll"/>
+	</block>
+</form>
+<form id="select_lang">
+	<block>
+		<assign name="prompt_name" expr="'LANG_SELECTION'"/>	
+		<assign name="movie_idx" expr="0"/>
+		<assign name="i" expr="0"/>
+		<script>
+			 <![CDATA[
+				for(j=start_index; j<end_index ;  j++)
+				{  	  
+					language[i] = array1[j];
+					i++;													   
+				}
+			]]>		
+		</script>
+	</block>
+	<field name="langopt">
+		  <grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">
+				<one-of>						
+					<item> 1 </item>
+					<item> 2 </item>
+					<item> 3 </item>						
+					<item> 4 </item>						
+					<item> 5 </item>						
+					<item> 6 </item>						
+					<item> 7 </item>						
+					<item> 8 </item>
+					<item> 9 </item>
+					<item> 0 </item>	
+				</one-of>
+			</rule>
+		  </grammar>
+		  <prompt bargein="true" timeout="3s">
+			 <foreach item="names" array="language">
+				<mark nameexpr="movie_idx++"/>
+				<audio expr="promptpath+names+'/lang'+names+'.wav'"/>
+	          	       <audio expr="promptpath+names+'/press_dtmf'+movie_idx+'.wav'"/>
+		  	 </foreach>													
+		  </prompt>					
+		  <prompt bargein="true" cond="OTHER_lang=='TRUE'">
+			  <audio expr="promptpath+'01/lang_other_option.wav'"/>
+			  <!--	<audio expr="promptpath+'01/press_dtmf9.wav'"/> -->
+	          </prompt>				
+                  <filled>		
+			<log>helow              $$$$$$$$$$$$$$$$$$$$$$$$ c_langoptis$$$$$$$$$$$$$$$$$$$$$	<value expr="langopt"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>      
+			<log>helow              $$$$$$$$$$$$$$$$$$$$$$$$ end_index is$$$$$$$$$$$$$$$$$$$$$	<value expr="end_index"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>      
+		      <if cond="langopt=='9'">
+		      		<if cond="OTHER_lang=='TRUE'">
+			      		<if cond="circle=='ori'">
+						<if cond="end_index == '12'">
+							<assign name="start_index" expr="end_index"/>
+							<assign name="end_index" expr="len"/>
+							<assign name="OTHER_lang" expr="'FALSE'"/>
+							<script>
+								language.length=0;
+							</script>
+						<else/>
+							<assign name="start_index" expr="end_index"/>
+							<assign name="end_index" expr="'12'"/>
+							<assign name="OTHER_lang" expr="'TRUE'"/>
+						</if> 
+					<else/>
+						<if cond="end_index == '16'">
+							<assign name="start_index" expr="end_index"/>
+							<assign name="end_index" expr="len"/>
+							<assign name="OTHER_lang" expr="'FALSE'"/>
+							<script>
+								language.length=0;
+							</script>
+						<else/>
+							<assign name="start_index" expr="end_index"/>
+							<assign name="end_index" expr="len-2"/>
+							<assign name="OTHER_lang" expr="'TRUE'"/>
+						</if> 
+					</if>
+			             	<goto next="#select_lang"/>		
+		                <else/>
+			             	<throw event="nomatch"/>
+		          	</if>
+			<elseif cond="langopt=='0'"/>
+	        		<if cond="OTHER_lang=='FALSE'">
+				        <assign name="end_index" expr="'8'"/>
+				        <assign name="start_index" expr="'0'"/>
+				        <assign name="OTHER_lang" expr="'TRUE'"/>
+				        <script>
+						language.length=0;
+					</script>
+					<goto next="#select_lang"/>			
+				 <else/>												     
+		      			<throw event="nomatch"/>								
+			         </if>			
+			<else/>
+			        <!--<throw event="nomatch"/>-->
+ 				<if cond="langopt &lt; end_index+1">
+			       		 <assign name="lang" expr="language[--langopt]"/>
+			       		 <assign name="LANG_DESCRIPTION" expr="lang"/> 
+			   		        <goto next="Subscription.vxml"/> 			
+				<else/>
+				         <throw event="nomatch"/>
+				</if>		
+	      	        </if>
+	    	    </filled>				
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<assign name="movie_idx" expr="0"/>
+			<goto next="#select_lang"/>
+		</noinput>
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<assign name="movie_idx" expr="0"/>
+			<goto next="#select_lang"/>
+		</nomatch>
+		</field>
+</form>
+<form id="select_lang_Toll">
+	<block>
+		<assign name="prompt_name" expr="'LANG_SELECTION'"/>	
+		<assign name="movie_idx" expr="0"/>
+		<assign name="i" expr="0"/>
+		<script>
+			 <![CDATA[
+				for(j=start_index; j<end_index ;  j++)
+				{  	  
+					language[i] = array1[j];
+					i++;													   
+				}
+			]]>		
+		</script>
+	</block>
+	<field name="langopt">
+		  <grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">
+				<one-of>						
+					<item> 1 </item>
+					<item> 2 </item>
+					<item> 3 </item>						
+					<item> 4 </item>						
+					<item> 5 </item>						
+					<item> 6 </item>						
+					<item> 7 </item>						
+					<item> 8 </item>
+					<item> 9 </item>
+					<item> 0 </item>	
+				</one-of>
+			</rule>
+		  </grammar>
+		  <prompt bargein="true" timeout="3s">
+			 <foreach item="names" array="language">
+				<mark nameexpr="movie_idx++"/>
+				<audio expr="promptpath+names+'/lang'+names+'.wav'"/>
+	          	       <audio expr="promptpath+names+'/press_dtmf'+movie_idx+'.wav'"/>
+		  	 </foreach>													
+		  </prompt>					
+		  <prompt bargein="true" cond="OTHER_lang=='TRUE'">
+			  <audio expr="promptpath+'01/lang_other_option.wav'"/>
+			  <!--	<audio expr="promptpath+'01/press_dtmf9.wav'"/> -->
+	          </prompt>				
+                  <filled>		
+			<log>helow              $$$$$$$$$$$$$$$$$$$$$$$$ c_langoptis$$$$$$$$$$$$$$$$$$$$$	<value expr="langopt"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>      
+			<log>helow              $$$$$$$$$$$$$$$$$$$$$$$$ end_index is$$$$$$$$$$$$$$$$$$$$$	<value expr="end_index"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>      
+		      <if cond="langopt=='9'">
+		      		<if cond="OTHER_lang=='TRUE'">
+			      		<if cond="circle=='ori'">
+						<if cond="end_index == '12'">
+							<assign name="start_index" expr="end_index"/>
+							<assign name="end_index" expr="len"/>
+							<assign name="OTHER_lang" expr="'FALSE'"/>
+							<script>
+								language.length=0;
+							</script>
+						<else/>
+							<assign name="start_index" expr="end_index"/>
+							<assign name="end_index" expr="'12'"/>
+							<assign name="OTHER_lang" expr="'TRUE'"/>
+						</if> 
+					<else/>
+						<if cond="end_index == '16'">
+							<assign name="start_index" expr="end_index"/>
+							<assign name="end_index" expr="len"/>
+							<assign name="OTHER_lang" expr="'FALSE'"/>
+							<script>
+								language.length=0;
+							</script>
+						<else/>
+							<assign name="start_index" expr="end_index"/>
+							<assign name="end_index" expr="len-2"/>
+							<assign name="OTHER_lang" expr="'TRUE'"/>
+						</if> 
+					</if>
+			             	<goto next="#select_lang"/>		
+		                <else/>
+			             	<throw event="nomatch"/>
+		          	</if>
+			<elseif cond="langopt=='0'"/>
+	        		<if cond="OTHER_lang=='FALSE'">
+				        <assign name="end_index" expr="'8'"/>
+				        <assign name="start_index" expr="'0'"/>
+				        <assign name="OTHER_lang" expr="'TRUE'"/>
+				        <script>
+						language.length=0;
+					</script>
+					<goto next="#select_lang"/>			
+				 <else/>												     
+		      			<throw event="nomatch"/>								
+			         </if>			
+			<else/>
+			        <!--<throw event="nomatch"/>-->
+ 				<if cond="langopt &lt; end_index+1">
+			       		 <assign name="lang" expr="language[--langopt]"/>
+			       		 <assign name="LANG_DESCRIPTION" expr="lang"/> 
+			       		 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_LANG_TOLL_SET&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=510168&amp;INPARAM[2]='+lang"/>
+			   		 <goto next="ExistingUser.vxml"/>
+				<else/>
+				         <throw event="nomatch"/>
+				</if>		
+	      	        </if>
+	    	    </filled>				
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<assign name="movie_idx" expr="0"/>
+			<goto next="#select_lang"/>
+		</noinput>
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<assign name="movie_idx" expr="0"/>
+			<goto next="#select_lang"/>
+		</nomatch>
+		</field>
+	</form>
+<!--***************************************************ADD COMPAIGN BLOCK**********************************-->	
+	<form id="ADDUSERSTAUS">
+		<field name="choice">
+			<grammar mode="dtmf" root="start36" version="1.0">
+				<rule id="start36" scope="public" >
+					<one-of>
+						 <item>  1  </item>
+
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="false" timeout="0s" cond="ADskip_flag!='1'">	
+				<audio expr="ADPrompt_Path+AD_name+'.wav'"/>
+			</prompt> 
+			<prompt bargein="true" timeout="0s" cond="ADskip_flag=='1'">	
+				<audio expr="ADPrompt_Path+AD_name+'.wav'"/>
+			</prompt> 
+		<filled>
+			<if cond="choice=='1'">
+				<assign name="block_flag" expr="'1'"/>
+				<assign name="add_endtime" expr="rim(add_starttime)"/>
+				<log>add_endtime for msisdn : <value expr="add_endtime"/></log>
+				<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+				<if cond="DNIS=='510168'">
+					<goto next="#USRSTATUSTOLL"></goto>					
+				<else/>	
+					<goto next="#USRSTATUS"></goto>
+				</if>
+			</if>
+			</filled>
+			<noinput >				
+				<assign name="block_flag" expr="'1'"/>
+				<assign name="add_endtime" expr="rim(add_starttime)"/>
+				<log>add_endtime for msisdn : <value expr="add_endtime"/></log>
+				<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+				<if cond="DNIS=='510168'">
+					<goto next="#USRSTATUSTOLL"></goto>					
+				<else/>	
+					<goto next="#USRSTATUS"></goto>
+				</if>				
+			</noinput>		
+			<nomatch>
+				<assign name="block_flag" expr="'1'"/>
+				<assign name="add_endtime" expr="rim(add_starttime)"/>
+				<log>add_endtime for msisdn : <value expr="add_endtime"/></log>
+				<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+				<if cond="DNIS=='510168'">
+					<goto next="#USRSTATUSTOLL"></goto>					
+				<else/>	
+					<goto next="#USRSTATUS"></goto>
+				</if>
+			</nomatch>		
+		</field>
+	</form>		
+</vxml>

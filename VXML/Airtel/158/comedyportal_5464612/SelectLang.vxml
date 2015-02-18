@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="ComedyPortalRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+ 
+	<meta name="SelectLang.vxml" content=""/>
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="audiofetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<var name="DirectSub" expr="''" />
+	
+	
+	<!--<var name="song" expr="''" />
+	<var name="VDay_Date" expr="''" />
+	<var name="Song_Type" expr="''" />
+	<var name="Song_Path" expr="''" />
+	<var name="sessionid" expr="''" /> -->
+	<var name="ciropr" expr="''" />
+	
+		
+	<script>
+		var ciropr1 = new Object(); 
+		var out_string=new Object();
+		
+	</script>
+	
+<form id="Main">
+	<block>
+	<assign name="Section_Name" expr="'COMEDYPORTAL_CONTENTCDS'"/>
+<assign name="C_Start" expr="call_time()"/>
+ 		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+	    </script>
+	    
+				<script>
+					var length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				  </script>
+			
+				  <assign name="DNIS" expr="realDNIS"/>
+	    		  
+				
+              	 <!--  <log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+              	  <log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>  -->
+              	  
+              	<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+        
+	 	         <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+	      				
+	      				<assign name="ciropr" expr="ciropr1.value"/>
+	      				<!-- <log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/> -->
+	      				<script>
+	      					var splitstr=ciropr.split("#");
+	      					operator=splitstr[1];
+	      					circle=splitstr[2];
+				</script>
+	      				       					       
+	      		       	 
+				 <assign name="dbservlet" expr="'airtel_dbinteraction'"/> 
+				 <assign name ="operator" expr="'airm'"/>
+
+				
+				 <!-- <log>circle  is	<value expr="circle"/>    </log>
+				<log>operator is <value expr="operator"/>    </log> -->
+		
+		<assign name="initial_balance" expr="start_time()"/>
+		
+		
+
+			
+				
+	   <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=COMEDY_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<script>
+				 <![CDATA[
+							    for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+								       	usr_status = out_string[j];
+								       if(j==1)
+								       	lang = out_string[j];
+								       if(j==2)
+								       	balance = out_string[j];
+									 if(j==4)
+										modesub = out_string[j];
+
+																		      								       							      
+								  }
+		
+					]]>
+				</script>
+				<!-- <log>length of outstring  is	<value expr="out_string.length"/></log> -->
+			<!-- <log expr="'@@@@@@@New usr_status===>' +usr_status"/> -->
+		
+       				 <if cond="usr_status=='1'">
+				
+							<script> 					 
+								    balance=balance*60;
+								    timerflag=1;      
+							</script>
+							
+						<script>
+						    <![CDATA[
+						       if(timerflag==1)
+						 		start_BalenceMinute=starttime();
+						   ]]>	 	
+						</script>
+				<goto next="ExistingUser.vxml"/>
+	
+				  
+        		
+      	 <elseif cond="usr_status == '-1'"/>
+      	 	<!--*************************************************DIRECTACTIVATION CHECK****************************************************-->
+		
+		  <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=COMEDY_CHKDIRECTSUB&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+				 DirectSub=out_string[0];
+			</script>
+			<log>Direct Sub : <value expr="DirectSub"/></log>
+			<if cond="DirectSub=='1'">
+				<goto next="#DirectSubRequest"/>
+			
+			</if>
+		<!--***************************************************************************************************************************-->
+			<log>usr_status   is	<value expr="usr_status"/>    </log>
+			<assign name="dtmf_check" expr="1"/>
+			<assign name="dtmf_log" expr="ANI+hash+circle"/>
+			<assign name="dtmfsub" expr="'First_level_input'"/>  
+
+      		<goto next="Subscription.vxml"/> 
+        <else/>
+		<prompt bargein="true" timeout="1s">
+		   <audio expr="promptpath+'/08/Delay_charging.wav'"/>
+		</prompt>
+		<goto next="End.vxml"/>
+	 </if>
+	
+	
+	</block>
+  </form>
+<form id="DirectSubRequest">
+	<block>
+		<assign name="amt" expr="'30'"/>
+		<assign name="plan_id" expr="'50'"/>
+		<assign name="service_id" expr="'1518'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=COMEDY_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/> 
+		<goto next="Subscription.vxml#BillStatusChk"/>	
+	</block>	
+		
+	</form>
+
+
+
+</vxml>

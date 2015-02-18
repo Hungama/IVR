@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+<property name="timeout" value="2s"/>
+<meta name="Hungama_SPKENG_MainMenu_Basic.vxml" content=""/>
+<meta name="Author" content=""/>
+<meta name="Date" content=""/>
+<meta name="Description" content=""/>
+<meta name="Support" content=""/>  
+
+<!--***************************************************************************8Basic module play back to back*******************************************-->
+<form id="basic_Menu">
+<block>
+<script>
+	MENU_bar="MainMenu_Basic";
+	song_listen="START";
+	subcat="basic";
+	coursetypeflag="b";
+</script>
+	<assign name="Section_Name" expr="'SPKENG_MAINMENU_BASIC'"/>
+		<if cond="timerflag=='1'">                       						   
+				 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+							 <script>
+						    	 total_used_bal=dur;
+							     curbalance=balance-total_used_bal;  						  
+						     </script>
+						   
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+curbalance"/>
+			                 <if cond="curbalance &lt;= '120'">          
+			                     <goto next="TopupRenew.vxml"/>
+			                </if>
+			              </if> 	
+						<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=SPKENGconfig/B_MODULE/basic_mainmenuorder.cfg'"/>
+						<script>
+									array1.length=0;
+									unike_play=0;
+						</script>				
+			
+						<assign name="len" expr="favSongs.length"/>
+						<assign name="movie_idx" expr="0" />
+						<assign name="i" expr="0" />
+						<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+						<script>
+							 <![CDATA[
+								   for(j=0; j<len ;  j++)
+								   {  	  
+											array1[j] = favSongs[j];						   
+								   }
+								]]>		
+						</script> 	       					       
+						<log>Length  is	<value expr="len"/>    </log>
+						<log>Array[1]  is	<value expr="array1[0]"/>    </log>					
+			</block>
+						<field name="choice">
+							<grammar mode="dtmf" root="start" version="1.0">
+				            	   <rule id="start" scope="public">
+				                		 <one-of>				 
+											 
+				  							  <item>8</item>
+				            		     </one-of>
+					               </rule>
+				            </grammar>
+						
+							 <prompt bargein="true" timeout="1s">	
+								     <audio expr="promptpath+'/'+lang+'/intro_basic.wav'"/>		
+	           					 </prompt>
+							
+							<filled>
+								<if cond="choice=='8'">
+								     <clear namelist="choice"/> 
+								     <goto next="#Main_Menu"/>
+								</if>
+							</filled>
+							
+						<noinput>
+						<assign name="last_heard" expr="'true'" />
+						<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined'">
+							<script>
+								unike_play=unike_play;
+							</script>	
+							<script>
+								module = array1[unike_play];
+							</script>								
+					<else/>	
+						<log>	module ****** == <value expr="module"/>    </log>
+			                     <log>	clip is ############  is ==	<value expr="clip_no"/>    </log>
+						<log>	HEARD == <value expr="HEARD"/>    </log>
+							<if cond="(HEARD=='mod1' &amp;&amp; clip_no=='24') || HEARD!='mod1' &amp;&amp; clip_no=='26'">
+								<script>
+									songcheck1=HEARD.split("d");
+									cnt=songcheck1[1];
+									cnt=parseInt(cnt);
+									if(cnt==120)
+										cnt=0;
+									cnt=cnt+1;
+									module="mod"+cnt;
+									clip_no=0;
+								</script>
+							<else/>
+								<script>
+									module=HEARD;
+								</script>
+							</if>
+						</if>
+
+						<goto next="#fetch_module"/>
+						</noinput>
+
+						<nomatch>
+						<assign name="last_heard" expr="'true'" />
+							<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined'">
+							<script>
+								unike_play=unike_play;
+							</script>	
+							<script>
+								module = array1[unike_play];
+							</script>								
+					<else/>	
+						<log>	HEARD == <value expr="HEARD"/>    </log>
+						<log>	module ****** == <value expr="module"/>    </log>
+			                     <log>	clip is ############  is ==	<value expr="clip_no"/>    </log>
+							<if cond="(HEARD=='mod1' &amp;&amp; clip_no=='29') || HEARD!='mod1' &amp;&amp; clip_no=='25'">
+								<script>
+									songcheck1=HEARD.split("d");
+									cnt=songcheck1[1];
+									cnt=parseInt(cnt);
+									if(cnt==120)
+										cnt=0;
+									cnt=cnt+1;
+									module="mod"+cnt;
+									clip_no=0;
+								</script>
+							<else/>
+								<script>
+									module=HEARD;
+								</script>
+							</if>
+					</if>
+
+						   <goto next="#fetch_module"/>
+						</nomatch> 
+					
+											
+					  </field>	 
+			</form>    
+<!--***************************************************************FETCH MODULE****************************************************************************-->			
+			
+<form id="fetch_module">
+<block>	
+		<script>
+			MENU_bar="MainMenu_Basic";
+			coursetypeflag="b";
+			subcat="basic";
+		</script>
+			<if cond="module_check=='bwa'">
+				<log >module_check GREATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA <value expr="module_check"/>    </log>	
+				<goto next="Hungama_SPKENG_WA.vxml"></goto>
+			</if>
+	
+			<if cond="pre_heard=='false'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=@&amp;INPARAM[2]=@&amp;INPARAM[3]=@&amp;;INPARAM[4]=@&amp;;INPARAM[5]=@&amp;;INPARAM[6]=@&amp;INPARAM[7]=GET'"/>
+				<script>
+					<![CDATA[
+						for(j=0; j< out_string.length;  j++)
+							{  	  
+							if(j==0)
+								HEARD = out_string[j];
+							if(j==1)
+								clip_no = out_string[j];
+							if(j==2)
+								test_flag = out_string[j];
+							if(j==3)
+								MENU_bar = out_string[j];
+							if(j==4)
+								WRC = out_string[j];
+							if(j==5)
+								MRC = out_string[j];
+							}
+						]]>
+				</script>
+				<log> @@@@HEARD VALUEEEEEEEEEEEEEEEEE is  <value expr="HEARD"/> </log>
+				<log> @@@@clip_no VALUEEEEEEEEEEEEEEEEE is  <value expr="clip_no"/> </log>
+				<log> @@@@test_flag VALUEEEEEEEEEEEEEEEEE is  <value expr="test_flag"/> </log>
+				<log> @@@@MENU_bar VALUEEEEEEEEEEEEEEEEE is  <value expr="MENU_bar"/> </log>
+				<log> @@@@WRC VALUEEEEEEEEEEEEEEEEE is  <value expr="WRC"/> </log>
+				<log> @@@@MRC VALUEEEEEEEEEEEEEEEEE is  <value expr="MRC"/> </log>
+				<assign name="module" expr="HEARD"></assign>
+				<if cond="HEARD=='0' || HEARD=='00'">
+					<assign name="module" expr="'mod1'"></assign>
+					<assign name="clip_no" expr="'0'"></assign>
+				</if>
+			</if>
+			<script>
+				module_check=module.substring(0,3);
+			</script>
+			<if cond="module_check=='mod'">
+				<log >module_check GREAT <value expr="module_check"/>    </log>	
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_PREVIOUSHEARD&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]=SET'"/>
+			</if>
+			<if cond="module_check=='brw'">
+				<script>
+					WRC="1";
+				</script>
+				<log >module_check GREAT <value expr="module_check"/>    </log>	
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_WEEKLYHEARD&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]=SET'"/>
+			</if>
+			<if cond="module_check=='bmr'">
+				<script>
+					MRC="1";
+				</script>
+				<log >module_check GREAT <value expr="module_check"/>    </log>	
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_MONTHLYHEARD&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]=SET'"/>
+			</if>			
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=SPKENGconfig/B_MODULE/'+module+'.cfg'"/>
+			<script>
+						array2.length=0;
+						mod_play=0;
+			</script>
+			<assign name="HEARD" expr="module" />
+			<assign name="len" expr="favSongs.length" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array2[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+								array2[j] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array2[0]"/>    </log>					
+</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  8  </item>
+						 <item>  9  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+
+			<filled>
+				<if cond="choice=='8'">
+					<goto next="#Main_Menu"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="Hungama_SPKENG_Help.vxml"/>	
+				<else/>
+					<goto next="play_module.vxml"/>
+				</if>						
+			</filled>
+			<noinput>
+					<goto next="play_module.vxml"/>
+			</noinput>
+			<nomatch>
+					<goto next="play_module.vxml"/>
+			</nomatch>
+		</field>
+</form>
+<!--********************************************************************MAINMENU************************************************************************-->
+<form id="Main_Menu">
+<block>
+<assign name="song_begin" expr="start_time()"/>
+</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+	            	   <rule id="start" scope="public">
+					<one-of>				 
+						  <item>1</item>				  	
+						  <item>2</item>
+						  <item>3</item>
+						  <item>9</item>
+						   <item>0</item>
+					</one-of>
+		               </rule>
+	            </grammar>
+			
+		     <prompt bargein="true" timeout="6s">	
+	               <audio expr="promptpath+'/'+lang+'/mainmenu.wav'"/>		
+	            </prompt>
+				
+				<filled>
+					<assign name="con_data" expr="'mainmenu'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<if cond="choice=='1'">
+						<assign name="song_begin" expr="start_time()"/>
+					     <clear namelist="choice"/> 
+					     	<if cond="HEARD=='0' || HEARD=='00'">
+						     <prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/'+lang+'/empty_prev.wav'"/>	
+						     </prompt>
+								<assign name="con_data" expr="'empty_prev'" />
+								<assign name="var_wel" expr="getRandom(1,5)" />
+								<assign name="compare_time" expr="var_wel"/>
+								<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+						  <else/>
+						  	 <goto next="Hungama_SPKENG_moduleHeared.vxml"/>
+						  </if>
+					 <elseif cond="choice=='2'"/>
+					 	<assign name="song_begin" expr="start_time()"/>
+					      <clear namelist="choice"/> 
+					      <if cond="WRC=='0' &amp;&amp; MRC=='0'">
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+'/'+lang+'/empty_recap.wav'"/>	
+							</prompt>
+								<assign name="con_data" expr="'empty_recap'" />
+								<assign name="var_wel" expr="getRandom(1,5)" />
+								<assign name="compare_time" expr="var_wel"/>
+								<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+							<else/>
+							 <if cond="WRC=='1' &amp;&amp; MRC=='0'">
+						  		<goto next="Hungama_SPKENG_weeklyrecape.vxml"/>	
+						  	  <elseif cond="WRC=='1'&amp;&amp; MRC=='1'"/>
+						  	  	<goto next="Hungama_SPKENG_weekly_monthly_recape.vxml"/>	
+						  	  </if>
+						  </if>
+					<elseif cond="choice=='3'"/>
+					      <clear namelist="choice"/> 		
+						  <goto next="#testscore"/>		       
+					<elseif cond="choice=='9'"/>
+					      <clear namelist="choice"/> 		
+						  <goto next="Hungama_SPKENG_Help.vxml"/>	
+					<elseif cond="choice=='0'"/>
+							 <clear namelist="choice"/> 		
+							<assign name="last_heard" expr="'true'" />
+							<if cond="MENU_bar=='MainMenu_Basic'">
+								<goto next="Hungama_SPKENG_MainMenu_Basic.vxml#fetch_module"></goto>
+							<elseif cond="MENU_bar=='MainMenu_Advanced'"/>
+								<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+							<elseif cond="MENU_bar=='PRETEST'"/>
+								<goto next="Hungama_SPKENG_Pretest.vxml"></goto>
+							<else/>
+								<goto next="Hungama_SPKENG_RootMenu.vxml"></goto>
+							</if>
+
+					</if>
+				</filled>
+				
+				 <noinput>
+						<assign name="con_data" expr="'mainmenu'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<log >module_check GREATTTTTTTTTTTTTTTTTTTTTTTTTTT <value expr="module"/>    </log>
+						<assign name="last_heard" expr="'true'" />
+					<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined'">
+							<script>
+								unike_play=unike_play;
+							</script>	
+							<script>
+								module = array1[unike_play];
+							</script>								
+					</if>
+
+						<log>	module == <value expr="module"/>    </log>
+
+						<assign name="module_pass" expr="'noinput'" />
+			                     <goto next="#fetch_module"/>
+	             		</noinput>
+		        
+				<nomatch>
+					<assign name="con_data" expr="'mainmenu'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<assign name="song_begin" expr="start_time()"/>
+					<reprompt></reprompt>
+				</nomatch> 
+					<nomatch count="3">
+						<assign name="con_data" expr="'mainmenu'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+
+					<assign name="last_heard" expr="'true'" />
+					<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined'">
+							<script>
+								unike_play=unike_play;
+							</script>	
+							<script>
+								module = array1[unike_play];
+							</script>								
+					</if>
+
+						<log>	module == <value expr="module"/>    </log>
+
+						<assign name="module_pass" expr="'noinput'" />
+			                     <goto next="#fetch_module"/>
+				</nomatch>					
+		  </field>	 
+</form>   
+<!--*********************************************************************testscore*******************************************************************-->
+<form id="testscore">
+		<block>
+		<assign name="song_begin" expr="start_time()"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SCORE&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+				 <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							score = out_string[j];								       							      
+						  }
+		
+					]]>
+				</script>
+			<log >score GREATTTTTTTTTTTTTTTTTTTTTTTTTTT <value expr="score"/>    </log>
+			<if cond="score=='0'">
+				<prompt bargein="true" timeout="0s" >
+				<audio expr="promptpath+'/'+lang+'/empty_score.wav'"/>
+				</prompt>
+				<assign name="con_data" expr="'empty_score'" />
+				<assign name="var_wel" expr="getRandom(1,5)" />
+				<assign name="compare_time" expr="var_wel"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+			<else/>
+				<prompt bargein="true" timeout="0s" >
+					<audio expr="promptpath+'/'+lang+'/score.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/'+score+'.wav'"/>
+				</prompt>
+				
+					<assign name="con_data" expr="score" />
+					<assign name="var_wel" expr="getRandom(1,5)" />
+					<assign name="compare_time" expr="var_wel"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+			</if>
+<assign name="last_heard" expr="'true'" />
+			<if cond="MENU_bar=='MainMenu_Basic'">
+				<goto next="#fetch_module"></goto>
+			<elseif cond="MENU_bar=='MainMenu_Advanced'"/>
+				<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+			<elseif cond="MENU_bar=='PRETEST'"/>
+				<goto next="Hungama_SPKENG_Pretest.vxml"></goto>
+			<else/>
+				<goto next="Hungama_SPKENG_RootMenu.vxml"></goto>
+			</if>
+</block>
+</form>
+
+</vxml>
+<!--********************************************************************************************************************************************************8-->

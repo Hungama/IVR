@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MND_Userstatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+  <script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var ciropr1=new Object();
+		var len=0;
+ </script>
+ 
+ <form id="Starting">
+ 	<block>
+		
+		<if cond="circle=='kar'">
+			<assign name="lang" expr="'10'" />
+		<elseif cond="circle=='apd'"/>
+			<assign name="lang" expr="'08'" />
+		<else/>
+			<assign name="lang" expr="'01'" />
+		</if>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LISTEN_STORY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+ 		<goto next="#Menu"/>
+ 	</block>
+ </form>
+ 
+ <form id="Menu">
+    <block>
+     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>
+           <script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	
+
+					      if(j==0)
+						  usr_status = out_string[j];
+					      if(j==1)
+						  lang = out_string[j];
+					      if(j==2)
+						  balance = out_string[j]; 
+					  }
+
+				]]>
+			</script>
+			<log expr="'Balance isss'+balance"/>
+			<log>Balance isss  <value expr="balance"/>    </log>
+
+			<if cond="usr_status=='1'">
+				<script>
+					balance=balance*60;
+					timerflag=1;
+				</script>
+				<script>
+					<![CDATA[
+					 if(timerflag==1)
+					 start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<goto next="#Checkuser"/>
+			<elseif cond="usr_status=='-1'"/>
+				<if cond="circle=='upe' || circle=='upw'">
+					<goto next="#preplaysongs"/>
+				<else/>
+					<goto next="MND_Subscription.vxml"/> 
+				</if>
+			<else/> 
+				<if cond="circle=='upe' || circle=='upw'">
+					<goto next="#preplaysongs"/>
+				<else/>
+					<goto next="MND_Subscription.vxml"/>
+				</if>
+			</if>
+   </block>
+</form>
+
+<form id="preplaysongs">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=MNDconfig/songs.cfg'"/>
+		<script>
+			array.length=0;
+			unike_play=0;
+		</script>
+			<assign name="len" expr="favSongs.length" />
+			<assign name="movie_idx" expr="'0'" />
+			<assign name="i" expr="'0'" />   
+		<script>
+			<![CDATA[
+			   for(k=0; k<len ;  k++)
+				  {  	  
+					array[k] = favSongs[k];						   
+				  }
+			]]>		
+		</script> 
+		<assign name="unike_play" expr="getRandom(1,len)" />
+		<script>
+			songcheck=array[unike_play].split("_");
+			contentdir=songcheck[0]; 
+			song = array[unike_play];
+		</script>
+	</block>
+
+<field name="selectoption">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+				  <one-of>
+				      <item>1</item>
+				  </one-of>
+				</rule>
+			 </grammar>
+			
+				
+		      <prompt bargein="true"  timeout="1s">
+			      <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		      </prompt> 			 
+		      
+		      <filled>
+			         <if cond="selectoption=='1'">
+				        <goto next="MND_Subscription.vxml"/>
+				 </if>				 
+		      </filled>				  
+				     
+			<noinput>
+				<goto next="MND_Subscription.vxml"/>
+			</noinput>
+			<nomatch>
+				  <goto next="MND_Subscription.vxml"/>
+			</nomatch>	
+			<catch event="error.badfetch.http.404">
+	   				<script>
+						unike_play=0;
+					</script>
+				<goto next="#preplaysongs"/>
+			</catch>
+</field>
+
+</form>
+
+<form id="Checkuser">
+	<block>
+		 		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LASTCAT_ALLCHARACTER&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]=2'"/>
+		<script>
+			<![CDATA[
+				for(j=0; j< out_string.length;  j++)
+					{  	
+						playconfig = out_string[j];
+					}
+			]]>
+		</script>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=9'"/>
+		<script>
+			 <![CDATA[
+			       for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					smskeyword = out_string[j];
+				  }
+			  ]]>
+		</script>
+
+		<log>	smskeyword  isssss    <value expr="smskeyword"/> 	</log>
+
+
+		<if cond="DNIS=='55001961'">
+			<if cond="playconfig=='ch3'">
+				<assign name="playconfig" expr="'ch3'" />
+			<else/>
+				<assign name="playconfig" expr="'-1'" />
+			</if>
+		<elseif cond="DNIS=='55001962'"/>
+			<if cond="playconfig=='ch4'">
+				<assign name="playconfig" expr="'ch4'" />
+			<else/>
+				<assign name="playconfig" expr="'-1'" />
+			</if>
+		<elseif cond="DNIS=='55001963'"/>
+			<if cond="playconfig=='ch1'">
+				<assign name="playconfig" expr="'ch1'" />
+			<else/>
+				<assign name="playconfig" expr="'-1'" />
+			</if>
+		<elseif cond="DNIS=='55001964'"/>
+			<if cond="playconfig=='ch2'">
+				<assign name="playconfig" expr="'ch2'" />
+			<else/>
+				<assign name="playconfig" expr="'-1'" />
+			</if>
+		<elseif cond="DNIS=='55001965'"/>
+			<if cond="playconfig=='ch5'">
+				<assign name="playconfig" expr="'ch5'" />
+			<else/>
+				<assign name="playconfig" expr="'-1'" />
+			</if>
+		</if>
+		
+		<if cond="playconfig=='-1'">
+			<assign name="playconfig" expr="'ch1'" />
+			<assign name="dtmfsub" expr="'Old_User'"/>
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+playconfig"></assign>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/ch1/welcome_old.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="DNIS!='55001961' &amp;&amp; DNIS!='55001962' &amp;&amp; DNIS!='55001963' &amp;&amp; DNIS!='55001964' &amp;&amp; DNIS!='55001965' &amp;&amp; (smskeyword=='ch1' || smskeyword=='ch2' || smskeyword=='ch3' || smskeyword=='ch4' || smskeyword=='ch5')">
+				<audio expr="promptpath+'/'+lang+'/common/mainmenu.wav'"/>
+			</prompt>
+			
+			<goto next="MND_mainmenu.vxml"/>
+		<else/>
+			<assign name="dtmfsub" expr="'last_cat'"/>
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+playconfig"></assign>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/repeat_'+playconfig+'.wav'"/>
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/last_cat.wav'"/>
+			</prompt>
+			<goto next="MND_mainmenu.vxml#loadcliptoplay"/>
+		</if>
+	
+	</block>
+</form>
+
+</vxml>

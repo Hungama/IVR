@@ -1,0 +1,169 @@
+<vxml version="2.0" application="rasio_root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Hungama_Lifestyle_Mainmenu.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="langnew" expr="0"/>
+	<var name="nomtch" expr="0"/>
+     
+        <script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var len=0;
+	</script>
+
+<form id="MAINMENU">
+	<block>
+		<assign name="Section_Name" expr="'MAIN_MENU'"/>
+		<if cond="timerflag=='1'">                       						   
+		   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+		   <script>
+		     total_used_bal=dur;
+		     curbalance=balance-total_used_bal;  						  
+		   </script>
+
+		   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+		   <log expr="'@@@@@@ left balance is '+curbalance"/>
+ 		<if cond="curbalance &lt;= '0'">          
+ 		    <goto next="Topup.vxml"/>
+		</if>
+		</if>
+		<if cond="ANI=='8527000779' || ANI=='8011862944'">	  	
+			<goto next="Hungama_Lifestyle_Mainmenu_Asm.vxml"></goto>
+		</if>
+		
+		<assign name="lang" expr="'01'"></assign>
+		<assign name="nomtch" expr="0"></assign>
+		
+
+		<assign name="movie_idx" expr="0"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=lifestyle/mainmenu.cfg'"/>
+
+		<script>
+			array1.length=0;
+			unike_play=0;
+		</script>
+
+		<assign name="len" expr="favSongs.length" />
+		<assign name="i" expr="0" />
+		<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+
+		<script>
+			 <![CDATA[
+				   for(j=0; j<len ;  j++)
+				   {  	  
+					array1[j] = favSongs[j];						   
+				   }
+
+			]]>		
+		</script> 	       					       
+
+		<log>Length  is	<value expr="len"/>    </log>
+		<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+         			    		   		
+	</block>
+			
+		<field name="choice">
+				<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">	
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				
+				
+				<prompt bargein="true" timeout="3s">
+					<foreach item="names" array="array1">
+						<!--<mark nameexpr="movie_idx++"/>-->
+						<audio expr="promptpath_lifestyle+'/'+lang+'/select_cat_'+names+'.wav'"/>
+						<audio expr="promptpath_lifestyle+'/'+lang+'/press_dtmf'+ ++movie_idx+'.wav'"/>
+					</foreach>													
+			        </prompt>
+				<prompt bargein="true" timeout="3s">	
+			  	     	<audio expr="promptpath_lifestyle+lang+'/select_acmanager.wav'"/>
+<!--					<audio expr="promptpath_lifestyle+'/'+lang+'/press_dtmf9.wav'"/>-->
+		          	</prompt>
+
+		
+		<filled>
+			<if cond="choice=='1'">
+				<assign name="last_listen" expr="'cat_lovecalc'"/>
+				<goto next="Love_cal.vxml"/>
+			<elseif cond="choice=='2'"/>
+				<prompt bargein="true"  timeout="1s">
+		          		<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_fashion.wav'"/>
+				</prompt> 
+				<prompt bargein="true"  timeout="1s">
+		          		<audio expr="promptpath_lifestyle+'/'+lang+'/intro_cat_fashion.wav'"/>
+				</prompt> 
+
+				<assign name="last_listen" expr="'cat_fashion'"/>
+				<assign name="playconfig" expr="'fashion'"/>
+				<goto next="Playcontent_life.vxml"/>
+			<elseif cond="choice=='3'"/>
+				<prompt bargein="true"  timeout="1s">
+		          		<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_relation.wav'"/>
+				</prompt> 
+				<prompt bargein="true"  timeout="1s">
+		          		<audio expr="promptpath_lifestyle+'/'+lang+'/intro_cat_relationship.wav'"/>
+				</prompt> 
+
+				<assign name="last_listen" expr="'cat_relation'"/>
+				<assign name="playconfig" expr="'relation'"/>
+				<goto next="Playcontent_life.vxml"/>
+			<elseif cond="choice=='4'"/>
+				<prompt bargein="true"  timeout="1s">
+		          		<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_dating.wav'"/>
+				</prompt> 
+				<prompt bargein="true"  timeout="1s">
+		          		<audio expr="promptpath_lifestyle+'/'+lang+'/intro_cat_dating.wav'"/>
+				</prompt> 
+
+				<assign name="last_listen" expr="'cat_dating'"/>
+				<assign name="playconfig" expr="'dateing'"/>
+				<goto next="Playcontent_life.vxml"/>
+			<elseif cond="choice=='5'"/>
+				<assign name="last_listen" expr="'cat_confession'"/>
+				<prompt bargein="true"  timeout="1s">
+		          		<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_confession.wav'"/>
+				</prompt>   
+				<goto next="Record_confession.vxml"/>
+			<elseif cond="choice=='6'"/>
+				<assign name="last_listen" expr="'cat_recipe'"/>
+				<goto next="Rasoi_MainMenu.vxml"/>
+			<elseif cond="choice=='9'"/>
+				 <goto next="AccountManager.vxml"/>
+    			</if>
+	        </filled>				    
+			
+			 <noinput>
+				<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt/> 
+			</noinput>        
+          
+			  <nomatch>
+				<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt/>
+		     </nomatch> 
+		</field>
+	</form>
+</vxml>

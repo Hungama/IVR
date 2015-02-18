@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+	<property name="timeout" value="2s"/>
+	<meta name="Hungama_SPKENG_sub.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>    
+<form id="SUB_OPTION">
+	<field name="submnuopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+            	   <rule id="start" scope="public">
+			<one-of>				 
+				<item>1</item>	
+				<item>2</item>	
+				<item>3</item>	
+			</one-of>
+	               </rule>
+            </grammar>
+	    
+	     <prompt bargein="true" timeout="3s">
+	     <audio expr="promptpath+'/'+lang+'/welcome_new.wav'"/>		
+               <audio expr="promptpath+'/'+lang+'/subintro_sample.wav'"/>		
+            </prompt>
+			
+			<filled>
+				<assign name="dtmfsub" expr="'First_level_input'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+submnuopt"></assign>
+
+				<if cond="submnuopt=='1'">
+					<assign name="amt" expr="'399'"/>
+					<assign name="sid" expr="'0'"/>
+					<assign name="pid" expr="'0'"/>
+				     <clear namelist="submnuopt"/> 	
+				     <goto next="#reconfirm_subs"/>
+				<elseif cond="submnuopt=='2'"/>
+					<assign name="amt" expr="'5'"/>
+					<assign name="sid" expr="'0'"/>
+					<assign name="pid" expr="'0'"/>
+					<clear namelist="submnuopt"/> 	
+				     	<goto next="#reconfirm_subs"/>
+				 <elseif cond="submnuopt=='3'"/>
+				 	<audio expr="promptpath+'/'+lang+'/sample_lesson.wav'"/>
+				 	<goto next="#samplelession"/>	
+				</if>
+			</filled>
+			
+			 <noinput>
+					<assign name="input_check" expr="'noinput'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+					<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>                
+					<goto nextitem="submnuopt"/>
+			</noinput>
+
+			<noinput count="3">
+					<assign name="input_check" expr="'noinput'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>  
+					<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>						           
+					<goto next="Hungama_SPKENG_End.vxml"/>            
+			</noinput>
+
+			<nomatch>
+					<assign name="input_check" expr="'nomatch'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>               
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>		
+					<goto nextitem="submnuopt"/>
+			</nomatch> 
+
+			<nomatch count="3">
+					<assign name="input_check" expr="'nomatch'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>    			
+					<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>	
+					<goto next="Hungama_SPKENG_End.vxml"/>                			
+			</nomatch>					
+	  </field>	 
+</form>
+<form id="samplelession">
+<block>
+ 	<prompt bargein="false" timeout="3s">
+               <audio expr="promptpath+'/'+lang+'/sample_sub.wav'"/>		
+            </prompt>
+		<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=SPKENGconfig/samplelesson.cfg'"/>
+		<script>
+			array1.length=0;
+			unike_play=0;
+		</script>				
+
+		<assign name="len" expr="favSongs.length"/>
+		<assign name="movie_idx" expr="0" />
+		<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+			 <![CDATA[
+				   for(j=0; j<len ;  j++)
+				   {  	  
+							array1[j] = favSongs[j];						   
+				   }
+				]]>		
+			</script> 	
+		<if cond="unike_play &gt; len-1">
+			<!--<assign name="unike_play" expr="0" />-->
+			<goto next="#samplelession_reconfirm"/>
+		<elseif cond="unike_play &lt; 0" />
+			<assign name="unike_play" expr="len-1" />
+		</if>
+
+		<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+		<log>	array == <value expr="array1[unike_play]"/>    </log>
+		<script>
+			module = array1[unike_play];
+		</script>
+		
+</block>
+	<field name="submnuopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+            	   <rule id="start" scope="public">
+			<one-of>				 
+				<item>1</item>	
+				<item>2</item>	
+			</one-of>
+	               </rule>
+            </grammar>
+	    
+	    <prompt bargein="true" timeout="2s">
+	    
+	    			     	
+	    		             <audio expr="promptpath+'/'+lang+'/'+module+'_preview.wav'"/>	
+		</prompt>
+			
+			<filled>
+				<assign name="dtmfsub" expr="'First_level_input'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+submnuopt"></assign>
+
+				<if cond="submnuopt=='1'">
+					<assign name="amt" expr="'399'"/>
+					<assign name="sid" expr="'0'"/>
+					<assign name="pid" expr="'0'"/>
+					
+				     <clear namelist="submnuopt"/> 	
+				     <goto next="#reconfirm_subs"/>
+				<elseif cond="submnuopt=='2'"/>
+					<assign name="amt" expr="'5'"/>
+					<assign name="sid" expr="'0'"/>
+					<assign name="pid" expr="'0'"/>
+					<clear namelist="submnuopt"/> 
+					
+				     	<goto next="#reconfirm_subs"/>
+				   
+				 	
+				</if>
+			</filled>
+			
+			 <noinput>
+					<assign name="input_check" expr="'noinput'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+					<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>                
+			<goto nextitem="submnuopt"/>
+			</noinput>
+
+			<noinput count="3">
+					<assign name="input_check" expr="'noinput'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>  
+					<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>						           
+					<goto next="Hungama_SPKENG_End.vxml"/>            
+			</noinput>
+
+			<nomatch>
+					<assign name="input_check" expr="'nomatch'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>               
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>		
+					<goto nextitem="submnuopt"/>
+			</nomatch> 
+
+			<nomatch count="3">
+					<assign name="input_check" expr="'nomatch'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>    			
+					<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>	
+					<goto next="Hungama_SPKENG_End.vxml"/>                			
+			</nomatch>					
+	  </field>	 
+</form>
+
+<form id="samplelession_reconfirm">
+	<field name="submnuopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+            	   <rule id="start" scope="public">
+			<one-of>				 
+				<item>1</item>	
+				<item>2</item>				  	
+			</one-of>
+	               </rule>
+            </grammar>
+	     
+	     <prompt bargein="false" timeout="3s">
+               <audio expr="promptpath+'/'+lang+'/sample_lesson_end.wav'"/>		
+            </prompt>
+			
+			<filled>
+				<assign name="dtmfsub" expr="'First_level_input'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+submnuopt"></assign>
+
+				<if cond="submnuopt=='1'">
+					<assign name="amt" expr="'399'"/>
+					<assign name="sid" expr="'0'"/>
+					<assign name="pid" expr="'0'"/>
+				     <clear namelist="submnuopt"/> 	
+				     <goto next="#reconfirm_subs"/>
+				<elseif cond="submnuopt=='2'"/>
+					<assign name="amt" expr="'5'"/>
+					<assign name="sid" expr="'0'"/>
+					<assign name="pid" expr="'0'"/>
+					<clear namelist="submnuopt"/> 	
+				     	<goto next="#reconfirm_subs"/>
+				 
+				</if>
+			</filled>
+			
+			 <noinput>
+					<assign name="input_check" expr="'noinput'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+					<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>                
+			<goto nextitem="submnuopt"/>
+			</noinput>
+
+			<noinput count="3">
+					<assign name="input_check" expr="'noinput'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>  
+					<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>						           
+					<goto next="Hungama_SPKENG_End.vxml"/>            
+			</noinput>
+
+			<nomatch>
+					<assign name="input_check" expr="'nomatch'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>               
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>		
+					<goto nextitem="submnuopt"/>
+			</nomatch> 
+
+			<nomatch count="3">
+					<assign name="input_check" expr="'nomatch'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>    			
+					<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>	
+					<goto next="Hungama_SPKENG_End.vxml"/>                			
+			</nomatch>					
+	  </field>	 
+</form>
+
+<form id="reconfirm_subs">
+    	<field name="reconfirm">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+					  <item>5</item>				  			  		      
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt bargein="true" timeout="3s">	
+               <audio expr="promptpath+'/'+lang+'/cofirm_sub.wav'"/>		
+            </prompt>
+
+			<filled>
+				<assign name="dtmfsub" expr="'Second_level_input'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+reconfirm"></assign>
+				<if cond="reconfirm=='5'">
+				    	 <clear namelist="reconfirm"/> 	
+					 <goto next="#hungamasubmnu"/>	
+				</if>
+			</filled>
+			
+		<noinput>
+			<assign name="input_check" expr="'noinput'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 		 
+			<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>                
+			<reprompt/> 
+		</noinput>
+
+		<noinput count="3">
+			<assign name="input_check" expr="'noinput'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 		 
+			<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>	        
+			<goto next="Hungama_SPKENG_End.vxml"/>
+		</noinput>
+
+		<nomatch>
+			<assign name="input_check" expr="'nomatch'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>              
+			<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>		
+			<reprompt/>
+		</nomatch> 
+		 <nomatch count="3">
+			<assign name="input_check" expr="'nomatch'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 		 
+			<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>	        
+			<goto next="Hungama_SPKENG_End.vxml"/>			
+		</nomatch>			
+	  </field>
+    </form> 
+    
+
+<form id="hungamasubmnu">
+		<block>	   
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=01&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+sid+'&amp;INPARAM[6]='+pid"/>
+			 <assign name="usr_status" expr="'0'"/>
+			 <log> @@@@prompth path in subscribe3s is <value expr="promptpath"/> </log>
+		</block>	  
+	   
+	   <field name="hungamasubwait">               
+				  <grammar mode="dtmf" root="start" version="1.0">
+                   <rule id="start" scope="public">
+                     <one-of>
+				<item>1</item>
+				<item>2</item>	
+				<item>3</item>	
+				<item>4</item>	
+				<item>5</item>	
+				<item>6</item>	
+				<item>7</item>	
+				<item>8</item>	
+				<item>9</item>	
+				<item>0</item>	               			 
+				<item>#</item>
+				<item>*</item>			      
+                    </one-of>
+                  </rule>
+               </grammar> 	
+			      <prompt bargein="false">
+					<audio expr="promptpath+'/'+lang+'/thanks_sub.wav'"/>		
+	   		      </prompt>	
+		 	
+		 	  <filled>
+		 	  
+		 	  <goto next="Hungama_SPKENG_RootMenu.vxml"/>
+             	 <!-- <goto next="#Status"/> -->  
+              </filled>
+			  
+			  <noinput>		  
+	         	  <goto next="Hungama_SPKENG_RootMenu.vxml"/> 
+             	 <!-- <goto next="#Status"/> -->  
+              </noinput>	
+        </field>       
+   </form> 
+    
+<form id="Status">
+<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=1&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+DNIS"/>
+	   		<script>
+	 			<![CDATA[
+	   				for(j=0; j< out_string.length;  j++)
+		 		 		{  	  
+		      				if(j==0)
+		      			 	usr_status = out_string[j];
+					        if(j==1)
+					       	lang = out_string[j];
+					        if(j==2)
+					       	balance = out_string[j];							      
+		  				}
+				]]>
+			</script>		
+
+			<if cond="usr_status == '1'">						    
+		         <script> 	
+				    balance=balance*60;
+				    timerflag=1;      
+				 </script>
+			        <assign name="dtmfsub" expr="'Billing_status'"/>
+			        <assign name="input_check" expr="'SUCCESS'"/>
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+					<goto next="Hungama_SPKENG_RootMenu.vxml"/>
+			<else/>
+			        <assign name="dtmfsub" expr="'Billing_status'"/>
+			        <assign name="input_check" expr="'WAIT'"/>
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+					
+					<prompt bargein="false">
+			           <audio expr="promptpath+'/'+lang+'/charging_wait.wav'"/>		
+		   	      	</prompt>
+					<goto next="Hungama_SPKENG_End.vxml"/>						
+			</if>
+</block>
+</form>    
+</vxml>

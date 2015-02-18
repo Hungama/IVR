@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="MSDRoot.vxml">      
+    
+   <meta name="Hungama_EDU_Help.vxml" content=""/>
+   <meta name="Author" content=""/>
+   <meta name="Date" content=""/>
+   <meta name="Description" content=""/>
+   <meta name="Support" content=""/>
+   <property name="caching" value="fast"/>
+   <property name="documentfetchhint" value="safe"/>
+   <property name="grammarfetchhint" value="safe"/>
+   <property name="documentmaxage" value="3600"></property>
+   <property name="fetchminimumbuffersize" value="54272"/>
+   <property name="fetchhint" value="safe"/>
+   <property name="timeout" value="1s" />
+   <property name="maxage" value="1800s"/>
+   <property name="audiofetchhint" value="safe"/>
+ <var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="'true'"/>		
+   <var name="names"/> 
+   
+   <script>  
+   		var flag=1;
+		var index=0;
+		var startindex=0;
+		var totalbalminute=0;
+   </script>	
+   
+   <form id="hungamaedumang">
+   <block>
+   <assign name="Section_Name" expr="'PD_ACCOUNTMANAGER'"/>
+	                                                 <log>dur "ANI"   is	<value expr="ANI"/>    </log>
+	                                                 <log>dur "CIRCLE"   is	<value expr="circle"/>    </log>
+   <if cond="circle!='kar' &amp;&amp; circle!='apd'">
+   				  <goto next="#hungamaactmgrbMnu"/>	
+   	</if>
+   </block>
+    <field name="actmgrmnuopt1">
+   			  <grammar mode="dtmf" root="start" version="1.0">
+                  <rule id="start" scope="public">
+                    <one-of>				 
+   				  <item>1</item>
+   				  <item>2</item>			
+   				  <item>3</item>
+   				   <item>4</item>
+   				  <item>8</item>		  		      
+                   </one-of>
+                 </rule>
+            </grammar>
+           	 <prompt bargein="true" timeout="0s">
+	    	               <audio expr="promptpath+'/'+lang+'/welcome_acmanager_lang.wav'"/>				
+	                </prompt>
+	    		    			
+	    			
+	    			<filled>
+	    				<if cond="actmgrmnuopt1=='1'">
+						     <clear namelist="actmgrmnuopt1"/>
+							
+	        				    <goto next="Hungama_EDU_sub.vxml#HELP_LANG_OPTION"/>
+	    				<elseif cond="actmgrmnuopt1=='2'"/>
+	    				        <clear namelist="actmgrmnuopt1"/> 
+	        				    <goto next="#hungamablanceminute"/>	
+	        			<elseif cond="actmgrmnuopt1=='3'"/>				    		
+	    				        <clear namelist="actmgrmnuopt1"/> 	
+	        					<goto next="TopupRenew.vxml"/>			 
+	    				<elseif cond="actmgrmnuopt1=='4'"/>				    		
+	    				        <clear namelist="actmgrmnuopt1"/> 	
+	        					<goto next="#hungamaunsubmnu"/>					
+	    				<elseif cond="actmgrmnuopt1=='8'"/>				    		
+	    				        <clear namelist="actmgrmnuopt1"/> 	
+	    					    <if cond="timerflag=='1'">                       						   
+	    						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+	    						 <script>
+	    					    	 total_used_bal=dur;
+	    						     curbalance=balance-total_used_bal;  						  
+	    					     </script>
+	    					   
+	    					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+	    					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+	                             <if cond="curbalance &lt;= '0'">          
+	                                 <goto next="TopupRenew.vxml"/>
+	                            </if>
+	                          </if> 
+	           			        <goto next="Hungama_EDU_MainMenu.vxml"/>						
+	    				</if>
+	    			</filled>
+	    			
+	    			 <noinput timeout="3s">
+	    		           <audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>					 
+	                       <reprompt/> 
+	                 </noinput>
+	    	        
+	                 <noinput count="3">	
+	    			     
+	    					 <if cond="timerflag=='1'">                       						   
+	    						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+	    						 <script>
+	    					    	 total_used_bal=dur;
+	    						     curbalance=balance-total_used_bal;  						  
+	    					     </script>
+	    					   
+	    					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+	    					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+	                             <if cond="curbalance &lt;= '0'">          
+	                                 <goto next="TopupRenew.vxml"/>
+	                            </if>
+	                          </if> 
+	                                                 <log>dur "saurav"   is	<value expr="dur"/>    </log>
+	                          <log>total_used_bal "saurav"   is	<value expr="total_used_bal"/>    </log>
+	                          <log>balance "saurav"   is	<value expr="balance"/>    </log>
+	                          <log>curbalance "saurav"   is	<value expr="curbalance"/>    </log>
+	           			      <goto next="Hungama_EDU_MainMenu.vxml"/>	
+	                  </noinput>
+	    	        
+	                 <nomatch>
+	    		           <audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>             
+	                    <reprompt/>
+	                 </nomatch> 
+	    	
+	    	         <nomatch count="3">
+	    					 <if cond="timerflag=='1'">                       						   
+	    						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+	    						 <script>
+	    					    	 total_used_bal=dur;
+	    						     curbalance=balance-total_used_bal;  						  
+	    					     </script>
+	    					   
+	    					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+	    					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+	                             <if cond="curbalance &lt;= '0'">          
+	                                 <goto next="TopupRenew.vxml"/>
+	                            </if>
+	                          </if> 
+	           			      <goto next="Hungama_EDU_MainMenu.vxml"/>	
+	    	         </nomatch>                
+	  </field>	 
+   
+   </form>
+   
+<form id="hungamaactmgrbMnu">
+    <field name="actmgrmnuopt">
+			  <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>
+				  <item>2</item>			
+				  <item>3</item>						  	
+				  <item>8</item>		  		      
+                </one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true" timeout="0s">
+	               <audio expr="promptpath+'/'+lang+'/welcome_acmanager.wav'"/>				
+            </prompt>
+		    			
+			
+			<filled>
+				<if cond="actmgrmnuopt=='1'">
+				        <clear namelist="actmgrmnuopt"/> 
+    				    <goto next="#hungamablanceminute"/>	
+    			<elseif cond="actmgrmnuopt=='2'"/>				    		
+				        <clear namelist="actmgrmnuopt"/> 	
+    					<goto next="TopupRenew.vxml"/>			 
+				<elseif cond="actmgrmnuopt=='3'"/>				    		
+				        <clear namelist="actmgrmnuopt"/> 	
+    					<goto next="#hungamaunsubmnu"/>					
+				<elseif cond="actmgrmnuopt=='8'"/>				    		
+				        <clear namelist="actmgrmnuopt"/> 	
+					    <if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+       			        <goto next="Hungama_EDU_MainMenu.vxml"/>						
+				</if>
+			</filled>
+			
+			 <noinput timeout="3s">
+		           <audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>					 
+                   <reprompt/> 
+             </noinput>
+	        
+             <noinput count="3">	
+			     
+					 <if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+                                             <log>dur "saurav"   is	<value expr="dur"/>    </log>
+                      <log>total_used_bal "saurav"   is	<value expr="total_used_bal"/>    </log>
+                      <log>balance "saurav"   is	<value expr="balance"/>    </log>
+                      <log>curbalance "saurav"   is	<value expr="curbalance"/>    </log>
+       			      <goto next="Hungama_EDU_MainMenu.vxml"/>	
+              </noinput>
+	        
+             <nomatch>
+		           <audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>             
+                <reprompt/>
+             </nomatch> 
+	
+	         <nomatch count="3">
+					 <if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+       			      <goto next="Hungama_EDU_MainMenu.vxml"/>	
+	         </nomatch>                
+	  </field>	 
+</form> 
+   
+<form id="hungamaunsubmnu">
+<block>
+<assign name="Section_Name" expr="'PD_ACCOUNTMANAGER_UNSUB'"/>
+</block>
+	<field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>5</item>
+				  <item>0</item>						  			 				
+                </one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true" timeout="2s">
+		           <audio expr="promptpath+'/'+lang+'/acmanager_unsub_confirm.wav'"/>             			
+            </prompt>
+			
+			<filled>
+				<if cond="mnuopt=='5'">
+				     <clear namelist="mnuopt"/> 	
+				     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+					 <prompt bargein="true" timeout="3s">
+							 <audio expr="promptpath+'/'+lang+'/thanks_unsub.wav'"/>	
+	                 </prompt>				    
+				 	 <goto next="Hungama_EDU_End.vxml"/>
+				<elseif cond="mnuopt=='0'"/>				    		
+				     <clear namelist="mnuopt"/> 	
+					 <if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+       			      <goto next="Hungama_EDU_MainMenu.vxml"/>
+				</if>
+			</filled>
+			
+			 <noinput timeout="3s">
+					 <audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>	
+		             <reprompt/> 
+             </noinput>
+	        
+             <noinput count="3">		
+					 <if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+       			        <goto next="Hungama_EDU_MainMenu.vxml"/>
+             </noinput>
+	        
+             <nomatch>
+        		      <audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+		              <reprompt/>
+             </nomatch> 
+	
+	         <nomatch count="3">
+					 <if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+       			      <goto next="Hungama_EDU_MainMenu.vxml"/>
+	         </nomatch>                
+  </field>  		
+</form> 
+
+
+<form id="hungamablanceminute"> 
+	<block>
+	<assign name="Section_Name" expr="'PD_ACCOUNTMANAGER_BALANCE'"/>
+       		<if cond="curbalance &lt; '0'">
+       		<assign name="curbalance" expr="'0'"/>
+       		</if>
+       		<script>
+         		 totalbalminute=Math.floor(curbalance/60);	
+			</script>
+		    <goto next="#speak"/> 
+	</block> 
+</form> 
+<form id="speak">
+	 <block>
+	 		<prompt bargein="false">
+	 				<audio expr="promptpath+'/'+lang+'/acmanager_balanceis.wav'"/>
+	 				<audio expr="promptpath+'/'+lang+'/'+totalbalminute+'.wav'"/>
+	 				<audio expr="promptpath+'/'+lang+'/minutes.wav'"/>
+			</prompt>
+					  <if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					    <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					    <log expr="'@@@@@@ left balance is '+curbalance"/>
+                        <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                    </if> 
+				<if cond="repeat_flag=='1'">
+				      <assign name="repeat_flag" expr="'2'" />  				
+       			      <goto next="Hungama_EDU_ExistUser.vxml"/>
+       			<else/>
+	       			  <goto next="Hungama_EDU_MainMenu.vxml"/>
+       			</if>      
+	</block>
+</form>
+
+<form id="directunsub">
+<block>
+<assign name="Section_Name" expr="'PD_ACCOUNTMANAGER_UNSUB'"/>
+</block>
+    <field name="choice">
+			  <grammar mode="dtmf" root="start">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>
+                </one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true" timeout="0s">
+	               <audio expr="promptpath+'/'+lang+'/pd_unsub.wav'"/>				
+            </prompt>
+		    			
+			
+			<filled>
+				<if cond="choice=='1'">
+    				    <goto next="#unsub"/>	
+				</if>
+			</filled>
+			
+			 <noinput timeout="3s">
+		           <audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>					 
+                   <reprompt/> 
+             </noinput>
+	        
+             <noinput count="3">	
+					<goto next="Hungama_EDU_End.vxml"/>		
+              </noinput>
+	        
+             <nomatch>
+		           <audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>             
+                <reprompt/>
+             </nomatch> 
+	
+	         <nomatch count="3">
+					<goto next="Hungama_EDU_End.vxml"/>	
+	         </nomatch>                
+	  </field>	 
+</form>
+
+<form id="unsub">
+<block>
+<assign name="Section_Name" expr="'PD_ACCOUNTMANAGER_UNSUB'"/>
+</block>
+	<field name="choice">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>5</item>
+              </one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true" timeout="2s">
+		           <audio expr="promptpath+'/'+lang+'/acmanager_unsub_confirm.wav'"/>             			
+            </prompt>
+			
+			<filled>
+				<if cond="choice=='5'">
+				     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+					 <prompt bargein="true" timeout="3s">
+							 <audio expr="promptpath+'/'+lang+'/thanks_unsub.wav'"/>	
+	                 </prompt>				    
+				 	 <goto next="Hungama_EDU_End.vxml"/>
+				</if>
+			</filled>
+			
+			 <noinput timeout="3s">
+					 <audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>	
+		             <reprompt/> 
+             </noinput>
+	        
+             <noinput count="3">		
+				 	 <goto next="Hungama_EDU_End.vxml"/>
+             </noinput>
+	        
+             <nomatch>
+        		      <audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+		              <reprompt/>
+             </nomatch> 
+	
+	         <nomatch count="3">
+				 	 <goto next="Hungama_EDU_End.vxml"/>	         
+	         </nomatch>                
+  </field>  		
+</form> 
+
+</vxml>

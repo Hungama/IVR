@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="MSDRoot.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="Root file for the AL-MOD project" />
+
+	<meta name="Support" content="" />	
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<property name="documentmaxage" value="86400"></property>
+<property name="documentmaxstale" value="86400"></property>
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+<property name="audiofetchhint" value="safe"/>
+
+<!--Double confirmation variables Start-->
+
+<var name = "zone" expr = "''"/>
+<var name = "sessionId" expr = "session.id"/>
+<var name = "Lang" expr = "'eng'"/>
+<var name = "MSISDN" expr = "''"/>
+<var name="Section_Name" expr="'0'" />
+<var name="modesub" expr="'ND'" />
+<var name="pricepoint" expr="'0'" />
+
+<var name = "ChargeAmount1" expr = "''"/>
+<var name = "ChargeAmount2" expr = "''"/>
+<var name = "Validity1" expr = "''"/>
+<var name = "Validity2" expr = "''"/>
+<var name = "ProductID" expr = "''"/>
+<var name = "CpId" expr = "'83'"/>
+<var name = "ApplicationType" expr = "'OTHER'"/>
+<var name = "channelName" expr = "'ivr'"/>
+<var name = "cpName" expr = "'hungama'"/>
+<var name = "centralIVRPwd" expr = "'hungama'"/>
+<var name = "cpTransactionID" expr = "'0'"/>
+<var name = "subProdID" expr = "'0'"/>
+<var name = "songProdID" expr = "'0'"/>
+<var name = "songVCode" expr = "'0'"/>
+<var name = "msisdnGiftReceiver" expr = "'0'"/>
+<var name = "msisdnDedicatee" expr = "'0'"/>
+<var name = "msisdnStarCopy" expr = "'0'"/>
+<var name = "aocMessage1" expr = "'1'"/>
+<var name = "aocMessage2" expr = "'1'"/>
+<var name = "param1" expr = "'value1'"/>
+<var name = "param2" expr = "'value2'"/>
+<var name = "param3" expr = "'value3'"/>
+<var name = "param4" expr = "'value4'"/>
+<var name = "param5" expr = "'value5'"/>
+<!--Double confirmation variables End-->
+
+	<var name="lang" expr="'01'"/>
+	<var name="cat1" expr="'Esongs'"/>
+	<var name="cat" expr="'0'"/>
+	<var name="subcat" expr="'0'"/>
+	<var name="curbalance" expr="'0'"/>
+	<var name="initial_balance" expr="''"/>
+	<var name="current_balance" expr="''"/>
+	<var name="invalidani" expr="''"/>			
+	<var name="balance" expr="'0'"/>
+	<var name="ciropr" expr="''"/>
+	<var name="operator" expr="''"/>
+	<var name="circle" expr="''"/>
+	<var name="C_Start" expr=""/>
+	<var name="HEARD" expr="'0'"/>
+    <var name="ANI" expr="''"/>       
+	<var name="DNIS" expr="'53222345'"/>
+	<var name="realDNIS" expr="''"/>
+	<var name="Flag" expr="''"/>
+	<var name="tot" expr="5"/>
+	<var name="type" expr="'E'"/>
+	<var name="service_token" expr="'5006'"/>
+	<var name="sub_type" expr="'NA'"/>
+	<var name="mood_cnt" expr="0"/>
+	<var name="usr_status" expr="0"/>
+	<var name="tarrif" expr="0"/>
+	<var name="songID" expr="''"/>	
+	<var name="unike_play" expr="0"/>
+	<var name="pointsplaystatus" expr="''"/>	
+	<var name="playconfig" expr="''"/>	
+	<var name="C_End" expr="''"/>	
+	<var name="C_End" expr="''"/>	
+	<var name="song_begin" expr="''"/>		
+	<var name="pref_counter" expr="1"/>
+	<var name="cirid" expr="1"/>
+	<var name="contentpath" expr="''"/>
+	<var name="userflag" expr="'0'"/>
+	<var name="tempHd" expr="''"/>
+	
+	<var name="dtmf_check" expr="0"/>
+	<var name="dtmf_log" expr="''"/>
+	<var name="input_check" expr="''"/>
+	<var name="dtmfsub" expr="''"/>	
+
+	<!--<var name="IP" expr="'10.2.73.158:8080'"/>-->
+	<var name="IP" expr="'10.2.73.163:8089'"/>
+
+	<var name="CDSIP" expr="'10.2.73.156'" />	
+	<var name="CDSPATH" expr="':8080/hungama/'"/>
+<!--	<var name="promptpath" expr="'http://10.89.48.212:8088/CDS/hungama/EDU/'"/>-->
+	<var name="LANG_DESCRIPTION" expr="'ENG'"/>
+	<var name="mxopt" expr="''"/>
+	<var name="bopt" expr="''"/>
+	<var name="lang_status1" expr="''"/>
+	<var name="lang_change_st" expr="'true'"/>
+	<var name="timerflag" expr="'0'"/>
+	<var name="start_BalenceMinute" expr="'0'"/>
+	<var name="total_used_bal" expr="'0'"/>
+	<var name="forcastyyyyddmm" expr="''"/>
+	<var name="forcastdd" expr="''"/>
+	<var name="contentdir" expr=""/>
+	<var name="contentdir1" expr=""/>
+	<var name="song_listen" expr="'END'" />
+	<var name="ContentTime" expr="0"/>
+	<var name="contentlog" expr="''"/>
+	<var name="compare_time" expr="0"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="starting_time" expr="0"/>
+	<var name="contentip" expr="'10.130.14.106:8080'"/>
+	<var name="servlet_path" expr="'hungama'"/>
+	<var name="dbservlet" expr="'hungama'"/>
+	<var name="lastplay_index" expr="0"/>
+	<var name="module" expr="''"/>
+	<var name="module1" expr="''"/>
+	<var name="clip_no" expr="0"/>			
+	<var name="test_flag" expr="0"/>	
+	<var name="last_heard" expr="'false'"/>	
+	<var name="mod_play" expr="0"/>	
+	<var name="module_pass" expr="''"/>	
+	<!-- TEST VARIABLE -->
+	<var name="score" expr="'0'"/>
+	<var name="scorepartfirst" expr="0"/>
+	<var name="scorepartsecond" expr="''"/>
+	<var name="scorepartthird" expr="0"/>
+	<var name="scorepartfirstnew" expr="''"/>
+	<var name="questionnum" expr="0"/>
+	<var name="NumberOfQues" expr="''"/>
+	<var name="index" expr="1" />
+	<var name="ind" expr="" />
+	<var name="ans" expr="''"/>
+	<var name="right_opt" expr="''"/>
+	<var name="wrong_opt" expr="''"/>
+	<var name="testno" expr="'1'"/>
+	<var name="test_complete" expr="'false'"/>
+	<var name="modno" expr="'1'"/>
+	<var name="modname" expr="''"/>
+	<var name="songcheck1" expr="''"/>
+	<var name="cnt" expr="0"/>
+	<var name="OTHER_MODULE" expr="'FALSE'"/>
+	<var name="start_index_pre" expr="''"/>
+	<var name="start_index" expr="''"/>
+	<var name="end_index" expr="''"/>
+	<var name="movie_idx" expr="'0'"/>
+	<var name="counter_cat" expr="'0'"/>
+	<var name="con_data" expr="'0'"/>
+	<var name="repeat_flag" expr="'0'"/>
+	<var name="tnb_flag" expr="'0'"/>
+	<var name="trynbuy" expr="''"/>
+	<var name="ccxml_session" expr="session.connection.ccxml.dialogid"/>
+	<var name="dialogid1" expr="session.connection.ccxml.dialogid"/>
+
+	
+<!--	<script srcexpr="'http://'+IP+'/hungama/ECMAScripts/common_files.es'"/>	-->
+	<script srcexpr="'../ECMAScripts/common_files.es'"/>		
+
+   	<script>	
+      	var len=0;    
+		var i=0; 
+	    var j=0;
+		var k=0;	                  
+	    var aNavHistory=new Array();			
+	    var array=new Array();
+	    var array1=new Array();
+   	    var array2=new Array();
+ 		var song=new Array();
+		var modules=new Array();			
+		var crbtstatus=new Array();
+		var crbtid=new Array();
+		var favSongs=new Object();
+		var out_string=new Object();
+		var songs_details=new Object();	
+		var lang_status=new Object();
+		var usrlang=new Object();
+		var sub_status=new Object();
+		var usrbalance=new Object();
+		var	totaltopup=new Object();
+		var	topup1=new Object();
+		var	topup2=new Object();
+		var	topup3=new Object();			
+		var	ciropr1 = new Object();
+		var last_cat=new Object();
+		var v=new Object();
+		var v1=new Object();
+		var v2=new Object();
+		var v3=new Object();
+		var v4=new Object();
+		var v5=new Object();
+		var v6=new Object();
+		var c1=new Object();
+		var c2=new Object();
+		var c3=new Object();
+		var c4=new Object(); 
+		var c5=new Object(); 
+		var c6=new Object(); 
+		var c7=new Object(); 
+		var c8=new Object(); 
+     </script>
+     
+<form id="MainRoot">
+	<block>
+		<log>Inside Root   2222</log>
+		<goto next="SelectLang.vxml"></goto>
+	</block>
+</form>
+  	  <catch event="error.badfetch">
+    	  <log>Inside Error BadCatch catch  2222</log>  	      
+		  <goto next="Hungama_EDU_End.vxml"></goto>
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+	      <log>Inside Telephone Disconnect Hangup catch  3333</log> 
+		  <goto next="Hungama_EDU_End.vxml"></goto>								
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+		   <log>Inside Telephonet Disconnected catch  4444</log>	
+		   <goto next="Hungama_EDU_End.vxml"></goto>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+		   <log>Inside connection.disconnect.hangup catch  5555</log>	
+		   <goto next="Hungama_EDU_End.vxml"></goto>
+      </catch>
+
+</vxml>

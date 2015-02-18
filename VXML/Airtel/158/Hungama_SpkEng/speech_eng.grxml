@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<grammar xml:lang="en-IN" version="1.0" root="ROOT" tag-format="swi-semantics/1.0" xmlns="http://www.w3.org/2001/06/grammar">
+
+<rule id="ROOT" scope="public">
+ <ruleref uri="#SubRule" />
+   <tag>
+	     SWI_meaning=SubRule.SWI_meaning;
+         recipe=SWI_meaning;
+       </tag>
+</rule>
+<rule id="SubRule">
+		<one-of>
+			<item><ruleref uri="#Banquet"/><tag>SWI_meaning ='Banquet'</tag></item>
+			<item><ruleref uri="#Assignment"/><tag>SWI_meaning ='Assignment'</tag></item>
+		</one-of>
+</rule>
+<rule id="Banquet">
+<one-of>
+<item>bangkwit</item>
+<item>Banqut</item>
+<item>benquet</item>
+<item>banquest</item>
+<item>bangkute</item>
+<item>bungkwait</item>
+<item>bainkwait</item>
+<item>bainkwit</item>
+</one-of>
+</rule>
+
+<rule id="Assignment">
+<one-of>
+<item>uhsahynmuhnt</item>
+<item>uhseynment</item>
+<item>uhseynmaint</item>
+<item>eysahynment</item>
+<item>eysahynmaint</item>
+<item>uhshinemuhnt</item>
+<item>aashinmuhnt</item>
+</one-of>
+</rule>
+</grammar>

@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+	<property name="timeout" value="2s"/>
+	<meta name="Hungama_EDU_MainMenu.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>    
+	<property name="caching" value="fast"/>
+	<property name="documentfetchhint" value="safe"/>
+	<property name="grammarfetchhint" value="safe"/>
+	<property name="documentmaxage" value="3600"></property>
+	<property name="fetchminimumbuffersize" value="54272"/>
+	<property name="fetchhint" value="safe"/>
+	<property name="timeout" value="1s" />
+	<property name="maxage" value="1800s"/>
+	<property name="audiofetchhint" value="safe"/>
+
+
+<form id="Main_Menu">
+<block>
+<assign name="Section_Name" expr="'PD_MAINMENU'"/>
+			<if cond="timerflag=='1'">                       						   
+				 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				 <script>
+			    	 total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+			     </script>
+			   
+			   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                 <if cond="curbalance &lt;= '0'">          
+                     <goto next="TopupRenew.vxml"/>
+                </if>
+              </if> 	
+			<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=EDUconfig/mainmenuorder-'+lang+'.cfg'"/>
+			<script>
+						array1.length=0;
+						unike_play=0;
+			</script>				
+
+			<assign name="len" expr="favSongs.length"/>
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+								array1[j] = favSongs[j];						   
+					   }
+					]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>					
+</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+	            	   <rule id="start" scope="public">
+	                		 <one-of>				 
+								  <item>1</item>				  	
+								  <item>2</item>
+								  <item>3</item>
+	  							  <item>9</item>
+	            		     </one-of>
+		               </rule>
+	            </grammar>
+			
+				<prompt bargein="true" timeout="1s">	
+	               <audio expr="promptpath+'/'+lang+'/welcome_root2.wav'"/>		
+	            </prompt>
+				
+				<filled>
+					<if cond="choice=='1'">
+					     <clear namelist="choice"/> 
+					     <prompt bargein="true" timeout="0s">
+				                <audio expr="promptpath+'/'+lang+'/module_full.wav'"/>	
+					     </prompt>
+	
+					     <goto next="#play_preview"/>
+					<elseif cond="choice=='2'"/>
+					      <clear namelist="choice"/> 		
+						  <goto next="Hungama_EDU_PlayList.vxml"/>	
+					<elseif cond="choice=='3'"/>
+					      <clear namelist="choice"/> 		
+						  <goto next="Hungama_EDU_testcheck.vxml"/>		       
+					<elseif cond="choice=='9'"/>
+					      <clear namelist="choice"/> 		
+						  <goto next="Hungama_EDU_Help.vxml"/>	
+					</if>
+				</filled>
+				
+				 <noinput>
+						<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined'">
+							<script>
+								unike_play=unike_play;
+							</script>	
+							<script>
+								module = array1[unike_play];
+							</script>								
+						<else/>	
+							<script>
+								songcheck1=HEARD.split("d");
+								cnt=songcheck1[1];
+								cnt=parseInt(cnt);
+								if(cnt==19)
+									cnt=0;
+								cnt=cnt+1;
+								module="mod"+cnt;
+							</script>
+						</if>
+
+						<log>	module == <value expr="module"/>    </log>
+
+						<assign name="module_pass" expr="'noinput'" />
+	                    <goto next="#fetch_module"/>
+	             </noinput>
+		        
+	             <nomatch>
+			            <prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+						<reprompt></reprompt>
+	             </nomatch> 
+		
+				<nomatch count="3">
+					<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined'">
+							<script>
+								unike_play=unike_play;
+							</script>	
+							<script>
+								module = array1[unike_play];
+							</script>								
+						<else/>	
+						<!--	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=@&amp;INPARAM[2]=@&amp;INPARAM[3]=@&amp;INPARAM[4]=GET'"/>
+					   		<script>
+					 			<![CDATA[
+					   				for(j=0; j< out_string.length;  j++)
+						 		 		{  	  
+						      				if(j==0)
+							      			 	HEARD = out_string[j];
+									        if(j==1)
+										       	clip_no = out_string[j];
+									        if(j==2)
+										       	test_flag = out_string[j];							      
+						  				}
+									]]>
+							</script>	-->					
+						<log>	module == <value expr="module"/>    </log>
+						<log>	HEARD == <value expr="HEARD"/>    </log>
+							<script>
+								songcheck1=HEARD.split("d");
+								cnt=songcheck1[1];
+								cnt=parseInt(cnt);
+								if(cnt==19)
+									cnt=0;
+								cnt=cnt+1;
+								module="mod"+cnt;
+							</script>
+						</if>
+
+						<log>	module == <value expr="module"/>    </log>
+
+						<assign name="module_pass" expr="'noinput'" />
+			                    <goto next="#fetch_module"/>
+				</nomatch>					
+		  </field>	 
+</form>    
+
+<form id="play_preview">
+	<block>
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+			</if>
+			
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="array1[unike_play]"/>    </log>
+			<script>
+				module = array1[unike_play];
+			</script>
+			<assign name="song_listen" expr="'START'" />
+			<assign name="song_begin" expr="start_time()"/>
+			<assign name="con_data" expr="module+'_preview'" />
+
+	</block>
+
+	<field name="choice">
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="2s">
+		                <audio expr="promptpath+'/'+lang+'/'+module+'_preview.wav'"/>	
+			</prompt>
+
+			<filled>
+				  <if cond="choice=='1'">
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>	
+	    				<assign name="module_pass" expr="'select'" />
+		                <goto next="#fetch_module"/> 
+					<elseif cond="choice=='2'"/>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>	
+						<script> unike_play=unike_play+1</script>
+						<goto next="#play_preview" />
+					<elseif cond="choice=='3'"/>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>	
+						<script> unike_play=unike_play-1</script>
+						<goto next="#play_preview" />	
+					<elseif cond="choice=='8'"/>												
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>			
+						 <goto next="#Main_Menu"/>	       			        
+		 			<elseif cond="choice=='9'"/>												
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>			
+						<if cond="timerflag=='1'">                       						   
+							 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+							 <script>
+						    	 total_used_bal=dur;
+							     curbalance=balance-total_used_bal;  						  
+						     </script>
+						   
+						     <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						     <log expr="'@@@@@@ left balance is '+curbalance"/>
+	                           <if cond="curbalance &lt;= '0'">          
+	                             <goto next="TopupRenew.vxml"/>
+	                          </if>
+	                       </if> 
+ 					     <goto next="Hungama_EDU_Help.vxml"/>		  			        						
+					</if>
+			</filled>
+
+			<noinput>				
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>	
+					<script> unike_play=unike_play+1</script>
+					<goto next="#play_preview" />
+			</noinput>
+			<nomatch>	
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>				
+	                		<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>						
+					<script> unike_play=unike_play</script>
+					<goto next="#play_preview" />				
+			</nomatch>
+	</field>
+</form>
+
+<form id="fetch_module">
+			<block>		
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=EDUconfig/'+module+'.cfg'"/>
+			<script>
+						array2.length=0;
+						mod_play=0;
+			</script>
+			<assign name="HEARD" expr="module" />
+			<assign name="len" expr="favSongs.length" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array2[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+								array2[j] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array2[0]"/>    </log>					
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  8  </item>
+						 <item>  9  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+
+			<filled>
+				<if cond="choice=='8'">
+					<goto next="#Main_Menu"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="Hungama_EDU_Help.vxml"/>	
+				<else/>
+					<goto next="play_module.vxml"/>
+				</if>						
+			</filled>
+			<noinput>
+					<goto next="play_module.vxml"/>
+			</noinput>
+			<nomatch>
+					<goto next="play_module.vxml"/>
+			</nomatch>
+		</field>
+</form>
+</vxml>

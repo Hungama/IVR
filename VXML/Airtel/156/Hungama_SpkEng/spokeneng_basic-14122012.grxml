@@ -1,0 +1,965 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<grammar xml:lang="en-IN" version="1.0" root="ROOT" tag-format="swi-semantics/1.0" xmlns="http://www.w3.org/2001/06/grammar">
+
+<rule id="ROOT" scope="public">
+ <ruleref uri="#SubRule" />
+   <tag>
+	     SWI_meaning=SubRule.SWI_meaning;
+         recipe=SWI_meaning;
+       </tag>
+</rule>
+<rule id="SubRule">
+		<one-of>
+			<item><ruleref uri="#Morning"/><tag>SWI_meaning ='Morning'</tag></item>
+			<item><ruleref uri="#Afternoon"/><tag>SWI_meaning ='Afternoon'</tag></item>
+			<item><ruleref uri="#Evening"/><tag>SWI_meaning ='Evening'</tag></item>
+			<item><ruleref uri="#Mr"/><tag>SWI_meaning ='Mr'</tag></item>
+			<item><ruleref uri="#Ms"/><tag>SWI_meaning ='Ms'</tag></item>
+			<item><ruleref uri="#Mrs"/><tag>SWI_meaning ='Mrs'</tag></item>
+			<item><ruleref uri="#Address"/><tag>SWI_meaning ='Address'</tag></item>
+			<item><ruleref uri="#Alternate"/><tag>SWI_meaning ='Alternate'</tag></item>
+			<item><ruleref uri="#Kindly"/><tag>SWI_meaning ='Kindly'</tag></item>
+			<item><ruleref uri="#Mobile"/><tag>SWI_meaning ='Mobile'</tag></item>
+			<item><ruleref uri="#Number"/><tag>SWI_meaning ='Number'</tag></item>
+			<item><ruleref uri="#Picking"/><tag>SWI_meaning ='Picking'</tag></item>
+			<item><ruleref uri="#Calling"/><tag>SWI_meaning ='Calling'</tag></item>
+			<item><ruleref uri="#Appointment"/><tag>SWI_meaning ='Appointment'</tag></item>
+			<item><ruleref uri="#Schedule"/><tag>SWI_meaning ='Schedule'</tag></item>
+			<item><ruleref uri="#Sorry"/><tag>SWI_meaning ='Sorry'</tag></item>
+			<item><ruleref uri="#Disturb"/><tag>SWI_meaning ='Disturb'</tag></item>
+			<item><ruleref uri="#Wait"/><tag>SWI_meaning ='Wait'</tag></item>
+			<item><ruleref uri="#Minute"/><tag>SWI_meaning ='Minute'</tag></item>
+			<item><ruleref uri="#Postpone"/><tag>SWI_meaning ='Postpone'</tag></item>
+			<item><ruleref uri="#Sincere"/><tag>SWI_meaning ='Sincere'</tag></item>
+			<item><ruleref uri="#Update"/><tag>SWI_meaning ='Update'</tag></item>
+			<item><ruleref uri="#File"/><tag>SWI_meaning ='File'</tag></item>
+			<item><ruleref uri="#Please"/><tag>SWI_meaning ='Please'</tag></item>
+			<item><ruleref uri="#Feeling"/><tag>SWI_meaning ='Feeling'</tag></item>
+			<item><ruleref uri="#Pending"/><tag>SWI_meaning ='Pending'</tag></item>
+			<item><ruleref uri="#Tomorrow"/><tag>SWI_meaning ='Tomorrow'</tag></item>
+			<item><ruleref uri="#Boarding"/><tag>SWI_meaning ='Boarding'</tag></item>
+			<item><ruleref uri="#Ticket"/><tag>SWI_meaning ='Ticket'</tag></item>
+			<item><ruleref uri="#Safe"/><tag>SWI_meaning ='Safe'</tag></item>
+			<item><ruleref uri="#Hobby"/><tag>SWI_meaning ='Hobby'</tag></item>
+			<item><ruleref uri="#Gardening"/><tag>SWI_meaning ='Gardening'</tag></item>
+			<item><ruleref uri="#Stay"/><tag>SWI_meaning ='Stay'</tag></item>
+			<item><ruleref uri="#Working"/><tag>SWI_meaning ='Working'</tag></item>
+			<item><ruleref uri="#Experience"/><tag>SWI_meaning ='Experience'</tag></item>
+			<item><ruleref uri="#Manager"/><tag>SWI_meaning ='Manager'</tag></item>
+			<item><ruleref uri="#Stopped"/><tag>SWI_meaning ='Stopped'</tag></item>
+			<item><ruleref uri="#Quarter"/><tag>SWI_meaning ='Quarter'</tag></item>
+			<item><ruleref uri="#Oclock"/><tag>SWI_meaning ='Oclock'</tag></item>
+			<item><ruleref uri="#Need"/><tag>SWI_meaning ='Need'</tag></item>
+			<item><ruleref uri="#Entirely"/><tag>SWI_meaning ='Entirely'</tag></item>
+			<item><ruleref uri="#Pleasure"/><tag>SWI_meaning ='Pleasure'</tag></item>
+			<item><ruleref uri="#Blank"/><tag>SWI_meaning ='Blank'</tag></item>
+			<item><ruleref uri="#Sure"/><tag>SWI_meaning ='Sure'</tag></item>
+			<item><ruleref uri="#Problem"/><tag>SWI_meaning ='Problem'</tag></item>
+			<item><ruleref uri="#From"/><tag>SWI_meaning ='From'</tag></item>
+			<item><ruleref uri="#Branch"/><tag>SWI_meaning ='Branch'</tag></item>
+			<item><ruleref uri="#Speaking"/><tag>SWI_meaning ='Speaking'</tag></item>
+			<item><ruleref uri="#Could"/><tag>SWI_meaning ='Could'</tag></item>
+			<item><ruleref uri="#Certainly"/><tag>SWI_meaning ='Certainly'</tag></item>
+			<item><ruleref uri="#Through"/><tag>SWI_meaning ='Through'</tag></item>
+			<item><ruleref uri="#Everyone"/><tag>SWI_meaning ='Everyone'</tag></item>
+			<item><ruleref uri="#Suggestion"/><tag>SWI_meaning ='Suggestion'</tag></item>
+			<item><ruleref uri="#Issue"/><tag>SWI_meaning ='Issue'</tag></item>
+			<item><ruleref uri="#Unable"/><tag>SWI_meaning ='Unable'</tag></item>
+			<item><ruleref uri="#Really"/><tag>SWI_meaning ='Really'</tag></item>
+			<item><ruleref uri="#Excuse"/><tag>SWI_meaning ='Excuse'</tag></item>
+			<item><ruleref uri="#Best"/><tag>SWI_meaning ='Best'</tag></item>
+			<item><ruleref uri="#Assignment"/><tag>SWI_meaning ='Assignment'</tag></item>
+			<item><ruleref uri="#Learning"/><tag>SWI_meaning ='Learning'</tag></item>
+			<item><ruleref uri="#Landline"/><tag>SWI_meaning ='Landline'</tag></item>
+			<item><ruleref uri="#Soon"/><tag>SWI_meaning ='Soon'</tag></item>
+			<item><ruleref uri="#Table"/><tag>SWI_meaning ='Table'</tag></item>
+			<item><ruleref uri="#Trip"/><tag>SWI_meaning ='Trip'</tag></item>
+			<item><ruleref uri="#Guitar"/><tag>SWI_meaning ='Guitar'</tag></item>
+			<item><ruleref uri="#Three"/><tag>SWI_meaning ='Three'</tag></item>
+			<item><ruleref uri="#Watch"/><tag>SWI_meaning ='Watch'</tag></item>
+			<item><ruleref uri="#Meeting"/><tag>SWI_meaning ='Meeting'</tag></item>
+		</one-of>
+</rule>
+<rule id="Morning">
+<one-of>
+<item>mawrning</item>
+<item>Marning</item>
+<item>Maarning</item>
+<item>Mourning</item>
+<item>Mooarning</item>
+<item>maaning</item>
+<item>maadning</item>
+<item>mowning</item>
+<item>maarding</item>
+</one-of>
+</rule>
+<rule id="Meeting">
+<one-of>
+<item>mateing</item>
+<item>mating</item>
+<item>meehting</item>
+<item>meahting</item>
+<item>meetine</item>
+<item>meahtine</item>
+<item>matething</item>
+<item>meehthing</item>
+</one-of>
+</rule>
+<rule id="Watch">
+<one-of>
+<item>woch</item>
+<item>wooch</item>
+<item>weach</item>
+<item>waach</item>
+<item>whatch</item>
+<item>wooach</item>
+<item>wheach</item>
+<item>watcez</item>
+<item>waates</item>
+</one-of>
+</rule>
+<rule id="Three">
+<one-of>
+<item>there</item>
+<item>theere</item>
+<item>tree</item>
+<item>teri</item>
+<item>thari</item>
+<item>terai</item>
+<item>thrai</item>
+<item>tri</item>
+</one-of>
+</rule>
+<rule id="Guitar">
+<one-of>
+<item>gitaar</item>
+<item>geetar</item>
+<item>gaytar</item>
+<item>gaitar</item>
+<item>gheetar</item>
+<item>gatar</item>
+<item>githar</item>
+<item>gither</item>
+<item>guetar</item>
+</one-of>
+</rule>
+<rule id="Trip">
+<one-of>
+<item>trep</item>
+<item>treep</item>
+<item>trap</item>
+<item>trape</item>
+<item>treph</item>
+<item>thrip</item>
+<item>threep</item>
+<item>tripuh</item>
+</one-of>
+</rule>
+<rule id="Soon">
+<one-of>
+<item>shoon</item>
+<item>Shoonn</item>
+<item>Sooon</item>
+<item>Shoonnuh</item>
+<item>Shoonuh</item>
+<item>Soonnuh</item>
+<item>Soonuh</item>
+<item>Sunn</item>
+</one-of>
+</rule>
+<rule id="Landline">
+<one-of>
+<item>Landline</item>
+<item>landlahyn</item>
+<item>laandline</item>
+<item>landlinuh</item>
+<item>landuhline</item>
+<item>lendline</item>
+<item>lenduhline</item>
+<item>lantline</item>
+<item>lantuhline</item>
+<item>lanlinuh</item>
+</one-of>
+</rule>
+<rule id="Table">
+<one-of>
+<item>teybuhl</item>
+<item>taaybhul</item>
+<item>thabhul</item>
+<item>theybhul</item>
+<item>teybawl</item>
+<item>teybal</item>
+<item>teyaable</item>
+<item>tehaabal</item>
+<item>thabawl</item>
+</one-of>
+</rule>
+<rule id="Afternoon">
+<one-of>
+<item>afternoon</item>
+<item>Aphternoon</item>
+<item>Aafternooon</item>
+<item>Apthanoon</item>
+<item>Aphternun</item>
+<item>afernoon</item>
+<item>aphernun</item>
+<item>ephternun</item>
+<item>ehpternoon</item>
+</one-of>
+</rule>
+<rule id="Evening">
+<one-of>
+<item>eevning</item>
+<item>Evding</item>
+<item>Ewdning</item>
+<item>Evading</item>
+<item>Eweing</item>
+<item>aivding</item>
+<item>ewining</item>
+<item>ewing</item>
+<item>vning</item>
+</one-of>
+</rule>
+<rule id="Mr">
+<one-of>
+<item>mister</item>
+<item>Mishter</item>
+<item>Meeshter</item>
+<item>Michter</item>
+<item>mishtaar</item>
+<item>Meezter</item>
+<item>maashter</item>
+<item>mushter</item>
+<item>mishiter</item>
+</one-of>
+</rule>
+<rule id="Ms">
+<one-of>
+<item>miz</item>
+<item>Miss</item>
+<item>Mijj</item>
+<item>Mij</item>
+<item>Mees</item>
+<item>mish</item>
+<item>meesh</item>
+<item>mahj</item>
+<item>mich</item>
+</one-of>
+</rule>
+<rule id="Mrs">
+<one-of>
+<item>misiz</item>
+<item>Michij</item>
+<item>Meesheej</item>
+<item>Meezeez</item>
+<item>Misseej</item>
+<item>michuhj</item>
+<item>meesuhj</item>
+<item>mirseej</item>
+<item>mirseez</item>
+</one-of>
+</rule>
+<rule id="Address">
+<one-of>
+<item>uhdres</item>
+<item>Aahdress</item>
+<item>Adraas</item>
+<item>Dress</item>
+<item>Edress</item>
+<item>address</item>
+<item>aedress</item>
+<item>adresh</item>
+<item>adris</item>
+</one-of>
+</rule>
+<rule id="Alternate">
+<one-of>
+<item>awlterneyt</item>
+<item>Aalternit</item>
+<item>Aalternate</item>
+<item>Ulternate</item>
+<item>Ulternit</item>
+<item>uluhterneyt</item>
+<item>terneyt</item>
+<item>oallterneyt</item>
+<item>altrait</item>
+</one-of>
+</rule>
+<rule id="Kindly">
+<one-of>
+<item>kahyndlee</item>
+<item>Kendly</item>
+<item>Kaindly</item>
+<item>andly</item>
+<item>Kundlee</item>
+<item>kaainlee</item>
+<item>khaaaindlee</item>
+<item>khaaindlee</item>
+<item>kaayuhndalee</item>
+</one-of>
+</rule>
+<rule id="Mobile">
+<one-of>
+<item>mohbahyl</item>
+<item>Mohbaail</item>
+<item>Mobail</item>
+<item>mohbilluh</item>
+<item>Mohbayl</item>
+<item>mobelail</item>
+<item>mohaaeel</item>
+<item>mobiaaeel</item>
+<item>maabaeel</item>
+</one-of>
+</rule>
+<rule id="Number">
+<one-of>
+<item>nuhmber</item>
+<item>numberuh</item>
+<item>numbud</item>
+<item>numberr</item>
+<item>numbeyr</item>
+<item>naambuhr</item>
+<item>naimbuhr</item>
+<item>nimbuhr</item>
+<item>Numver</item>
+</one-of>
+</rule>
+<rule id="Picking">
+<one-of>
+<item>piking</item>
+<item>pickinguh</item>
+<item>Pickeeng</item>
+<item>Peecking</item>
+<item>Peeckeeng</item>
+<item>pickung</item>
+<item>peyking</item>
+<item>pickin</item>
+<item>packing</item>
+</one-of>
+</rule>
+<rule id="Calling">
+<one-of>
+<item>kawling</item>
+<item>Caaling</item>
+<item>Caaleeng</item>
+<item>coling</item>
+<item>Cooling</item>
+<item>kuhaalling</item>
+<item>caalinguh</item>
+<item>caarling</item>
+<item>kwaling</item>
+</one-of>
+</rule>
+<rule id="Appointment">
+<one-of>
+<item>uhpointmuhnt</item>
+<item>Appontment</item>
+<item>Appantment</item>
+<item>Apuntment</item>
+<item>Puntment</item>
+<item>pointment</item>
+<item>pointmint</item>
+<item>peyoyemint</item>
+<item>uhpeeoyimint</item>
+</one-of>
+</rule>
+<rule id="Schedule">
+<one-of>
+<item>skejool</item>
+<item>Shoodul</item>
+<item>Shedool</item>
+<item>eschdule</item>
+<item>Shadeule</item>
+<item>sudhol</item>
+<item>sudhool</item>
+<item>suhdool</item>
+<item>shidiool</item>
+</one-of>
+</rule>
+<rule id="Sorry">
+<one-of>
+<item>sawree</item>
+<item>sowry</item>
+<item>sowree</item>
+<item>Saari</item>
+<item>chowri</item>
+<item>soori</item>
+<item>showdee</item>
+<item>seyree</item>
+<item>showree</item>
+</one-of>
+</rule>
+<rule id="Disturb">
+<one-of>
+<item>dihsturb</item>
+<item>Dishtub</item>
+<item>Deesturb</item>
+<item>Disturab</item>
+<item>Dishturub</item>
+<item>deetarab</item>
+<item>deestrub</item>
+<item>duhsturb</item>
+<item>distib</item>
+</one-of>
+</rule>
+<rule id="Wait">
+<one-of>
+<item>weyt</item>
+<item>waituh</item>
+<item>Bait</item>
+<item>baituh</item>
+<item>Wit</item>
+<item>bit</item>
+<item>veeait</item>
+<item>vith</item>
+<item>vaiyt</item>
+</one-of>
+</rule>
+<rule id="Minute">
+<one-of>
+<item>minit</item>
+<item>Mineet</item>
+<item>minituh</item>
+<item>Meeneet</item>
+<item>Mint</item>
+<item>minoot</item>
+<item>mintuck</item>
+<item>meenaat</item>
+<item>meenait</item>
+</one-of>
+</rule>
+<rule id="Postpone">
+<one-of>
+<item>pohstpohn</item>
+<item>puspone</item>
+<item>poshtpone</item>
+<item>pauspone</item>
+<item>paushtpone</item>
+<item>postfone</item>
+<item>pastpone</item>
+<item>puhhoostpoon</item>
+<item>paustpone</item>
+</one-of>
+</rule>
+<rule id="Sincere">
+<one-of>
+<item>sinseer</item>
+<item>sinsair</item>
+<item>shinsair</item>
+<item>shunseer</item>
+<item>shinseer</item>
+<item>shunsair</item>
+<item>sinsuhr</item>
+<item>shinsuhr</item>
+<item>shunsuhr</item>
+</one-of>
+</rule>
+<rule id="Update">
+<one-of>
+<item>uhpdeyt</item>
+<item>Oopdate</item>
+<item>Apdate</item>
+<item>Updait</item>
+<item>Uppadate</item>
+<item>pdate</item>
+<item>aapdayet</item>
+<item>uhfdeyt</item>
+<item>aafdait</item>
+</one-of>
+</rule>
+<rule id="File">
+<one-of>
+<item>Fahyl</item>
+<item>Phayl</item>
+<item>Phail</item>
+<item>Fail</item>
+<item>Phaail</item>
+<item>feeaahyl</item>
+<item>paaeel</item>
+<item>payil</item>
+<item>faayuhl</item>
+</one-of>
+</rule>
+<rule id="Please">
+<one-of>
+<item>Pleez</item>
+<item>Puhleez</item>
+<item>Puhleej</item>
+<item>Pleej</item>
+<item>Pleese</item>
+<item>peej</item>
+<item>peeleej</item>
+<item>peelaaj</item>
+<item>plooj</item>
+</one-of>
+</rule>
+<rule id="Feeling">
+<one-of>
+<item>feeling</item>
+<item>Pheeling</item>
+<item>Filling</item>
+<item>Philling</item>
+<item>Pheeleeng</item>
+<item>feelung</item>
+<item>peelung</item>
+<item>peeling</item>
+<item>feeding</item>
+</one-of>
+</rule>
+<rule id="Pending">
+<one-of>
+<item>pending</item>
+<item>Painding</item>
+<item>Pendeeng</item>
+<item>Panding</item>
+<item>Payinding</item>
+<item>paindung</item>
+<item>payindung</item>
+<item>pinding</item>
+<item>fendding</item>
+</one-of>
+</rule>
+<rule id="Tomorrow">
+<one-of>
+<item>tuhmawroh</item>
+<item>Tohmohroh</item>
+<item>Tamaaroh</item>
+<item>Tomaaroh</item>
+<item>Toomaaroh</item>
+<item>toomroh</item>
+<item>toomayaarow</item>
+<item>toomooroo</item>
+<item>tumawroh</item>
+</one-of>
+</rule>
+<rule id="Boarding">
+<one-of>
+<item>bohrding</item>
+<item>Baurding</item>
+<item>Bordeeng</item>
+<item>Borrading</item>
+<item>Bodding</item>
+<item>broding</item>
+<item>barding</item>
+<item>bhording</item>
+<item>bowdung</item>
+</one-of>
+</rule>
+<rule id="Ticket">
+<one-of>
+<item>tikit</item>
+<item>Tikkat</item>
+<item>Tickt</item>
+<item>Tickeyt</item>
+<item>Tikat</item>
+<item>tuckkit</item>
+<item>tuckkuht</item>
+<item>tikeet</item>
+<item>tikuhs</item>
+</one-of>
+</rule>
+<rule id="Safe">
+<one-of>
+<item>seyf</item>
+<item>Seyph</item>
+<item>Saph</item>
+<item>Seyb</item>
+<item>Sev</item>
+<item>seyfey</item>
+<item>sheyf</item>
+<item>sheyfey</item>
+<item>shave</item>
+</one-of>
+</rule>
+<rule id="Hobby">
+<one-of>
+<item>hobee</item>
+<item>Hahby</item>
+<item>Obby</item>
+<item>Hobi</item>
+<item>Hooby</item>
+<item>hubby</item>
+<item>hobhee</item>
+<item>huhvbee</item>
+<item>hoyaabee</item>
+</one-of>
+</rule>
+<rule id="Gardening">
+<one-of>
+<item>gahrdning</item>
+<item>Garding</item>
+<item>garadaning</item>
+<item>gurdanning</item>
+<item>garderning</item>
+<item>gurdening</item>
+<item>gardaning</item>
+<item>guhrdeen</item>
+<item>gaardeen</item>
+</one-of>
+</rule>
+<rule id="Stay">
+<one-of>
+<item>Stey</item>
+<item>Estay</item>
+<item>Eshtay</item>
+<item>Shtay</item>
+<item>Satay</item>
+<item>sitay</item>
+<item>shutay</item>
+<item>sutay</item>
+<item>shatay</item>
+</one-of>
+</rule>
+<rule id="Working">
+<one-of>
+<item>wurking</item>
+<item>Barking</item>
+<item>waraking</item>
+<item>Waarking</item>
+<item>Warking</item>
+<item>Burking</item>
+<item>budking</item>
+<item>vuhdking</item>
+<item>woorking</item>
+</one-of>
+</rule>
+<rule id="Experience">
+<one-of>
+<item>ikspeereeuhns</item>
+<item>peerince</item>
+<item>ekshperience</item>
+<item>ikpeerince</item>
+<item>ekshpirience</item>
+<item>aikspeerence</item>
+<item>aikspeerains</item>
+<item>ikspeyrains</item>
+<item>exprins</item>
+</one-of>
+</rule>
+<rule id="Manager">
+<one-of>
+<item>manijer</item>
+<item>mneger</item>
+<item>nejer</item>
+<item>Manger</item>
+<item>manejer</item>
+<item>maanijaar</item>
+<item>muhneyjer</item>
+<item>maineyjer</item>
+<item>muhneyzer</item>
+</one-of>
+</rule>
+<rule id="Stopped">
+<one-of>
+<item>stoped</item>
+<item>Shtopped</item>
+<item>Stoped</item>
+<item>Stapped</item>
+<item>Estapped</item>
+<item>shtaapuhd</item>
+<item>shtaapuhd</item>
+<item>sutohpaid</item>
+<item>sutaupuhd</item>
+</one-of>
+</rule>
+<rule id="Quarter">
+<one-of>
+<item>kwawrter</item>
+<item>Karter</item>
+<item>Cotter</item>
+<item>Kawater</item>
+<item>Quwater</item>
+<item>kuhbaater</item>
+<item>koobaater</item>
+<item>kaater</item>
+<item>kuhveyturh</item>
+</one-of>
+</rule>
+<rule id="Oclock">
+<one-of>
+<item>uhklok</item>
+<item>Oclook</item>
+<item>Oclack</item>
+<item>Ocolak</item>
+<item>Oclaka</item>
+<item>okoolaak</item>
+<item>okaaluk</item>
+<item>okohk</item>
+<item>okeelaak</item>
+</one-of>
+</rule>
+<rule id="Need">
+<one-of>
+<item>need</item>
+<item>nid</item>
+<item>neet</item>
+<item>ned</item>
+<item>needuh</item>
+<item>nit</item>
+<item>nituh</item>
+<item>neetuh</item>
+<item>neduh</item>
+</one-of>
+</rule>
+<rule id="Entirely">
+<one-of>
+<item>entahyuhrlee</item>
+<item>Entairly</item>
+<item>Intirely</item>
+<item>Intairly</item>
+<item>Yentairly</item>
+<item>enterlee</item>
+<item>entrylee</item>
+<item>uhntaayuhrlee</item>
+<item>uhnteyuhrlee</item>
+</one-of>
+</rule>
+<rule id="Pleasure">
+<one-of>
+<item>plezher</item>
+<item>plaizher</item>
+<item>Plejher</item>
+<item>plaijher</item>
+<item>plaisyure</item>
+<item>puhlaajuhr</item>
+<item>puhluyeeuhr</item>
+<item>puhluyeejuhr</item>
+<item>puhlayiz</item>
+</one-of>
+</rule>
+<rule id="Blank">
+<one-of>
+<item>Blank</item>
+<item>Blaink</item>
+<item>Blankh</item>
+<item>Balaink</item>
+<item>Balank</item>
+<item>vuhlunk</item>
+<item>vuhlaink</item>
+<item>beelaink</item>
+<item>buhlainuhk</item>
+</one-of>
+</rule>
+<rule id="Sure">
+<one-of>
+<item>shaur</item>
+<item>saur</item>
+<item>soouhr</item>
+<item>shoouhr</item>
+<item>shoor</item>
+<item>shoovar</item>
+<item>soovar</item>
+<item>soor</item>
+<item>ishaur</item>
+</one-of>
+</rule>
+<rule id="Problem">
+<one-of>
+<item>probluhm</item>
+<item>probelem</item>
+<item>probelaim</item>
+<item>problaim</item>
+<item>praublumuh</item>
+<item>peeraabluhm</item>
+<item>pobeluhm</item>
+<item>paabluhm</item>
+<item>peeraablim</item>
+</one-of>
+</rule>
+<rule id="From">
+<one-of>
+<item>Fruhm</item>
+<item>Form</item>
+<item>Pharam</item>
+<item>Phom</item>
+<item>Faram</item>
+<item>Phram</item>
+<item>fam</item>
+<item>frame</item>
+<item>firm</item>
+</one-of>
+</rule>
+<rule id="Branch">
+<one-of>
+<item>Brahnch</item>
+<item>Brunch</item>
+<item>baranch</item>
+<item>baraanch</item>
+<item>Brainch</item>
+<item>varanch</item>
+<item>buhdaanch</item>
+<item>raanch</item>
+<item>beeraanch</item>
+</one-of>
+</rule>
+<rule id="Speaking">
+<one-of>
+<item>speeking</item>
+<item>Shpeaking</item>
+<item>Espeeking</item>
+<item>Shapeekingh</item>
+<item>Shapiking</item>
+<item>sweeking</item>
+<item>sbeeking</item>
+<item>spuhking</item>
+<item>suhpking</item>
+</one-of>
+</rule>
+<rule id="Could">
+<one-of>
+<item>kood</item>
+<item>Kur</item>
+<item>Kaoud</item>
+<item>Codh</item>
+<item>Cuud</item>
+<item>kudd</item>
+<item>kuhd</item>
+<item>ood</item>
+<item>khood</item>
+</one-of>
+</rule>
+<rule id="Certainly">
+<one-of>
+<item>surtnlee</item>
+<item>shertenlee</item>
+<item>shertanaly</item>
+<item>shertanlee</item>
+<item>sertanlee</item>
+<item>Shertainlee</item>
+<item>shurtenlee</item>
+<item>surtanally</item>
+<item>shatanlee</item>
+</one-of>
+</rule>
+<rule id="Through">
+<one-of>
+<item>Throo</item>
+<item>tharoo</item>
+<item>thuru</item>
+<item>Troo</item>
+<item>tharau</item>
+<item>tuhroo</item>
+<item>theeroo</item>
+<item>tooroo</item>
+<item>thheyroo</item>
+</one-of>
+</rule>
+<rule id="Everyone">
+<one-of>
+<item>evreewuhn</item>
+<item>aivreewuhn</item>
+<item>ebreewuhn</item>
+<item>aibreewuhn</item>
+<item>aivverywuhn</item>
+<item>eeavreewuhn</item>
+<item>uhbbuhreebuhn</item>
+<item>aibeebuhn</item>
+<item>uhrveevuhn</item>
+</one-of>
+</rule>
+<rule id="Suggestion">
+<one-of>
+<item>suhjesshuhn</item>
+<item>suhjeysshuhn</item>
+<item>suhjesshin</item>
+<item>saajesshuhn</item>
+<item>suhjeeshuhn</item>
+<item>saajaysuhn</item>
+<item>suhjeyeysuhn</item>
+<item>suhjeyshaan</item>
+<item>seyjayshuhn</item>
+</one-of>
+</rule>
+<rule id="Issue">
+<one-of>
+<item>ishoo</item>
+<item>eeshyoo</item>
+<item>Issoo</item>
+<item>eesyoo</item>
+<item>eesooo</item>
+<item>eesaaoo</item>
+<item>aishoo</item>
+<item>ishshoo</item>
+<item>ishsoo</item>
+</one-of>
+</rule>
+<rule id="Unable">
+<one-of>
+<item>uhneybuhl</item>
+<item>uneybluh</item>
+<item>uneybill</item>
+<item>inable</item>
+<item>unahbuhl</item>
+<item>oonuhyebuhl</item>
+<item>iniable</item>
+<item>uhnaibuhl</item>
+<item>unnnaibuhl</item>
+</one-of>
+</rule>
+<rule id="Really">
+<one-of>
+<item>reeuhlee</item>
+<item>Rillee</item>
+<item>Railee</item>
+<item>reallee</item>
+<item>Reeyahlee</item>
+<item>deelee</item>
+<item>ruheylee</item>
+<item>deylee</item>
+<item>ruhali</item>
+</one-of>
+</rule>
+<rule id="Excuse">
+<one-of>
+<item>ikskyooz</item>
+<item>ikskooj</item>
+<item>excoozh</item>
+<item>ekscooj</item>
+<item>escuse</item>
+<item>aakooz</item>
+<item>ickeeooz</item>
+<item>keeooz</item>
+<item>shuhkooj</item>
+</one-of>
+</rule>
+<rule id="Best">
+<one-of>
+<item>Best</item>
+<item>Besht</item>
+<item>Bayst</item>
+<item>Baysht</item>
+<item>Bust</item>
+<item>beest</item>
+<item>beysuht</item>
+<item>busht</item>
+<item>baasht</item>
+</one-of>
+</rule>
+<rule id="Assignment">
+<one-of>
+<item>uhsahynmuhnt</item>
+<item>Assignment</item>
+<item>uhseynment</item>
+<item>uhseynmaint</item>
+<item>eysahynment</item>
+<item>eysahynmaint</item>
+<item>uhsinmaint</item>
+<item>uhshinemuhnt</item>
+<item>aashinmuhnt</item>
+<item>uhsayinmayint</item>
+</one-of>
+</rule>
+<rule id="Learning">
+<one-of>
+<item>lurning</item>
+<item>Lurrning</item>
+<item>Laraning</item>
+<item>Lerning</item>
+<item>Leraning</item>
+<item>lairning</item>
+<item>lairaning</item>
+<item>lirning</item>
+<item>lurnin</item>
+</one-of>
+</rule>
+</grammar>

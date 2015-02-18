@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<vxml version="2.0"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+
+	<meta name="Hungama_ARM_ServicesRoot.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="Root file for the Hungama_ARM_Services project" />
+
+	<meta name="Support" content="" />
+	
+
+
+	<var name = "zone" expr = "''"/>
+	<var name = "sessionId" expr = "session.id"/>
+	<var name = "Lang" expr = "'eng'"/>
+	<var name = "MSISDN" expr = "''"/>
+	<var name = "ChargeAmount1" expr = "''"/>
+	<var name = "ChargeAmount2" expr = "''"/>
+	<var name = "Validity1" expr = "''"/>
+	<var name = "Validity2" expr = "''"/>
+	<var name = "ProductID" expr = "''"/>
+
+	<var name = "CpId" expr = "'83'"/>
+	<var name = "ApplicationType" expr = "'OTHER'"/>
+	<var name = "channelName" expr = "'ivr'"/>
+	<var name = "cpName" expr = "'hungama'"/>
+	<var name = "centralIVRPwd" expr = "'hungama'"/>
+	<var name = "cpTransactionID" expr = "'0'"/>
+	<var name = "subProdID" expr = "'0'"/>
+	<var name = "songProdID" expr = "'0'"/>
+	<var name = "songVCode" expr = "'0'"/>
+	<var name = "msisdnGiftReceiver" expr = "'0'"/>
+	<var name = "msisdnDedicatee" expr = "'0'"/>
+	<var name = "msisdnStarCopy" expr = "'0'"/>
+	<var name = "aocMessage1" expr = "'1'"/>
+	<var name = "aocMessage2" expr = "'1'"/>
+	<var name = "param1" expr = "'value1'"/>
+	<var name = "param2" expr = "'value2'"/>
+	<var name = "param3" expr = "'value3'"/>
+	<var name = "param4" expr = "'value4'"/>
+	<var name = "param5" expr = "'value5'"/>
+
+	<var name="lang" expr="'07'"/>
+	<var name="LangFirstValue" expr="'01'"/>
+	<var name="CIRCLE_LANG" expr="'otherlang'"/>
+
+	<var name="sub_flag" expr="'0'"/>
+	<var name="cat" expr="'0'"/>
+	<var name="subcat" expr="'0'"/>
+	<var name="PLAYSONG_STATUS" expr="'FALSE'"/>
+	<var name="balance" expr="'0'"/>
+	<var name="dummyinput" expr="'0'"/>
+	<var name="scorepartfirst" expr="0"/>
+	<var name="MostHeard" expr="''"/>
+	<var name="station" expr="'Delhi'"/>
+	<var name="Station_Name" expr="''"/>
+	<var name="backmovepage" expr="''"/>
+	<var name="date" expr="''"/>
+	<var name="bedfatch" expr="''"/>
+	<var name="end_BalenceMinute" expr="''"/>
+	<var name="score" expr="0"/>
+	<var name="questionnum" expr="0"/>
+	<var name="SCORE_STATUS" expr="'FALSE'"/>
+	<var name="dbservlet" expr="''"/>
+	<var name="FLOW_FLAG" expr="'CATEGORY'"/>
+	<var name="CALCULATE_TIME" expr="'RESET'"/>
+	<var name="HeardCat" expr="0"/>
+	<var name="FilePlay" expr="''"/>
+	<var name="nextchoice" expr="'1'"/>
+	<var name="servlet_path" expr="'hungama'"/>
+	<var name="C_Start" expr=""/>
+	<var name="C_End" expr=""/>	
+    <var name="ANI" expr="''"/>       
+<!--	<var name="DNIS" expr="'54646'"/> -->
+	<var name="DNIS" expr="''"/>
+<!--	<var name="realDNIS" expr="'54646'"/> -->
+	<var name="realDNIS" expr="''"/>
+
+	<var name="length" expr="0"/>
+	<var name="Flag" expr="''"/>
+	<var name="tot" expr="5"/>
+	<var name="type" expr="'E'"/>
+	<var name="service_token" expr="'5006'"/>
+	<var name="TOKEN" expr="''"/>
+	<var name="nomtch" expr="0"/>
+	<var name="playconfig" expr="''"/>
+	<var name="HEARD" expr="''"/>
+	<var name="index" expr=""/>
+	<var name="score" expr=""/>
+	<var name="balupdatestatus" expr="'1'"/>
+	<var name="choice" expr=""/>
+	<var name="plan_id" expr="'1'"/>
+	<var name="service_id" expr="'1102'"/>
+	<var name="amt" expr="''"/>
+	<var name="DATE" expr="''"/>
+	<var name="TIME" expr="''"/>
+	
+	<var name="Aarti_IP" expr="''"/>
+	<var name="Aarti_path" expr="'file:/var/opt/OC/contentrepository/hungama/content/'"/>
+	<var name="defaultclipflag" expr="'f'"/>
+	<var name="staticclipflag" expr="'f'"/>
+	<var name="dfltcnt" expr="0"/>
+	<var name="prevhour" expr="''"/>
+	<var name="offset" expr="0"/>
+	<var name="date1" expr="''"/>
+	<var name="names" expr="''"/>
+	<var name="mark2" expr="0"/>
+	<var name="NM_count" expr="1"/>
+	<var name="NI_count" expr="1"/>	
+	<var name="live_cnt" expr="0"/>
+	<var name="fillerfile" expr="''"/>	
+	<var name="Song_Type" expr="''"/>
+	<var name="Song_Path" expr="''"/>
+	<var name="type" expr="''"/>
+	<var name="hash_new" expr="'%5C'"/>
+	<var name="lennew" expr="0"/>
+	<var name="modules" expr="0"/>
+	<var name="modulecounter" expr="1"/>
+	<var name="prevmodulecounter" expr="0"/>
+	<var name="staticpath" expr="'hindi'"/>
+	<var name="rem_time" expr="0"/>
+	<var name="cnt" expr="0"/>
+	
+	
+	<var name="var_wel" expr="''"/>
+	<var name="sub_cat_value" expr="''"/>
+	<var name="sub_type" expr="'NA'"/>
+	<var name="mood_cnt" expr="0"/>
+	<var name="usr_status" expr="-1"/>
+	<var name="loc_balance" expr="0"/>
+	<var name="tarrif" expr="0"/>
+	<var name="songID" expr="''"/>
+	<var name="dummyinput" expr="'0'"/>
+	<var name="song" expr="''"/>	
+	<var name="circle" expr="''"/>
+	<var name="operator" expr="''"/>		
+	<var name="pref_counter" expr="1"/>
+	<var name="IP" expr="'10.2.73.158:8080'"/>
+	<var name="CDSIP" expr="'localhost'"/>	
+	<var name="CDSPATH" expr="':8080/hungama/'"/>	
+	<var name="LANG_DESCRIPTION" expr="'TAM'"/>
+	<var name="mxopt" expr="''"/>
+	<var name="bopt" expr="''"/>
+	<var name="lang_status1" expr="''"/>
+	<var name="lang_change_st" expr="'true'"/>
+	<var name="timerflag" expr="'0'"/>
+	<var name="start_BalenceMinute" expr="'0'"/>
+	<var name="total_used_bal" expr="'0'"/>
+	<var name="forcastyyyyddmm" expr="''"/>
+	<var name="forcastdd" expr="''"/>
+	<var name="contentdir" expr=""/>
+	<var name="Song_Path" expr=""/>
+	<var name="contentdir1" expr=""/>
+	<var name="CATEGORY" expr="''"/>
+	<var name="CATEGORYINTRO" expr="''"/>
+	<var name="song_begin" expr="'END'"/>
+    <var name="song_listen" expr="''"/>
+    <var name="compare_time" expr="0"/>
+	<var name="ContentTime" expr="0"/>
+	<var name="contentlog" expr="''"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="starting_time" expr="0"/>
+	<var name="PROMPTS_CONTENT" expr="'localhost:8080'"/>
+
+
+	<var name="moviectr" expr="0"/>
+	<var name="moviesetflag" expr="'false'"/>
+	<var name="clipflag" expr="1"/>
+	<var name="movieflag" expr="1"/>
+	<var name="firstmovie" expr="1"/>	
+	<var name="firstclip" expr="1"/>
+	<var name="moviename" expr="'@'"/>
+
+	<var name="contentpath" expr="'file:/var/opt/OC/contentrepository/hungama/content/'"/>
+	<var name="promptspath_54646" expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/54646V2'"/>	
+	<var name="Prompts_Path_bigfm" expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/Redfm'"/>	
+	<var name="unike_play" expr="0"/>
+	<var name="dtmf_check" expr="0"/>
+	<var name="dtmf_log" expr="''"/>
+	<var name="input_check" expr="''"/>
+	<var name="dtmfsub" expr="''"/>	
+	<var name="Section_Name" expr="'0'"/>
+	<var name="modesub" expr="'ND'"/>
+	<var name="pricepoint" expr="'0'"/>
+	<script srcexpr="'../ECMAScripts/common_files.es'"/>		
+   	<script>	
+	        var TotalFM= 0;
+			var TotalTV= 0;
+			var TotalloveguruQA=0;
+			var TotalloveguruPQ=0;
+ 		    var len=0;    
+			var i=0; 
+		    var j=0;
+			var k=0;	                  
+			 var movie_idx=0;
+			var aNavHistory=new Array();			
+		   	 var array=new Array();
+			var arrayClip=new Array();
+			var arraySong=new Array();
+			var arrayFull=new Array();
+		   	 var array1=new Array();
+			var FMFileNames=new Array();
+			var TVFileNames=new Array();
+		   	 var array2=new Array();
+		   	 var array3=new Array();
+			var songarray=new Array();
+			var ERFileNames=new Array();
+			var LGQarray=new Array();
+			var LGAarray=new Array();
+			var LGPRQarray=new Array();
+			var category_Array = new Array();
+			var QuestionArray=new Object();
+			var Question=new Array();
+			var AnswerArray=new Object();
+			var Answer=new Array();
+			var ciropr=new Object();
+			var score=new Array();
+			var favSongs=new Object();
+			
+			var songcheck=new Array();
+			var songcheck1=new Array();
+			var favLangs=new Object();
+			var length=new Object();	
+			var AllSongs=new Object();		   
+			var FM_details=new Object();				
+			var TV_details=new Object();
+			var songs_details=new Object();	
+			var bollywood_details=new Object();
+			var startinterviewFileNames=new Object();
+			var LGQA_details=new Object();			
+			var LGPRQA_details=new Object();
+			var lang_status=new Object();
+			var usrlang=new Object();
+			var sub_status=new Object();
+			var usrbalance=new Object();
+			var totaltopup=new Object();
+			var topup1=new Object();
+			var topup2=new Object();
+			var topup3=new Object();			
+			var ASTRO_Compatibility=new Object();
+			var ASTRO_Forecast=new Object();
+			var out_string=new Object();
+			var questionnum=new Object();
+			var	NumberOfQues=new Object();
+			var scorepartfirst=new Object();
+			var ind=new Object();
+			var usrmovie=new Object();
+			var ans=new Object();
+			var cur_mm=new Object();
+			var	cur_hh=new Object();
+			var get_duration=new Object();
+			var RECORD_FILE=new Object();
+			var len_duration=0;
+
+
+
+	</script>
+      <catch event="error.badfetch">
+		 								
+    	  <log>Inside Error BadCatch catch  2222</log>  	      		  
+		   <goto next="Hungama_ARM_End.vxml"></goto>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  3333</log> 		     
+		   <goto next="Hungama_ARM_End.vxml"></goto>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  4444</log>			   				
+		   <goto next="Hungama_ARM_End.vxml"></goto>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  5555</log>			   		
+		   <goto next="Hungama_ARM_End.vxml"></goto>
+		  
+      </catch>
+
+
+
+
+</vxml>

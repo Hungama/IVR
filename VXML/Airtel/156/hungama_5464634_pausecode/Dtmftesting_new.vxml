@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Dtmftesting.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="SUBANI" expr="''"/>
+	<var name="TEMPANI" expr="''"/>
+	<var name="SUBDNIS" expr="''"/>
+	<var name="TEMPDNIS" expr="''"/>
+	<var name="ciropr" expr="''"/>
+	<var name="operator2" expr="''"/>
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+		var lastkeyinput=0;
+	</script>
+
+<var name="wellang" expr="''" />
+	
+	
+	
+	
+<form id="Main">
+	<block>		
+		<assign name="C_Start" expr="call_time()"/>
+		
+		
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+	    </script>
+	    
+
+	    <script>
+         		var	length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		</script>
+			
+		<assign name="DNIS" expr="realDNIS"/>
+         	         <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+	         	 <assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 
+				    	
+			 <log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+			 <log> @@@@DNI is 		<value expr="session.connection.local.uri"/> </log>	
+			 <log> @@@@ANI is 		<value expr="session.connection.remote.uri"/> </log>
+			 
+			<script>
+		  					var splitparam=sessionid.split("_");
+		  						cirid=splitparam[1]; 
+		  					
+		  	</script>
+
+		  	 <assign name ="operator" expr="'airm'"/>
+		  	 <assign name="dbservlet" expr="'airtel_dbinteraction'"/>
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@operator is <value expr="operator"/> </log>
+
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Airtel_IVR.CDS_IP_CIR&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+cirid+'&amp;INPARAM[1]='+ANI"/>
+			 <script>
+				  <![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+							CDSIP = out_string[j];
+					       if(j==1)
+							circle = out_string[j];
+					       if(j==2)
+							zone = out_string[j];
+					  }
+				  ]]>
+		         </script>
+
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@CDSIP is <value expr="CDSIP"/> </log>
+			 <log> @@@@circle name is <value expr="circle"/> </log>
+			 <log> @@@@zone name is <value expr="zone"/> </log>
+
+			<if cond="circle =='und' || circle =='UND'">
+				<goto next="Hungama_54646_End.vxml"></goto> 
+			</if>	
+
+			 <assign name ="promptpath" expr="'http://'+CDSIP+':8088/CDS/hungama/54646V2'"/>
+			 <assign name="contentpath" expr="'http://'+CDSIP+':8088/CDS/hungama/content/'" /> 
+			
+
+			 <log> promptpath issss is <value expr="promptpath"/> </log>
+			 <log> contentpath isssss is <value expr="contentpath"/> </log>			
+	</block>
+
+		<field name="choice">               
+				<grammar mode="dtmf" root="start4" version="1.0">
+		                   	<rule id="start4" scope="public">
+              		       	<one-of>     
+						   <item>1</item>
+						</one-of>
+              	  		</rule>
+	               	</grammar>
+               			 
+			<filled>  
+				<goto next="#RECORD"/>
+			</filled>
+			  
+		      <noinput>		  
+				<goto next="#RECORD"/>
+	              </noinput>
+              
+       	       <nomatch>
+				<goto next="#RECORD"/>
+		      </nomatch>		
+          </field>
+  </form>
+	
+
+
+	
+<form id="RECORD">
+     
+       <field name="choice" type="digits?length=30">
+		 <grammar  fetchhint="prefetch" fetchtimeout="10s" mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+				   <item>1</item>
+				   <item>2</item>
+				   <item>3</item>
+				   <item>4</item>
+				   <item>5</item>
+				   <item>6</item>
+				   <item>7</item>
+				   <item>8</item>
+				   <item>9</item>
+				   <item>0</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+ 		</field>
+
+       	       <field name="choice1" type="digits?length=30">
+		 <grammar  fetchhint="prefetch" fetchtimeout="10s" mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+				   <item>1</item>
+				   <item>2</item>
+				   <item>3</item>
+				   <item>4</item>
+				   <item>5</item>
+				   <item>6</item>
+				   <item>7</item>
+				   <item>8</item>
+				   <item>9</item>
+				   <item>0</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+ 		</field>
+<field name="choice2" type="digits?length=30">
+		 <grammar  fetchhint="prefetch" fetchtimeout="10s" mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+				   <item>1</item>
+				   <item>2</item>
+				   <item>3</item>
+				   <item>4</item>
+				   <item>5</item>
+				   <item>6</item>
+				   <item>7</item>
+				   <item>8</item>
+				   <item>9</item>
+				   <item>0</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+ 		</field>
+<field name="choice3" type="digits?length=30">
+		 <grammar  fetchhint="prefetch" fetchtimeout="10s" mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+				   <item>1</item>
+				   <item>2</item>
+				   <item>3</item>
+				   <item>4</item>
+				   <item>5</item>
+				   <item>6</item>
+				   <item>7</item>
+				   <item>8</item>
+				   <item>9</item>
+				   <item>0</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+ 		</field>
+
+<field name="choice4" type="digits?length=30">
+		 <grammar  fetchhint="prefetch" fetchtimeout="10s" mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+				   <item>1</item>
+				   <item>2</item>
+				   <item>3</item>
+				   <item>4</item>
+				   <item>5</item>
+				   <item>6</item>
+				   <item>7</item>
+				   <item>8</item>
+				   <item>9</item>
+				   <item>0</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+ 		</field>
+
+<field name="choice5" type="digits?length=30">
+		 <grammar  fetchhint="prefetch" fetchtimeout="10s" mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+				   <item>1</item>
+				   <item>2</item>
+				   <item>3</item>
+				   <item>4</item>
+				   <item>5</item>
+				   <item>6</item>
+				   <item>7</item>
+				   <item>8</item>
+				   <item>9</item>
+				   <item>0</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+ 		
+
+       
+				
+		<filled>
+				
+		     		<!--<script>
+					lastkeyinput=choice.substring(5);
+				</script>-->
+<script>
+	DNIS=realDNIS+'P'+choice+choice1+choice2+choice3+choice4+choice5;
+</script>
+
+				<log><value expr="realDNIS+'P'+choice+choice1+choice2+choice3+choice4+choice5"/> 	</log>	
+				<log>	Last key iss   <value expr="lastkeyinput"/> 	</log>	
+
+				<if cond="realDNIS=='5464644'">
+					<goto next="Hungama_54646_UserStatus.vxml"/> 
+				</if>
+				<script>
+						lastkey=choice5;
+				</script>
+ 				<log>	Last key iss   <value expr="lastkey"/> 	</log>
+				<if cond="lastkey=='0'">
+					
+					<goto next="Hungama_54646_UserStatus.vxml"/> 
+					
+				<elseif cond="lastkey=='1'"/>
+					<!--<goto next="Hungama_MM_LoveGuru_546462.vxml"/>-->
+					<goto next="Hungama_54646_UserStatus.vxml"/> 
+
+				<elseif cond="lastkey=='2'"/>
+					<goto next="Hungama_54646_UserStatus.vxml"/> 
+
+					<!--<goto next="Hungama_MW_PlayContent_546463.vxml"/>-->
+					
+				<elseif cond="lastkey=='3'"/>
+					<!--<goto next="Audio_Cinema_MainMenu_546469.vxml"/> -->
+					<goto next="Hungama_54646_UserStatus.vxml"/> 
+
+					
+				<elseif cond="lastkey=='4'"/>
+					<!--<goto next="Hungama_54646_CelebrityWorld.vxml"/>-->
+					<goto next="Hungama_54646_UserStatus.vxml"/> 
+
+				<elseif cond="lastkey=='5'"/>
+					<!--<submit expr="'../Hungama_Jyotish/checkuserstatus.vxml'"/>-->
+					<goto next="checkuserstatus.vxml"/>
+				<else/>
+					<goto next="Hungama_54646_UserStatus.vxml"/>
+				</if>
+		     
+
+		     
+		</filled>				
+		
+	  </field>
+  
+   </form>
+
+</vxml>

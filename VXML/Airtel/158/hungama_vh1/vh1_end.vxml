@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="vh1Root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="vh1_end.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+<form id="EndLogin">
+		<block>
+		<log>program_name:<value expr="program_name"/></log>
+							 <if cond="timerflag=='1'">
+							        <assign name="current_balance" expr="start_time()"/>
+								   		<script>
+								     		total_used_bal=CheckUserBalance(initial_balance,current_balance);
+								     		curbalance=balance-total_used_bal;  	
+									   </script>
+
+								       <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								       <log expr="'@@@@@@ left balance is '+curbalance"/>
+				           <script>
+					     		curbalance=Math.floor(curbalance/60);  	
+						   </script>
+								       <if cond="curbalance &lt; '0'">
+								       <script>
+								       curbalance=0;
+								       </script>
+									</if>
+							 </if>	
+		    
+		    <assign name="C_End" expr="call_time()"/>
+		    
+    		    <log>song_listen=<value expr="song_listen"/></log>
+			<log>song=<value expr="song"/></log>
+		    <if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+hash+song+hash+playconfig+hash+compare_time+hash"></assign>
+			</if>
+			
+			
+			<if cond="Flag=='0'">
+						<if cond="playconfig=='00' || playconfig=='01'||playconfig=='02'||playconfig=='03'||playconfig=='04'">
+								<script srcexpr="'http://'+IP+'/hungama/vh_dbinteraction?PROCEDURE=VH1_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]=SET'"/>
+						</if>
+			</if>
+				
+			<if cond="dtmf_check=='1'">
+				<script srcexpr="'http://10.2.73.158:8080/hungama/dtmf_logs?service=vh1&amp;SONG='+dtmf_log"/>
+			</if>
+
+				<script>
+			  	total_time=rim(CallTime);
+			  	balance=balance-total_time;  						  
+		 	</script>
+			<script> total_time=Math.floor(total_time/60); </script>
+
+
+				<if cond="DNIS=='5584112' &amp;&amp; (circle=='nes' || circle=='asm')">
+					<!--<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=NIGHTPACK_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+curbalance+'&amp;INPARAM[2]=5584112&amp;INPARAM[3]='+timerflag"/>-->
+
+				<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=NIGHTPACK_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+total_time+'&amp;INPARAM[2]=5584112&amp;INPARAM[3]='+timerflag"/>
+				<else/>
+					<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+total_time+'&amp;INPARAM[2]=55841&amp;INPARAM[3]='+timerflag"/>
+				</if>
+
+			<script srcexpr="'http://10.2.73.158:8080/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+program_name+hash+modesub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=vh1&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			
+			
+			
+			
+			<throw event="connection.disconnect.hangup"/>
+		</block>
+	    <catch event="error.badfetch">
+		 								
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      
+		  
+		  <exit/>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 
+		  
+		  <exit/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  End4444</log>	
+		   
+		   <exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  End5555</log>	
+		
+		   <exit/>
+		  
+      </catch>
+	</form>
+
+
+
+
+
+
+</vxml>

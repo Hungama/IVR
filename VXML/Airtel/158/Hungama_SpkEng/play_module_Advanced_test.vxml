@@ -1,0 +1,1460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+	<property name="timeout" value="2s"/>
+	<meta name="play_module_Advanced_test.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>    
+	<var name="q_num" expr="'0'"/>
+	<var name="anns" expr="'0'"/>
+	
+	
+	<script>
+		var ques=new Object();
+		var que=new Object();
+		MENU_bar="MainMenu_Advanced";
+	</script>
+<form id="modules">
+	<block>
+		<log>	module############  is ==	<value expr="module"/>    </log>
+		<log>	gen_info_flag############  is ==	<value expr="gen_info_flag"/>    </log>
+		<log>	last_heard############@@@@@@@@@@@@@@@@@  is ==	<value expr="last_heard"/>    </log>
+		<script>
+			assm_menu= module.substring(0,3);
+		</script>
+		<if cond="assm_menu=='bwa'">
+			<goto next="Hungama_SPKENG_WA.vxml"/>
+		</if>
+		<if cond="assm_menu=='bma'">
+			<goto next="Hungama_SPKENG_MA.vxml"/>
+		</if>
+		<assign name="song_begin" expr="start_time()"/>
+	<if cond="last_heard=='true'">
+				<if cond="module=='mod61' &amp;&amp; gen_info_flag=='0' &amp;&amp; clip_no=='0'">
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/intro_mod61.wav'"/>	
+					</prompt>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+					<assign name="con_data" expr="'intro_mod61'" />
+					<assign name="var_wel" expr="getRandom(1,5)" />
+					<assign name="compare_time" expr="var_wel"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<script>	
+						gen_info_flag=gen_info_flag+1;
+					</script>
+	
+						<goto next="#gen_infointro"/>
+				<else/>
+					<if cond="module=='mod61' &amp;&amp; clip_no=='0'">
+						<goto next="#start_module"/>
+					<else/>	
+						<goto next="#play_mod"/>
+					</if>	
+				</if>
+		<else/>
+			<goto next="#play_mod"/>
+	</if>
+      </block>        	
+
+</form>
+<form id="start_module">
+	<block>
+		<log>	start_modulissssssssssssssssssssssssssssssssssssssssssssse############  is ==	<value expr="module"/>    </log>
+			
+			<assign name="song_begin" expr="start_time()"/>
+			<prompt bargein="true" timeout="1s" cond="module=='mod61'">
+				<audio expr="promptpath+'/'+lang+'/sug_mod61.wav'"/>
+			</prompt>
+			<assign name="con_data" expr="'sug_mod61'" />
+			<assign name="var_wel" expr="getRandom(1,5)" />
+			<assign name="compare_time" expr="var_wel"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+	
+			<assign name="song_begin" expr="start_time()"/>
+			<prompt bargein="true" timeout="1s" cond="module=='mod61'">
+				<audio expr="promptpath+'/'+lang+'/because_mod61.wav'"/>
+			</prompt>
+			<assign name="con_data" expr="'because_mod61'" />
+			<assign name="var_wel" expr="getRandom(1,5)" />
+			<assign name="compare_time" expr="var_wel"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 				
+			<assign name="song_begin" expr="start_time()"/>
+	</block>
+	<field name="clipoptions">
+			<grammar mode="dtmf" root="start" version="1.0">
+                   <rule id="start" scope="public">
+                     <one-of>
+				<item>1</item>
+				<item>2</item>	
+				<item>3</item>	
+				<item>4</item>	
+				<item>6</item>	
+				<item>7</item>	
+				<item>8</item>	
+				<item>9</item>	
+				<item>0</item>	               			 
+						      
+                    </one-of>
+                </rule>
+               </grammar>
+				<prompt bargein="true" timeout="0s" cond="module=='mod61'">
+					<audio expr="promptpath+'/'+lang+'/keypad_option.wav'"/>	
+				</prompt>
+		       <filled> 
+				<assign name="con_data" expr="'keypad_option'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>		
+			   <if cond="clipoptions=='8'">	
+			 	  <assign name="pre_heard" expr="'false'"></assign>
+			   		   <if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+				 <if cond="curbalance &lt;= '120'">          
+				     <goto next="TopupRenew.vxml"/>
+				</if>
+                      	</if> 	
+    			       <goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#Main_Menu"/>				 
+    		   <elseif cond="clipoptions=='9'"/>	
+    		   <assign name="pre_heard" expr="'false'"></assign>
+    		   			<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '120'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if>    
+ 					    <goto next="Hungama_SPKENG_Help.vxml"/>		  			            		       
+			   <else/>                    
+                       <goto next="#play_mod"/>
+			   </if>	
+              </filled>
+			  
+		<noinput>		  
+			<assign name="con_data" expr="'keypad_option'" />
+			<assign name="compare_time" expr="time_duration(song_begin)"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+			<goto next="#play_mod"/>
+              </noinput>		
+	</field>
+</form>
+<form id="play_mod">
+	<block>
+		
+			<log>	last_heard############  is ==	<value expr="last_heard"/>    </log>
+
+			<if cond="last_heard=='true'">
+					<script>
+						mod_play=clip_no;
+						mod_play=parseInt(mod_play);
+					</script>
+					<assign name="last_heard" expr="'false'" />
+			</if>
+			<script>lastplay_index=mod_play;</script>			
+			
+			<log>	len############  is ==	<value expr="len"/>    </log>
+			<log>	mod_play == <value expr="array2[mod_play]"/>    </log>
+	
+			<script>
+				songID = array2[mod_play];
+			</script>
+			<if cond="songID=='repeat_mod' || songID=='brw1_repeat'">
+				<goto next="#repeat_mod"/>
+			<elseif cond="songID=='brw2_repeat' || songID=='brw3_repeat'|| songID=='brw4_repeat'"/>	
+				<!--<goto next="#weeklyrepeat_mod"/>-->
+				<goto next="#repeat_mod"/>
+
+			<elseif cond="songID=='refer'"/>
+				<goto next="#refer" />
+			</if>
+			<log>	value of befor content_type== <value expr="content_type"/>    </log>
+			<log>	value of before modulequsmodulequs== <value expr="modulequs"/>    </log>
+			<script>
+			
+			content_type= songID.substring(0,2);
+				if(content_type=="dq")
+					 modulequs="modqus";
+				else 
+					content_type= songID.substring(0,4);
+					if(content_type=="asrp")
+						modulequs="modasrp";
+					else if(content_type=="asrv")
+						modulequs="modasrv";
+					else
+						modulequs="0";
+			</script>
+			<log>	value of after content_type== <value expr="content_type"/>    </log>
+			
+			<assign name="song_listen" expr="'START'" />
+			<assign name="song_begin" expr="start_time()"/>
+			<assign name="con_data" expr="songID" />
+				<if cond="content_type=='dq'">
+					<script> clip_no=mod_play</script>
+					<goto next="#play_mod_dtmfques" />
+				<elseif cond="content_type=='asrp'"/>
+					<script> clip_no=mod_play</script>
+					<goto next="#play_mod_asr_prounc_ques" />
+				<elseif cond="content_type=='asrv'"/>
+					<script> clip_no=mod_play</script>
+					<goto next="#play_mod_asr_vocu_ques" />
+				</if>
+			<log>	songID == <value expr="songID"/>    </log>	
+
+	</block>
+	
+	<field name="choice">
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+ 								 <item>  6  </item>
+ 								 <item>  8  </item>
+ 								 <item>  9  </item>
+							</one-of>
+						</rule>
+			</grammar>
+			<prompt bargein="true" timeout="0s">
+                <audio expr="promptpath+'/'+lang+'/'+songID+'.wav'"/>	
+			</prompt>			
+			
+			<filled>
+				 <script> MENU_bar="MainMenu_Advanced"; </script>
+				 
+				<if cond="pre_heard=='false'">
+				<script>
+					clip_no1=mod_play+1;
+				</script>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no1+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+				</if>
+				 <if cond="choice=='1'">
+				 		<script> mod_play=mod_play+1</script>
+				 		<script> clip_no=mod_play</script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="con_data" expr="songID" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '120'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                       
+					<goto next="#play_mod"/>
+                      </if>
+				<elseif cond="choice=='2'"/>
+						<script> mod_play=mod_play</script>
+				 		<script> clip_no=mod_play</script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="con_data" expr="songID" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+					 <if cond="curbalance &lt;= '120'">          
+					     <goto next="TopupRenew.vxml"/>
+
+					</if>
+					<goto next="#play_mod"/>
+                      </if> 
+					 
+				<elseif cond="choice=='3'"/>
+						<script> mod_play=mod_play-1</script>
+							<if cond="mod_play &lt; '0'">
+							<script>
+								mod_play=0;
+							</script>
+							</if>
+				 		<script> clip_no=mod_play</script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="con_data" expr="songID" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+					 <if cond="curbalance &lt;= '120'">          
+					     <goto next="TopupRenew.vxml"/>
+					</if>
+					<goto next="#play_mod"/>
+                      </if> 
+					 	
+				
+				<elseif cond="choice=='6'"/>														
+					<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+						 <if cond="curbalance &lt;= '120'">          
+						     <goto next="TopupRenew.vxml"/>
+						</if>
+                       
+                     			 </if>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/'+lang+'/keypad_option.wav'"/>	
+						</prompt>
+					
+ 					 <goto next="#play_mod"/>
+				<elseif cond="choice=='4'"/>	
+					<goto next="#refer_friend"/>
+				<elseif cond="choice=='8'"/>	
+						<assign name="pre_heard" expr="'false'"></assign>
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '120'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+						<assign name="song_listen" expr="'END'" />
+						<assign name="con_data" expr="songID" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+       					<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#Main_Menu"/>	       			        
+				<elseif cond="choice=='9'"/>	
+						<assign name="pre_heard" expr="'false'"></assign>
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '120'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+						<assign name="song_listen" expr="'END'" />
+						<assign name="con_data" expr="songID" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+
+ 					    <goto next="Hungama_SPKENG_Help.vxml"/>		  			        
+				</if>
+			</filled>
+
+			<noinput>
+			<script> MENU_bar="MainMenu_Advanced"; </script>
+					<script> mod_play=mod_play+1</script>
+			 		<script> clip_no=mod_play</script>
+					<if cond="pre_heard=='false'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+					</if>
+					<assign name="song_listen" expr="'END'" />
+					<assign name="con_data" expr="songID" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 			
+					<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+						 <if cond="curbalance &lt;= '120'">          
+						     <goto next="TopupRenew.vxml"/>
+						</if>
+                     			 </if> 
+                     			  <goto next="#play_mod"/>
+					  
+			</noinput>
+			<nomatch>
+			<script> MENU_bar="MainMenu_Advanced"; </script>
+	                <audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>					
+					<script> mod_play=mod_play</script>	
+			 		<script> clip_no=mod_play</script>		
+					<assign name="song_listen" expr="'END'" />
+					<assign name="con_data" expr="songID" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+					<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+							 <if cond="curbalance &lt;= '120'">          
+							     <goto next="TopupRenew.vxml"/>
+							</if>
+                      			</if> 
+                       <goto next="#play_mod"/>
+					 				
+			</nomatch>
+	</field>
+</form>
+<!--**********************************************************IF INTRO MOD 1 FOR GEN INFO************************************************************8-->
+<form id="gen_infointro">
+<block>
+<log>	songID afterrrrrrrrrrrrr == <value expr="songID"/>    </log>
+		<assign name="song_begin" expr="start_time()"/>
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath+'/'+lang+'/gen_info.wav'"/>	
+		</prompt>
+		<assign name="con_data" expr="'gen_info'" />
+		<assign name="var_wel" expr="getRandom(1,5)" />
+		<assign name="compare_time" expr="var_wel"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+		<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+		<assign name="song_begin" expr="start_time()"/>	
+</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+				<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/gen_info_repeat.wav'"/>	
+				</prompt>
+			
+			<filled>
+				<assign name="con_data" expr="'gen_info_repeat'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<if cond="choice=='1'">
+					<goto next="#modules"/>
+				<elseif cond="choice=='2'"/>
+					<goto next="#gen_infointro"/>	
+				
+				</if>						
+			</filled>
+			<noinput>
+				<assign name="con_data" expr="'gen_info_repeat'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<goto next="#modules"/>
+			</noinput>
+			<nomatch>
+				<assign name="con_data" expr="'gen_info_repeat'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<goto next="#modules"/>
+			</nomatch>
+		</field>
+</form>
+<!--**********************************************************REPAET MODULE OPTION************************************************************8-->
+<form id="repeat_mod">
+<block>
+	<log>	songID afterrrrrrrrrrrrr == <value expr="songID"/>    </log>
+</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/'+songID+'.wav'"/>	
+				
+			</prompt>
+			<filled>
+				<assign name="con_data" expr="songID" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<if cond="choice=='1'">
+					<script>clip_no=0;</script>
+					<log >this is next module switching caseeeeeeeeeeeeeeeeeeeeeee<value expr="module"/>    </log>
+					<if cond="pre_heard=='false'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=LESSION&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+DNIS"/>
+					<script>
+					 <![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+									module = out_string[j];
+								  }
+
+							]]>
+
+					</script>	
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+					</if>
+						<log >this is next module switching caseeeeeeeeeeeeeeeeeeeeeee<value expr="module"/>    </log>
+						<script>
+							module_check=module.substring(0,3);
+						</script>
+						<log >this is next module module_check caseeeeeeeeeeeeeeeeeeeeeee<value expr="module_check"/>    </log>
+						<if cond="pre_heard=='true'">
+							<assign name="pre_heard" expr="'false'"></assign>
+							<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#Main_Menu"></goto>
+						<else/>
+							<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+						</if>
+				
+				<elseif cond="choice=='2'"/>
+					<script>clip_no=0;</script>
+					<script>mod_play=0;</script>
+					<goto next="#play_mod"/>	
+				
+				</if>						
+			</filled>
+			<noinput>
+				<assign name="con_data" expr="songID" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+			<script>clip_no=0;</script>
+				<log >this is next module switching caseeeeeeeeeeeeeeeeeeeeeee<value expr="module"/>    </log>
+				<if cond="pre_heard=='false'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=LESSION&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+DNIS"/>
+					<script>
+					 <![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+									module = out_string[j];
+								  }
+
+							]]>
+
+					</script>	
+					<log >this is next module switching caseeeeeeeeeeeeeeeeeeeeeee<value expr="module"/>    </log>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+				</if>
+				<script>
+					module_check=module.substring(0,3);
+				</script>
+					<log >this is next module module_check caseeeeeeeeeeeeeeeeeeeeeee<value expr="module_check"/>    </log>
+					<if cond="pre_heard=='true'">
+						<assign name="pre_heard" expr="'false'"></assign>
+						<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#Main_Menu"></goto>
+					<else/>
+						<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+					</if>
+
+				
+			</noinput>
+			<nomatch>
+							<assign name="con_data" expr="songID" />
+							<assign name="compare_time" expr="time_duration(song_begin)"/>
+							<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+							<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+
+			<script>clip_no=0;</script>
+				<log >this is next module switching caseeeeeeeeeeeeeeeeeeeeeee<value expr="module"/>    </log>
+				<if cond="pre_heard=='false'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=LESSION&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+DNIS"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+								module = out_string[j];
+							  }
+
+						]]>
+
+				</script>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+				</if>
+					<log >this is next module switching caseeeeeeeeeeeeeeeeeeeeeee<value expr="module"/>    </log>
+					<script>
+						module_check=module.substring(0,3);
+					</script>
+					<log >this is next module module_check caseeeeeeeeeeeeeeeeeeeeeee<value expr="module_check"/>    </log>
+					<if cond="pre_heard=='true'">
+						<assign name="pre_heard" expr="'false'"></assign>
+						<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#Main_Menu"></goto>
+					<else/>
+						<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+					</if>
+			</nomatch>
+		</field>
+</form>
+<!--**********************************************************REPAET MODULE OPTION************************************************************8-->
+
+<form id="repeat_brw">
+<block>
+<log>	songID afterrrrrrrrrrrrr == <value expr="songID"/>    </log>
+</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/'+songID+'.wav'"/>	
+				
+			</prompt>
+			<filled>
+				<assign name="con_data" expr="songID" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<if cond="choice=='1'">
+					<script>
+						songcheck1=HEARD.split("d");
+						cnt=songcheck1[1];
+						cnt=parseInt(cnt);
+						if(cnt==60)
+						cnt=0;
+						cnt=cnt+1;
+						module="mod"+cnt;
+						clip_no=0;
+					</script>
+					<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+				<elseif cond="choice=='2'"/>
+					<script>clip_no=0;</script>
+					<goto next="#play_mod"/>	
+				
+				</if>						
+			</filled>
+			<noinput>
+				<assign name="con_data" expr="songID" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+				<script>
+					songcheck1=HEARD.split("d");
+					cnt=songcheck1[1];
+					cnt=parseInt(cnt);
+					if(cnt==60)
+						cnt=0;
+					cnt=cnt+1;
+					module="mod"+cnt;
+					clip_no=0;
+				</script>
+				<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+			</noinput>
+			<nomatch>
+					<assign name="con_data" expr="songID" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+
+				<script>
+					songcheck1=HEARD.split("d");
+					cnt=songcheck1[1];
+					cnt=parseInt(cnt);
+					if(cnt==60)
+						cnt=0;
+					cnt=cnt+1;
+					module="mod"+cnt;
+					clip_no=0;
+				</script>
+				<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+			</nomatch>
+		</field>
+</form>
+<!--**********************************************************refera friend************************************************************8-->
+
+<form id="refer">
+<block>
+<log>	songID afterrrrrrrrrrrrr == <value expr="songID"/>    </log>
+</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  4  </item>
+						 <item>  2  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/refer.wav'"/>	
+				
+			</prompt>
+			<filled>
+				<assign name="con_data" expr="'refer'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<if cond="choice=='4'">
+					<goto next="#refer_friend"></goto>
+				<else/> 
+					<script> mod_play=mod_play+1</script>
+					 <script> clip_no=mod_play</script>
+					<goto next="#play_mod"/>
+				</if>						
+			</filled>
+			<noinput>
+				<assign name="con_data" expr="'refer'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<script> mod_play=mod_play+1</script>
+				<script> clip_no=mod_play</script>
+					<goto next="#play_mod"/>
+			</noinput>
+			<nomatch>
+				<assign name="con_data" expr="'refer'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<script> mod_play=mod_play+1</script>
+				<script> clip_no=mod_play</script>
+				<goto next="#play_mod"/>
+			</nomatch>
+		</field>
+</form>
+
+<!--**********************************************************refera friend************************************************************8-->
+
+<form id="refer_friend">
+<block>
+	<log>	songID afterrrrrrrrrrrrr == <value expr="songID"/>    </log>
+		<assign name="song_begin" expr="start_time()"/>
+		<prompt bargein="true" timeout="2s">
+			<audio expr="promptpath+'/'+lang+'/enter_mobile.wav'"/>
+		</prompt>
+		<assign name="con_data" expr="'enter_mobile'" />
+		<assign name="var_wel" expr="getRandom(1,5)" />
+		<assign name="compare_time" expr="var_wel"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+		<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 		
+		<assign name="song_begin" expr="start_time()"/>	
+</block>
+		<field name="friend_no" type="digits?length=10">  
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  4  </item>
+						 <item>  2  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+			
+			<filled>
+				
+				<script>
+					friend_no= friend_no.replace(/\s+/g,'');
+					number = friend_no.length;
+					mnumber=friend_no;
+				</script>
+			
+			<log>number  is	<value expr="number"/>    </log>
+			<log>friend_no  is	<value expr="friend_no"/>    </log>
+			<log>mnumber  is	<value expr="mnumber"/>    </log>
+			
+			<if cond="number=='10'">
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptpath+'/'+lang+'/entered_number.wav'" />
+				</prompt>
+				<goto next="#playnumber"/>
+			<else/>
+				<script> mod_play=mod_play+1</script>
+				<script> clip_no=mod_play</script>
+				<goto next="#play_mod"/>
+
+			</if>	
+			</filled>
+			<noinput>
+				<assign name="con_data" expr="'beep'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<script> mod_play=mod_play+1</script>
+				<script> clip_no=mod_play</script>
+				<goto next="#play_mod"/>
+
+			</noinput>
+			<nomatch>
+				<assign name="con_data" expr="'beep'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+
+				<script> mod_play=mod_play+1</script>
+				<script> clip_no=mod_play</script>
+				<goto next="#play_mod"/>
+
+			</nomatch>
+		</field>
+</form>
+<!--**************************************************************playing mobile number****************************************8**************************-->          		
+<form id="playnumber">
+<block>
+		  <if cond="counter!=10">	
+				<script>	
+					number=mnumber.substring(counter,counter+1);
+					counter=counter+1;
+				</script>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/'+number+'.wav'" />
+				</prompt>
+				<goto next="#playnumber"/>
+		</if>
+		<goto next="#confirm"/>
+	</block>
+</form>
+<!--***************************************************************confirm*******************************************************************************-->
+<form id="confirm">
+<block>
+<log>	songID afterrrrrrrrrrrrr == <value expr="songID"/>    </log>
+<assign name="song_begin" expr="start_time()"/>
+</block>
+		<field name="friend_no1" type="digits">  
+			<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptpath+'/'+lang+'/confirm_mobile.wav'"/>
+				
+				
+			</prompt>
+			<filled>
+				<assign name="con_data" expr="'confirm_mobile'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<if cond="friend_no1=='1'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REFER_MSG&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+					<assign name="song_begin" expr="start_time()"/>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/request_process.wav'" />
+					</prompt>
+						<assign name="con_data" expr="'request_process'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 					
+
+					<assign name="song_begin" expr="start_time()"/>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/thanks_refer.wav'" />
+					</prompt>
+
+						<assign name="con_data" expr="'thanks_refer'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=SPKENG_REFER&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+mnumber"/>
+					<script> mod_play=mod_play+1</script>
+					<script> clip_no=mod_play</script>
+					<goto next="#play_mod"/>
+
+				
+			<else/>
+				
+				<goto next="#refer_friend"></goto>
+			</if>	
+			</filled>
+			<noinput>
+				<assign name="con_data" expr="'confirm_mobile'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+				<script> mod_play=mod_play+1</script>
+				<script> clip_no=mod_play</script>
+				<goto next="#play_mod"/>
+
+			</noinput>
+			<nomatch>
+				<assign name="con_data" expr="'confirm_mobile'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+
+				<script> mod_play=mod_play+1</script>
+				<script> clip_no=mod_play</script>
+				<goto next="#play_mod"/>
+
+			</nomatch>
+		</field>
+</form>
+<!--**********************************************************88DTMF QUESTIONSSSS***************************************************************-->
+
+<form id="play_mod_dtmfques">
+	<block>	
+		<script>
+				ques_mod=array2[mod_play].split("#");
+				ques_play=ques_mod[0]; 
+				ques_answer=ques_mod[1];
+				ques_right = ques_mod[2];
+				ques_wrong = ques_mod[3];
+		</script>
+		<log>	ques_play############  is ==	<value expr="ques_play"/>    </log>
+		<log>	ques_answer############  is ==	<value expr="ques_answer"/>    </log>
+		<log>	ques_right############  is ==	<value expr="ques_right"/>    </log>
+		<log>	ques_wrong############  is ==	<value expr="ques_wrong"/>    </log>
+		<assign name="song_begin" expr="start_time()"/>
+	</block>
+
+	<field name="Play">
+		<grammar mode="dtmf" root="start">    
+	    		 <rule id="start" scope="public">
+				<one-of>
+			   		 <item>1</item>
+			  		 <item>2</item>
+			   		 <item>3</item>
+			   		 <item>8</item>
+			   		 <item>9</item>
+				</one-of>
+	    		 </rule>
+		</grammar>
+	
+		<prompt bargein="true" timeout="4s">
+			<audio expr="promptpath+'/'+lang+'/'+ques_play+'.wav'"/>
+		</prompt>
+	
+		<filled>
+			<assign name="con_data" expr="ques_play" />
+			<assign name="compare_time" expr="time_duration(song_begin)"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+			<assign name="song_begin" expr="start_time()"/>
+		<script> mod_play=mod_play+1</script>
+		<script> clip_no=mod_play</script>
+		<if cond="pre_heard=='false'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+				</if>
+				<if cond="Play==ques_answer">
+					<prompt bargein="true" timeout="3s">							
+						<audio expr="promptpath+'/'+lang+'/'+ques_right+'.wav'"/>
+					</prompt>
+					<assign name="con_data" expr="ques_right" />
+					<assign name="var_wel" expr="getRandom(1,5)" />
+					<assign name="compare_time" expr="var_wel"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<elseif cond="Play=='8'"/>	
+					<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#Main_Menu"/>
+				 <elseif cond="Play=='9'"/>	
+					<goto next="Hungama_SPKENG_Help.vxml"/>
+				 <elseif cond="Play=='3'"/>
+					 <script> mod_play=mod_play-1</script>
+					<script> clip_no=mod_play</script>
+				  	<goto next="#play_mod_dtmfques"/>
+				<else/>	
+					
+					<prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/'+lang+'/'+ques_wrong+'.wav'"/>
+					</prompt>
+					<assign name="con_data" expr="ques_wrong" />
+					<assign name="var_wel" expr="getRandom(1,5)" />
+					<assign name="compare_time" expr="var_wel"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				</if>
+				
+				<goto next="#play_mod"/>	
+		</filled>
+		<noinput>
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+				<assign name="con_data" expr="ques_play" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 			
+				<goto next="#play_mod"/>
+			
+		</noinput>
+
+		<nomatch>
+			<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			<assign name="con_data" expr="ques_play" />
+			<assign name="compare_time" expr="time_duration(song_begin)"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 			
+			<goto next="#play_mod"/>
+
+		</nomatch>
+    </field>
+</form>
+<!--************************************************************************ASRin  prouncemodule***********************************************************************-->
+<form id="play_mod_asr_prounc_ques">
+<block>	
+		<script>
+				ques_mod=array2[mod_play].split("#");
+				ques_play=ques_mod[0]; 
+				ques_answer=ques_mod[1];
+				
+		</script>
+		<log>	ASRques_play############  is ==	<value expr="ques_play"/>    </log>
+		<log>	ASRques_answer############  is ==	<value expr="ques_answer"/>    </log>
+		<assign name="song_begin" expr="start_time()"/>
+	</block>
+	<field name="recipe">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							
+							 <item>  8  </item>
+							 <item>  9  </item>
+						</one-of>
+					</rule>
+				</grammar>
+
+				<grammar type="application/srgs+xml" srcexpr="'spokeneng_advanced.grxml'" mode="voice"/>	 
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/'+ques_play+'.wav'"/>
+			</prompt>
+				<filled>
+					<assign name="con_data" expr="ques_play" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					
+					<if cond="recipe=='8'">
+						<if cond="pre_heard=='false'">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+						</if>
+						<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#Main_Menu"/>
+					<elseif cond="recipe=='9'"/>
+						<if cond="pre_heard=='false'">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+						</if>
+						<goto next="Hungama_SPKENG_Help.vxml"/>
+					<else/>
+						
+						<if cond="pre_heard=='false'">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+						</if>
+						<assign name="recipename" expr="recipe" />
+						<assign name="recipeid" expr="recipe" />
+							<log>
+								recipeid is 
+								<value expr="recipeid"/>
+							</log>
+
+						<assign name="conf" expr="recipe$.confidence" />
+						<assign name="speechuttar" expr="recipe$.utterance" />
+						<assign name="speechword" expr="conf"/>
+						<log>	conf == <value expr="conf"/>    </log>
+
+						<log>	CONFIDENCE == <value expr="recipe$.confidence"/>    </log>
+						<log>	INPUTMODE == <value expr="recipe$.inputmode"/>    </log>
+						<log>	utterance== <value expr="recipe$.utterance"/>    </log>
+						<log>	INTERPRETATION == <value expr="recipe$.interpretation"/>    </log>
+						<goto next="#final" />
+					</if>
+				</filled>
+			<noinput>
+					<assign name="con_data" expr="ques_play" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<assign name="song_begin" expr="start_time()"/>
+					<prompt bargein="true" timeout="0s">  
+						<audio expr="promptpath+'/'+lang+'/nospeak.wav'"/>
+					</prompt>
+						<assign name="con_data" expr="'nospeak'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+						<assign name="song_begin" expr="start_time()"/>
+					<prompt bargein="true" timeout="0s">  
+						<audio expr="promptpath+'/'+lang+'/try_again.wav'"/>
+					</prompt>
+						<assign name="con_data" expr="'try_again'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<goto next="#play_mod_asr_prounc_ques" />
+			</noinput>
+	
+				<nomatch count="1">
+						<assign name="con_data" expr="ques_play" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 						
+						<prompt bargein="true" timeout="0s"> 
+							<audio expr="promptpath+'/'+lang+'/wrong_pron.wav'"/>
+							<audio expr="promptpath+'/'+lang+'/try_again.wav'"/>
+						</prompt>
+						<assign name="con_data" expr="'wrong_pron'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 		
+						<goto next="#play_mod_asr_prounc_ques"/>
+				</nomatch>
+
+				<nomatch count="2">
+							<script> mod_play=mod_play+1</script>
+							<script> clip_no=mod_play</script>
+					<assign name="con_data" expr="ques_play" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 						
+						<prompt bargein="true" timeout="0s"> 
+							<audio expr="promptpath+'/'+lang+'/wrong_pron.wav'"/>
+						</prompt>
+						<assign name="con_data" expr="'wrong_pron'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 		
+						<goto next="#play_mod"/>
+				</nomatch>
+    </field>
+</form>
+<form id="final">
+		<block>
+		<assign name="speechvalue" expr="'0'"/>
+		<assign name="speechvalue1" expr="'0'"/>
+		<assign name="speech_course" expr="'0'"/>
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=speak_word_status&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+speechuttar+'&amp;INPARAM[1]='+module"/>
+			
+				<script>
+					<![CDATA[
+						for(j=0; j< out_string.length;  j++)
+							{  	  
+							if(j==0)
+								speechvalue = out_string[j];
+							if(j==1)
+								speechvalue1 = out_string[j];
+							if(j==2)
+							 	speech_course = out_string[j];
+						
+							}
+						]]>
+				</script>
+				<log>	speechvalue  is ==<value expr="speechvalue"/>    </log>
+				<log>	speechvalue1  is ==<value expr="speechvalue1"/>    </log>
+				<log>	speech_course  is ==<value expr="speech_course"/>    </log> 
+			 
+ 			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=spoken_word_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+speechuttar"/>
+<assign name="song_begin" expr="start_time()"/>
+	<if cond="speechvalue=='correct'">
+		<script> mod_play=mod_play+1</script>
+		<script> clip_no=mod_play</script>
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath+'/'+lang+'/right_pron.wav'"/>
+		</prompt>
+		<assign name="con_data" expr="'right_pron'" />
+		<assign name="var_wel" expr="getRandom(1,5)" />
+		<assign name="compare_time" expr="var_wel"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+		<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+		<goto next="#play_mod"/>	
+	<else/>
+			<if cond="prounc_asr_flag=='0'">
+					<script>
+						prounc_asr_flag=prounc_asr_flag+1;
+					</script>
+
+					<prompt bargein="true" timeout="0s" cond="speechvalue1!='0' &amp;&amp; speech_course!='0'">
+						<audio expr="promptpath+'/'+lang+'/wrong_pron.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/correct_way.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/'+speech_course+'_'+speechvalue1+'.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/try_again.wav'"/>
+					</prompt>
+
+					<prompt bargein="true" timeout="0s" cond="speechvalue1=='0' &amp;&amp; speech_course=='0'">
+							<audio expr="promptpath+'/'+lang+'/wrong_pron.wav'"/>
+							<audio expr="promptpath+'/'+lang+'/try_again.wav'"/>
+					</prompt>
+						<assign name="con_data" expr="'wrong_pron'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 			
+					<goto next="#play_mod_asr_prounc_ques"/>
+			<else/>
+					<script>
+						prounc_asr_flag=0;
+					</script>
+					<script> mod_play=mod_play+1</script>
+					<script> clip_no=mod_play</script>
+
+					<prompt bargein="true" timeout="0s" cond="speechvalue1!='0' &amp;&amp; speech_course!='0'">
+						<audio expr="promptpath+'/'+lang+'/wrong_pron.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/correct_way.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/'+speech_course+'_'+speechvalue1+'.wav'"/>
+					</prompt>
+
+					<prompt bargein="true" timeout="0s" cond="speechvalue1=='0' &amp;&amp; speech_course=='0'">
+							<audio expr="promptpath+'/'+lang+'/wrong_pron.wav'"/>
+					</prompt>
+						<assign name="con_data" expr="'wrong_pron'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 			
+					<goto next="#play_mod"/>
+
+			</if>
+	</if>
+</block>
+</form>
+<!--************************************************************************ASRin  vocubalory module***********************************************************************-->
+<form id="play_mod_asr_vocu_ques">
+<block>	
+		<script>
+				ques_mod=array2[mod_play].split("#");
+				ques_play=ques_mod[0]; 
+				ques_right = ques_mod[1];
+				ques_wrong = ques_mod[2];
+		</script>
+		<log>	voucbalory ASRques_play############  is ==	<value expr="ques_play"/>    </log>
+		
+		<log>	voucbalory ASRques_right############  is ==	<value expr="ques_right"/>    </log>
+		<log>	voucbalory ASRques_wrong############  is ==	<value expr="ques_wrong"/>    </log>
+				
+		<assign name="song_begin" expr="start_time()"/>	
+		
+						
+	</block>
+	<field name="recipe">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 
+							 <item>  8  </item>
+							 <item>  9  </item>
+						</one-of>
+					</rule>
+				</grammar>
+
+				<grammar type="application/srgs+xml" srcexpr="'spokeneng_advanced.grxml'" mode="voice"/>	 
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/'+ques_play+'.wav'"/>
+			</prompt>
+				<filled>
+					<assign name="con_data" expr="ques_play" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<if cond="recipe=='8'">
+						<if cond="pre_heard=='false'">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+						</if>
+						<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#Main_Menu"/>
+					<elseif cond="recipe=='9'"/>
+						<if cond="pre_heard=='false'">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+						</if>
+						<goto next="Hungama_SPKENG_Help.vxml"/>
+					<else/>
+				
+						
+						<if cond="pre_heard=='false'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+						</if>
+						<assign name="recipename" expr="recipe" />
+						<assign name="recipeid" expr="recipe" />
+							<log>
+								recipeid is 
+								<value expr="recipeid"/>
+							</log>
+
+						<assign name="conf" expr="recipe$.confidence" />
+						<assign name="speechuttar" expr="recipe$.utterance" />
+						<assign name="speechword" expr="conf"/>
+						<log>	conf == <value expr="conf"/>    </log>
+
+						<log>	CONFIDENCE == <value expr="recipe$.confidence"/>    </log>
+						<log>	INPUTMODE == <value expr="recipe$.inputmode"/>    </log>
+						<log>	utterance== <value expr="recipe$.utterance"/>    </log>
+						<log>	INTERPRETATION == <value expr="recipe$.interpretation"/>    </log>
+						<goto next="#final1" />
+					</if>
+				</filled>
+			<noinput>
+					<assign name="con_data" expr="ques_play" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 			
+					<assign name="song_begin" expr="start_time()"/>		
+					<prompt bargein="true" timeout="0s">  
+					<audio expr="promptpath+'/'+lang+'/nospeak.wav'"/>
+					</prompt>
+						<assign name="con_data" expr="'nospeak'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+						<assign name="song_begin" expr="start_time()"/>
+					<prompt bargein="true" timeout="0s">  
+						<audio expr="promptpath+'/'+lang+'/try_again.wav'"/>
+					</prompt>
+						<assign name="con_data" expr="'try_again'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<goto next="#play_mod_asr_vocu_ques" />
+			</noinput>
+				<nomatch count="1">
+					<assign name="con_data" expr="ques_play" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 			
+					<prompt bargein="true" timeout="0s"> 
+						<audio expr="promptpath+'/'+lang+'/'+ques_wrong+'.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/try_again.wav'"/>
+					</prompt>
+						<assign name="con_data" expr="ques_wrong" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 		
+						<goto next="#play_mod_asr_vocu_ques"/>
+				</nomatch>
+
+				<nomatch count="2">
+					<script> mod_play=mod_play+1</script>
+					<script> clip_no=mod_play</script>
+					<assign name="con_data" expr="ques_play" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 			
+					<prompt bargein="true" timeout="0s"> 
+						<audio expr="promptpath+'/'+lang+'/'+ques_wrong+'.wav'"/>
+					</prompt>
+						<assign name="con_data" expr="ques_wrong" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 		
+						<goto next="#play_mod"/>
+				</nomatch>
+    </field>
+</form>
+<form id="final1">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=speak_vocab_status&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+speechuttar+'&amp;INPARAM[1]='+module"/>
+			
+				<script>
+					<![CDATA[
+						for(j=0; j< out_string.length;  j++)
+							{  	  
+								if(j==0)
+								speechvalue = out_string[j];
+							 if(j==1)
+								speechvalue1 = out_string[j];
+							 if(j==2)
+								speech_course = out_string[j];
+
+							}
+						]]>
+					</script>
+				<log>	speechvalue  is ==<value expr="speechvalue"/>    </log>
+				<log>	speechvalue1  is ==<value expr="speechvalue1"/>    </log>
+				<log>	speech_course  is ==<value expr="speech_course"/>    </log> 
+ 
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=spoken_vocabword_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+speechuttar"/>
+	
+	<assign name="song_begin" expr="start_time()"/>
+	<if cond="speechvalue=='correct'">
+			<script> mod_play=mod_play+1</script>
+			<script> clip_no=mod_play</script>
+		<prompt bargein="true" timeout="0s">
+			   <audio expr="promptpath+'/'+lang+'/'+ques_right+'.wav'"/>
+		</prompt>
+		<assign name="con_data" expr="ques_right" />
+		<assign name="var_wel" expr="getRandom(1,5)" />
+		<assign name="compare_time" expr="var_wel"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+		<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 
+		<goto next="#play_mod"/>	
+	<else/>
+		
+			<if cond="prounc_asr_flag=='0'">
+				<script>
+					prounc_asr_flag=prounc_asr_flag+1;
+				</script>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/'+ques_wrong+'.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/try_again.wav'"/>
+				</prompt>
+				<goto next="#play_mod_asr_vocu_ques"/>
+				
+			<else/>
+			
+			<script> mod_play=mod_play+1</script>
+			<script> clip_no=mod_play</script>
+			<script> prounc_asr_flag=0</script>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/'+ques_wrong+'.wav'"/>
+				</prompt>
+				<assign name="con_data" expr="ques_wrong" />
+				<assign name="var_wel" expr="getRandom(1,5)" />
+				<assign name="compare_time" expr="var_wel"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 		
+				<goto next="#play_mod"/>
+			</if>
+	</if>
+</block>
+</form>
+<!--*************************************************************************************************************************************************************-->
+</vxml>

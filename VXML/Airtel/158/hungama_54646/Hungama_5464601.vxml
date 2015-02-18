@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_5464601.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="audiofetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+
+     
+     <script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var len=0;
+		var Totalcount=0;
+	</script>
+
+	
+	
+	 <form id="loadcliptoplay">
+		  <block> 
+		  <assign name="cat" expr="0"/>
+		  <assign name="subcat" expr="0"/>
+		  <assign name="Section_Name" expr="'MUSICEXPRESS_FREECONTENT'"/>
+		  <assign name="nomtch" expr="0"></assign>
+		  <assign name="subcat" expr="0"></assign>
+		  <assign name="cat" expr="0"></assign>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646V2/'+operator+'/mwconfig/songconfig/0101.cfg'"/>
+			<script>
+						arraySong.length=0;
+						unike_play=0;
+			</script>
+			
+			<assign name="len" expr="favSongs.length" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+				<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								arraySong[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#StartToPlaysongs"/>  					
+		   </block>
+	</form>
+
+	
+	<form id="StartToPlaysongs">
+
+
+				<block>
+				<assign name="Section_Name" expr="'MUSICEXPRESS_FREECONTENT'"/>
+					<script>
+		   		 <![CDATA[
+  		       		if(timerflag==1)
+                 start_BalenceMinute=call_time();
+		    ]]>	 	
+ 		  </script>
+					  	<if cond="unike_play &gt; len-1">
+							<assign name="unike_play" expr="0" />
+						<elseif cond="unike_play &lt; 0" />
+							<assign name="unike_play" expr="len-1" />
+						</if>
+			
+			<if cond="Totalcount>'3'">
+				<goto next="Hungama_54646_UserSub.vxml"></goto>
+			</if>
+					<log expr="'@@@@@@ used balance is '+unike_play"/>
+						   <log expr="'@@@@@@ left balance is '+songcheck[0]"/>
+						<script>
+							var songcheck=arraySong[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = arraySong[unike_play];
+							
+						</script>
+			
+					 <assign name="song_begin" expr="starttime()"/>
+					 <assign name="song_listen" expr="'START'" />
+					 <assign name="CALCULATE_TIME" expr="'SET'" />
+					  <assign name="cat" expr="'0101'" />
+ 
+      </block>
+		   <field name="selectoption">
+
+				    <grammar mode="dtmf" root="start" version="1.0">
+			   		<rule id="start" scope="public">
+			   		  <one-of>
+					      <item>1</item>
+					      <item>2</item>	
+					      <item>3</item>
+					      
+					     
+					 </one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			   <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		      </prompt> 			 
+		  
+		      <filled>
+		      <script>
+		      		Totalcount=Totalcount+1;
+		      </script>
+		      		<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>	
+				
+				 <if cond="selectoption=='1'">
+				        <script> unike_play=unike_play-1; </script>
+					<goto next="#StartToPlaysongs"/>	
+				 <elseif cond="selectoption=='2'"/>
+				 	<script> unike_play=unike_play</script>
+					<goto next="#StartToPlaysongs"/> 				 
+				 <elseif cond="selectoption=='3'"/>	
+				 	<script> unike_play=unike_play+1</script>
+					<goto next="#StartToPlaysongs"/> 
+				</if>				 
+			  </filled>				  
+		
+		     
+			   <noinput>	
+			        <script> 
+			      		unike_play=unike_play+1;
+			      		Totalcount=Totalcount+1;
+			      	</script> 	
+				<assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="rim(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>			
+			  	 <goto next="#StartToPlaysongs"/> 	
+			</noinput>
+			<nomatch>
+				<script> 
+					unike_play=unike_play+1;
+					Totalcount=Totalcount+1;
+				</script> 	
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>			
+				<goto next="#StartToPlaysongs"/> 
+			</nomatch>	
+	 </field>
+	  </form>	
+	
+	
+
+</vxml>

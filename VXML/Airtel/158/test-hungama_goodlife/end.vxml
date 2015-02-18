@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="rasio_root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="end.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+<var name="current_balance" expr=""/>
+<var name="curbalance" expr=""/>
+<var name="total_used_bal" expr=""/>
+	<form id="EndLogin">
+		<block>
+		    <assign name="C_End" expr="call_time()"/>
+		    <if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+hash+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			</if>
+			 <log>!!!!!!!!!!!!!!!!!!!!ContentTime=<value expr="ContentTime"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!starttime=  <value expr="C_Start"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!endtime=    <value expr="C_End"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!ANI=        <value expr="ANI"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!DNIS=       <value expr="DNIS"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!realDNIS=   <value expr="realDNIS"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!usr_status= <value expr="usr_status"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!contentlog= <value expr="contentlog"/>    </log>
+								<script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+C_Start+'&amp;endtime='+call_time()"/>
+						<script>
+							points=dur;
+							points=Math.floor(points/60); 
+					     		   						  
+					       </script>
+			<if cond="dtmf_check=='1'">
+				<script srcexpr="'http://10.2.73.156:8080/hungama/dtmf_logs?service=goodlife&amp;SONG='+dtmf_log"/>
+			</if>
+		    	<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                     		  <script>
+							curbalance=Math.floor(curbalance/60); 
+					   </script> 
+
+						   
+	
+    					<if cond="key &gt; '4'">
+						   <script>
+						   key=4
+						   </script>
+					 </if>
+
+			
+				<script>
+					total_used_bal=rim(CallTime);
+					balance=balance-total_used_bal;  						  
+				</script>
+		 		 	
+				<script> balance=Math.floor(balance/60); </script>
+				<script> total_used_bal=Math.floor(total_used_bal/60); </script>
+
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_UPDATETIME&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+points+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+key+'&amp;INPARAM[4]='+curbalance"/>
+				
+				<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_UPDATETIME&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+points+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+key+'&amp;INPARAM[4]='+total_used_bal"/>-->
+
+			
+				
+    		</if>		
+			<if cond="last_listen!='NA'">
+		             <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=LIFE_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+last_listen+'&amp;INPARAM[2]=SET'"/>
+			</if>	
+			<if cond="s_flag=='LIFE'">
+				<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_CTSMS&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>-->
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_CTSMS&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+realDNIS"/>
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_SENDMESSAGE&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+			</if>
+			<script srcexpr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=LIFESTYLE&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<exit/>
+		</block>
+	    <catch event="error.badfetch">
+		 								
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      
+		  
+		  <exit/>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 
+		  
+		  <exit/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  End4444</log>	
+		   
+		   <exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  End5555</log>	
+		
+		   <exit/>
+		  
+      </catch>
+	</form>
+
+
+
+</vxml>

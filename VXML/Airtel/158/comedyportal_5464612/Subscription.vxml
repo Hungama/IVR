@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="ComedyPortalRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+ 
+	<meta name="Subscription_TEST.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+<property name="fetchminimumbuffersize" value="54272"/>
+	<property name="fetchhint" value="prefetch"/>
+	<property name="timeout" value="1s" />
+	<property name="maxage" value="1800s"/>
+	<meta name="Support" content="" />
+	<var name="double_switch" expr="-1"/>
+	<var name="prompt_switch" expr="0"/>
+	<var name="random" expr="'1'"/>
+	
+	
+	<script>
+		var out_string=new Object();
+		var var_wel=0;
+	</script>
+
+	<var name="confirmstatus" expr="''"/>
+	
+	
+	<form id="SubOption">
+	<block>
+	<assign name="Section_Name" expr="'COMEDYPORTAL_SUBSCRIPTION'"/>
+		<assign name="amt" expr="'30'"/>
+		<assign name="plan_id" expr="'50'"/>
+		<assign name="service_id" expr="'1518'"/>
+		
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=COMEDY_DOUBLECONSENT&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+					 double_switch=out_string[0];
+					 prompt_switch=out_string[1];
+				</script>
+
+		
+		<log>double_switch Sub : <value expr="double_switch"/></log>
+		<log>prompt_switch for msisdn : <value expr="prompt_switch"/></log>
+		
+		<if cond="double_switch=='1' &amp;&amp; prompt_switch=='0'">
+				<assign name="var_wel" expr="getRandom(1,10)" />
+					<if cond="var_wel=='1' || var_wel=='2' || var_wel=='3' || var_wel=='4' || var_wel=='5'">
+						<assign name="var_wel" expr="'1'" />
+					<else/>
+						<assign name="var_wel" expr="'2'" />
+				
+					</if>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/switch_mpmc'+var_wel+'.wav'"/>		
+				</prompt>
+
+			<!--<prompt bargein="true" timeout="1s">
+				  <audio expr="promptpath+LANG_DESCRIPTION+'/MPMC.wav'"/>	
+			</prompt>-->
+			<goto next="#Doubleconfirm"></goto>
+		</if>
+		<if cond="double_switch=='1' &amp;&amp; prompt_switch=='1'">
+			<assign name="var_wel" expr="getRandom(1,10)" />
+					<if cond="var_wel=='1' || var_wel=='2' || var_wel=='3' || var_wel=='4' || var_wel=='5'">
+						<assign name="var_wel" expr="'1'" />
+					<else/>
+						<assign name="var_wel" expr="'2'" />
+				
+					</if>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/switch_mpmc'+var_wel+'.wav'"/>		
+				</prompt>
+
+			<!--<prompt bargein="true" timeout="1s">
+				  <audio expr="promptpath+LANG_DESCRIPTION+'/MPMC.wav'"/>	
+
+			</prompt>-->
+			<goto next="#Doubleconfirm"></goto>
+		</if>
+	</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								
+								 
+							</one-of>
+						</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+						<!--<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_cntst.wav'"/>-->	
+
+						<audio expr="promptpath+LANG_DESCRIPTION+'/Introduction_Newuser.wav'"/>	
+						<audio expr="promptpath+LANG_DESCRIPTION+'/Newuser_Waiting.wav'"/>
+						<!--<audio expr="promptpath+LANG_DESCRIPTION+'/Subscription_Confirm.wav'"/>-->	
+			</prompt> 
+			
+			<filled>
+				<assign name="dtmfsub" expr="'First_level_input'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+choice"></assign>
+				<if cond="choice=='1'">
+				  <clear namelist="choice"/> 
+				  <script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1518&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=firstconsent&amp;response_code=OK&amp;sessonid='+sessionId"/> 
+				   <goto next="#Doubleconfirm"></goto>
+				</if>
+				
+			</filled>
+			
+			
+			<noinput count="1">
+					<assign name="input_check" expr="'noinput'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/No_Input.wav'"/>
+				</prompt>
+				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<assign name="input_check" expr="'noinput'"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Waiting_Response.wav'"/>
+				</prompt>
+				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<assign name="input_check" expr="'noinput'"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+						<goto next="End.vxml"/>
+			</noinput>
+			
+			<nomatch  count="1">
+			<assign name="input_check" expr="'nomatch'"/>
+			<assign name="dtmfsub" expr="'First_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>   
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Wrong_Input.wav'"/>
+				</prompt>
+				
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch  count="2">
+						<assign name="input_check" expr="'nomatch'"/>
+						<assign name="dtmfsub" expr="'First_level_input'"/>			        
+						<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>   
+
+						<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/Newuser_Waiting.wav'"/>
+
+						</prompt>
+
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch  count="3">
+						<assign name="input_check" expr="'nomatch'"/>
+						<assign name="dtmfsub" expr="'First_level_input'"/>			        
+						<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>   
+
+						<goto next="End.vxml"/>					
+			</nomatch>
+			
+			
+		</field>
+	</form>
+	
+<form id="Doubleconfirm">
+	<block>
+			<if cond="LANG_DESCRIPTION=='01'">
+				<assign name="LANG_DES" expr="'HIN'"/>
+			<elseif cond="LANG_DESCRIPTION=='07'"/>
+				<assign name="LANG_DES" expr="'TAM'"/>
+			<elseif cond="LANG_DESCRIPTION=='09'"/>
+				<assign name="LANG_DES" expr="'MAL'"/>
+			<elseif cond="LANG_DESCRIPTION=='08'"/>
+				<assign name="LANG_DES" expr="'TEL'"/>
+			<elseif cond="LANG_DESCRIPTION=='10'"/>
+				<assign name="LANG_DES" expr="'KAN'"/>
+			<elseif cond="LANG_DESCRIPTION=='06'"/>
+				<assign name="LANG_DES" expr="'BEN'"/>					
+			<else/>
+				<assign name="LANG_DES" expr="'TEL'"/>				
+			</if>
+			<assign name="MSISDN" expr="ANI"/>
+			<assign name="Lang" expr="LANG_DES"/>
+			<assign name="planid" expr="'50'"/>
+			<assign name="Amt" expr="'30'"/>
+			<assign name="serviceid" expr="'1518'"/>
+			<assign name="SubAmount" expr="30"/>
+			<assign name="SubPlanId" expr="50"/>
+			<assign name="ChargeAmount1" expr="30.0"/>
+			<assign name="ProductID" expr="1509044"/>
+		<assign name="Validity1" expr="30"/>
+		
+		<log expr = "'since user has selected a pack to subscribe to, taking him to the central confirmation app for second confirmation'"/>
+		<log>passing paaremeter MSISDN:<value expr="ANI"/></log>
+		<log>passing paaremeter Lang:<value expr="Lang"/></log>
+		<log>passing paaremeter ChargeAmount1 :<value expr="ChargeAmount1"/></log>
+		<log>passing paaremeter Validity1:<value expr="Validity1"/></log>
+		<log>passing paaremeter ApplicationType:<value expr="ApplicationType"/></log>
+		<log>passing paaremeter ProductID:<value expr="ProductID"/></log>
+		<log>passing paaremeter CpId :<value expr="CpId"/></log>
+		<log>passing paaremeter sessionId :<value expr="sessionId"/></log>
+		<log>zone:<value expr="zone"/></log>
+
+		<if cond="zone=='north' || zone=='west'">
+			<log>North API call</log>
+			<goto next="#AirtelApiNorth"/>
+		<else/>
+			<log>REST REGION API call</log>
+			<goto next="#AirtelApiREST"/>
+		</if>
+	</block> 
+ </form>
+	
+<form id="AirtelApiNorth">
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DES+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">-->
+	
+	    <subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/SecondConsentHandler.vxml'" method = "post" namelist = "MSISDN Lang ChargeAmount1 ChargeAmount2 Validity1 Validity2 ApplicationType ProductID CpId sessionId channelName cpName centralIVRPwd aocMessage1 aocMessage2 cpTransactionID subProdID songProdID songVCode msisdnGiftReceiver msisdnDedicatee msisdnStarCopy param1 param2 param3 param4 param5">
+	<filled>
+				<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1518&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=secondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					<goto next="End.vxml"/>
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<goto next="#SubRequest"/>
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<goto next="#SubOption"/>
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+					<goto next="End.vxml"/>
+				<else/>
+					<goto next="#SubOption"/>
+				</if>		
+		</filled>
+	</subdialog>
+
+</form>
+
+<form id="AirtelApiREST">
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DES+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">-->
+	    
+	     <subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/SecondConsentHandler.vxml'" method = "post" namelist = "MSISDN Lang ChargeAmount1 ChargeAmount2 Validity1 Validity2 ApplicationType ProductID CpId sessionId channelName cpName centralIVRPwd aocMessage1 aocMessage2 cpTransactionID subProdID songProdID songVCode msisdnGiftReceiver msisdnDedicatee msisdnStarCopy param1 param2 param3 param4 param5">
+		<filled>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1518&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=secondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>
+			<if cond="confirmUserChoice.userInput=='maxError'">
+				<goto next="End.vxml"/>
+			<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+				<goto next="#SubRequest"/>
+			<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+				<goto next="#SubOption"/>
+			<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+				<goto next="End.vxml"/>
+			<else/>
+				<goto next="#SubOption"/>
+			</if>			
+		</filled>
+	</subdialog>
+
+</form>	
+	
+
+<form id="SubRequest">
+		<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=COMEDY_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/> 
+		
+			
+		</block>
+			
+		<field name="choice">
+			<prompt bargein="false" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/Delay_charging.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/Delay_charging.wav'"/>
+			</prompt>
+			<filled>
+				<goto next="#BillStatusChk"/>					
+			</filled>
+
+			<nomatch>
+			   <goto next="#BillStatusChk"/>	
+			</nomatch>
+
+			<noinput>
+			   <goto next="#BillStatusChk"/>	
+			</noinput>
+		</field>
+</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=COMEDY_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+							 if(j==4)
+							modesub = out_string[j];
+
+						  }
+
+					]]>
+			
+			</script>
+			
+			<if cond="usr_status=='1'">
+				 <assign name="input_check" expr="'SUCCESS'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+
+						<script> 					 
+								    balance=bal*60;
+								    timerflag=1;      
+							</script>
+							
+						<script>
+						    <![CDATA[
+						       if(timerflag==1)
+						 		start_BalenceMinute=starttime();
+						   ]]>	 	
+						</script>
+
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Congrats.wav'"/>
+				</prompt>
+				
+				 <goto next="ComedyMainMenu.vxml"/>		
+			<else/>
+			
+				 <goto next="#charging_wait"/>
+			</if>
+		</block>
+	</form>
+	<form id="charging_wait">
+		
+		<field name="choice">
+			<prompt bargein="false" timeout="3s">
+				  			<audio expr="promptpath+LANG_DESCRIPTION+'/Delay_charging.wav'"/>
+							<audio expr="promptpath+LANG_DESCRIPTION+'/Delay_charging.wav'"/>
+	
+		  		</prompt>
+			<filled>
+				<goto next="#BillStatusChkAgain"/>					
+			</filled>
+					
+			<nomatch>
+			   <goto next="#BillStatusChkAgain"/>	
+			</nomatch>
+			
+			<noinput>
+			   <goto next="#BillStatusChkAgain"/>	
+			</noinput>
+		</field>
+</form>
+
+	<form id="BillStatusChkAgain">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=COMEDY_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+							 if(j==4)
+										modesub = out_string[j];
+
+						  }
+
+					]]>
+			
+			</script>
+			<if cond="usr_status=='-1'">
+				<assign name="input_check" expr="'wait'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="End.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+			<assign name="input_check" expr="'success'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+					
+
+				<script> 					 
+								    balance=bal*60;
+								    timerflag=1;      
+							</script>
+							
+						<script>
+						    <![CDATA[
+						       if(timerflag==1)
+						 		start_BalenceMinute=starttime();
+						   ]]>	 	
+						</script>
+
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Congrats.wav'"/>
+				</prompt>
+				
+				 <goto next="ComedyMainMenu.vxml"/>		
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+				</prompt>
+
+				
+				 <goto next="End.vxml"/>
+			</if>
+		</block>
+	</form>
+
+
+</vxml>

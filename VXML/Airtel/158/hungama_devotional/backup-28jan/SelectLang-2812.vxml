@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="devRoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="SelectLang.vxml" content="" />
+	<meta name="Author" content="anita " />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+	<var name="wellang" expr="''" />
+	<var name="c_test" expr="''"/>
+	<var name="c_test_day" expr="1"/>		
+	<script>
+		var ciropr1 = new Object();		
+	</script>
+	
+<form id="Main">
+	<block>
+		<assign name="C_Start" expr="call_time()"/>
+ 		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+		</script>
+	     	<script>
+		  <![CDATA[
+			 c_test=new Date();
+		      ]]>
+		</script>
+		
+		<log>helow              $$$$$$$$$$$$$$$$$$$$$$$$ c_test  is$$$$$$$$$$$$$$$$$$$$$	<value expr="c_test"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>	    
+		
+	        <script>
+			var length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);					
+		</script>
+		<script>
+	     		c_test_day=c_test.getDay();
+	     	</script>			
+		<log>helow              $$$$$$$$$$$$$$$$$$$$$$$$ c_test_day  is$$$$$$$$$$$$$$$$$$$$<value expr="c_test_day"/>$$$$$$$$$$$$$$$$$$$$$$$$$$   </log>	    
+				 
+		<if cond="c_test_day==1">
+		 	<assign name="day" expr="'mon'"/>
+		<elseif cond="c_test_day==2"/>
+		  	<assign name="day" expr="'tue'"/>
+		<elseif cond="c_test_day==3"/>
+		  	<assign name="day" expr="'wed'"/>				  	
+		<elseif cond="c_test_day==4"/>
+		  	<assign name="day" expr="'thu'"/>				  	
+		<elseif cond="c_test_day==5"/>
+		  	<assign name="day" expr="'fri'"/>				  	
+		<elseif cond="c_test_day==6"/>
+		  	<assign name="day" expr="'sat'"/>				  	
+		<elseif cond="c_test_day==0"/>
+		  	<assign name="day" expr="'sun'"/>				  	
+		</if>
+				  
+		<assign name="DNIS" expr="realDNIS"/>
+	    		  
+                <log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+              	<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>  
+              	  
+		<if cond="DNIS=='54321057' || DNIS=='54321052' || DNIS=='5432105786' || DNIS=='54321053' || DNIS=='54321054' || DNIS=='54321055' || DNIS=='54321056'">
+			  <submit expr="'../hungama_devotional_MM/SelectLang.vxml'"/>		
+		</if>
+
+		
+
+				  
+              	<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+        
+               				 
+				<assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 
+				    	
+			 <log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+			 <log> @@@@DNI is 		<value expr="session.connection.local.uri"/> </log>	
+			 <log> @@@@ANI is 		<value expr="session.connection.remote.uri"/> </log>
+			 
+			<script>
+		  					var splitparam=sessionid.split("_");
+		  						cirid=splitparam[1]; 
+		  					
+		  	</script>
+
+		  	<if cond="realDNIS=='5500169'">
+				<submit expr="'../ManchalaPremRiyaSub/SelectLang.vxml'"/>
+			</if>
+			 <if cond="DNIS=='55001000'">
+    					<submit expr="'../UnSubApp/manchalaRoot.vxml'"/>
+		        </if> 	
+			<assign name ="operator" expr="'airm'"/>
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@operator is <value expr="operator"/> </log>
+			<!--<if cond="ANI=='8527000779'">
+				<assign name ="ANI" expr="'9906904544'"/>
+				<script>
+					cirid=7;
+				</script>
+			</if>-->
+ 			
+
+			 <if cond="cirid==1">
+			 	<!--DL -->
+			 	<assign name ="circle" expr="'del'"/>
+			 	<assign name ="promptpath" expr="'http://10.2.87.32:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.2.87.32:8088/CDS/hungama/content/'" /> 
+				
+			 <elseif cond="cirid==2"/>
+			 	<!--UPE -->
+			 	<assign name ="circle" expr="'upe'"/>
+				<assign name ="promptpath" expr="'http://10.34.24.176:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.34.24.176:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==3"/>
+			 	<!--UPW -->
+			 	<assign name ="circle" expr="'upw'"/>
+				<assign name ="promptpath" expr="'http://10.31.5.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.31.5.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==4"/>
+			 	<!--PJ -->
+			 	<assign name ="circle" expr="'pub'"/>
+				<assign name ="promptpath" expr="'http://10.20.23.102:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.20.23.102:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==5"/>
+			 	<!--HR -->
+			 	<assign name ="circle" expr="'hay'"/>
+				<assign name ="promptpath" expr="'http://10.25.7.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.25.7.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==6"/>
+			 	<!--HP -->
+			 	<assign name ="circle" expr="'hpd'"/>
+				<assign name ="promptpath" expr="'http://10.41.7.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.41.7.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==7"/>
+			 	<!--JK -->
+			 	<assign name ="circle" expr="'jnk'"/>
+				<assign name ="promptpath" expr="'http://10.28.6.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.28.6.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==8"/>
+			 	<!--MB -->
+			 	<assign name ="circle" expr="'mum'"/>
+				<assign name ="promptpath" expr="'http://10.49.9.32:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.49.9.32:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==9"/>
+			 	<!--MP -->
+			 	<assign name ="circle" expr="'mpd'"/>
+				<assign name ="promptpath" expr="'http://10.73.25.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.73.25.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==10"/>
+			 	<!--MH -->
+			 	<assign name ="circle" expr="'mah'"/>
+				<assign name ="promptpath" expr="'http://10.65.5.184:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.65.5.184:8088/CDS/hungama/content/'" />
+
+				
+			 <elseif cond="cirid==11"/>
+			 	<!--GJ -->
+			 	<assign name ="circle" expr="'guj'"/>
+				<assign name ="promptpath" expr="'http://10.81.36.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.81.36.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==12"/>
+			 	<!--RJ -->
+			 	<assign name ="circle" expr="'raj'"/>
+				<assign name ="promptpath" expr="'http://10.45.57.183:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.45.57.183:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==13"/>
+			 	<!--KC -->
+			 	<assign name ="circle" expr="'kol'"/>
+				<assign name ="promptpath" expr="'http://10.133.24.185:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.133.24.185:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==14"/>
+			 	<!--WB -->
+			 	<assign name ="circle" expr="'wbl'"/>
+				<assign name ="promptpath" expr="'http://10.131.5.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.131.5.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==15"/>
+			 	<!--AS -->
+			 	<assign name ="circle" expr="'asm'"/>
+				<assign name ="promptpath" expr="'http://10.142.5.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.142.5.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==16"/>
+			 	<!--NE -->
+			 	<assign name ="circle" expr="'nes'"/>
+				<assign name ="promptpath" expr="'http://10.142.35.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.142.35.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==17"/>
+			 	<!--OR -->
+			 	<assign name ="circle" expr="'ori'"/>
+				<assign name ="promptpath" expr="'http://10.140.24.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.140.24.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==18"/>
+			 	<!--BH -->
+			 	<assign name ="circle" expr="'bih'"/>
+				<assign name ="promptpath" expr="'http://10.137.24.183:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.137.24.183:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==19"/>
+			 	<!--KN -->
+			 	<assign name ="circle" expr="'kar'"/>
+				<assign name ="promptpath" expr="'http://10.89.48.42:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.89.48.42:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==20"/>
+			 	<!--AP -->
+			 	<assign name ="circle" expr="'apd'"/>
+				<assign name ="promptpath" expr="'http://10.105.8.42:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.105.8.42:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==21"/>
+			 	<!--CN -->
+			 	<assign name ="circle" expr="'chn'"/>
+				<assign name ="promptpath" expr="'http://10.111.14.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.111.14.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==22"/>
+			 	<!--KL -->
+			 	<assign name ="circle" expr="'ker'"/>
+				<assign name ="promptpath" expr="'http://10.127.5.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.127.5.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==23"/>
+			 	<!--TN -->
+			 	<assign name ="circle" expr="'tnu'"/>
+				<assign name ="promptpath" expr="'http://10.121.14.182:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.121.14.182:8088/CDS/hungama/content/'" />
+			 <else/>
+			 	<!--DL -->
+			 	<assign name ="circle" expr="'del'"/>
+			 	<assign name ="promptpath" expr="'http://10.2.87.32:8088/CDS/hungama/dev/'"/>
+			 	<assign name="contentpath" expr="'http://10.2.87.32:8088/CDS/hungama/content/'" /> 
+			 </if>			 
+
+			<!-- <assign name="promptpath" expr="'http://10.89.48.212:8088/CDS/hungama/dev/'"/>
+		 	<assign name="contentpath" expr="'http://10.89.48.212:8088/CDS/hungama/content'" />-->
+			<!-- <assign name="contentpath" expr="'http://10.2.87.32:8088/CDS/hungama/content'" /> -->
+					   					       
+	      		  
+	      	<log>circle  is	<value expr="circle"/>    </log>
+		<log>operator is <value expr="operator"/>    </log>
+		<log>day ==== is <value expr="day"/>    </log>			
+		<assign name="dbservlet" expr="'devo_dbinteraction'"/>
+	        <assign name="operator" expr="'airm'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		
+		<script>
+			  <![CDATA[
+				for(j=0; j< out_string.length;  j++)
+				{  	  
+				       if(j==0)
+					       	usr_status = out_string[j];
+				       if(j==1)
+					       	lang = out_string[j];
+				       if(j==2)
+					       	balance = out_string[j];
+				 }
+				]]>
+		</script>
+				
+		<log>length of outstring  is	<value expr="out_string.length"/></log>
+		<log expr="'@@@@@@@New usr_status===>' +usr_status"/>
+		
+	
+         		 <if cond="usr_status=='1'">
+				<assign name="timerflag" expr="1"/>
+		  		<assign name="initial_balance" expr="start_time()"/>
+				<script> 					 
+					balance=balance*60;     
+				</script>
+		 		<assign name="wellang" expr="lang"/>
+				<assign name="LANG_DESCRIPTION" expr="wellang"/>
+				<log expr="'Lang Desc!!!!!!!!!!!!! =' + LANG_DESCRIPTION"/>
+				<if cond="DNIS=='5105011'">
+					<goto next="Hungama_5105011_MainMenu.vxml"/>
+				<elseif cond="DNIS=='54321059'"/>
+					<goto next="Hungama_54321059_MainMenu.vxml"/>
+				<else/>
+					<goto next="ExistingUser.vxml"/>
+				</if>
+        		<elseif cond="usr_status == '-1'"/>
+					<if cond="DNIS=='5105011'">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/01/welcome_catname5105011.wav'"/>
+						</prompt>					
+					<else/>	
+						<!--<assign name="k" expr="getRandom(1,49)"/>-->
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/01/welcome_new.wav'"/>
+						</prompt>
+					</if>
+		        	<goto next="#New_User"/>
+        		<else/>
+		        	<assign name="wellang" expr="lang"/>
+		        	<assign name="LANG_DESCRIPTION" expr="lang"/>
+			 	<prompt bargein="true" timeout="3s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+				</prompt>
+			</if>
+	</block>
+</form>
+
+<form id="New_User">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/'+circle+'/navlang.cfg&amp;TOKEN=FREE'"/>
+		 <script>
+			array1.length=0;
+			dishes.length=0;		
+		</script>	
+		<assign name="len" expr="favSongs.length" />
+		<assign name="i" expr="0" />
+		<script>
+			 <![CDATA[
+				   for(j=0; j<len ;  j++)
+				   {  	  
+					array1[j] = favSongs[j];						   
+				   }
+			     ]]>		
+		</script> 	       					       
+		<if cond="len &lt; 8 || len==8">
+			<assign name="end_index" expr="len"/>
+			<assign name="OTHER_lang" expr="'FALSE'"/>
+		<else/>
+			<assign name="end_index" expr="8"/>
+			<assign name="OTHER_lang" expr="'TRUE'"/>
+		</if>
+		<assign name="start_index_pre" expr="0"/>
+		<assign name="start_index" expr="0"/>
+		<assign name="movie_idx" expr="0" />
+		<assign name="i" expr="0" />
+		<if cond="circle=='jnk'">
+			<!--<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/01/lang_option_del.wav'"/>
+			</prompt>-->
+			<assign name="LANG_DESCRIPTION" expr="'01'"/> 	
+ 		       <goto next="Subscription.vxml"/>
+
+		<else/>		
+			<prompt bargein="true" timeout="0s" cond="circle=='tnu' || circle=='chn'">
+				<audio expr="promptpath+'/07/lang_option_'+circle+'.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="circle!='tnu' &amp;&amp; circle!='chn'">
+				<audio expr="promptpath+'/01/lang_option_'+circle+'.wav'"/>
+			</prompt>
+
+
+		</if>
+
+		<goto next="#select_lang"/>
+	</block>
+</form>
+
+<form id="select_lang">
+	<block>
+		<assign name="movie_idx" expr="0"/>
+		<assign name="i" expr="0"/>
+		<script>
+			 <![CDATA[
+				for(j=start_index; j<end_index ;  j++)
+				{  	  
+					language[i] = array1[j];
+					i++;													   
+				}
+			]]>		
+		</script>
+	</block>
+	<field name="langopt">
+		  <grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">
+				<one-of>						
+					<item> 1 </item>
+					<item> 2 </item>
+					<item> 3 </item>						
+					<item> 4 </item>						
+					<item> 5 </item>						
+					<item> 6 </item>						
+					<item> 7 </item>						
+					<item> 8 </item>
+					<item> 9 </item>
+					<item> 0 </item>	
+				</one-of>
+			</rule>
+		  </grammar>
+		 
+	
+		  <prompt bargein="true" timeout="3s">
+			 <foreach item="names" array="language">
+				<mark nameexpr="movie_idx++"/>
+				<audio expr="promptpath+names+'/lang'+names+'.wav'"/>
+	          	       <audio expr="promptpath+names+'/press_dtmf'+movie_idx+'.wav'"/>
+		  	 </foreach>													
+		  </prompt>					
+		  <prompt bargein="true" cond="OTHER_lang=='TRUE'">
+			  <audio expr="promptpath+'01/lang_other_option.wav'"/>
+			  <!--	<audio expr="promptpath+'01/press_dtmf9.wav'"/> -->
+	          </prompt>
+				
+                  <filled>		      
+		      <if cond="langopt=='9'">
+		      		<if cond="OTHER_lang=='TRUE'">
+			      		
+					<if cond="end_index == '16'">
+						<assign name="start_index" expr="end_index"/>
+						<assign name="end_index" expr="len"/>
+						<assign name="OTHER_lang" expr="'FALSE'"/>
+						<script>
+							language.length=0;
+						</script>
+					<else/>
+						<assign name="start_index" expr="end_index"/>
+						<assign name="end_index" expr="len-2"/>
+						<assign name="OTHER_lang" expr="'TRUE'"/>
+					</if> 
+			             	<goto next="#select_lang"/>		
+		                <else/>
+			             	<throw event="nomatch"/>
+		          	</if>
+			<elseif cond="langopt=='0'"/>
+	        		<if cond="OTHER_lang=='FALSE'">
+				        <assign name="end_index" expr="'8'"/>
+				        <assign name="start_index" expr="'0'"/>
+				        <assign name="OTHER_lang" expr="'TRUE'"/>
+				        <script>
+						language.length=0;
+					</script>
+					<goto next="#select_lang"/>			
+				 <else/>												     
+		      			<throw event="nomatch"/>								
+			         </if>			
+			<elseif cond="langopt &lt; i+1"/>
+			       	 <if cond="langopt &lt; end_index+1">
+			       		 <assign name="lang" expr="language[--langopt]"/>
+			       		 <assign name="LANG_DESCRIPTION" expr="lang"/> 		
+				<else/>
+				         <throw event="nomatch"/>
+				</if>			
+			<else/>
+			        <throw event="nomatch"/>
+	      	        </if>
+   		        <goto next="Subscription.vxml"/> 	
+	    	    </filled>
+					
+			   			
+				
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<assign name="movie_idx" expr="0"/>
+			<goto next="#select_lang"/>
+		</noinput>
+
+
+
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<assign name="movie_idx" expr="0"/>
+			<goto next="#select_lang"/>
+		</nomatch>
+
+		</field>
+</form>
+ 
+<!--
+<form id="SELLANG2">
+<field name="langopt1">
+			  <grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>						
+						<item> 1 </item>
+						<item> 2 </item>
+						<item> 3 </item>						
+						<item> 4 </item>						
+						<item> 5 </item>						
+						<item> 6 </item>						
+												
+														
+					</one-of>
+				</rule>
+			  </grammar>
+									
+				<prompt bargein="true" timeout="3s">
+				
+				<audio expr="promptpath+LANG_DESCRIPTION+'/lang09.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/lang10.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION/press_dtmf2.wav'"/>
+			 	<audio expr="promptpath+LANG_DESCRIPTION+'/lang11.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf3.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/lang12.wav'"/>										   		
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf4.wav'"/> 
+				<audio expr="promptpath+LANG_DESCRIPTION+'/lang17.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf5.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/lang18.wav'"/>										   		
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf6.wav'"/> 				
+				</prompt>
+                            
+										   		
+				
+				<filled>
+				      <if cond="langopt=='1'">
+					     <assign name="lang" expr="'09'"/> 		
+					     <assign name="LANG_DESCRIPTION" expr="'MAL'"/>
+				      <elseif cond="langopt=='2'"/>
+				          <assign name="lang" expr="'10'"/> 		
+				          <assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+				     
+				     
+				     <elseif cond="langopt=='3'"/>
+				          <assign name="lang" expr="'11'"/> 		
+				          <assign name="LANG_DESCRIPTION" expr="'MAR'"/>
+                                      <elseif cond="langopt=='4'"/>
+				          <assign name="lang" expr="'12'"/> 		
+				          <assign name="LANG_DESCRIPTION" expr="'GUJ'"/>
+				      <elseif cond="langopt=='5'"/>
+				          <assign name="lang" expr="'17'"/> 		
+				          <assign name="LANG_DESCRIPTION" expr="'ASM'"/>
+                    		     <elseif cond="langopt=='6'"/>
+				          <assign name="lang" expr="'18'"/> 		
+				          <assign name="LANG_DESCRIPTION" expr="'RAJ'"/>					    		     				  				    
+				      </if>
+				      <log expr="'language selected option:'+langopt+' is :'+lang"/>
+				      <goto next="Subscription.vxml"/> 	
+				</filled>
+	<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_nosub.wav'"/>
+			</prompt>
+			<exit/>
+		</noinput>
+
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_nosub.wav'"/>
+			</prompt>
+
+			<exit/>
+		</nomatch>
+				
+					
+		</field>			
+
+</form>-->
+</vxml>

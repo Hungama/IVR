@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="TintuRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+ 
+	<meta name="End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<script>
+		var out_string=new Object();
+		
+	</script>
+	
+
+	<form id="EndLogin">
+	<block>
+		<assign name="C_End" expr="call_time()"/>
+					<if cond="song_listen=='START'">
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+					</if>
+<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=TINTUMON_UPDATETIME_TOLL&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>-->
+
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=TINTUMON&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+		
+									
+		<exit/>
+			
+	</block>
+		<catch event="error.badfetch">
+			<exit/>
+		 </catch>      
+
+		<catch event="telephone.disconnect.hangup">
+			 <exit/>							
+		</catch>
+
+		<catch event="telephone.disconnect">
+			<exit/>
+		</catch>   
+		<catch event="connection.disconnect.hangup">
+			 <exit/>
+		</catch>
+	</form>
+</vxml>

@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="devRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+
+	<meta name="dev_PlayList.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<script>
+		var out_string=new Object();
+		var song_status=new Object();
+	</script>
+
+	<form id="Get">
+		<block>
+				<assign name="prompt_name" expr="'GET_PLAYLIST'"/>		
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/devo_dbinteraction?PROCEDURE=dm_PLAYLISTPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=GET'"/>
+				<script>
+							array1.length=0;
+				</script>
+				<assign name="len" expr="out_string.length" />
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+					 <![CDATA[
+						   for(j=0; j<len ;  j++)
+						   {  	  
+									array1[j] = out_string[j];						   
+						   }
+					]]>		
+				</script> 	       					       
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+				<if cond="array1[0]==''">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/notin_playlist.wav'"/>
+					</prompt>
+					<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+			 		<assign name="PLAYLIST_FLAG" expr="'TRUE'"></assign>
+					<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+				</if>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  0  </item>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+						 <item>  6  </item>
+						 <item>  7  </item>
+						 <item>  8  </item>
+						 <item>  9  </item>	
+					</one-of>
+				</rule>
+			</grammar>
+			    	
+             		<prompt bargein="true"  timeout="0s" cond="PLAYLIST_FLAG=='TRUE'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_playlist.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/keypad.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/main_menu.wav'"/>
+			</prompt>
+			<filled>
+				<goto next="#next"/>
+			</filled>
+			<noinput>
+				<goto next="#next"/>
+			</noinput>
+			<nomatch>
+				<goto next="#next"/>
+			</nomatch>
+		</field>				
+	</form>
+	
+	<form id="next">
+		<block>
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+			</if>
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="array1[unike_play]"/>    </log>
+			<script>
+				var songcheck=array1[unike_play].split("_");
+				contentdir=songcheck[0];
+				song = array1[unike_play];
+			</script>
+			<assign name="song_begin" expr="start_time()"/>
+			<assign name="song_listen" expr="'START'" />
+		
+		</block>
+		<field name="choice" type="digits?lenght=1">
+			
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  0  </item>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+						 <item>  6  </item>
+						 <item>  5  </item>
+						 <item>  8  </item>
+						 <item>  9  </item>	
+					</one-of>
+				</rule>
+			</grammar>
+						
+			<prompt bargein="true" timeout="0s">
+				<audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+			</prompt>
+
+			<filled>
+				<if cond="timerflag=='5'">
+					<assign name="current_balance" expr="start_time()"/>
+					<script>
+						total_used_bal=CheckUserBalance(initial_balance,current_balance);
+						curbalance=balance-total_used_bal;
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+curbalance"/>
+					<if cond="curbalance &lt;= '0'">
+						<goto next="Subscription_Switch.vxml"/>
+					</if>
+				</if>			
+				<assign name="nextchoice" expr="choice"></assign>
+				<goto next="#contentlogin" />
+			</filled>
+
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+
+				<script> unike_play=unike_play+1</script>
+				<goto next="#next" />
+			</noinput>
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+
+				<script> unike_play=unike_play+1</script>
+				<goto next="#next" />
+			</nomatch>
+		</field>
+			
+	</form>
+	
+	<form id="contentlogin">
+		<block>
+				 <assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="time_duration(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+		<!--		 <log expr="'compare_time=='+compare_time"></log>
+				 <log expr="'ContentTime=='+ContentTime"></log>
+				 <log expr="'hash=='+hash"></log>
+				 <log expr="'song=='+song"></log>
+				 <log expr="'cat=='+cat"></log>
+				 <log expr="'subcat=='+subcat"></log>
+				 <log expr="'contentlog=='+contentlog"></log> -->
+				 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+				 <if cond="nextchoice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<goto next="#next" />
+				<elseif cond="nextchoice=='2'"/>
+				
+					<script> unike_play=unike_play</script>
+					<goto next="#next" />
+				<elseif cond="nextchoice=='3'"/>
+				
+					<script> unike_play=unike_play-1</script>
+					<goto next="#next" />
+				<elseif cond="nextchoice=='6'"/>
+					
+					<goto next="#playinst_next" />		
+				<elseif cond="nextchoice=='5'"/>
+				
+					<goto next="#Del"/>
+				<elseif cond="nextchoice=='9'"/>
+					<assign name="PLAYLIST_FLAG" expr="'TRUE'"></assign>
+
+					<goto next="dev_ManageAccount.vxml"/>	
+				<elseif cond="nextchoice=='0'"/>
+					<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+					<assign name="start_index_1" expr="'0'"/>
+					<assign name="PLAYLIST_FLAG" expr="'TRUE'"></assign>
+ 					<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+
+				<elseif cond="nextchoice=='8'"/>
+					<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+					<assign name="start_index_1" expr="'0'"/>
+					<assign name="PLAYLIST_FLAG" expr="'TRUE'"></assign>
+			 	
+					 <goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+				<else/>
+					<script> unike_play=unike_play+1</script>
+					<goto next="#next" />
+				</if>
+		</block>
+	</form>
+
+	<form id="playinst_next">
+		
+		<field name="choice" type="digits?lenght=1">
+			
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  0  </item>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+						 <item>  6  </item>
+						 <item>  5  </item>
+						 <item>  8  </item>
+						 <item>  9  </item>	
+					</one-of>
+				</rule>
+			</grammar>
+						
+			<prompt bargein="true" timeout="0s">
+				
+				<audio expr="promptpath+LANG_DESCRIPTION+'/keypad_options_other_playlist.wav'"/>
+			</prompt>
+
+			<filled>
+				<assign name="nextchoice" expr="choice"></assign>
+				<goto next="#contentlogin" />
+				<if cond="choice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<goto next="#next" />
+				<elseif cond="choice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="#next" />
+				<elseif cond="choice=='3'"/>
+					<script> unike_play=unike_play-1</script>
+					<goto next="#next" />
+				<elseif cond="choice=='6'"/>
+					<goto next="#next" />	
+				<elseif cond="choice=='5'"/>
+					<goto next="#Del"/>	
+				<elseif cond="choice=='9'"/>
+					<assign name="PLAYLIST_FLAG" expr="'TRUE'"></assign>
+					<goto next="dev_ManageAccount.vxml"/>
+				<elseif cond="choice=='0'"/>
+					<assign name="playconfigcat" expr="cat"/>	
+			 		<assign name="PLAYLIST_FLAG" expr="'TRUE'"></assign>
+ 					<goto next="devoplaycontent.vxml#loadcliptoplay"/>
+				<elseif cond="choice=='8'"/>
+					<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+					<assign name="start_index_1" expr="'0'"/>
+			 		<assign name="PLAYLIST_FLAG" expr="'TRUE'"></assign>
+					 <goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+				<else/>
+					<script> unike_play=unike_play+1</script>
+					<goto next="#next" />
+				</if> 
+			</filled>
+
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+
+				<script> unike_play=unike_play+1</script>
+				<goto next="#next" />
+			</noinput>
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+
+				<script> unike_play=unike_play+1</script>
+				<goto next="#next" />
+			</nomatch>
+		</field>
+</form>
+	
+	<form id="Del">
+		<block>
+				<assign name="prompt_name" expr="'DELETE_PLAYLIST'"/>		
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/devo_dbinteraction?PROCEDURE=dm_PLAYLISTPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song+'&amp;INPARAM[2]=DEL'"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       	song_status = out_string[j];						 
+							  }
+	
+						]]>
+				</script>
+				<if cond="song_status=='1'">
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/song_deleted.wav'"/>
+					</prompt>
+				</if> 
+				<script> unike_play=unike_play+1</script>
+				<assign name="PLAYLIST_FLAG" expr="'FALSE'"></assign>
+			<goto next="#Get" />
+		</block>
+	</form>
+	
+<form id="Add">
+		<block>
+			<assign name="prompt_name" expr="'ADD_PLAYLIST'"/>		
+			<assign name="AddSong" expr="song"/>
+			 
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/devo_dbinteraction?PROCEDURE=dm_PLAYLISTPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+AddSong+'&amp;INPARAM[2]=ADD'"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       	song_status = out_string[j];						 
+							  }
+	
+						]]>
+				</script>
+				<if cond="song_status=='1'">
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/song_added.wav'"/>
+					</prompt>
+				</if>
+				<if cond="song_status=='-1'">
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/alreadyin_playlist.wav'"/>
+					</prompt>
+				</if>
+			<!--	<script> unike_play=unike_play</script> -->
+			<goto next="devoplaycontent.vxml#loadcliptoplay" />
+		</block>
+</form>
+
+
+
+</vxml>

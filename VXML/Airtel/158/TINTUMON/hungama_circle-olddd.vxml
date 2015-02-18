@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="TintuRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="SelectLang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+		
+	<var name="wellang" expr="''" />
+	
+	<var name="ciropr" expr="''" />
+	<script>
+	   var	ciropr1 = new Object();		
+	</script>
+	
+<form id="Main">
+	<block>	
+	<assign name="Section_Name" expr="'TINTUMON_CIRCLECDS'"/>
+		<assign name="C_Start" expr="call_time()"/>
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+	    	</script>
+	     <script>
+         		var length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		</script>
+		  <if cond="ANI=='9910040744'">
+			<goto next="hungama_circle_test.vxml"/>
+		  </if>
+	
+		<assign name="DNIS" expr="realDNIS"/>
+         	         <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+	         	 <assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 
+				    	
+			 <log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+			 <log> @@@@DNI is 		<value expr="session.connection.local.uri"/> </log>	
+			 <log> @@@@ANI is 		<value expr="session.connection.remote.uri"/> </log>
+			 
+			<script>
+		  					var splitparam=sessionid.split("_");
+		  						cirid=splitparam[1]; 
+		  					
+		  	</script>
+
+		  	 <assign name ="operator" expr="'airm'"/>
+		  	 <assign name="dbservlet" expr="'airtel_dbinteraction'"/>
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@operator is <value expr="operator"/> </log>
+			 
+			  <if cond="cirid==1">
+			 	<!--DL -->
+			 	<assign name ="circle" expr="'del'"/>
+			 	<assign name ="promptpath" expr="'http://10.2.87.32:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+			 	<assign name="contentpath" expr="'http://10.2.87.32:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==2"/>
+			 	<!--UPE -->
+			 	<assign name ="circle" expr="'upe'"/>
+				<assign name ="promptpath" expr="'http://10.34.24.176:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.34.24.176:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==3"/>
+			 	<!--UPW -->
+			 	<assign name ="circle" expr="'upw'"/>
+				<assign name ="promptpath" expr="'http://10.31.5.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.31.5.182:8088/CDS/hungama/content/'" />
+
+			 <elseif cond="cirid==4"/>
+			 	<!--PJ -->
+			 	<assign name ="circle" expr="'pub'"/>
+				<assign name ="promptpath" expr="'http://10.20.23.102:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.20.23.102:8088/CDS/hungama/content/'" />
+	
+			 <elseif cond="cirid==5"/>
+			 	<!--HR -->
+			 	<assign name ="circle" expr="'har'"/>
+				<assign name ="promptpath" expr="'http://10.25.7.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.25.7.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==6"/>
+			 	<!--HP -->
+			 	<assign name ="circle" expr="'hpd'"/>
+				<assign name ="promptpath" expr="'http://10.41.7.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name ="promptspath_54646" expr="'http://10.41.7.182:8088/CDS/hungama/54646V2/'"/>
+			 	<assign name="contentpath" expr="'http://10.41.7.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==7"/>
+			 	<!--JK -->
+			 	<assign name ="circle" expr="'jnk'"/>
+				<assign name ="promptpath" expr="'http://10.28.6.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name ="promptspath_54646" expr="'http://10.28.6.182:8088/CDS/hungama/54646V2/'"/>
+			 	<assign name="contentpath" expr="'http://10.28.6.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==8"/>
+			 	<!--MB -->
+			 	<assign name ="circle" expr="'mum'"/>
+				<assign name ="promptpath" expr="'http://10.49.9.32:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name ="promptspath_54646" expr="'http://10.49.9.32:8088/CDS/hungama/54646V2/'"/>
+			 	<assign name="contentpath" expr="'http://10.49.9.32:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==9"/>
+			 	<!--MP -->
+			 	<assign name ="circle" expr="'mpd'"/>
+				<assign name ="promptpath" expr="'http://10.73.25.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name ="promptspath_54646" expr="'http://10.73.25.182:8088/CDS/hungama/54646V2/'"/>
+			 	<assign name="contentpath" expr="'http://10.73.25.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==10"/>
+			 	<!--MH -->
+			 	<assign name ="circle" expr="'mah'"/>
+				<assign name ="promptpath" expr="'http://10.65.5.184:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name ="promptspath_54646" expr="'http://10.65.5.184:8088/CDS/hungama/54646V2/'"/>
+			 	<assign name="contentpath" expr="'http://10.65.5.184:8088/CDS/hungama/content/'" />
+				
+			 <elseif cond="cirid==11"/>
+			 	<!--GJ -->
+			 	<assign name ="circle" expr="'guj'"/>
+				<assign name ="promptpath" expr="'http://10.81.36.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name ="promptspath_54646" expr="'http://10.81.36.182:8088/CDS/hungama/54646V2/'"/>
+			 	<assign name="contentpath" expr="'http://10.81.36.182:8088/CDS/hungama/content/'" />
+				
+			 <elseif cond="cirid==12"/>
+			 	<!--RJ -->
+			 	<assign name ="circle" expr="'raj'"/>
+				<assign name ="promptpath" expr="'http://10.45.57.183:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name ="promptspath_54646" expr="'http://10.45.57.183:8088/CDS/hungama/54646V2/'"/>
+			 	<assign name="contentpath" expr="'http://10.45.57.183:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==13"/>
+			 	<!--KC -->
+			 	<assign name ="circle" expr="'kol'"/>
+				<assign name ="promptpath" expr="'http://10.133.24.185:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.133.24.185:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==14"/>
+			 	<!--WB -->
+			 	<assign name ="circle" expr="'wbl'"/>
+				<!--<assign name ="promptpath" expr="'http://10.131.5.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.131.5.182:8088/CDS/hungama/content/'" />-->
+
+				<assign name ="promptpath" expr="'http://10.133.24.185:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.133.24.185:8088/CDS/hungama/content/'" />
+
+			 <elseif cond="cirid==15"/>
+			 	<!--AS -->
+			 	<assign name ="circle" expr="'asm'"/>
+				<assign name ="promptpath" expr="'http://10.142.5.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.142.5.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==16"/>
+			 	<!--NE -->
+			 	<assign name ="circle" expr="'nes'"/>
+				<assign name ="promptpath" expr="'http://10.142.35.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.142.35.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==17"/>
+			 	<!--OR -->
+			 	<assign name ="circle" expr="'ori'"/>
+				<assign name ="promptpath" expr="'http://10.140.24.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				
+			 	<assign name="contentpath" expr="'http://10.140.24.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==18"/>
+			 	<!--BH -->
+			 	<assign name ="circle" expr="'bih'"/>
+				<assign name ="promptpath" expr="'http://10.137.24.183:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name ="promptspath_54646" expr="'ttp://10.137.24.183:8088/CDS/hungama/54646V2/'"/>
+			 	<assign name="contentpath" expr="'http://10.137.24.183:8088/CDS/hungama/content/'" />
+				
+
+			 <elseif cond="cirid==19"/>
+			 	<!--KN -->
+			 	<assign name ="circle" expr="'kar'"/>
+				<assign name ="promptpath" expr="'http://10.89.48.42:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				
+			 	<assign name="contentpath" expr="'http://10.89.48.42:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==20"/>
+			 	<!--AP -->
+			 	<assign name ="circle" expr="'apd'"/>
+				<assign name ="promptpath" expr="'http://10.105.8.42:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				
+			 	<assign name="contentpath" expr="'http://10.105.8.42:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==21"/>
+			 	<!--CN -->
+			 	<assign name ="circle" expr="'chn'"/>
+				<assign name ="promptpath" expr="'http://10.111.14.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				
+			 	<assign name="contentpath" expr="'http://10.111.14.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==22"/>
+			 	<!--KL -->
+			 	<assign name ="circle" expr="'ker'"/>
+				<assign name ="promptpath" expr="'http://10.127.5.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.127.5.182:8088/CDS/hungama/content/'" />
+			 <elseif cond="cirid==23"/>
+			 	<!--TN -->
+			 	<assign name ="circle" expr="'tnu'"/>
+				<assign name ="promptpath" expr="'http://10.121.14.182:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.121.14.182:8088/CDS/hungama/content/'" />
+			 <else/>
+			 	<!--DL -->
+			 	<assign name ="circle" expr="'del'"/>
+				<assign name ="promptpath" expr="'http://10.2.87.32:8088/CDS/hungama/TINTUMONPORTAL/'"/>
+				<assign name="contentpath" expr="'http://10.2.87.32:8088/CDS/hungama/content/'" />
+			 </if>
+			<if cond="cirid==0 ||cirid==1 || cirid==2 ||  cirid==3 || cirid==4 || cirid==5 || cirid==6 || cirid==7 ">
+				<assign name="zone" expr="'north'"/>
+			<elseif cond="cirid==8 || cirid==9 ||  cirid==10 || cirid==11 || cirid==12 " />
+				<assign name="zone" expr="'west'"/>
+			<elseif cond="cirid==13 || cirid==14 ||  cirid==15 || cirid==16 || cirid==17 || cirid==18 "/>
+				<assign name="zone" expr="'east'"/>
+			<elseif cond="cirid==19 || cirid==20 ||  cirid==21 || cirid==22 || cirid==23 "/>
+				<assign name="zone" expr="'south'"/>
+			</if>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/tollfree.wav'"/>		
+				</prompt>
+				<goto next="SelectLang.vxml"/> 
+		
+	</block>
+  </form>
+
+</vxml>

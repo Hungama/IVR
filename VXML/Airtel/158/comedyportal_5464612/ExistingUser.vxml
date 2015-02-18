@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="ComedyPortalRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+<meta name="ExistingUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="audiofetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+	<meta name="Support" content="" />	
+	
+	<var name="length" expr="0"/>
+	
+	<script>
+		var out_string=new Object();
+	</script>
+	
+	<form id="LASTHEARD_PROFILE">
+		<block>
+		<assign name="Section_Name" expr="'COMEDYPORTAL_EXISITING'"/>
+			
+				<prompt bargein="true" timeout="3s">
+					<!--<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_old_cntst1.wav'"/>-->
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Welcome_old.wav'"/>
+				</prompt>
+			<goto next="ComedyMainMenu.vxml"></goto>
+								
+		</block>
+	</form>
+	
+</vxml>

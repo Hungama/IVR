@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+	<property name="timeout" value="2s"/>
+	<meta name="Hungama_EDU_ExistUser.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>    
+	<property name="caching" value="fast"/>
+	<property name="documentfetchhint" value="safe"/>
+	<property name="grammarfetchhint" value="safe"/>
+	<property name="documentmaxage" value="3600"></property>
+	<property name="fetchminimumbuffersize" value="54272"/>
+	<property name="fetchhint" value="safe"/>
+	<property name="timeout" value="1s" />
+	<property name="maxage" value="1800s"/>
+	<property name="audiofetchhint" value="safe"/>
+
+
+<form id="Main_Menu">
+	<block>
+	<assign name="Section_Name" expr="'PD_EXISITINGUSER'"/>
+			<if cond="ANI=='8527000779' || ANI=='9910040744'">
+			 	<assign name ="circle" expr="'kar'"/>
+			</if> 
+		<if cond="repeat_flag=='1'">
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=@&amp;INPARAM[2]=@&amp;INPARAM[3]=@&amp;INPARAM[4]=GET'"/>
+		   		<script>
+		 			<![CDATA[
+		   				for(j=0; j< out_string.length;  j++)
+			 		 		{  	  
+			      				if(j==0)
+				      			 	HEARD = out_string[j];
+						        if(j==1)
+							       	clip_no = out_string[j];
+						        if(j==2)
+							       	test_flag = out_string[j];							      
+			  				}
+						]]>
+				</script>
+				<prompt bargein="true" timeout="0s" cond="repeat_flag!='2'">
+					 	<audio expr="promptpath+'/'+lang+'/welcome_old.wav'"/>
+				</prompt>
+		</if>
+				<if cond="repeat_flag=='1'">
+						<goto next="Hungama_EDU_Help.vxml#hungamablanceminute"></goto>				
+				</if>
+				<if cond="test_flag=='2'">	
+					<goto next="Hungama_EDU_MainMenu.vxml"></goto>
+				<elseif cond="test_flag=='1'"/>
+					  <assign name="module" expr="HEARD" />
+					  <log>	module == <value expr="module"/>    </log>				
+			                <goto next="#LASTHEARD"/> 	
+				</if>
+
+				<assign name="last_heard" expr="'true'"></assign>					
+				<if cond="HEARD=='0' || HEARD=='00'">
+					<goto next="Hungama_EDU_MainMenu.vxml"></goto>
+				<else/>
+					<assign name="module" expr="HEARD"></assign>					
+					<goto next="#LASTHEARD"></goto>												
+				</if>									
+				
+	</block>
+<!--	<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+					<prompt bargein="true" timeout="0s" cond="repeat_flag!='2'">
+					 	<audio expr="promptpath+'/'+lang+'/welcome_old.wav'"/>
+					</prompt>
+			<filled>
+				<if cond="repeat_flag=='1'">
+						<goto next="Hungama_EDU_Help.vxml#hungamablanceminute"></goto>				
+				</if>
+				<if cond="test_flag=='2'">	
+					<goto next="Hungama_EDU_MainMenu.vxml"></goto>
+				<elseif cond="test_flag=='1'"/>
+					  <assign name="module" expr="HEARD" />
+					  <log>	module == <value expr="module"/>    </log>				
+		              <goto next="#LASTHEARD"/> 	
+				</if>
+
+				<assign name="last_heard" expr="'true'"></assign>					
+				<if cond="HEARD=='0' || HEARD=='00'">
+					<goto next="Hungama_EDU_MainMenu.vxml"></goto>
+				<else/>
+					<assign name="module" expr="HEARD"></assign>					
+					<goto next="#LASTHEARD"></goto>												
+				</if>									
+			</filled>
+		</field>
+		<noinput>
+				<if cond="test_flag=='2'">	
+					<goto next="Hungama_EDU_MainMenu.vxml"></goto>
+				<elseif cond="test_flag=='1'"/>	
+					  <assign name="module" expr="HEARD" />
+					  <log>	module == <value expr="module"/>    </log>				
+		              <goto next="#LASTHEARD"/> 	
+				</if>		
+
+				<assign name="last_heard" expr="'true'"></assign>			
+				<if cond="HEARD=='0' || HEARD=='00'">
+					<goto next="Hungama_EDU_MainMenu.vxml"></goto>
+				<else/>
+					<assign name="module" expr="HEARD"></assign>					
+					<goto next="#LASTHEARD"></goto>												
+				</if>	
+		</noinput>
+		<nomatch>
+			<if cond="test_flag=='2'">	
+				<goto next="Hungama_EDU_MainMenu.vxml"></goto>
+			<elseif cond="test_flag=='1'"/>
+					  <assign name="module" expr="HEARD" />
+					  <log>	module == <value expr="module"/>    </log>				
+		              <goto next="#LASTHEARD"/> 	
+			</if>
+
+			<assign name="last_heard" expr="'true'"></assign>			
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="Hungama_EDU_MainMenu.vxml"></goto>
+			<else/>
+				<assign name="module" expr="HEARD"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>
+		</nomatch>-->
+</form>
+<form id="LASTHEARD">
+<block>
+<assign name="Section_Name" expr="'PD_EXISITINGUSER_LASTHEARD'"/>
+</block>
+		<field name="choice">
+		    <grammar mode="dtmf" root="start">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+
+			<prompt bargein="true" timeout="1s">
+			 	<audio expr="promptpath+'/'+lang+'/listening_cat.wav'"/>
+			 	<audio expr="promptpath+'/'+lang+'/'+HEARD+'.wav'"/>
+			 	<audio expr="promptpath+'/'+lang+'/continue_mainmenu.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='8'">
+					<goto next="Hungama_EDU_MainMenu.vxml"></goto>
+				<elseif cond="choice=='9'"/>
+ 					<goto next="Hungama_EDU_Help.vxml"/>	
+				<else/>			
+					<if cond="test_flag=='1'">
+					  <assign name="module" expr="HEARD" />
+					  <log>	module == <value expr="module"/>    </log>				
+		              <goto next="test_module.vxml"/> 	
+					<else/>
+	    				<assign name="module_pass" expr="'lastheard'" />		
+						<goto next="Hungama_EDU_MainMenu.vxml#fetch_module"></goto>												
+					</if>	
+				</if>									
+			</filled>
+		</field>
+		<noinput>
+					<if cond="test_flag=='1'">
+					  <assign name="module" expr="HEARD" />
+					  <log>	module == <value expr="module"/>    </log>				
+		              <goto next="test_module.vxml"/> 	
+					<else/>
+	    				<assign name="module_pass" expr="'lastheard'" />		
+						<goto next="Hungama_EDU_MainMenu.vxml#fetch_module"></goto>												
+					</if>
+		</noinput>
+		<nomatch>
+					<if cond="test_flag=='1'">
+					  <assign name="module" expr="HEARD" />
+					  <log>	module == <value expr="module"/>    </log>				
+		              <goto next="test_module.vxml"/> 	
+					<else/>
+	    				<assign name="module_pass" expr="'lastheard'" />		
+						<goto next="Hungama_EDU_MainMenu.vxml#fetch_module"></goto>												
+					</if>
+		</nomatch>
+</form>
+
+</vxml>

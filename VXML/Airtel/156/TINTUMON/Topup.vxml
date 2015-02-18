@@ -1,0 +1,197 @@
+
+<vxml version="2.1" application="TintuRoot.vxml">      
+    
+   <var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="true"/>		
+   <var name="names"/> 
+   <var name="tottopup" expr="''"/>	
+   <var name="topup11" expr="''"/>	
+   <var name="topup12" expr="''"/>	
+   <var name="topup13" expr="''"/>	
+   <var name="topupmnu" expr="''"/>	
+   <var name="balupdatestatus" expr="'1'"/>	
+   
+   <script>
+		var out_string=new Object();
+	</script>
+   
+   <form id="hungamatopupchk">
+   
+       <block>
+  		
+		<goto next="End.vxml"/>
+		<assign name="Section_Name" expr="'TINTUMON_TOPUP'"/>
+
+	          <if cond="balupdatestatus == '1'">			     
+	            <script> 
+	            	total_used_bal=rim(start_BalenceMinute);
+                  balance=balance-total_used_bal;
+	            	balance=Math.floor(balance/60);	
+	            </script>
+	            <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=TINTUMON_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]=5464612&amp;INPARAM[3]='+timerflag"/>
+  	          		<script>balupdatestatus=0; </script>
+			  </if>	
+			  
+			 
+				       <goto next="#hungamatopupmnu"/>						 	    			   	
+   			    	
+	   </block>	
+	  
+	 
+   </form> 
+	
+   <form id="hungamatopupmnu">
+   
+      <block>
+			<script>
+				<![CDATA[
+				if(timerflag==1)
+				start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+         
+		     
+      </block>		
+		 
+	    <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				   <item>1</item>		
+				   <item>2</item>		
+				   <item>3</item>
+				   <item>4</item>
+				   <item>5</item>
+                </one-of>
+              </rule>
+            </grammar>			
+			
+		   
+			<prompt bargein="true" timeout="0s">	
+					<audio expr="promptpath+LANG_DESCRIPTION+'/topup5.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/topup4.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf2.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/topup3.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Press_dtmf3.wav'"/>	
+					<audio expr="promptpath+LANG_DESCRIPTION+'/topup4.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Press_dtmf4.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/topup5.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/Press_dtmf5.wav'"/>
+           	</prompt>
+			
+			
+			<filled>
+				<if cond="mnuopt=='1'">
+				     <clear namelist="mnuopt"/> 
+				     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=TINTUMON_TOP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[1]='+DNIS"/>
+				     <audio expr="promptpath+LANG_DESCRIPTION+'/topup_request_recd.wav'"/>			      
+					 <goto next="#update_topup"/>		           	  					
+				<elseif cond="mnuopt=='2'"/>
+				     <clear namelist="mnuopt"/> 
+				     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=TINTUMON_TOP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2&amp;INPARAM[1]='+DNIS"/>
+				     <audio expr="promptpath+LANG_DESCRIPTION+'/topup_request_recd.wav'"/>			      
+					 <goto next="#update_topup"/>				
+				<elseif cond="mnuopt=='3'"/>
+				     <clear namelist="mnuopt"/> 
+				     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=TINTUMON_TOP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[1]='+DNIS"/>
+				     <audio expr="promptpath+LANG_DESCRIPTION+'/topup_request_recd.wav'"/>			      
+					 <goto next="#update_topup"/>
+				<elseif cond="mnuopt=='4'"/>
+					<clear namelist="mnuopt"/> 
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=TINTUMON_TOP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=15&amp;INPARAM[1]='+DNIS"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/topup_request_recd.wav'"/>			      
+					<goto next="#update_topup"/>
+				<elseif cond="mnuopt=='5'"/>
+					<clear namelist="mnuopt"/> 
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=TINTUMON_TOP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[1]='+DNIS"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/topup_request_recd.wav'"/>			      
+					<goto next="#update_topup"/>
+				</if>
+			</filled>		
+			
+			<noinput count="1">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/No_Input.wav'"/>
+			<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/No_Input.wav'"/>
+			<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+
+			 <goto next="End.vxml"/>	
+			</noinput>
+			<nomatch count="1">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/Wrong_Input.wav'"/>			   
+			<reprompt></reprompt>
+			</nomatch>  
+			<nomatch count="2">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/Wrong_Input.wav'"/>			   
+			<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+			<goto next="End.vxml"/>
+			</nomatch>  
+
+
+ 			            	
+	  </field>	 
+    </form> 
+    
+ <form id="update_topup">
+   
+       <block>
+	            <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=TINTUMON_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2'"/>
+		   				<script>
+		   				 <![CDATA[
+		   							    for(j=0; j< out_string.length;  j++)
+		   								  {  	  
+		   								       if(j==0)
+		   								       	usr_status = out_string[j];
+		   								       if(j==1)
+		   								       	lang = out_string[j];
+		   								       if(j==2)
+		   								       	balance = out_string[j];
+											 if(j==3)
+											modesub = out_string[j];
+
+		   																		      								       							      
+		   								  }
+		   		
+		   					]]>
+				</script>
+				<script> 					 
+				  	balance=balance*60;
+				  	  timerflag=1;      
+				</script>
+				<script>
+					    <![CDATA[
+					       if(timerflag==1)
+							start_BalenceMinute=starttime();
+					   ]]>	 	
+				</script>
+				 	
+				<if cond="balance &gt; '0'">			         			 
+				     <log expr="'@@@@@@ user top up balance is '+balance"/>
+				     <prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_topup.wav'"/>
+				     </prompt>
+				      <script> timerflag=1;</script>
+			 	     <goto next="TintuMainMenu.vxml"/>					
+				<else/>	
+				      <prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/topup_sorry.wav'"/>
+				     </prompt>
+				      <goto next="End.vxml"/>										 	    			   	
+   			      </if>	
+	   </block>	
+	  
+	 
+   </form>
+</vxml>
+ 

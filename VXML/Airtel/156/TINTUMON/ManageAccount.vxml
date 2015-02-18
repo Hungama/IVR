@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="TintuRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="ManageAccount.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<script>
+		var UserStatus1=new Object();
+		var out_string=new Object();		
+	</script>
+	
+   <var name="PlayOnce" expr="'true'"/>		
+   <var name="names"/> 
+   
+   <form id="accountmanager">
+
+   <block>
+   <assign name="Section_Name" expr="'TINTUMON_ACCOUNTMANAGER'"/>
+		<script>
+		    <![CDATA[
+		       if(timerflag==1)
+				start_BalenceMinute=starttime();
+		   ]]>	 	
+		</script>				   
+		</block>
+   
+		<!-- <log expr="'welcome to the 9 XM hungama Portal act manager menu '"/> 
+        
+        <log expr="' Server ip is :' + IP"/>
+	    <log expr="'Ani IS : ' + ANI"/> 	K
+		<log expr="'DNIS IS : ' + DNIS"/> -->	
+							
+		 
+	    <field name="actmgrmnuopt">
+		
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>			
+				  <item>2</item>
+				<!--  <item>3</item>-->
+				 
+				  <item>8</item>
+                </one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_acmanager.wav'"/>
+			</prompt>
+		    			
+			
+			<filled>
+				
+				<!--<if cond="actmgrmnuopt=='1'">
+					
+						<if cond="timerflag=='1'">
+						   <script>
+							total_used_bal=rim(start_BalenceMinute);
+							balance=balance-total_used_bal;  						  
+						</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+								   <goto next="Topup.vxml"/>
+							    </if>     
+						</if>
+					 <goto next="Topup.vxml"/>
+               				 </if>-->
+				
+				<if cond="actmgrmnuopt=='1'">
+				
+						<if cond="timerflag=='1'">
+						   <script>
+							total_used_bal=rim(start_BalenceMinute);
+							balance=balance-total_used_bal;  						  
+						</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+								   <goto next="Topup.vxml"/>
+							    </if>     
+						</if>
+
+
+					 <goto next="#AcntBalance"/>
+                 </if>
+                 
+                 <if cond="actmgrmnuopt=='2'">
+					<if cond="timerflag=='1'">
+					   <script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+						     <if cond="balance &lt;= '0'">          
+							   <goto next="Topup.vxml"/>
+						    </if>     
+					</if>
+
+					 <goto next="#unsubscription"/>
+                 </if>
+                 
+                	
+				<if cond="actmgrmnuopt=='8'">
+					<if cond="timerflag=='1'">
+					   <script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+						     <if cond="balance &lt;= '0'">          
+							   <goto next="Topup.vxml"/>
+						    </if>     
+					</if>
+
+					 <goto next="TintuMainMenu.vxml"/>
+                 </if>
+				
+				
+			</filled>
+			
+	    		
+   		<noinput count="1">
+				<if cond="timerflag=='1'">
+				   <script>
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;  						  
+				</script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+					     <if cond="balance &lt;= '0'">          
+						   <goto next="Topup.vxml"/>
+					    </if>     
+				</if>
+
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="2">
+				<if cond="timerflag=='1'">
+				   <script>
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;  						  
+				</script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+					     <if cond="balance &lt;= '0'">          
+						   <goto next="Topup.vxml"/>
+					    </if>     
+				</if>
+
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="3">
+			<goto next="TintuMainMenu.vxml"/>
+		</noinput>
+		<nomatch count="1">
+			<if cond="timerflag=='1'">
+			   <script>
+				total_used_bal=rim(start_BalenceMinute);
+				balance=balance-total_used_bal;  						  
+			</script>
+			   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			   <log expr="'@@@@@@ left balance is '+balance"/>
+				     <if cond="balance &lt;= '0'">          
+					   <goto next="Topup.vxml"/>
+				    </if>     
+			</if>
+
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+					<if cond="timerflag=='1'">
+					   <script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+						     <if cond="balance &lt;= '0'">          
+							   <goto next="Topup.vxml"/>
+						    </if>     
+					</if>
+		
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+					</prompt>			
+					<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+					 <goto next="TintuMainMenu.vxml"/>
+		</nomatch>
+
+		
+             					
+	  </field>	 
+	  		
+    </form> 
+    
+    <form id="AcntBalance">
+	 <block>
+	 <assign name="Section_Name" expr="'TINTUMON_ACCOUNTMANAGER_BALANCE'"/>
+		<script> 
+			  loc_balance=Math.floor(balance/60); 
+
+		</script>
+		
+				<prompt bargein="false" >
+			  		<audio expr="promptpath+LANG_DESCRIPTION+'/acmanager_balanceis.wav'"/>
+			  	</prompt>
+		  <if cond="loc_balance &lt;= '0'">          
+	  			<prompt bargein="false" >
+	  				
+	  				<audio expr="promptpath+LANG_DESCRIPTION+'/0.wav'"/>
+	  				<audio expr="promptpath+LANG_DESCRIPTION+'/minutes.wav'"/>
+	  			</prompt>
+	  		<elseif cond="loc_balance &gt;= '100'"/>
+	  			<script>loc_balance=loc_balance-100;</script>
+	  			<prompt bargein="false" >
+	  				
+	  				<audio expr="promptpath+LANG_DESCRIPTION+'/1.wav'"/>
+	  				<audio expr="promptpath+LANG_DESCRIPTION+'/100.wav'"/>
+	  				<audio expr="promptpath+LANG_DESCRIPTION+'/'+loc_balance+'.wav'"/>
+	  				<audio expr="promptpath+LANG_DESCRIPTION+'/minutes.wav'"/>
+	  			</prompt>
+	  		<else/>
+	  			<prompt bargein="false" >
+	  				
+	  				<audio expr="promptpath+LANG_DESCRIPTION+'/'+loc_balance+'.wav'"/>
+	  				<audio expr="promptpath+LANG_DESCRIPTION+'/minutes.wav'"/>
+	  			</prompt>
+	  		</if> 
+	  	
+			<if cond="timerflag=='1'">
+				   <script>
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;  						  
+				</script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+					     <if cond="balance &lt;= '0'">          
+						   <goto next="Topup.vxml"/>
+					    </if>     
+			</if>
+         
+			
+			
+			<goto next="TintuMainMenu.vxml"/>
+	</block>
+  </form>
+   
+    <form id="unsubscription">
+         
+		 <block>
+		 <assign name="Section_Name" expr="'TINTUMON_ACCOUNTMANAGER_UNSUB'"/>
+			<script>
+			    <![CDATA[
+			       if(timerflag==1)
+					start_BalenceMinute=starttime();
+			   ]]>	 	
+			</script>					   
+		</block>
+		
+		<!-- <log expr="'welcome to the hungama unsub category main menu '"/>
+        
+        <log expr="' Server ip is :' + IP"/>
+	    <log expr="'Ani IS : ' + ANI"/> 	
+		<log expr="'DNIS IS : ' + DNIS"/> -->			
+		 
+	    <field name="choice">	
+		   
+		   <grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+			</grammar>
+
+			<prompt bargein="true" timeout="0s">
+			       <audio expr="promptpath+LANG_DESCRIPTION+'/acmanager_unsub_confirm.wav'"/>		
+			    </prompt>
+		    			
+			
+			<filled>	
+				     	  
+				<if cond="choice=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=TINTUMON_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+
+					<prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_unsub.wav'"/>	
+					</prompt>
+					   <goto next="End.vxml"/>
+
+				<elseif cond="choice=='8'"/>
+					<if cond="timerflag=='1'">
+					   <script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+						     <if cond="balance &lt;= '0'">          
+							   <goto next="Topup.vxml"/>
+						    </if>     
+					</if>
+						<goto next="TintuMainMenu.vxml"/>    		     				  				    
+				    </if>
+			       
+			</filled>
+			
+			 <noinput>
+					<if cond="timerflag=='1'">
+						   <script>
+							total_used_bal=rim(start_BalenceMinute);
+							balance=balance-total_used_bal;  						  
+						</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+								   <goto next="Topup.vxml"/>
+							    </if>     
+					</if>
+
+			         	<prompt>						
+   						<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>		 
+   			   		</prompt>
+   					<reprompt/>
+   					
+			 </noinput>
+ 			<noinput count="3">
+					<if cond="timerflag=='1'">
+						   <script>
+							total_used_bal=rim(start_BalenceMinute);
+							balance=balance-total_used_bal;  						  
+						</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+								   <goto next="Topup.vxml"/>
+							    </if>     
+					</if>
+
+			         	<prompt>						
+   						<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>		 
+   			   		</prompt>
+   					 <goto next="TintuMainMenu.vxml"/>
+   					
+			 </noinput>
+ <nomatch>
+					<if cond="timerflag=='1'">
+						   <script>
+							total_used_bal=rim(start_BalenceMinute);
+							balance=balance-total_used_bal;  						  
+						</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+								   <goto next="Topup.vxml"/>
+							    </if>     
+					</if>
+
+   					<prompt>						
+   						<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>		 
+   			   		</prompt>
+   			   		<reprompt/>
+   		   	    </nomatch>
+
+			 <nomatch count="3">
+					<if cond="timerflag=='1'">
+						   <script>
+							total_used_bal=rim(start_BalenceMinute);
+							balance=balance-total_used_bal;  						  
+						</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+								   <goto next="Topup.vxml"/>
+							    </if>     
+					</if>
+
+   					<prompt>						
+   						<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>		 
+   			   		</prompt>
+   			   		 <goto next="TintuMainMenu.vxml"/>
+   		   	    </nomatch>	
+ 					
+	  </field>	 
+	  		
+    </form> 
+    
+  </vxml>

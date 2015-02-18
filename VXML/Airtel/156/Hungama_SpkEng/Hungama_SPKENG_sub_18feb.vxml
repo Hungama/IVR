@@ -1,0 +1,774 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+	<property name="timeout" value="2s"/>
+	<meta name="Hungama_SPKENG_sub.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>    
+<form id="SUB_OPTION">
+<block>
+<if cond="ANI=='8527000779'">
+	<goto next="Hungama_SPKENG_sub_test.vxml"/>
+</if>
+<script>
+	subcat="sub";
+</script>
+	<assign name="song_begin" expr="start_time()"/>
+<prompt bargein="false" timeout="3s">
+<audio expr="promptpath+'/'+lang+'/welcome_new.wav'"/>		
+</prompt>
+	<assign name="con_data" expr="'welcome_new'" />
+	<assign name="var_wel" expr="getRandom(1,5)" />
+	<assign name="compare_time" expr="var_wel"/>
+	<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+	<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+<assign name="song_begin" expr="start_time()"/>
+</block>
+	<field name="submnuopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+            	   <rule id="start" scope="public">
+			<one-of>				 
+				<item>1</item>	
+				<item>2</item>	
+				
+			</one-of>
+	               </rule>
+            </grammar>
+	    
+	     
+             <prompt bargein="false" timeout="3s">
+	    	    
+	                   <audio expr="promptpath+'/'+lang+'/subintro_sample.wav'"/>		
+            </prompt>
+			
+			<filled>
+				
+				<assign name="con_data" expr="'subintro_sample'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				
+				<assign name="dtmfsub" expr="'First_level_input'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+submnuopt"></assign>
+
+				
+				<if cond="submnuopt=='1'">
+					<assign name="amt" expr="'5'"/>
+					<assign name="sid" expr="'1517'"/>
+					<assign name="pid" expr="'57'"/>
+					<clear namelist="submnuopt"/> 	
+				     	<goto next="#hungamasubmnu"/>	
+				 <elseif cond="submnuopt=='2'"/>
+				 <assign name="dtmfsub" expr="'lesson_level_input'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+submnuopt"></assign>
+					<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=SPKENGconfig/samplelesson.cfg'"/>
+					<script>
+						array1.length=0;
+						unike_play=0;
+					</script>				
+
+					<assign name="len" expr="favSongs.length"/>
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+						<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+						<script>
+						 <![CDATA[
+							   for(j=0; j<len ;  j++)
+							   {  	  
+										array1[j] = favSongs[j];						   
+							   }
+							]]>		
+			</script> 	
+					<prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/'+lang+'/sample_sub.wav'"/>		
+					</prompt>
+				 	<goto next="#samplelession"/>	
+				</if>
+			</filled>
+			
+			 <noinput>
+					 
+					<assign name="con_data" expr="'subintro_sample'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<assign name="input_check" expr="'noinput'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+					<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>                
+					<goto nextitem="submnuopt"/>
+			</noinput>
+
+			<noinput count="3">
+					
+					<assign name="con_data" expr="'subintro_sample'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<assign name="input_check" expr="'noinput'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>  
+					<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>						           
+					<goto next="Hungama_SPKENG_End.vxml"/>            
+			</noinput>
+
+			<nomatch>
+					
+					<assign name="con_data" expr="'subintro_sample'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<assign name="input_check" expr="'nomatch'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>               
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>		
+					<goto nextitem="submnuopt"/>
+			</nomatch> 
+
+			<nomatch count="3">
+					
+					<assign name="con_data" expr="'subintro_sample'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<assign name="input_check" expr="'nomatch'"/>
+					<assign name="dtmfsub" expr="'First_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>    			
+					<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>	
+					<goto next="Hungama_SPKENG_End.vxml"/>                			
+			</nomatch>					
+	  </field>	 
+</form>
+<form id="samplelession">
+<block>
+<assign name="song_begin" expr="start_time()"/>
+ 	
+				
+		<if cond="unike_play &gt; len-1">
+			<!--<assign name="unike_play" expr="0" />-->
+			<goto next="#samplelession_reconfirm"/>
+		<elseif cond="unike_play &lt; 0" />
+			<assign name="unike_play" expr="len-1" />
+		</if>
+			
+			<assign name="con_data" expr="'sample_sub'" />
+			<assign name="var_wel" expr="getRandom(1,5)" />
+			<assign name="compare_time" expr="var_wel"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+			<assign name="song_begin" expr="start_time()"/>
+
+		<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+		<log>	array == <value expr="array1[unike_play]"/>    </log>
+		<script>
+			sampleless = array1[unike_play];
+		</script>
+		
+		<script>
+			var a= sampleless.substring(0,4);
+				if(a=="asrp")
+					 modulequs="asrp";
+				 else
+					modulequs="0";
+		</script>
+		<log>	modulequsmodulequsmodulequsmodulequsmodulequsmodulequsmodulequsmodulequsmodulequs == <value expr="modulequs"/>    </log>
+		<if cond="modulequs=='asrp'">
+			<goto next="#play_mod_asrsample"/>
+		
+		</if>
+		
+</block>
+	<field name="submnuopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+            	   <rule id="start" scope="public">
+			<one-of>				 
+				<item>1</item>	
+				
+			</one-of>
+	               </rule>
+            </grammar>
+	    
+	    <prompt bargein="true" timeout="2s">
+	    
+	    			     	
+	    		             <audio expr="promptpath+'/'+lang+'/'+sampleless+'.wav'"/>		
+		</prompt>
+			
+			<filled>
+			
+				<assign name="con_data" expr="sampleless" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<assign name="dtmfsub" expr="'First_level_input'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+submnuopt"></assign>
+
+				
+				<if cond="submnuopt=='1'">
+					<assign name="amt" expr="'5'"/>
+					<assign name="sid" expr="'1517'"/>
+					<assign name="pid" expr="'57'"/>
+					<clear namelist="submnuopt"/> 	
+				     	<goto next="#hungamasubmnu"/>	
+				</if>
+			</filled>
+			
+			 <noinput>
+			 <assign name="input_check" expr="'noinput'"/>
+			 					<assign name="dtmfsub" expr="'first_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+				<assign name="con_data" expr="sampleless" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+			 <script> unike_play=unike_play+1</script>
+					
+			<goto next="#samplelession"/>
+			</noinput>
+
+			
+
+			<nomatch>
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmfsub" expr="'first_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+					<assign name="con_data" expr="sampleless" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+
+					<script> unike_play=unike_play+1</script>
+					
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+					<goto next="#samplelession"/>
+			</nomatch> 
+
+								
+	  </field>	 
+</form>
+<!--************************************************************************ASRin module***********************************************************************-->
+<form id="play_mod_asrsample">
+<block>
+<assign name="song_begin" expr="start_time()"/>
+		<script>
+				ques_mod=array1[unike_play].split("#");
+				ques_play=ques_mod[0]; 
+				
+		</script>
+		<log>	sampleeeeeeeeeASRques_play############  is ==	<value expr="ques_play"/>    </log>
+		
+		
+		
+						
+	</block>
+	<field name="recipe">
+				<grammar type="application/srgs+xml" srcexpr="'spokeneng_sample.grxml'" mode="voice"/>	 
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptpath+'/'+lang+'/'+ques_play+'.wav'"/>
+			</prompt>
+				<filled>
+					<assign name="con_data" expr="ques_play" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<script> unike_play=unike_play+1</script>
+					<assign name="recipename" expr="recipe" />
+					<assign name="recipeid" expr="recipe" />
+						<log>
+							recipeid is 
+							<value expr="recipeid"/>
+						</log>
+	
+					<assign name="conf" expr="recipe$.confidence" />
+					<assign name="speechuttar" expr="recipe$.utterance" />
+					<assign name="speechword" expr="conf"/>
+					<log>	conf == <value expr="conf"/>    </log>
+	
+					<log>	CONFIDENCE == <value expr="recipe$.confidence"/>    </log>
+					<log>	INPUTMODE == <value expr="recipe$.inputmode"/>    </log>
+					<log>	utterance== <value expr="recipe$.utterance"/>    </log>
+					<log>	INTERPRETATION == <value expr="recipe$.interpretation"/>    </log>
+				<goto next="#final" />
+				</filled>
+				<noinput>
+					<assign name="con_data" expr="ques_play" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+					<assign name="song_begin" expr="start_time()"/>		
+					<prompt bargein="true" timeout="0s">  
+					<audio expr="promptpath+'/'+lang+'/nospeak.wav'"/>
+					</prompt>
+						<assign name="con_data" expr="'nospeak'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+						<assign name="song_begin" expr="start_time()"/>
+					<prompt bargein="true" timeout="0s">  
+						<audio expr="promptpath+'/'+lang+'/try_again.wav'"/>
+					</prompt>
+						<assign name="con_data" expr="'try_again'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<goto next="#play_mod_asrsample" />
+				</noinput>
+	
+			<nomatch>
+				<script> unike_play=unike_play+1</script>
+				<assign name="con_data" expr="ques_play" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+					<prompt bargein="true" timeout="0s"> 
+					<audio expr="promptpath+'/'+lang+'/wrong_pron.wav'"/>
+					</prompt>
+						<assign name="con_data" expr="'wrong_pron'" />
+						<assign name="var_wel" expr="getRandom(1,5)" />
+						<assign name="compare_time" expr="var_wel"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>					 				 						 		
+					<goto next="#samplelession"/>	
+			</nomatch>
+    </field>
+</form>
+<form id="final">
+		<block>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=speak_word_status&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+speechuttar+'&amp;INPARAM[1]=sl'"/>
+
+				<script>
+					<![CDATA[
+						for(j=0; j< out_string.length;  j++)
+							{  	  
+							if(j==0)
+								speechvalue = out_string[j];
+							if(j==1)
+								speechvalue1 = out_string[j];
+							if(j==2)
+								speech_course = out_string[j];
+
+							}
+						]]>
+				</script>
+				<log>	speechvalue  is ==<value expr="speechvalue"/>    </log>
+				<log>	speechvalue1  is ==<value expr="speechvalue1"/>    </log>
+				<log>	speech_course  is ==<value expr="speech_course"/>    </log> 
+			 
+ 			<script srcexpr="'http://10.2.73.156:8080/hungama/rasoi_dbinteraction?PROCEDURE=spoken_word_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+speechuttar"/>
+<assign name="song_begin" expr="start_time()"/>
+	<if cond="speechvalue=='correct'">
+		<prompt bargein="true" timeout="0s">
+			   <!--<audio expr="promptpath+'/'+lang+'/'+ques_right+'.wav'"/>-->
+			   <audio expr="promptpath+'/'+lang+'/right_pron.wav'"/>
+		</prompt>
+			<assign name="con_data" expr="'right_pron'" />
+			<assign name="var_wel" expr="getRandom(1,5)" />
+			<assign name="compare_time" expr="var_wel"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>	
+		
+		<goto next="#samplelession"/>		
+	<else/>
+		
+		<prompt bargein="true" timeout="0s">
+			<!--<audio expr="promptpath+'/'+lang+'/'+ques_wrong+'.wav'"/>-->
+			<audio expr="promptpath+'/'+lang+'/wrong_pron.wav'"/>
+			<audio expr="promptpath+'/'+lang+'/correct_way.wav'"/>
+			<audio expr="promptpath+'/'+lang+'/'+speech_course+'_'+speechvalue1+'.wav'"/>
+		</prompt>
+			<assign name="con_data" expr="'wrong_pron'" />
+			<assign name="var_wel" expr="getRandom(1,5)" />
+			<assign name="compare_time" expr="var_wel"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+		
+		<goto next="#samplelession"/>			
+	</if>
+</block>
+</form>
+<!--***************************************************************************************************************************************************-->
+
+<form id="samplelession_reconfirm">
+<block>
+<assign name="song_begin" expr="start_time()"/>
+</block>
+	<field name="submnuopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+            	   <rule id="start" scope="public">
+			<one-of>				 
+				<item>1</item>	
+							  	
+			</one-of>
+	               </rule>
+            </grammar>
+	     
+	     <prompt bargein="true" timeout="3s">
+               <audio expr="promptpath+'/'+lang+'/sample_lesson_end.wav'"/>		
+            </prompt>
+			
+			<filled>
+			<assign name="dtmfsub" expr="'lessonnend_level_input'"/>
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+submnuopt"></assign>
+
+				<assign name="con_data" expr="'sample_lesson_end'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+				
+				
+				<if cond="submnuopt=='1'">
+					<assign name="amt" expr="'5'"/>
+					<assign name="sid" expr="'1517'"/>
+					<assign name="pid" expr="'57'"/>
+					<clear namelist="submnuopt"/> 	
+				     <goto next="#hungamasubmnu"/>	
+				</if>
+			</filled>
+			
+			 <noinput>
+			 				<assign name="input_check" expr="'noinput'"/>
+			 				<assign name="dtmfsub" expr="'lessonnend_level_input'"/>			        
+			 				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+
+					<assign name="con_data" expr="'sample_lesson_end'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+					
+					<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>                
+					<goto nextitem="submnuopt"/>
+			</noinput>
+
+			<noinput count="3">
+					<assign name="input_check" expr="'noinput'"/>
+					<assign name="dtmfsub" expr="'lessonnend_level_input'"/>			        
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+
+					<assign name="con_data" expr="'sample_lesson_end'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+					
+					<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>						           
+					<goto next="Hungama_SPKENG_End.vxml"/>            
+			</noinput>
+
+			<nomatch>
+						<assign name="input_check" expr="'nomatch'"/>
+						<assign name="dtmfsub" expr="'lessonnend_level_input'"/>			        
+						<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+						<assign name="con_data" expr="'sample_lesson_end'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+					        <audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>		
+					<goto nextitem="submnuopt"/>
+			</nomatch> 
+
+			<nomatch count="3">
+									<assign name="input_check" expr="'nomatch'"/>
+									<assign name="dtmfsub" expr="'lessonnend_level_input'"/>			        
+									<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+
+					<assign name="con_data" expr="'sample_lesson_end'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+					   			
+					<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>	
+					<goto next="Hungama_SPKENG_End.vxml"/>                			
+			</nomatch>					
+	  </field>	 
+</form>
+
+<form id="reconfirm_399_subs">
+<block>
+	<assign name="song_begin" expr="start_time()"/>
+</block>
+    	<field name="reconfirm">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+			  <item>5</item>				  			  		      
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt bargein="true" timeout="3s">	
+               <audio expr="promptpath+'/'+lang+'/confirm_sub_399.wav'"/>		
+            </prompt>
+
+			<filled>
+				<assign name="dtmfsub" expr="'Second_level_input'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+reconfirm"></assign>
+				<assign name="con_data" expr="'cofirm_sub'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+				<assign name="dtmfsub" expr="'Second_level_input'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+reconfirm"></assign>
+				<if cond="reconfirm=='5'">
+				    	 <clear namelist="reconfirm"/> 	
+					 <goto next="#hungamasubmnu"/>	
+				</if>
+			</filled>
+			
+		<noinput>
+			<assign name="input_check" expr="'noinput'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 		 
+			<assign name="con_data" expr="'cofirm_sub'" />
+			<assign name="compare_time" expr="time_duration(song_begin)"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+			<assign name="input_check" expr="'noinput'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 		 
+			<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>   
+			<assign name="song_begin" expr="start_time()"/>
+			<reprompt/> 
+		</noinput>
+
+		<noinput count="3">
+			<assign name="input_check" expr="'noinput'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+			<assign name="con_data" expr="'cofirm_sub'" />
+			<assign name="compare_time" expr="time_duration(song_begin)"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+			<assign name="input_check" expr="'noinput'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 		 
+			<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>	        
+			<goto next="Hungama_SPKENG_End.vxml"/>
+		</noinput>
+
+		<nomatch>
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+				<assign name="con_data" expr="'cofirm_sub'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>              
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+				<assign name="song_begin" expr="start_time()"/>
+			<reprompt/>
+		</nomatch> 
+		 <nomatch count="3">
+		 	<assign name="input_check" expr="'nomatch'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+			<assign name="con_data" expr="'cofirm_sub'" />
+			<assign name="compare_time" expr="time_duration(song_begin)"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+			<assign name="input_check" expr="'nomatch'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 		 
+			<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>	        
+			<goto next="Hungama_SPKENG_End.vxml"/>			
+		</nomatch>			
+	  </field>
+    </form> 
+    <form id="reconfirm_5_subs">
+    <block>
+    	<assign name="song_begin" expr="start_time()"/>
+    </block>
+        	<field name="reconfirm">
+    			 <grammar mode="dtmf" root="start" version="1.0">
+                   <rule id="start" scope="public">
+                     <one-of>				 
+    					  <item>5</item>				  			  		      
+                    </one-of>
+                  </rule>
+                </grammar>
+    			<prompt bargein="true" timeout="3s">	
+                   <audio expr="promptpath+'/'+lang+'/confirm_sub_5.wav'"/>		
+                </prompt>
+    
+    			<filled>
+    			<assign name="dtmfsub" expr="'Second_level_input'"/>
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+reconfirm"></assign>
+
+    				<assign name="con_data" expr="'cofirm_sub'" />
+    				<assign name="compare_time" expr="time_duration(song_begin)"/>
+    				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+    				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+    				<assign name="dtmfsub" expr="'Second_level_input'"/>
+    				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+reconfirm"></assign>
+    				<if cond="reconfirm=='5'">
+    				    	 <clear namelist="reconfirm"/> 	
+    					 <goto next="#hungamasubmnu"/>	
+    				</if>
+    			</filled>
+    			
+    		<noinput>
+    			<assign name="input_check" expr="'noinput'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+    			<assign name="con_data" expr="'cofirm_sub'" />
+    			<assign name="compare_time" expr="time_duration(song_begin)"/>
+    			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+    			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+    			<assign name="input_check" expr="'noinput'"/>
+    			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+    			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 		 
+    			<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>   
+    			<assign name="song_begin" expr="start_time()"/>
+    			<reprompt/> 
+    		</noinput>
+    
+    		<noinput count="3">
+    			<assign name="input_check" expr="'noinput'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+    			<assign name="con_data" expr="'cofirm_sub'" />
+    			<assign name="compare_time" expr="time_duration(song_begin)"/>
+    			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+    			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+    			<assign name="input_check" expr="'noinput'"/>
+    			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+    			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 		 
+    			<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>	        
+    			<goto next="Hungama_SPKENG_End.vxml"/>
+    		</noinput>
+    
+    		<nomatch>
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+    				<assign name="con_data" expr="'cofirm_sub'" />
+    				<assign name="compare_time" expr="time_duration(song_begin)"/>
+    				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+    				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+    				<assign name="input_check" expr="'nomatch'"/>
+    				<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+    				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>              
+    				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+    				<assign name="song_begin" expr="start_time()"/>
+    			<reprompt/>
+    		</nomatch> 
+    		 <nomatch count="3">
+			<assign name="input_check" expr="'nomatch'"/>
+			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+    			<assign name="con_data" expr="'cofirm_sub'" />
+    			<assign name="compare_time" expr="time_duration(song_begin)"/>
+    			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+    			<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+    			<assign name="input_check" expr="'nomatch'"/>
+    			<assign name="dtmfsub" expr="'Second_level_input'"/>			        
+    			<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 		 
+    			<audio expr="promptpath+'/'+lang+'/thanks_nosub.wav'"/>	        
+    			<goto next="Hungama_SPKENG_End.vxml"/>			
+    		</nomatch>			
+    	  </field>
+        </form> 
+    
+
+<form id="hungamasubmnu">
+		<block>	   
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=01&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+sid+'&amp;INPARAM[6]='+pid"/>
+			 <assign name="usr_status" expr="'0'"/>
+			 <log> @@@@prompth path in subscribe3s is <value expr="promptpath"/> </log>
+			 <assign name="song_begin" expr="start_time()"/>
+		</block>	  
+	   
+	   <field name="hungamasubwait">               
+				  <grammar mode="dtmf" root="start" version="1.0">
+                   <rule id="start" scope="public">
+                     <one-of>
+				<item>1</item>
+				<item>2</item>	
+				<item>3</item>	
+				<item>4</item>	
+				<item>5</item>	
+				<item>6</item>	
+				<item>7</item>	
+				<item>8</item>	
+				<item>9</item>	
+				<item>0</item>	               			 
+				<item>#</item>
+				<item>*</item>			      
+                    </one-of>
+                  </rule>
+               </grammar> 	
+			      <prompt bargein="false">
+					<audio expr="promptpath+'/'+lang+'/thanks_sub.wav'"/>		
+	   		      </prompt>	
+	   		      
+		 	
+		 	  <filled>
+				<assign name="con_data" expr="'thanks_sub'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+		 	  <goto next="#Status"/> 
+		 	  <goto next="Hungama_SPKENG_RootMenu.vxml"/>
+             	  
+              </filled>
+			  
+			  <noinput>
+				<assign name="con_data" expr="'thanks_sub'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+<goto next="#Status"/> 
+	         	  <goto next="Hungama_SPKENG_RootMenu.vxml"/> 
+             
+              </noinput>	
+        </field>       
+   </form> 
+    
+<form id="Status">
+<block>
+<assign name="song_begin" expr="start_time()"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=1&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+DNIS"/>
+	   		<script>
+	 			<![CDATA[
+	   				for(j=0; j< out_string.length;  j++)
+		 		 		{  	  
+		      				if(j==0)
+		      			 	usr_status = out_string[j];
+					        if(j==1)
+					       	lang = out_string[j];
+					        if(j==2)
+					       	balance = out_string[j];							      
+		  				}
+				]]>
+			</script>		
+
+			<if cond="usr_status == '1'">						    
+		         <script> 	
+				    balance=balance*60;
+				    timerflag=1;      
+				 </script>
+			        <assign name="dtmfsub" expr="'Billing_status'"/>
+			        <assign name="input_check" expr="'SUCCESS'"/>
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+			        <assign name="profilecount" expr="'1'"/>
+					<goto next="Hungama_SPKENG_RootMenu.vxml"/>
+			<else/>
+			        <assign name="dtmfsub" expr="'Billing_status'"/>
+			        <assign name="input_check" expr="'WAIT'"/>
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+					
+					<prompt bargein="false">
+			           <audio expr="promptpath+'/'+lang+'/charging_wait.wav'"/>		
+		   	      	</prompt>
+					<assign name="con_data" expr="'charging_wait'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>
+					<goto next="Hungama_SPKENG_End.vxml"/>						
+			</if>
+</block>
+</form>    
+</vxml>

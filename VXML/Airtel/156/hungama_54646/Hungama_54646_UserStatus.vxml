@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="Hungama_54646_UserStatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="audiofetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+		var favSongs=new Object();
+	</script>
+
+	<form id="USRSTATUS_CHECK">
+		<block>
+			<assign name="Section_Name" expr="'USERSTATUS'"/>
+			<if cond="realDNIS=='54646000'">
+				<goto next="#USRSTATUS_54646000"></goto>
+    			</if>
+ <if cond="realDNIS=='5464648' || DNIS=='5464648'">
+	<goto next="#MULTI_TOLL"></goto>
+</if>
+<if cond="(ANI=='99108833251' || ANI=='9871452276')">
+	<prompt bargein="true" timeout="2s">
+		<audio expr="promptspath_54646+'/01/Hun-song-60879.wav'"/>
+	</prompt>
+</if>
+
+
+<!--****************************MULTIMODAL**********************************************-->
+	<if cond="realDNIS=='5464683'">
+		
+		<assign name="DNIS" expr="realDNIS"/>
+			<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=Airtel_IVR.HMP_MM&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+DNIS"/>
+					<script>
+					<![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						tarrif = out_string[j];
+
+						}	
+					]]>
+			</script>
+			<log>tarrif   is	<value expr="tarrif"/>    </log>
+				<prompt bargein="true">
+						<audio expr="promptspath_54646+'/FUKREY/01/tollmodal_3rs_del.wav'"/>
+					</prompt>
+
+<goto next="#USRSTATUS_TOLL"></goto>
+
+	</if>
+<if cond="(realDNIS=='5464649' &amp;&amp; circle=='apd')">
+	<assign name="lang" expr="'08'"/>
+		<assign name="DNIS" expr="realDNIS"/>
+			<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=Airtel_IVR.HMP_MM&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+DNIS"/>
+					<script>
+					<![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						tarrif = out_string[j];
+
+						}	
+					]]>
+			</script>
+			<log>tarrif   is	<value expr="tarrif"/>    </log>
+					<prompt bargein="true" timeout="2s">
+						<audio expr="promptspath_54646+'/'+lang+'/welcome_toll.wav'"/>
+					</prompt>
+
+				
+	<goto next="Hungama_54646_HMP_MM.vxml"></goto>
+</if>
+
+<!--******************************************************************************************-->
+
+
+    			     <if cond="DNIS=='54646'">
+					<prompt bargein="true">
+						<audio expr="promptspath_54646+'/FUKREY/01/tollmodal_3rs_del.wav'"/>
+					</prompt>
+
+					<if cond="circle=='raj'">
+						<goto next="#USRSTATUS_TOLL"></goto>
+
+						<!--<prompt bargein="true">
+							<audio expr="promptspath_54646+'/01/songofday_raj.wav'"/>
+						</prompt>
+						<goto next="#USRSTATUS_TOLL_MUSIC"></goto>-->
+					<else/>
+						  <if cond="DNIS=='5464648'">
+						  	<goto next="#MULTI_TOLL"></goto>
+						  <else/>
+						
+							<goto next="#USRSTATUS_TOLL"></goto>
+						</if>
+					</if>
+				</if>
+				<goto next="#USRSTATUS"></goto>
+		</block>
+	</form>
+	
+	
+	<form id="USRSTATUS_TOLL_MUSIC">
+	<block>
+		
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646V2/'+operator+'/browse/browse.cfg'"/>	
+			<script>
+						array1.length=0;
+				</script>
+				<assign name="len" expr="favSongs.length" />
+				<assign name="var_wel" expr="getRandom(1,len)" />
+				<log>previous Array[1]  is	<value expr="favSongs[var_wel]"/>    </log>
+				
+				<script>
+					var songcheck=favSongs[var_wel].split("_");
+					contentdir=songcheck[0]; 
+					song = favSongs[var_wel];
+	
+				</script>
+				
+				<prompt bargein="true" timeout="1s">
+					 <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+				</prompt>
+			
+				
+	</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0"> 
+				<rule id="start" scope="public">	
+					<one-of>
+
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+						 <item>  4  </item>
+						 <item>  5  </item>
+						 <item>  6  </item>
+						 <item>  7  </item>
+						 <item>  8  </item>
+						 <item>  9  </item>
+						 <item>  0  </item>
+						 <item>  *  </item>
+						 <item>  #  </item>
+					</one-of>
+				</rule>
+				</grammar>
+			<filled>
+				<goto next="#USRSTATUS_TOLL"></goto>	
+			</filled>
+			<noinput>
+				<goto next="#USRSTATUS_TOLL"></goto>	
+			</noinput>
+		</field>
+	
+	</form>
+	
+
+	<form id="USRSTATUS_54646000">
+			<block>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3'"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       	usr_status = out_string[j];
+							       if(j==1)
+							       	lang = out_string[j];
+							       if(j==2)
+							       	balance = out_string[j];
+							       if(j==3)
+								moviectr = out_string[j];	
+								 if(j==4)
+								modesub = out_string[j];						      
+							  }
+	
+						]]>
+				
+				</script>
+				<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+				
+				<if cond="usr_status=='-1'">
+				
+				<goto next="Hungama_54646_NewUser.vxml"></goto>
+				<elseif cond="usr_status=='1'"/>
+					<script> 					 
+						balance=balance*60;
+					        timerflag=1;      
+				        </script>							
+			                <script>
+						<![CDATA[
+			     				if(timerflag==1)
+							start_BalenceMinute=call_time();
+						]]>	 	
+					</script>
+					<log expr="'lang @@@@@@@@@ '+lang"></log>
+					<log expr="'balance @@@@@@@@@ '+balance"></log>				
+					
+						<if cond="lang=='01'">
+							<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+						<elseif cond="lang=='02'" />
+	                        			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+						<elseif cond="lang=='06'" />
+	                        			<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+						<elseif cond="lang=='07'" />
+	                        			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+						<elseif cond="lang=='08'" />
+	                        			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+						<elseif cond="lang=='10'" />
+	                        			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+						<else/>
+	                        			<assign name="lang" expr="'01'"/>
+	                        			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+						</if>							    									
+						<goto next="Hungama_54646_AccountMnger.vxml#AcntUnsubscription"></goto>
+					
+				<else/>			
+					<goto next="Hungama_54646_End.vxml"></goto>
+				</if>
+			</block>
+	</form>
+
+	<form id="USRSTATUS">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						       if(j==3)
+							moviectr = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+			
+			<if cond="usr_status=='-1'">
+				
+
+				<goto next="Hungama_54646_NewUser.vxml"></goto>
+			<elseif cond="usr_status=='1'"/>
+				<script> 					 
+					balance=balance*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=call_time();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+				<if cond="lang=='99'">
+					<goto next="Hungama_54646_NewUser.vxml"></goto>	
+				<else/>
+					<if cond="lang=='01'">
+						<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+					<elseif cond="lang=='02'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+					<elseif cond="lang=='06'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+					<elseif cond="lang=='07'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					<elseif cond="lang=='08'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+					<elseif cond="lang=='10'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+					<else/>
+                        			<assign name="lang" expr="'01'"/>
+                        			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+					</if>							    									
+					<goto next="Hungama_54646_ExistUser.vxml"></goto>
+					<!--<goto next="Hungama_54646_MainMenu.vxml"></goto>-->
+				
+			</if>
+			<else/>
+				<if cond="lang=='99'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/01/charge_req_recd.wav'"/>
+					</prompt>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/charge_req_recd.wav'"/>
+					</prompt>
+				</if>				
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+	
+	<form id="MULTI_TOLL">
+	<block>
+	<!--**********************************************************************DynamicMUltimodal******************************************************-->
+				
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_MM&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+DNIS"/>
+				<script>
+				<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							multimodaldnis = out_string[j];
+	
+							}
+						]]>
+	
+				</script>
+				<log expr="'multimodaldnis @@@@@@@@@@@@@@@@@@@  =' + multimodaldnis"/>
+				<assign name="directaccess" expr="multimodaldnis"/>
+				
+	<goto next="#USRSTATUS_TOLL"></goto>
+	<!--*****************************************************************************************************************************************-->
+	</block>
+	</form>
+
+	<form id="USRSTATUS_TOLL">
+		<block>
+		
+
+	
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CHK_LANG&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];						      
+						  }
+
+					]]>
+			
+			</script>
+
+			
+
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+			<if cond="usr_status=='-1'">
+				<goto next="Hungama_54646_NewUser.vxml#WELNEW_TOLL"></goto>
+			<elseif cond="usr_status=='1'"/>
+				<script> 					 
+					balance=500*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=call_time();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+				<if cond="lang=='99'">
+					<goto next="Hungama_54646_NewUser.vxml#WELNEW_TOLL"></goto>	
+				<else/>
+					<if cond="lang=='01'">
+						<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+					<elseif cond="lang=='02'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+					<elseif cond="lang=='06'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+					<elseif cond="lang=='07'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					<elseif cond="lang=='08'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+					<elseif cond="lang=='10'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+					</if>	
+							<if cond="tarrif=='MM'">
+									<goto next="Hungama_54646_HMP_MM.vxml"></goto>
+								</if>	
+					<prompt bargein="true" timeout="0s">
+							    <audio expr="promptspath_54646+'/NN/wel-'+lang+'.wav'"/>
+					</prompt>
+					    									
+					<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				</if>
+			<else/>
+				<goto next="Hungama_54646_NewUser.vxml#WELNEW_TOLL"></goto>
+			</if>
+		</block>
+	</form>
+</vxml>

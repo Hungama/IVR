@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="devRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">	
+
+	<meta name="Shiv_Spl.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="movie_idx" expr="0"/>
+	
+	<script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var dishes=new Array();		
+	</script>
+	
+<form id="TOPMENU">
+	<block>
+		<assign name="prompt_name" expr="'SHIVTOP_DECK'"/>
+	</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">	
+						<one-of>
+							 <item>  0  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/select_spl_shiv.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf0.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/main_menu.wav'"/>
+				</prompt>
+				
+				<filled>						
+					<if cond="choice=='9'">
+						<assign name="previous_page" expr="'New_MainMenu.vxml'"/>
+						<goto next="dev_ManageAccount.vxml"/>
+					<elseif cond="choice=='8'"/>
+						<assign name="OTHER_lang" expr="'TRUE'"/>
+						<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+					<else/>
+						<assign name="OTHER_lang" expr="'TRUE'"/>
+						 <if cond="circle=='ker' || circle=='kar' || circle=='apd'">
+							 <assign name="cat" expr="'shiv_'+circle"/>
+						 <else/>	 
+							 <assign name="cat" expr="'shiv_pan'"/>
+						 </if>
+						<assign name="playconfig" expr="cat"/>
+						<assign name="HEARD" expr="cat" />
+						<log expr="'CONFIG TO PLAY WITH NO PARTS ===='+playconfig"></log>
+						<goto next="devoplaycontent.vxml"/>
+					</if>
+				</filled>		     
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		
+		<noinput count="3">
+			<assign name="OTHER_lang" expr="'TRUE'"/>
+			 <if cond="circle=='ker' || circle=='kar' || circle=='apd'">
+				 <assign name="cat" expr="'shiv_'+circle"/>
+			 <else/>	 
+				 <assign name="cat" expr="'shiv_pan'"/>
+			 </if>
+			<assign name="playconfig" expr="cat"/>
+			<assign name="HEARD" expr="cat" />
+			<log expr="'CONFIG TO PLAY WITH NO PARTS ===='+playconfig"></log>
+			<goto next="devoplaycontent.vxml"/>
+		</noinput>		
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		
+		<nomatch count="3">
+			<assign name="OTHER_lang" expr="'TRUE'"/>
+			 <if cond="circle=='ker' || circle=='kar' || circle=='apd'">
+				 <assign name="cat" expr="'shiv_'+circle"/>
+			 <else/>	 
+				 <assign name="cat" expr="'shiv_pan'"/>
+			 </if>
+			<assign name="playconfig" expr="cat"/>
+			<assign name="HEARD" expr="cat" />
+			<log expr="'CONFIG TO PLAY WITH NO PARTS ===='+playconfig"></log>
+			<goto next="devoplaycontent.vxml"/>
+		</nomatch>
+		
+		</field>
+	</form>	
+</vxml>

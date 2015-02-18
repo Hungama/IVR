@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_pk_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="Hungama_pk_UserSub.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+    <script>		
+		var out_string=new Object();
+	</script>
+	<var name="confirmstatus" expr="''"/>
+	<var name="DirectSub" expr="''"/>
+   
+	<form id="SubOption">
+		<block>
+<if cond="ANI=='8527000779'">
+					<goto next="Hungama_pk_UserSub-test.vxml"></goto>
+				</if>	
+	
+
+			       <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_CHKDIRECTSUB&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+					var DirectSub=out_string[0];
+				</script>
+				<log>Direct Sub : <value expr="DirectSub"/></log>
+				<if cond="DirectSub== '1'">
+					<assign name="amt" expr="'30'"/>
+					<assign name="plan_id" expr="'59'"/>
+					<assign name="service_id" expr="'1520'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=01&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+					<goto next="#BillStatusChk"></goto>
+				</if>
+
+  
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'59'"/>
+			<assign name="service_id" expr="'1520'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_CONFIRMATIONSTATUS&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]=1520'"/>
+			<script>
+				confirmstatus= out_string[0];
+			</script>
+			<log>ConfirmStatus:<value expr="confirmstatus"/></log>
+			<!-- <assign name="confirmstatus" expr="'double'"/> -->
+
+		</block>
+
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+			
+			<prompt bargein="true" timeout="2s">
+				<!--<audio expr="promptspath_54646+'/'+lang+'/welcome_new_bg.wav'"/>-->
+				<audio expr="promptspath_54646+'/'+lang+'/welcome_new.wav'"/>			
+			</prompt>						
+			<filled>
+				<if cond="confirmstatus=='single'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+				        <goto next="#SubRequest"></goto>
+				<else/>
+					<goto next="#SubOptionDoubleconfirm"></goto>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_pk_End.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<!--<audio expr="promptspath_54646+'/'+lang+'/no_input.wav'"/> -->
+				<audio expr="promptspath_54646+'/'+lang+'/wrong_input.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<!--<audio expr="promptspath_54646+'/'+lang+'/no_input.wav'"/> -->
+				<audio expr="promptspath_54646+'/'+lang+'/wrong_input.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_pk_End.vxml"></goto>
+		</nomatch>
+	</form>
+
+	
+	<form id="SubOptionDoubleconfirm">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  5  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<!--<audio expr="promptspath_54646+'/'+lang+'/re-confirm_sub.wav'"/> -->
+				<audio expr="promptspath_54646+'/'+lang+'/confirm_sub.wav'"/>				
+			</prompt>						
+			<filled>
+				<if cond="choice=='5'">
+				    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+				    <goto next="#SubRequest"></goto>
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_pk_End.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<!--<audio expr="promptspath_54646+'/'+lang+'/no_input.wav'"/> -->
+				<audio expr="promptspath_54646+'/'+lang+'/wrong_input.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<!--<audio expr="promptspath_54646+'/'+lang+'/no_input.wav'"/> -->
+				<audio expr="promptspath_54646+'/'+lang+'/wrong_input.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_pk_End.vxml"></goto>
+		</nomatch>
+	</form>
+	
+	<form id="SubRequest">
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>							 
+							</one-of>
+						</rule>
+			</grammar>
+			<prompt bargein="false" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/sub_under_process.wav'"/>
+			</prompt>
+			<filled>
+				<goto next="#BillStatusChk"></goto>
+			</filled>
+			
+			<noinput>
+				<goto next="#BillStatusChk"></goto>
+			</noinput>
+			
+			<nomatch>
+				<goto next="#BillStatusChk"></goto>
+			</nomatch>
+		</field>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'lang @@@@@@@@@ '+lang"></log>
+			<log expr="'balance @@@@@@@@@ '+balance"></log>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/sub_under_process.wav'"/>
+				</prompt>
+				<goto next="Hungama_pk_End.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/thanks_sub_bg.wav'"/>
+				</prompt>
+				<script>
+					timerflag=1;
+					balance=balance*60;
+				</script>
+				<assign name="start_BalenceMinute" expr="starttime()"/>
+				<goto next="Hungama_pk_MainMenu.vxml"></goto>	
+			<else/> 
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/sub_under_process.wav'"/>
+				</prompt>
+				<goto next="Hungama_pk_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+</vxml>

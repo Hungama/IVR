@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="ComedyPortalRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="SelectLang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="audiofetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+	<meta name="Support" content="" />	
+		
+	<var name="wellang" expr="''" />
+	
+	<var name="ciropr" expr="''" />
+	<script>
+	   var	ciropr1 = new Object();	
+		var var_wel=0;	
+		var CDSIP=0;
+var out_string=new Object();
+
+	</script>
+	
+<form id="Main">
+	<block>
+	<assign name="Section_Name" expr="'COMEDYPORTAL_CONTENTCDS'"/>
+		<assign name="C_Start" expr="call_time()"/>
+		
+		
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+	    </script>
+	    
+
+	    <script>
+         		var	length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		</script>
+			
+		<assign name="DNIS" expr="realDNIS"/>
+         	         <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+	         	 <assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 
+				    	
+			 <log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+			 <log> @@@@DNI is 		<value expr="session.connection.local.uri"/> </log>	
+			 <log> @@@@ANI is 		<value expr="session.connection.remote.uri"/> </log>
+			 
+			<script>
+		  					var splitparam=sessionid.split("_");
+		  						cirid=splitparam[1]; 
+		  					
+		  	</script>
+
+		  	 <assign name ="operator" expr="'airm'"/>
+		  	 <assign name="dbservlet" expr="'airtel_dbinteraction'"/>
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@operator is <value expr="operator"/> </log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Airtel_IVR.CDS_IP_CIR&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+cirid+'&amp;INPARAM[1]='+ANI"/>
+			<script>
+			  <![CDATA[
+				for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+						CDSIP = out_string[j];
+				       if(j==1)
+						circle = out_string[j];
+				       if(j==2)
+						zone = out_string[j];
+				  }
+			  ]]>
+			</script>
+
+			<log> @@@@circleid is <value expr="cirid"/> </log>
+			<log> @@@@CDSIP is <value expr="CDSIP"/> </log>
+			<log> @@@@circle name is <value expr="circle"/> </log>
+			<log> @@@@zone name is <value expr="zone"/> </log>
+
+			<assign name ="promptpath" expr="'http://'+CDSIP+':8088/CDS/hungama/MPMCPrompts/'"/>
+			<assign name ="promptspath_54646" expr="'http://'+CDSIP+':8088/CDS/hungama/54646V2/'"/>
+			<assign name="contentpath" expr="'http://'+CDSIP+':8088/CDS/hungama/content/'" /> 
+			<log> promptpath issss is <value expr="promptpath"/> </log>
+			<log> contentpath isssss is <value expr="contentpath"/> </log>
+			 
+				<!--<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/tollfree.wav'"/>		
+				</prompt>-->
+
+		
+		</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<filled>
+					<goto next="SelectLang.vxml"/> 
+				</filled>
+			</field>
+		<noinput>
+			<goto next="SelectLang.vxml"/> 
+		</noinput>
+		<nomatch>
+			<goto next="SelectLang.vxml"/> 
+		</nomatch>
+	  </form>
+	
+	</vxml>

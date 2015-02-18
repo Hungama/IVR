@@ -1,0 +1,723 @@
+<vxml version="2.0" application="rasio_root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Love_cal.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="number" expr="'0'"/>
+	<var name ="MOB" expr =""/>
+
+<form id="START">	
+	<block>
+				<assign name="Section_Name" expr="'LOVE_CALCULATOR'"/>
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+		<log expr="'############ In START Menu #############'"></log>
+	</block>
+	<field name="choice">
+	       <grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">
+				<one-of>
+					 <item>  1  </item>
+					 <item>  2  </item>
+					 <item>  3  </item>
+					 <item>  4  </item>
+					 <item>  5  </item>
+					 <item>  6  </item>
+					 <item>  7  </item>
+					 <item>  8  </item>
+					 <item>  9  </item>
+					 <item>  *  </item>
+					 <item>  #  </item>
+				</one-of>
+			</rule>
+		</grammar>
+
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_lovecalc.wav'"/>
+		</prompt>
+			<filled>
+			    <if cond="choice=='8'">
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+	
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			  <elseif cond="choice=='9'"/>
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+					<goto next="AccountManager_LIFE.vxml"/>
+			  <else/>
+					<goto next="#START_SELF"/>
+			  </if> 	
+			</filled>
+		</field>
+		
+		<noinput>
+			<goto next="#START_SELF"/>
+		</noinput>
+		
+		
+		<nomatch>
+			<goto next="#START_SELF"/>
+		</nomatch>
+	</form>
+
+
+
+<form id="START_SELF">	
+	<block>
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+		<log expr="'############ In START_SELF Menu #############'"></log>
+	</block>
+	<field name="choice">
+	       <grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">
+				<one-of>
+					 <item>  8  </item>
+					 <item>  9  </item>
+				</one-of>
+			</rule>
+		</grammar>
+
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath_lifestyle+'/'+lang+'/enter_yourdob.wav'"/>
+			<audio expr="promptpath_lifestyle+'/'+lang+'/return_mainmenu.wav'"/>
+		</prompt>
+			<filled>
+			    <if cond="choice=='8'">
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+	
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			  <elseif cond="choice=='9'"/>
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+					<goto next="AccountManager_LIFE.vxml"/>
+			  <else/>
+					<goto next="#lovecalc"/>
+			  </if> 	
+			</filled>
+		</field>
+		
+		<noinput>
+			<goto next="#lovecalc"/>
+		</noinput>
+		
+		
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>	
+			<goto next="#START_SELF"/>
+
+		</nomatch>
+	</form>
+
+
+
+<form id="lovecalc">
+		<field name="MOB" type="digits?length=8">	
+	
+			<!--<grammar mode="dtmf" root="start1" version="1.0">
+				<rule id="start1" scope="public">	
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+						 <item>  4  </item>
+						 <item>  5  </item>
+						 <item>  6  </item>
+						 <item>  7  </item>
+						 <item>  8  </item>
+						 <item>  9  </item>
+						 <item>  0  </item>
+					</one-of>
+				</rule>
+			</grammar>-->
+
+    		        <prompt bargein="true" timeout="17s">
+				<audio expr="promptpath_lifestyle+'/'+lang+'/beep.wav'"/>				
+			</prompt>
+			<filled>
+				<log>pressed dtmf:<value expr="MOB"/></log>
+				
+				<script>
+						MOB=MOB.replace(/\s+/g,'');
+						number = MOB.length;
+						firstdob=MOB;
+				</script>
+				
+				<if cond="MOB==''">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>	
+					<goto next="#START_SELF"/>
+				</if>
+				<if cond="number!='8'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>	
+					<goto next="#START_SELF"/>
+				</if>
+				<goto next="#submit_DOB"></goto>
+			</filled>
+			<noinput count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</noinput>
+			<noinput count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</noinput>
+			<noinput count="3">
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			</noinput>
+			<nomatch count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</nomatch>
+			<nomatch count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</nomatch>
+			<nomatch count="3">
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			</nomatch>
+			
+		</field>
+</form>
+<form id="submit_DOB">
+	<field name="choice">
+	       <grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">
+				<one-of>
+					 <item>  *  </item>
+				</one-of>
+			</rule>
+		</grammar>
+			<filled>
+			    <if cond="choice=='*'">
+				<goto next="#check"/>	
+			    </if> 	
+			</filled>
+		</field>
+		
+			<noinput count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</noinput>
+			<noinput count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</noinput>
+			<noinput count="3">
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			</noinput>
+			<nomatch count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</nomatch>
+					<nomatch count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</nomatch>
+			<nomatch count="3">
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			</nomatch>
+</form>
+<form id="check">
+	<block>
+		<log expr="'############ firstdob #############'+firstdob"></log>
+		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=check_date&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+firstdob"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						self_zod = out_string[j];
+					  }
+			]]>
+
+		</script>
+
+		<log expr="'############ self_zod STATUS #############'+self_zod"></log>
+				
+		<if cond="self_zod=='-1'">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<goto next="#START_SELF"/>
+		<else/>
+			<goto next="#START_PARTNER"/>
+		</if>
+	</block>
+</form>
+
+
+<form id="START_PARTNER">	
+	<block>
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+	</block>
+	<field name="choice">
+	       <grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">
+				<one-of>
+					 <item>  8  </item>
+					 <item>  9  </item>
+				</one-of>
+			</rule>
+		</grammar>
+
+		<prompt bargein="true" timeout="3s">
+			<audio expr="promptpath_lifestyle+'/'+lang+'/enter_partnerdob.wav'"/>
+			<audio expr="promptpath_lifestyle+'/'+lang+'/return_mainmenu.wav'"/>
+		</prompt>
+			<filled>
+			    <if cond="choice=='8'">
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+	
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			  <elseif cond="choice=='9'"/>
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+					<goto next="AccountManager_LIFE.vxml"/>
+			  <else/>
+					<goto next="#partner_DOB"/>
+			  </if> 	
+			</filled>
+		</field>
+		
+		<noinput>
+			<goto next="#partner_DOB"/>
+		</noinput>
+		
+		
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>	
+			<goto next="#START_PARTNER"/>
+		</nomatch>
+	</form>
+
+
+
+
+<form id="partner_DOB">
+	<block>
+		<log expr="'############ In partner_DOB Menu #############'"></log>
+	</block>
+		<field name="MOB" type="digits?length=8">		
+			
+    		<prompt bargein="true" timeout="12s">
+				<audio expr="promptpath_lifestyle+'/'+lang+'/beep.wav'"/>				
+			</prompt>
+			<filled>
+				<script>
+						MOB= MOB.replace(/\s+/g,'');
+						number = MOB.length;
+						partnerdob=MOB;
+				</script>
+				<if cond="number!='8'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>	
+					<goto next="#START_PARTNER"/>
+				<else/>
+					<goto next="#par_submit_DOB"></goto>
+				</if>
+				
+			</filled>
+			<noinput count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</noinput>
+			<noinput count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</noinput>
+			<noinput count="3">
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			</noinput>
+			<nomatch count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</nomatch>
+					<nomatch count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#START_SELF"/>
+			</nomatch>
+			<nomatch count="3">
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			</nomatch>
+			
+		</field>
+</form>
+<form id="par_submit_DOB">
+	<field name="choice">
+	       <grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">
+				<one-of>
+					 <item>  *  </item>
+				</one-of>
+			</rule>
+		</grammar>
+			<filled>
+			    <if cond="choice=='*'">
+				<goto next="#check_partner"/>	
+			    </if> 	
+			</filled>
+		</field>
+		
+			<noinput count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#START_PARTNER"/>
+			</noinput>
+			<noinput count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#START_PARTNER"/>
+			</noinput>
+			<noinput count="3">
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			</noinput>
+			<nomatch count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#START_PARTNER"/>
+			</nomatch>
+					<nomatch count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#START_PARTNER"/>
+			</nomatch>
+			<nomatch count="3">
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			</nomatch>
+</form>
+<form id="check_partner">
+	<block>
+		<log expr="'############ partnerdob #############'+partnerdob"></log>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=check_date&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+partnerdob"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						partner_zod = out_string[j];
+					  }
+			]]>
+
+		</script>
+
+		<log expr="'############ partner_zod STATUS #############'+partner_zod"></log>
+				
+		<if cond="partner_zod=='-1'">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<goto next="#START_PARTNER"/>
+		<else/>
+			<goto next="#confirm"/>
+		</if>
+	</block>
+</form>
+<form id="confirm">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=love_cal&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+firstdob+'&amp;INPARAM[1]='+partnerdob+'&amp;INPARAM[2]=OK&amp;INPARAM[3]=GET'"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						file_status = out_string[j];
+					  }
+			]]>
+
+		</script>
+		
+		<log expr="'############ file STATUS #############'+file_status"></log>
+		<if cond="file_status=='-1'">
+			<assign name="var_wel" expr="getRandom(1,5)" />
+			<script>
+				playfile=self_zod+'_'+partner_zod+'_'+var_wel;
+			</script>
+			<log expr="'PLAYINF  @@@@@@@@@@@@@@@@@@@@@@ '+playfile"></log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=love_cal&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+firstdob+'&amp;INPARAM[1]='+partnerdob+'&amp;INPARAM[2]='+playfile+'&amp;INPARAM[3]=SET'"/>
+		<else/>
+			<assign name="playfile" expr="file_status" />
+		</if>
+		<goto next="#PLAYMENU"/>
+	</block>
+</form>
+
+<form id="PLAYMENU">	
+	<block>
+		<log expr="'IN PLAYFILE MENU"></log>
+		<prompt bargein="true" timeout="1s">
+			<audio expr="promptpath_lifestyle+'/'+lang+'/cal/'+playfile+'.wav'"/>
+		</prompt>	
+	</block>
+	<field name="choice">
+	       <grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">
+				<one-of>
+					 <item>  7  </item>
+					 <item>  8  </item>
+					<!--<item>  #  </item>-->
+				</one-of>
+			</rule>
+		</grammar>
+
+		<prompt bargein="true" timeout="2s">
+			<audio expr="promptpath_lifestyle+'/'+lang+'/thanks_compatibility.wav'"/>
+		</prompt>
+			<filled>
+			    <if cond="choice=='8'">
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+	
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			    <elseif cond="choice=='7'"/>
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+					<goto next="#START_PARTNER"/>
+			    <!--<elseif cond="choice=='#'"/>
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+					<assign name="playconfig" expr="'dateing'"/>
+					<assign name="love_cal" expr="'true'"/>
+					<goto next="Playcontent_life.vxml"/>-->
+			    </if> 	
+			</filled>
+		</field>
+		
+		<noinput count="3">
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+		</noinput>
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		
+		
+		<nomatch count="3">
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+		</nomatch>
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+	</form>
+</vxml>

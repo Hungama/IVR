@@ -1,0 +1,678 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="devRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<meta name="Devo_CRBT_south.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+	
+<var name="cRBTMODE" expr="''"></var>
+<var name="CLIPID" expr="''"></var>
+<var name="len_rng" expr="0"/>
+<var name="cRBTSTATUS" expr="''"/>
+
+<var name="subscriptionClass" expr="''"/>
+<var name="chargeClass" expr="''"/>
+<var name="ulink" expr="''"/>
+<var name="responce" expr="''"/>
+<var name="transID" expr="''"/>
+<var name="htlang" expr="'2'"/>
+<var name="Vcode" expr="''"/>
+<var name="LANG_DESCRIPTION5" expr="'HIN'"/>
+
+<script>
+	var UserStatus1=new Object();
+	var out_string = new Object();
+</script>
+<form id="CRBT">
+	<block>	
+		<assign name="prompt_name" expr="'RT_Select'"/>	
+		<if cond="lang=='01'">
+			<assign name="LANG_DESCRIPTION5" expr="'HIN'"/>
+			<assign name="htlang" expr="'2'"/>
+		<elseif cond="lang=='02'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'ENG'"/>
+			<assign name="htlang" expr="'1'"/>
+		<elseif cond="lang=='03'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'PUN'"/>
+			<assign name="htlang" expr="'6'"/>
+		<elseif cond="lang=='04'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'BHO'"/>
+			<assign name="htlang" expr="'14'"/>
+		<elseif cond="lang=='05'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'HAR'"/>
+			<assign name="htlang" expr="'1'"/>
+		<elseif cond="lang=='06'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'BEN'"/>
+			<assign name="htlang" expr="'11'"/>
+		<elseif cond="lang=='07'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'TAM'"/>
+			<assign name="htlang" expr="'4'"/>
+		<elseif cond="lang=='08'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'TEL'"/>
+			<assign name="htlang" expr="'5'"/>
+		<elseif cond="lang=='09'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'MAL'"/>
+			<assign name="htlang" expr="'7'"/>
+		<elseif cond="lang=='10'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'KAN'"/>
+			<assign name="htlang" expr="'3'"/>
+		<elseif cond="lang=='11'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'MAR'"/>
+			<assign name="htlang" expr="'8'"/>
+		<elseif cond="lang=='12'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'GUJ'"/>
+			<assign name="htlang" expr="'9'"/>
+		<elseif cond="lang=='13'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'ORI'"/>
+			<assign name="htlang" expr="'10'"/>
+		<elseif cond="lang=='17'"/>
+			<assign name="LANG_DESCRIPTION5" expr="'ASM'"/>
+			<assign name="htlang" expr="'12'"/>
+		<else/>
+			<assign name="LANG_DESCRIPTION5" expr="'HIN'"/>
+			<assign name="htlang" expr="'2'"/>
+		</if>
+
+		<assign name="MSISDN" expr="ANI"/>
+		<assign name="Lang" expr="LANG_DESCRIPTION5"/>
+					
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEVO_CHKCRBT&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+song"/>
+
+		<script>
+			Vcode=out_string[0];
+		</script>   
+		 <log expr="'Vcode=='+Vcode"></log>
+		    
+			<if cond="Vcode=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/nocrbt.wav'"/>
+				</prompt>
+				<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+			<else/>
+				<goto next="#AssignParameters"/>
+			</if>			   
+	</block>
+</form>
+
+<form id="AssignParameters">
+	<block>			
+		<assign name="ChargeAmount2" expr="'0.0'"/>
+		<assign name="Validity2" expr="1"/>
+		<assign name="ChargeAmount1" expr="'1.0'"/>
+		<assign name="Validity1" expr="1"/>
+		<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+		<if cond="zone=='north'">
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="508741"/>
+			<assign name="CallUrl" expr="'http://10.2.96.114:9080/CWM/helloTune.jsp&amp;API=RealNetwork&amp;MSISDN='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;FLAG=10'"/>
+			<goto next="#NEWRegions"/>
+			
+		<elseif cond="zone=='east'"/>		
+			<assign name="CpId" expr="1001"/>
+			<assign name="ProductID" expr="508742"/>
+			<assign name="CallUrl" expr="'http://10.133.27.101:9080/CWM/helloTune.jsp&amp;API=RealNetwork&amp;MSISDN='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;FLAG=10'"/>
+			<goto next="#NEWRegions"/>
+
+		<elseif cond="zone=='west'"/>
+			<assign name="CpId" expr="1003"/>
+			<assign name="ProductID" expr="508740"/>
+			<assign name="CallUrl" expr="'http://10.49.7.86:9080/CWM/helloTune.jsp&amp;API=RealNetwork&amp;MSISDN='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;FLAG=10'"/>
+			<goto next="#NEWRegions"/>
+
+		<else/>
+			<if cond="circle=='kar'">
+				<assign name="ChargeAmount2" expr="'0.0'"/>
+				<assign name="Validity2" expr="1"/>
+				<assign name="ChargeAmount1" expr="'1.0'"/>
+				<assign name="Validity1" expr="1"/>
+				<assign name="CpId" expr="4001"/>
+				<assign name="ProductID" expr="500690"/>
+				<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+
+				<assign name="CallUrl" expr="'http://10.89.8.73:8080/rbt/rbt_promotion.jsp&amp;API=OnMobile&amp;MSISDN='+ANI+'&amp;REQUEST=STATUS&amp;MODE=STS'"/>
+			<elseif cond="circle=='apd'"/>
+				<assign name="ChargeAmount2" expr="'0.0'"/>
+				<assign name="Validity2" expr="1"/>
+				<assign name="ChargeAmount1" expr="'1.0'"/>
+				<assign name="Validity1" expr="1"/>
+				<assign name="CpId" expr="4001"/>
+				<assign name="ProductID" expr="500690"/>
+				<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+			
+				<assign name="CallUrl" expr="'http://10.105.55.36:8080/rbt/rbt_promotion.jsp&amp;API=OnMobile&amp;MSISDN='+ANI+'&amp;REQUEST=STATUS&amp;MODE=STS'"/>
+			<elseif cond="circle=='tnu'"/>
+				<assign name="ChargeAmount2" expr="'0.0'"/>
+				<assign name="Validity2" expr="1"/>
+				<assign name="ChargeAmount1" expr="'1.0'"/>
+				<assign name="Validity1" expr="1"/>
+				<assign name="CpId" expr="4001"/>
+				<assign name="ProductID" expr="500690"/>
+				<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+			
+				<assign name="CallUrl" expr="'http://10.111.15.46:8080/rbt/rbt_promotion.jsp&amp;API=OnMobile&amp;MSISDN='+ANI+'&amp;REQUEST=STATUS&amp;MODE=STS'"/>
+			<elseif cond="circle=='ker'"/>
+				<assign name="ChargeAmount2" expr="'0.0'"/>
+				<assign name="Validity2" expr="1"/>
+				<assign name="ChargeAmount1" expr="'1.0'"/>
+				<assign name="Validity1" expr="1"/>
+				<assign name="CpId" expr="4001"/>
+				<assign name="ProductID" expr="500690"/>
+				<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+				
+				<assign name="CallUrl" expr="'http://10.127.7.4:8080/rbt/rbt_promotion.jsp&amp;API=OnMobile&amp;MSISDN='+ANI+'&amp;REQUEST=STATUS&amp;MODE=STS'"/>
+			<else/>
+				<assign name="ChargeAmount2" expr="'0.0'"/>
+				<assign name="Validity2" expr="1"/>
+				<assign name="ChargeAmount1" expr="'1.0'"/>
+				<assign name="Validity1" expr="1"/>
+				<assign name="CpId" expr="4001"/>
+				<assign name="ProductID" expr="500690"/>
+				<assign name="ApplicationType" expr="'NON_HT_SUB'"/>
+				
+				<assign name="CallUrl" expr="'http://10.105.55.36:8080/rbt/rbt_promotion.jsp&amp;API=OnMobile&amp;MSISDN='+ANI+'&amp;REQUEST=STATUS&amp;MODE=STS'"/>
+			</if>
+			<goto next="#CheckCrbtStatus"/>
+		</if>			
+	</block>
+</form>
+
+<form id="NEWRegions">
+	<block>
+		<log>call url:<value expr="CallUrl"/></log>		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/Eu_ChechApi?ulink='+CallUrl"/>
+		<log>UserStatus1.value is:<value expr="UserStatus1.value"/></log>
+
+		<assign name="query_sub1" expr="UserStatus1.value"/>
+		<log>Chk CRBT status:<value expr="CallUrl"/></log>
+		<log>Subdialog url:<value expr="CallUrl"/></log>
+		<log>subdialog Response:<value expr="query_sub1"/></log>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1515&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=profilechek&amp;response_code='+query_sub1+'&amp;sessonid='+sessionId"/>
+		<if cond="query_sub1=='2'">
+			<log>passing paaremeter MSISDN:<value expr="ANI"/></log>
+			<log>passing paaremeter Lang:<value expr="LANG_DESCRIPTION5"/></log>
+			<log>passing paaremeter ChargeAmount2 :<value expr="ChargeAmount2"/></log>
+			<log>passing paaremeter Validity2:<value expr="Validity2"/></log>
+			<log>passing paaremeter ApplicationType:<value expr="ApplicationType"/></log>
+			<log>passing paaremeter ProductID:<value expr="ProductID"/></log>
+			<log>passing paaremeter CpId :<value expr="CpId"/></log>
+			<log>passing paaremeter sessionId :<value expr="sessionId"/></log>
+
+			<!-- Hitting the comviva Activation URL Start  -->
+
+			<assign name="consentparam" expr="'C'"/>
+			
+			<if cond="zone=='north'">
+				<assign name="ulink" expr="'http://10.2.96.114:9080/CWM/Hungama_ASYNC.jsp'"/>
+			<elseif cond="zone=='east'"/>
+				<assign name="ulink" expr="'http://10.133.27.101:9080/CWM/Hungama_ASYNC.jsp'"/>
+			<elseif cond="zone=='west'"/>
+				<assign name="ulink" expr="'http://10.49.7.86:9080/CWM/Hungama_ASYNC.jsp'"/>
+			</if>				
+
+			<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype=27&amp;rentType=0&amp;vcode='+Vcode+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>
+			<!--
+			<if cond="realDNIS=='546469166'">
+				<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype=27&amp;rentType=0&amp;vcode='+Vcode+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>
+			<else/>
+				<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype=30&amp;rentType=0&amp;vcode='+Vcode+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>
+			</if>-->			
+
+			<script>
+				responce=out_string[0];
+				cpTransactionID=out_string[1];
+				subProdID=out_string[2];
+				songProdID=out_string[3];
+				songVCode=out_string[4];
+			</script>
+
+			<log>responce:<value expr="responce"/></log>
+			<log>cpTransactionID:<value expr="cpTransactionID"/></log>
+			<log>subProdID:<value expr="subProdID"/></log>
+			<log>songProdID:<value expr="songProdID"/></log>
+			<log>songVCode:<value expr="songVCode"/></log>
+
+			<if cond="responce=='0'">
+				<if cond="zone=='north' || zone=='west'">
+					<log>North API call</log>
+					<goto next="#NewuserAirtelApiNorth"/>
+				<else/>
+					<log>REST REGION API call</log>
+					<goto next="#NewuserAirtelApiREST"/>
+				</if>
+			<else/>
+				<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+			</if>
+			<!-- Hitting the comviva Activation URL End  -->
+			
+			<log>zone:<value expr="zone"/></log>
+			<if cond="zone=='north' || zone=='west'">
+				<log>North API call</log>
+				<goto next="#AirtelApiNorth"/>
+			<else/>
+				<log>REST REGION API call</log>
+				<goto next="#AirtelApiREST"/>
+			</if>
+
+		<else/>
+			<goto next="#CrbtDownloadDoubleconform"/>
+			<script srcexpr="'http://10.2.73.156:8080/'+servlet_path+'/AMU_cRBTNEW?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+Vcode+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+songID+'&amp;DNIS=SARNAM&amp;HTflag=9'"/>
+			<!--
+			<if cond="realDNIS=='546469166'">
+				<script srcexpr="'http://10.2.73.156:8080/'+servlet_path+'/AMU_cRBTNEW?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+Vcode+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+songID+'&amp;DNIS=EU&amp;HTflag=9'"/>
+			<else/>
+			    <script srcexpr="'http://'+IP+'/'+servlet_path+'/AMU_cRBT?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+Vcode+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+songID+'&amp;DNIS=EU&amp;HTflag=0'"/>
+			</if>-->
+			
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/thanks_crbt.wav'"/>
+			</prompt>
+			<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+		</if>
+	</block>
+</form>
+
+<form id="CrbtDownloadDoubleconform">
+	<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+						</one-of>
+					</rule>
+			</grammar>
+
+			<prompt bargein="true" timeout="4s">
+				<audio expr="promptpath+'/'+lang+'/welcome_crbt.wav'"/>
+				<audio expr="promptpath+'/'+lang+'/crbt_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<script srcexpr="'http://10.2.73.156:8080/'+servlet_path+'/AMU_cRBTNEW?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+Vcode+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+songID+'&amp;DNIS=SARNAM&amp;HTflag=9'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/thanks_crbt.wav'"/>
+					</prompt>
+					
+					<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+				<else/>
+					<throw event="nomatch"/>
+				</if>				
+			</filled>
+		</field>
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt/>
+		</noinput>
+		
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt/>
+		</nomatch>
+</form>
+
+<form id="CheckCrbtStatus">
+	<block>
+		<log>call url:<value expr="CallUrl"/></log>
+
+		<script srcexpr="'http://10.2.73.156:8080/'+servlet_path+'/airtel_CallServlet?ulink='+CallUrl"/>
+		<log>UserStatus1.value is:<value expr="UserStatus1.value"/></log>
+
+		<assign name="query_sub1" expr="UserStatus1.value"/>
+		<log>Chk CRBT status:<value expr="CallUrl"/></log>
+		<log>Subdialog url:<value expr="CallUrl"/></log>
+		<log>subdialog Response:<value expr="query_sub1"/></log> 
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1515&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=profilechek&amp;response_code='+query_sub1+'&amp;sessonid='+sessionId"/>
+		<!--<if cond="query_sub1=='DEACTIVE' || query_sub1=='DEACT_PENDING' || query_sub1=='NEW_USER' || query_sub1=='INVALID_PREFIX' || query_sub1=='ACT_PENDING'">-->
+
+		<if cond="query_sub1!='ACTIVE'">
+			<log>passing paaremeter MSISDN:<value expr="ANI"/></log>
+			<log>passing paaremeter Lang:<value expr="LANG_DESCRIPTION5"/></log>
+			<log>passing paaremeter ChargeAmount2 :<value expr="ChargeAmount2"/></log>
+			<log>passing paaremeter Validity2:<value expr="Validity2"/></log>
+			<log>passing paaremeter ApplicationType:<value expr="ApplicationType"/></log>
+			<log>passing paaremeter ProductID:<value expr="ProductID"/></log>
+			<log>passing paaremeter CpId :<value expr="CpId"/></log>
+			<log>passing paaremeter sessionId :<value expr="sessionId"/></log>
+
+			<!-- Hitting the OnmobileHelloTunes Activation URL Start  -->
+				<if cond="circle=='kar'">
+					<assign name="subscriptionClass" expr="'DEFAULT35'"/>
+					<assign name="chargeClass" expr="'DEFAULT_R15'"/>
+					<assign name="ulink" expr="'http://10.89.8.73:8080/rbt/Selection.do'"/>	
+				<elseif cond="circle=='apd'"/>
+					<assign name="subscriptionClass" expr="'DEFAULT'"/>
+					<assign name="chargeClass" expr="'DEFAULT_R15'"/>
+					<assign name="ulink" expr="'http://10.105.55.36:8080/rbt/Selection.do'"/>
+				<elseif cond="circle=='tnu' || circle=='chn'"/>
+					<assign name="subscriptionClass" expr="'DEFAULT'"/>
+					<assign name="chargeClass" expr="'DEFAULT_R15'"/>
+					<assign name="ulink" expr="'http://10.111.15.46:8080/rbt/Selection.do'"/>
+				<elseif cond="circle=='ker'"/>
+					<assign name="subscriptionClass" expr="'DEFAULT'"/>
+					<assign name="chargeClass" expr="'DEFAULT_R15'"/>
+					<assign name="ulink" expr="'http://10.127.7.4:8080/rbt/Selection.do'"/>
+				<else/>
+					<assign name="subscriptionClass" expr="'DEFAULT'"/>
+					<assign name="chargeClass" expr="'DEFAULT_R15'"/>
+					<assign name="ulink" expr="'http://10.105.55.36:8080/rbt/Selection.do'"/>
+				</if>
+			<!--Changes done by Gaurav-->				
+					<assign name="ProductID" expr="540301"/>	
+					<assign name="subscriptionClass" expr="'PACK30'"/>
+					<assign name="chargeClass" expr="'DEFAULT_R15'"/>
+			<!-- Changes end-->
+
+				<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_SouthActivationApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;vcode='+Vcode+'&amp;mode=IVR_1&amp;dnis='+DNIS+'&amp;subscriptionClass='+subscriptionClass+'&amp;chargeClass='+chargeClass+'&amp;zone='+zone+'&amp;circle='+circle"/>
+				<script>
+					responce=out_string[0];
+					cpTransactionID=out_string[1];
+				</script> 
+
+				<log>responce:<value expr="responce"/></log>
+				<log>cpTransactionID:<value expr="cpTransactionID"/></log>
+
+			<if cond="responce=='success'">
+				<if cond="zone=='north' || zone=='west'">
+					<log>North API call</log>
+					<goto next="#NewuserAirtelApiNorth"/>
+				<else/>
+					<log>REST REGION API call</log>
+					<goto next="#NewuserAirtelApiREST"/>
+				</if>
+			<else/>
+				<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+			</if>
+
+			<!-- Hitting the OnmobileHelloTunes Activation URL Start  -->
+			<log>zone:<value expr="zone"/></log>
+			<if cond="zone=='north' || zone=='west'">
+				<log>North API call</log>
+				<goto next="#AirtelApiNorth"/>
+			<else/>
+				<log>REST REGION API call</log>
+				<goto next="#AirtelApiREST"/>
+			</if>
+		<else/>
+			<script srcexpr="'http://10.2.73.156:8080/'+servlet_path+'/AMU_cRBTNEW?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+Vcode+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+songID+'&amp;DNIS=SARNAM&amp;HTflag=9'"/>
+			<!--
+			<if cond="realDNIS=='546469166'">
+				<script srcexpr="'http://10.2.73.156:8080/'+servlet_path+'/AMU_cRBTNEW?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+Vcode+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+songID+'&amp;DNIS=EU&amp;HTflag=9'"/>
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/AMU_cRBT?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+Vcode+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+songID+'&amp;DNIS=EU&amp;HTflag=0'"/>
+			</if>-->			
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/thanks_crbt.wav'"/>
+			</prompt>
+			<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+		</if>
+	</block>
+</form>
+
+<form id="AirtelApiNorth">
+	<block>
+		<!--Temperory changes done by gaurav request...setting vh1 price point-->
+		<log>setting charge amount</log>
+		<assign name="ChargeAmount2" expr="'15.0'"/>
+		<assign name="Validity2" expr="90"/>
+		<assign name="ChargeAmount1" expr="'36.0'"/>
+		<assign name="Validity1" expr="30"/>
+
+		<if cond="zone=='north'">
+			<log>North API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="504153"/>	
+		<elseif cond="zone=='west'"/>
+			<log>West API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="501095"/>	
+		<elseif cond="zone=='east'"/>
+			<log>east  API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="508699"/>		
+		</if>
+	</block>
+	<subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DESCRIPTION5+'&amp;ChargeAmount2='+ChargeAmount2+'&amp;Validity2='+Validity2+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">
+		<filled>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1515&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=HTsecondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>				
+
+			<if cond="confirmUserChoice.userInput=='maxError'">
+				<goto next="End.vxml"/>
+
+			<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+				<!--<if cond="realDNIS=='546469166'">-->
+					<script srcexpr="'http://10.2.73.156:8080/'+servlet_path+'/AMU_cRBTNEW?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+Vcode+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+songID+'&amp;DNIS=SARNAM&amp;HTflag=9'"/>
+				<!--<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/AMU_cRBT?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+Vcode+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+songID+'&amp;DNIS=EU&amp;HTflag=9'"/>
+				</if>-->	
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/thanks_crbt.wav'"/>
+				</prompt>
+				<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+
+			<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+				<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+
+			<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+				<goto next="End.vxml"/>
+
+			<else/>
+				<goto next="devoplaycontent.vxml#StartToPlaysongs"/>	
+			</if>
+		</filled>
+	</subdialog>
+</form>
+
+<form id="AirtelApiREST">
+	<block>
+		<!--Temperory changes done by gaurav request...setting vh1 price point-->
+		<log>setting charge amount</log>
+		<assign name="ChargeAmount2" expr="'15.0'"/>
+		<assign name="Validity2" expr="90"/>
+		<assign name="ChargeAmount1" expr="'36.0'"/>
+		<assign name="Validity1" expr="30"/>
+
+		<if cond="zone=='north'">
+			<log>North API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="504153"/>	
+		<elseif cond="zone=='west'"/>
+			<log>West API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="501095"/>	
+		<elseif cond="zone=='east'"/>
+			<log>east  API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="508699"/>		
+		</if>
+	</block>
+	<subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DESCRIPTION5+'&amp;ChargeAmount2='+ChargeAmount2+'&amp;Validity2='+Validity2+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">		
+		<filled>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1515&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=HTsecondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>
+
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					<goto next="End.vxml"/>
+					
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<script srcexpr="'http://10.2.73.156:8080/'+servlet_path+'/AMU_cRBTNEW?TOKEN=CRBT_SET&amp;ANI='+ANI+'&amp;vcode='+Vcode+'&amp;zone='+zone+'&amp;cirid='+cirid+'&amp;cirname='+circle+'&amp;ACTION=CRBT&amp;SNGID='+songID+'&amp;DNIS=SARNAM&amp;HTflag=9'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/thanks_crbt.wav'"/>
+					</prompt>
+					<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+					<goto next="End.vxml"/>
+				<else/>
+					<goto next="devoplaycontent.vxml#StartToPlaysongs"/>			
+				</if>
+		</filled>
+	</subdialog>
+</form>
+
+<form id="NewuserAirtelApiNorth">
+	<block>
+		<!--Temperory changes done by gaurav request...setting vh1 price point-->
+		<log>setting charge amount</log>
+		<assign name="ChargeAmount2" expr="'15.0'"/>
+		<assign name="Validity2" expr="90"/>
+		<assign name="ChargeAmount1" expr="'36.0'"/>
+		<assign name="Validity1" expr="30"/>
+
+		<if cond="zone=='north'">
+			<log>North API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="504153"/>	
+		<elseif cond="zone=='west'"/>
+			<log>West API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="501095"/>	
+		<elseif cond="zone=='east'"/>
+			<log>east  API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="508699"/>		
+		</if>
+	</block>
+	<subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/SecondConsentHandler.vxml'" method = "post" namelist = "MSISDN Lang ChargeAmount1 ChargeAmount2 Validity1 Validity2 ApplicationType ProductID CpId sessionId channelName cpName centralIVRPwd aocMessage1 aocMessage2 cpTransactionID subProdID songProdID songVCode msisdnGiftReceiver msisdnDedicatee msisdnStarCopy param1 param2 param3 param4 param5">
+		<filled>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1515&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=secondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>
+			<!-- Comviva conset API for acceptance and rejection Start   -->
+				<if cond="(zone=='north' || zone=='east' || zone=='west')">
+					<if cond="confirmUserChoice.userInput=='submitPackChosen'">
+						<assign name="consentparam" expr="'A'"/>
+					<else/>
+						<assign name="consentparam" expr="'R'"/>
+					</if>
+					<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype=27&amp;rentType=0&amp;vcode='+Vcode+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>	
+					<!--<if cond="realDNIS=='546469166'">
+						<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype=27&amp;rentType=0&amp;vcode='+Vcode+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>
+					<else/>
+						<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype=30&amp;rentType=0&amp;vcode='+Vcode+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>
+					</if>-->		
+					<script>
+						responce=out_string[0];
+						cpTransactionID=out_string[1];
+						subProdID=out_string[2];
+						songProdID=out_string[3];
+						songVCode=out_string[4];
+					</script>
+					<log>responce:<value expr="responce"/></log>
+					<log>cpTransactionID:<value expr="cpTransactionID"/></log>
+					<log>subProdID:<value expr="subProdID"/></log>
+					<log>songProdID:<value expr="songProdID"/></log>
+					<log>songVCode:<value expr="songVCode"/></log>
+				</if>
+			<!-- Comviva conset API for acceptance and rejection END   -->
+
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					<goto next="End.vxml"/>
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/thanks_crbt.wav'"/>
+					</prompt>
+					<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+					<goto next="End.vxml"/>
+				<else/>
+					<goto next="devoplaycontent.vxml#StartToPlaysongs"/>	
+				</if>
+		</filled>
+	</subdialog>
+</form>
+
+<form id="NewuserAirtelApiREST">
+	<block>
+		<!--Temperory changes done by gaurav request...setting vh1 price point-->
+		<log>setting charge amount</log>
+		<assign name="ChargeAmount2" expr="'15.0'"/>
+		<assign name="Validity2" expr="90"/>
+		<assign name="ChargeAmount1" expr="'36.0'"/>
+		<assign name="Validity1" expr="30"/>
+
+		<if cond="zone=='north'">
+			<log>North API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="504153"/>	
+		<elseif cond="zone=='west'"/>
+			<log>West API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="501095"/>	
+		<elseif cond="zone=='east'"/>
+			<log>east  API called</log>
+			<assign name="CpId" expr="1002"/>
+			<assign name="ProductID" expr="508699"/>		
+		</if>
+	</block>
+	<subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/SecondConsentHandler.vxml'" method = "post" namelist = "MSISDN Lang ChargeAmount1 ChargeAmount2 Validity1 Validity2 ApplicationType ProductID CpId sessionId channelName cpName centralIVRPwd aocMessage1 aocMessage2 cpTransactionID subProdID songProdID songVCode msisdnGiftReceiver msisdnDedicatee msisdnStarCopy param1 param2 param3 param4 param5">		<filled>
+		<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/Consent_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=1515&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;consent=secondconsent&amp;response_code='+confirmUserChoice.userInput+'&amp;sessonid='+sessionId"/>
+			<!-- Comviva conset API for acceptance and rejection Start   -->
+				<if cond="(zone=='north' || zone=='east' || zone=='west')">
+					<if cond="confirmUserChoice.userInput=='submitPackChosen'">
+						<assign name="consentparam" expr="'A'"/>
+					<else/>
+						<assign name="consentparam" expr="'R'"/>
+					</if>	
+					<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype=27&amp;rentType=0&amp;vcode='+Vcode+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>
+
+					<!--<if cond="realDNIS=='546469166'">
+						<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype=27&amp;rentType=0&amp;vcode='+Vcode+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>
+					<else/>
+						<script srcexpr="'http://10.2.73.156:8080/hungama/Airtel_ComvivaConsentApi?ulink='+ulink+'&amp;msisdn='+ANI+'&amp;uid=Hun_IVR&amp;pass=SHVuX0lWUg==&amp;myTune=0&amp;stype=30&amp;rentType=0&amp;vcode='+Vcode+'&amp;ucode=0&amp;cbsmsisdn=0&amp;downChg=1&amp;reserve=1&amp;downPrice=0&amp;myAlbum=0&amp;lang='+htlang+'&amp;cLogs=9&amp;ConsentParam='+consentparam+'&amp;channelName=IVR_HUNGAMA&amp;cpTransId='+cpTransactionID+'&amp;zone='+zone+'&amp;circle='+circle"/>
+					</if>-->
+					<script>
+						responce=out_string[0];
+						cpTransactionID=out_string[1];
+						subProdID=out_string[2];
+						songProdID=out_string[3];
+						songVCode=out_string[4];
+					</script>
+					
+					<log>responce:<value expr="responce"/></log>
+					<log>cpTransactionID:<value expr="cpTransactionID"/></log>
+					<log>subProdID:<value expr="subProdID"/></log>
+					<log>songProdID:<value expr="songProdID"/></log>
+					<log>songVCode:<value expr="songVCode"/></log>
+				</if>
+			<!-- Comviva conset API for acceptance and rejection END   -->
+
+			<if cond="confirmUserChoice.userInput=='maxError'">
+					<goto next="End.vxml"/>
+					
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/thanks_crbt.wav'"/>
+					</prompt>
+					<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<goto next="devoplaycontent.vxml#StartToPlaysongs"/>
+
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+					<goto next="End.vxml"/>
+					
+				<else/>
+					<goto next="devoplaycontent.vxml#StartToPlaysongs"/>			
+				</if>					
+		</filled>
+	</subdialog>
+</form>
+</vxml>

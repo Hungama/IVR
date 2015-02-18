@@ -1,0 +1,863 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="rasio_root.vxml">
+	<meta name="SanjeevKapur.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<var name="WelcomePrompt" expr="''"/>
+	<var name="WelcomePrompt1" expr="''"/>	   
+	<var name="PlayOnce" expr="'true'"/>	   
+	<var name="recipeid" expr="''"/>
+	<property name="confidencelevel" value="0.2"/>	
+	
+	
+	<form id="recipewelMenu">	
+	       <block>		   
+		      <if cond="LANG_DESCRIPTION==''"> 		
+				   <assign name="LANG_DESCRIPTION" expr="'HIN'" />
+			  </if>		
+			  <prompt>	                     
+					 <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/sanjeev_rasoi/'+LANG_DESCRIPTION+'/welcome_new_0.wav'"/>
+              </prompt> 	
+			  <log> @@@@@@@@@@@ call transfer in sanjeev welcome menu  @@@@@@@@@@@@@ </log>
+			  <goto next="#recipeMainMenu"/>	   	
+		   </block> 
+		  <!--
+		   <field name="recwel" cond="PlayOnce=='true'">               
+		    	 
+				 <grammar mode="dtmf" root="start">
+                   <rule id="start" scope="public">
+                     <one-of>
+				          <item>1</item>
+				          <item>2</item>	
+                          <item>3</item>	
+                          <item>4</item>	
+                          <item>5</item>	
+                          <item>6</item>	
+                          <item>7</item>	
+                          <item>8</item>	
+                          <item>9</item>	
+                          <item>0</item>	               			 
+				          <item>#</item>
+				          <item>*</item>			      
+                    </one-of>
+                </rule>
+               </grammar> 		 
+               <prompt>	                     
+					 <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/sanjeev_rasoi/'+LANG_DESCRIPTION+'/welcome_new_0.wav'"/>
+               </prompt> 
+				 
+              <filled>			       
+				   <script> PlayOnce="false"; </script>		      
+			       <goto next="#recipeMainMenu"/>			     
+              </filled>	
+			  
+			  <noinput>		
+			      <log> @@@@@@@@@@@ no input in sanjeev welcome menu  @@@@@@@@@@@@@ </log>
+				  <script> PlayOnce="false"; </script>		         
+                  <goto next="#recipeMainMenu"/>	     
+              </noinput>
+				
+         </field>	
+		 -->			  
+	</form>	
+		
+	<form id="recipeMainMenu">		  
+	
+		 <field name="recipe">
+		   
+				<grammar type="application/srgs+xml" srcexpr="'sanjeev_recipe_en-IN.grxml'" mode="voice"/>	 
+				<!--
+				
+				<grammar mode="dtmf" root="start">
+                   <rule id="start" scope="public">
+                     <one-of>
+				          <item>1</item>
+				          <item>2</item>	
+                          <item>3</item>                          	
+                          <item>6</item>                          		      
+                    </one-of>
+                </rule>
+               </grammar> 	
+			   -->
+					
+					<prompt timeout="3s">
+					    <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/sanjeev_rasoi/'+LANG_DESCRIPTION+'/welcome_asr.wav'"/>								
+				     </prompt>				
+					
+					<filled>					    						
+						<if cond="recipe== '01'">  
+						    <log> @@@@@@@@@@@ VEGETRIAN @@@@@@@@@@@@@ </log> 											
+						    <assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>
+							<goto next="Rasoi_MainMenu_Veg.vxml"/>			
+                        <elseif cond="recipe=='02'"/>
+                            <log> @@@@@@@@@@@ NON_VEGETRIAN @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	
+							<goto next="Select_Veg_NonVeg_cat.vxml"/>		     				  						
+						<elseif cond="recipe=='03'"/>
+                            <log> @@@@@@@@@@@ SNEKAS @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     															
+						<elseif cond="recipe=='04'"/>
+                            <log> @@@@@@@@@@@ BEVERAGE @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																	
+						<elseif cond="recipe=='05'"/>
+                            <log> @@@@@@@@@@@ MAKERSE @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				 														
+						<elseif cond="recipe=='06'"/>
+                            <log> @@@@@@@@@@@ SALDAS @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  														
+							<disconnect/>	
+        				<elseif cond="recipe=='07'"/>
+                            <log> @@@@@@@@@@@ Chatni @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																		
+						<elseif cond="recipe=='08'"/>
+                            <log> @@@@@@@@@@@ BREAD @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																		
+						<elseif cond="recipe=='09'"/>
+                            <log> @@@@@@@@@@@ RICES @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																
+						<elseif cond="recipe=='10'"/>
+                            <log> @@@@@@@@@@@ DESSERT @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																
+						<elseif cond="recipe=='11'"/>
+                            <log> @@@@@@@@@@@ SOUP @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																
+						<elseif cond="recipe=='12'"/>
+                            <log> @@@@@@@@@@@ STARTER @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																	
+						<elseif cond="recipe=='13'"/>
+                            <log> @@@@@@@@@@@ SWEET @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     											
+						<elseif cond="recipe=='14'"/>
+                            <log> @@@@@@@@@@@ DAAL AND CADI @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																
+						<elseif cond="recipe=='15'"/>
+                            <log> @@@@@@@@@@@ RITIA @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																
+						<elseif cond="recipe=='16'"/>
+                            <log> @@@@@@@@@@@ NODDLE  @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  														
+						<elseif cond="recipe=='17'"/>
+                            <log> @@@@@@@@@@@ PICKLLE @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				 															
+						<elseif cond="recipe=='001'"/>
+                            <log> @@@@@@@@@@@ carrot and almond soup @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																		
+						<elseif cond="recipe=='002'"/>
+                            <log> @@@@@@@@@@@ black grape sherbet @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																		
+						<elseif cond="recipe=='003'"/>
+                            <log> @@@@@@@@@@@ neer dosa @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='004'"/>
+                            <log> @@@@@@@@@@@ methi corn malai @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='005'"/>
+                            <log> @@@@@@@@@@@ grilled veg sandwich @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='006'"/>
+                            <log> @@@@@@@@@@@ papad paneer rolls @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='007'"/>
+                            <log> @@@@@@@@@@@ chilli potato salad @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='008'"/>
+                            <log> @@@@@@@@@@@ melon magic @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																
+						<elseif cond="recipe=='009'"/>
+                            <log> @@@@@@@@@@@ microwave poha @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='010'"/>
+                            <log> @@@@@@@@@@@ paneer babycorn balchao @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='011'"/>
+                            <log> @@@@@@@@@@@ rice pakoras @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     															
+						<elseif cond="recipe=='012'"/>
+                            <log> @@@@@@@@@@@ jal jeera @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																		
+						<elseif cond="recipe=='013'"/>
+                            <log> @@@@@@@@@@@ masala soda @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='014'"/>
+                            <log> @@@@@@@@@@@ red cabbage salad @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='015'"/>
+                            <log> @@@@@@@@@@@ aam ka panna @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='016'"/>
+                            <log> @@@@@@@@@@@ til moongphali aloo @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='017'"/>
+                            <log> @@@@@@@@@@@ prawn varuwal @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				 															
+						<elseif cond="recipe=='018'"/>
+                            <log> @@@@@@@@@@@ chicken pulao @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='019'"/>
+                            <log> @@@@@@@@@@@ masala omelette @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																		
+						<elseif cond="recipe=='020'"/>
+                            <log> @@@@@@@@@@@ anda aur methi pakora @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='021'"/>
+                            <log> @@@@@@@@@@@ hot dog @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																		
+						<elseif cond="recipe=='022'"/>
+                            <log> @@@@@@@@@@@ salad nicoise @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='023'"/>
+                            <log> @@@@@@@@@@@ adrak nimboo pani @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='024'"/>
+                            <log> @@@@@@@@@@@ american sev puri @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='025'"/>
+                            <log> @@@@@@@@@@@ apple basanti @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																			
+						<elseif cond="recipe=='026'"/>
+                            <log> @@@@@@@@@@@ banana and fig milkshake @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='027'"/>
+                            <log> @@@@@@@@@@@ banana and strawberry medley @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='028'"/>
+                            <log> @@@@@@@@@@@ bashful banana @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='029'"/>
+                            <log> @@@@@@@@@@@ batter fried onion rings @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																
+						<elseif cond="recipe=='030'"/>
+                            <log> @@@@@@@@@@@ beetroot float @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																		
+						<elseif cond="recipe=='031'"/>
+                            <log> @@@@@@@@@@@ beetroot salad with yoghurt @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='032'"/>
+                            <log> @@@@@@@@@@@ besan burfi @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																
+						<elseif cond="recipe=='033'"/>
+                            <log> @@@@@@@@@@@ bharwan bhindi @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='034'"/>
+                            <log> @@@@@@@@@@@ bhel puri @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																	
+						<elseif cond="recipe=='035'"/>
+                            <log> @@@@@@@@@@@ bombay veg sandwich @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='036'"/>
+                            <log> @@@@@@@@@@@ bread and butter pudding @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='037'"/>
+                            <log> @@@@@@@@@@@ bread and cheese salad @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='038'"/>
+                            <log> @@@@@@@@@@@ Bruschetta @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='039'"/>
+                            <log> @@@@@@@@@@@ california smoothie @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='040'"/>
+                            <log> @@@@@@@@@@@ caramel popcorn @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																	
+						<elseif cond="recipe=='041'"/>
+                            <log> @@@@@@@@@@@ carrot and apple salad @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																
+						<elseif cond="recipe=='042'"/>
+                            <log> @@@@@@@@@@@ carrot orange frappe @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='043'"/>
+                            <log> @@@@@@@@@@@ chatpati shankerpali @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='044'"/>
+                            <log> @@@@@@@@@@@ cheesy cherry swirl @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																
+						<elseif cond="recipe=='045'"/>
+                            <log> @@@@@@@@@@@ chhanar pulao @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='046'"/>
+                            <log> @@@@@@@@@@@ chi chi @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='047'"/>
+                            <log> @@@@@@@@@@@ chicken shorba @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				 															
+						<elseif cond="recipe=='048'"/>
+                            <log> @@@@@@@@@@@ chickpea salad @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																			
+						<elseif cond="recipe=='049'"/>
+                            <log> @@@@@@@@@@@ chilled cucumber and buttermilk soup @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='050'"/>
+                            <log> @@@@@@@@@@@ chilled melon soup @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='051'"/>
+                            <log> @@@@@@@@@@@ chocolate nut fondue @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='052'"/>
+                            <log> @@@@@@@@@@@ chocolate satin crunch @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='053'"/>
+                            <log> @@@@@@@@@@@ choconut fudge @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='054'"/>
+                            <log> @@@@@@@@@@@ citrus twister @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='055'"/>
+                            <log> @@@@@@@@@@@ clay pot drunken fish @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				 															
+						<elseif cond="recipe=='056'"/>
+                            <log> @@@@@@@@@@@ coleslaw with cottage cheese @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='057'"/>
+                            <log> @@@@@@@@@@@ corn and bean twosome @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='058'"/>
+                            <log> @@@@@@@@@@@ corn and spinach @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																		
+						<elseif cond="recipe=='059'"/>
+                            <log> @@@@@@@@@@@ corn fritter @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='060'"/>
+                            <log> @@@@@@@@@@@ crunchy coriander pomfret @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='061'"/>
+                            <log> @@@@@@@@@@@ crunchy fruit with yogurt and cheese @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='062'"/>
+                            <log> @@@@@@@@@@@ crusty potato fingers @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='063'"/>
+                            <log> @@@@@@@@@@@ breakfast wrap @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='064'"/>
+                            <log> @@@@@@@@@@@ coconut karanji @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='065'"/>
+                            <log> @@@@@@@@@@@ daal be aab @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																	
+						<elseif cond="recipe=='066'"/>
+                            <log> @@@@@@@@@@@ dahi shorba @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='067'"/>
+                            <log> @@@@@@@@@@@ devilled eggs @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='068'"/>
+                            <log> @@@@@@@@@@@ fire crackers @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='069'"/>
+                            <log> @@@@@@@@@@@ french bread crispies @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																		
+						<elseif cond="recipe=='070'"/>
+                            <log> @@@@@@@@@@@ fruit tart @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='071'"/>
+                            <log> @@@@@@@@@@@ goan fish curry @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='072'"/>
+                            <log> @@@@@@@@@@@ gobhi kasoori @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     							  															
+						<elseif cond="recipe=='073'"/>
+                            <log> @@@@@@@@@@@ green banana salad @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='074'"/>
+                            <log> @@@@@@@@@@@ gurparay @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																		
+						<elseif cond="recipe=='075'"/>
+                            <log> @@@@@@@@@@@ hara masala pulao @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																			
+						<elseif cond="recipe=='076'"/>
+                            <log> @@@@@@@@@@@ idiappam @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																
+						<elseif cond="recipe=='077'"/>
+                            <log> @@@@@@@@@@@ jeera rice @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     													
+						<elseif cond="recipe=='078'"/>
+                            <log> @@@@@@@@@@@ keema tikki kebab @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='079'"/>
+                            <log> @@@@@@@@@@@ kela halwa @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='080'"/>
+                            <log> @@@@@@@@@@@ kesari phirni @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='081'"/>
+                            <log> @@@@@@@@@@@ kulcha @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				 															
+						<elseif cond="recipe=='082'"/>
+                            <log> @@@@@@@@@@@ kulith saar @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  															
+						<elseif cond="recipe=='083'"/>
+                            <log> @@@@@@@@@@@ lychee paneer @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  															
+						<elseif cond="recipe=='084'"/>
+                            <log> @@@@@@@@@@@ makai dhingri @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='085'"/>
+                            <log> @@@@@@@@@@@ mangodi ki sabzi @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																			
+						<elseif cond="recipe=='086'"/>
+                            <log> @@@@@@@@@@@ masale bhaat @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																	
+						<elseif cond="recipe=='087'"/>
+                            <log> @@@@@@@@@@@ mini tostadas @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='088'"/>
+                            <log> @@@@@@@@@@@ mirchi wada @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='089'"/>
+                            <log> @@@@@@@@@@@ mixed sprout salad @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='090'"/>
+                            <log> @@@@@@@@@@@ mixed vegetable soup @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  															
+						<elseif cond="recipe=='091'"/>
+                            <log> @@@@@@@@@@@ moongdal halwa @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='092'"/>
+                            <log> @@@@@@@@@@@ mutton stew @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='093'"/>
+                            <log> @@@@@@@@@@@ palak raita @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='094'"/>
+                            <log> @@@@@@@@@@@ palakwali dal @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='095'"/>
+                            <log> @@@@@@@@@@@ paneer ki kheer @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																								
+						<elseif cond="recipe=='096'"/>
+                            <log> @@@@@@@@@@@ pinni @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																									
+						<elseif cond="recipe=='097'"/>
+                            <log> @@@@@@@@@@@ rice salad @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='098'"/>
+                            <log> @@@@@@@@@@@ sesame hot noodles @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='099'"/>
+                            <log> @@@@@@@@@@@ sprouted moong chaat @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='100'"/>
+                            <log> @@@@@@@@@@@ swiss roll @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='101'"/>
+                            <log> @@@@@@@@@@@ tomato rasam @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     							  																						
+						<elseif cond="recipe=='102'"/>
+                            <log> @@@@@@@@@@@ wonton soup @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																								
+						<elseif cond="recipe=='103'"/>
+                            <log> @@@@@@@@@@@ zesty lemon cake @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																						
+						<elseif cond="recipe=='104'"/>
+                            <log> @@@@@@@@@@@ zafrani pulao @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='105'"/>
+                            <log> @@@@@@@@@@@ wadian aloo @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='106'"/>
+                            <log> @@@@@@@@@@@ vegetable stew @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='107'"/>
+                            <log> @@@@@@@@@@@ vegetable salad with yogurt dressing @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='108'"/>
+                            <log> @@@@@@@@@@@ vegetable hakka noodles @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='109'"/>
+                            <log> @@@@@@@@@@@ vegetable club sandwich @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='110'"/>
+                            <log> @@@@@@@@@@@ triple decker sandwich @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																								
+						<elseif cond="recipe=='111'"/>
+                            <log> @@@@@@@@@@@ tittori @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																						
+						<elseif cond="recipe=='112'"/>
+                            <log> @@@@@@@@@@@ tirfalanchi amti @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																										
+						<elseif cond="recipe=='113'"/>
+                            <log> @@@@@@@@@@@ tiramisu @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='114'"/>
+                            <log> @@@@@@@@@@@ three treasure vegetables @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				 																						
+						<elseif cond="recipe=='115'"/>
+                            <log> @@@@@@@@@@@ tasty protein pulao @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='116'"/>
+                            <log> @@@@@@@@@@@ tangdi kabab @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='117'"/>
+                            <log> @@@@@@@@@@@ tandoori lobsters @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='118'"/>
+                            <log> @@@@@@@@@@@ tamarind ginger pickle @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     							  																						
+						<elseif cond="recipe=='119'"/>
+                            <log> @@@@@@@@@@@ sweet corn kadhi @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='120'"/>
+                            <log> @@@@@@@@@@@ sweet corn and paneer bake @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='121'"/>
+                            <log> @@@@@@@@@@@ sweet and sour fish @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='122'"/>
+                            <log> @@@@@@@@@@@ subz lajawaab @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																									
+						<elseif cond="recipe=='123'"/>
+                            <log> @@@@@@@@@@@ subz bahar arhar dal @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																								
+						<elseif cond="recipe=='124'"/>
+                            <log> @@@@@@@@@@@ stuffed mushrooms @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='125'"/>
+                            <log> @@@@@@@@@@@ stuffed crispy potatoes @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				 																						
+						<elseif cond="recipe=='126'"/>
+                            <log> @@@@@@@@@@@ steamed date buns @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='127'"/>
+                            <log> @@@@@@@@@@@ shrikhand @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='128'"/>
+                            <log> @@@@@@@@@@@ sprouted moong khichdi @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																										
+						<elseif cond="recipe=='129'"/>
+                            <log> @@@@@@@@@@@ spinach and mushroom risotto @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='130'"/>
+                            <log> @@@@@@@@@@@ spinach and tofu soup @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																									
+						<elseif cond="recipe=='131'"/>
+                            <log> @@@@@@@@@@@ spinach and cabbage parantha @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				 																						
+						<elseif cond="recipe=='132'"/>
+                            <log> @@@@@@@@@@@ spicy peanut gravy @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='133'"/>
+                            <log> @@@@@@@@@@@ soyabean granules sabzi  @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																								
+						<elseif cond="recipe=='134'"/>
+                            <log> @@@@@@@@@@@ smoky paneer wrap @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				 																						
+						<elseif cond="recipe=='135'"/>
+                            <log> @@@@@@@@@@@ sheermal @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																									
+						<elseif cond="recipe=='136'"/>
+                            <log> @@@@@@@@@@@ sev batata puri @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='137'"/>
+                            <log> @@@@@@@@@@@ sambhar @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																							
+						<elseif cond="recipe=='138'"/>
+                            <log> @@@@@@@@@@@ rajma masala @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																								
+						<elseif cond="recipe=='139'"/>
+                            <log> @@@@@@@@@@@ quick pressure cooked vegetables @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																										
+						<elseif cond="recipe=='140'"/>
+                            <log> @@@@@@@@@@@ quick chocolate mousse @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='141'"/>
+                            <log> @@@@@@@@@@@ aam ka abshola @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='142'"/>
+                            <log> @@@@@@@@@@@ achari baingan @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='143'"/>
+                            <log> @@@@@@@@@@@ baingan bharta @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																										
+						<elseif cond="recipe=='144'"/>
+                            <log> @@@@@@@@@@@ baked beans wrap @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																										
+						<elseif cond="recipe=='145'"/>
+                            <log> @@@@@@@@@@@ bangda fry @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																									
+						<elseif cond="recipe=='146'"/>
+                            <log> @@@@@@@@@@@ chandi korma @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																								
+						<elseif cond="recipe=='147'"/>
+                            <log> @@@@@@@@@@@ chatpati tikki @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='148'"/>
+                            <log> @@@@@@@@@@@ cheese balls @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='149'"/>
+                            <log> @@@@@@@@@@@ cheesy macaroni @@@@@@@@@@@@@ </log>
+							<audio expr="'http://'+CDSIP+CDSPATH+'Content/'+contentdir+'/149.wav'"/>			  																						
+						<elseif cond="recipe=='150'"/>
+                            <log> @@@@@@@@@@@ dahi ka keema @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='151'"/>
+                            <log> @@@@@@@@@@@ dahiwale aloo @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																								
+						<elseif cond="recipe=='152'"/>
+                            <log> @@@@@@@@@@@ dudhi halwa @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='153'"/>
+                            <log> @@@@@@@@@@@ ekadashi jeera aloo @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='154'"/>
+                            <log> @@@@@@@@@@@ garden vegetable rollp @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																								
+						<elseif cond="recipe=='155'"/>
+                            <log> @@@@@@@@@@@ grilled chicken with olive salad @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='156'"/>
+                            <log> @@@@@@@@@@@ grilled paneer with honey sauce @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='157'"/>
+                            <log> @@@@@@@@@@@ honeyed chicken wingsp @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																						
+						<elseif cond="recipe=='158'"/>
+                            <log> @@@@@@@@@@@ imli til ke chawal @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																										
+						<elseif cond="recipe=='159'"/>
+                            <log> @@@@@@@@@@@ kadak bhindi @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='160'"/>
+                            <log> @@@@@@@@@@@ kairichi amti @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='161'"/>
+                            <log> @@@@@@@@@@@ kesari kheer @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='162'"/>
+                            <log> @@@@@@@@@@@ khoya pulao @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='163'"/>
+                            <log> @@@@@@@@@@@ lauki chana dal @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='164'"/>
+                            <log> @@@@@@@@@@@ lehsuni tikki @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='165'"/>
+                            <log> @@@@@@@@@@@ matki bhaat @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='166'"/>
+                            <log> @@@@@@@@@@@ meethe chawal @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='167'"/>
+                            <log> @@@@@@@@@@@ mooli ka parantha @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='168'"/>
+                            <log> @@@@@@@@@@@ moong dal lehsuni @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='169'"/>
+                            <log> @@@@@@@@@@@ mushroom and cheese salad @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='170'"/>
+                            <log> @@@@@@@@@@@ onion paneer kulcha @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='171'"/>
+                            <log> @@@@@@@@@@@ palak aur gajar pulao @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																										
+						<elseif cond="recipe=='172'"/>
+                            <log> @@@@@@@@@@@ paneer di soti boti @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='173'"/>
+                            <log> @@@@@@@@@@@ paper wrapped chicken @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='174'"/>
+                            <log> @@@@@@@@@@@ pot mushroom rice @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     							  																						
+						<elseif cond="recipe=='175'"/>
+                            <log> @@@@@@@@@@@ roasted peanut chutney @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     				  																						
+						<elseif cond="recipe=='176'"/>
+                            <log> @@@@@@@@@@@ sichuan chilli potatoes @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     																										
+						<elseif cond="recipe=='177'"/>
+                            <log> @@@@@@@@@@@ spinach and cheese idlis @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='178'"/>
+                            <log> @@@@@@@@@@@ three flavour soup @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     						  																						
+						<elseif cond="recipe=='179'"/>
+                            <log> @@@@@@@@@@@ rice wade @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     					  																						
+						<elseif cond="recipe=='180'"/>
+                            <log> @@@@@@@@@@@ prawn cocktail @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	
+						<elseif cond="recipe=='181'"/>
+                            <log> @@@@@@@@@@@ brown rice @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='182'"/>
+                            <log> @@@@@@@@@@@ makai ki khichdi @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='183'"/>
+                            <log> @@@@@@@@@@@ masala bhaat @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='184'"/>
+                            <log> @@@@@@@@@@@ missi roti @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						 <elseif cond="recipe=='185'"/>
+                            <log> @@@@@@@@@@@ palak tilwala rice @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='186'"/>
+                            <log> @@@@@@@@@@@ panchanranga pulao @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe"/><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='187'"/>
+                            <log> @@@@@@@@@@@ pa mango squash mocktail @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     								     						  																						
+						<elseif cond="recipe=='188'"/>
+                            <log> @@@@@@@@@@@ kesri phirni @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     		
+						<elseif cond="recipe=='189'"/>
+                            <log> @@@@@@@@@@@ pineapple sheera @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='190'"/>
+                            <log> @@@@@@@@@@@ aloo chole @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+				   		<elseif cond="recipe=='191'"/>
+                            <log> @@@@@@@@@@@ aloo posto @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='192'"/>
+                            <log> @@@@@@@@@@@ aloo puri @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='193'"/>
+                            <log> @@@@@@@@@@@ ladyfinger pachadi @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='194'"/>
+                            <log> @@@@@@@@@@@ lobiya rassedaar @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	  
+						<elseif cond="recipe=='195'"/>
+                            <log> @@@@@@@@@@@ bombay toast sandwich @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='196'"/>
+                            <log> @@@@@@@@@@@ bread upma @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='197'"/>
+                            <log> @@@@@@@@@@@ healthy cornflakes bhel @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='198'"/>
+                            <log> @@@@@@@@@@@ moong moth chaat @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='199'"/>
+                            <log> @@@@@@@@@@@ coconut refresher @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='200'"/>
+                            <log> @@@@@@@@@@@ sweetcorn vegetable soup @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>	     	
+						<elseif cond="recipe=='201'"/>
+                            <log> @@@@@@@@@@@ salad with leftover boiled chickpeas @@@@@@@@@@@@@ </log>
+							<assign name="recipeid" expr="recipe" /><goto next="#recipeplayitem"/>						
+						</if>
+					</filled>
+
+                     
+					
+					<nomatch count="3">
+					    <log> @@@@@@@@@@@ no voice input and try more than 2 @@@@@@@@@@@@@ </log>
+                         <goto next="Rasoi_MainMenu.vxml"/>	
+					</nomatch>
+					
+					<nomatch>
+										    <prompt>     				      
+											  <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/sanjeev_rasoi/'+LANG_DESCRIPTION+'/'+'sorry_return.wav'"/>		
+										    </prompt>			
+											<log> @@@@@@@@@@@ VOICE COULD NOT MATCH RECOGNIZED VOICE IS ##### <value expr="recipe"/> </log>	
+					                        <reprompt/>
+					</nomatch>
+					
+					<noinput count="3">					  									
+						  <log> @@@@@@@@@@@ no voice input and try more than 2 @@@@@@@@@@@@@ </log>
+					      <goto next="Rasoi_MainMenu.vxml"/>		
+					</noinput>
+					
+					<noinput>
+					  <prompt>          					    
+						<audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/sanjeev_rasoi/'+LANG_DESCRIPTION+'/'+'sorry_return.wav'"/>			
+					  </prompt>									
+					  <log> @@@@@@@@@@@ no voice input  @@@@@@@@@@@@@ </log>
+                      <reprompt/>
+					</noinput>
+					
+		    </field>
+		
+		</form>	
+		
+		<form id="recipeplayitem">	
+		
+		  <block>
+		  
+		        <log> @@@@@@@@@@@ RECEIPE ID IS  ##### <value expr="recipeid"/> </log>
+			   
+			   <prompt bargein="false">	
+                     <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/sanjeev_rasoi/'+LANG_DESCRIPTION+'/recipe_asr.wav'"/>			
+               </prompt>		   
+			   
+			   
+			   <prompt bargein="false">	
+                     <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/sanjeev_rasoi/'+LANG_DESCRIPTION+'/'+recipeid+'_recipe_name.wav'"/>			
+               </prompt> 
+			   
+			   
+			   		 
+               <prompt bargein="false">	
+                     <audio expr="'http://'+CDSIP+CDSPATH+'Content/RECIPE/'+LANG_DESCRIPTION+'/RECIPE_'+recipeid+'.wav'"/>			
+               </prompt> 
+			   
+			   <log> Call tranfer in Sanjeev main menu @@@@@@ </log>
+			   
+			   <goto next="#recipeMainMenu"/>			    
+				 
+		  
+		  </block> 
+		  
+		  <!-- 	
+			
+		  <field name="recipeplay">		       
+		
+		       <grammar mode="dtmf" root="start">
+                   <rule id="start" scope="public">
+                     <one-of>
+				          <item>1</item>
+				          <item>2</item>	
+                          <item>3</item>	
+                          <item>4</item>	
+                          <item>5</item>	
+                          <item>6</item>	
+                          <item>7</item>	
+                          <item>8</item>	
+                          <item>9</item>	
+                          <item>0</item>	               			 
+				          <item>#</item>
+				          <item>*</item>			      
+                    </one-of>
+                </rule>
+               </grammar> 
+			   <log> @@@@@@@@@@@ RECEIPE ID IS  ##### <value expr="recipeid"/> </log>
+			   
+			   <prompt bargein="false">	
+                     <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/sanjeev_rasoi/'+LANG_DESCRIPTION+'/recipe_asr.wav'"/>			
+               </prompt>		   
+			   
+			   
+			   <prompt bargein="false">	
+                     <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/sanjeev_rasoi/'+LANG_DESCRIPTION+'/'+recipeid+'_recipe_name.wav'"/>			
+               </prompt> 
+			   
+			   
+			   		 
+               <prompt bargein="false">	
+                     <audio expr="'http://'+CDSIP+CDSPATH+'Content/RECIPE/'+LANG_DESCRIPTION+'/RECIPE_'+recipeid+'.wav'"/>			
+               </prompt> 
+				 
+              <filled>			       
+			       <goto next="#recipeMainMenu"/>			     
+              </filled>	
+			  
+			  <noinput>	
+			       <log> @@@@@@@@@@@ no input in sanjeev receipe play menu menu  @@@@@@@@@@@@@ </log>	  	               
+			       <goto next="#recipeMainMenu"/>  
+              </noinput>
+		
+		</field>
+		
+		-->
+
+	</form>		
+</vxml>

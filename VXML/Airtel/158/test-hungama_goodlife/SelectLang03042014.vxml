@@ -1,0 +1,1060 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="rasio_root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="SelectLang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+		
+	<var name="wellang" expr="''" />
+	 	<var name="ciropr" expr="''" />
+	<var name="currentindex" expr="0"/>
+
+
+
+	<script>
+		var	ciropr1 = new Object();		
+		var 	out_string=new Object();
+		var 	CDSIP=0;			
+	</script>
+	<var name="usr_status_goodlife" expr="'0'"/>
+	<var name="usr_status_riya" expr="'0'"/>
+	<var name="usr_status_storeone" expr="'0'"/>
+
+	
+<form id="Main">
+	<block>		
+		<assign name="C_Start" expr="call_time()"/>
+		<assign name="CallTime" expr="starttime()"/>
+		<assign name="Section_Name" expr="'USERCHK'"/>
+
+		
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+	    </script>
+	    <if cond="realDNIS=='9740084376'">
+		    <script>
+				realDNIS=55001;		    
+		    </script>
+	    </if>
+<!--	    
+<submit expr="'../hungama_goodlife_asr/test.vxml'"/>	-->    
+	    <script>
+		var	length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		</script>
+			
+		<assign name="DNIS" expr="realDNIS"/>
+		
+			    			 <!-- FETCHING CIRCLE   -->
+        <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+        
+         
+  
+		
+		 <assign name="initial_balance" expr="start_time()"/>
+         		 <log expr="'@@@@@@ call start_BalenceMinute is '+start_BalenceMinute"/> 
+				 
+				<assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 
+				    	
+			 <log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+			 <log> @@@@DNI is 		<value expr="session.connection.local.uri"/> </log>	
+			 <log> @@@@ANI is 		<value expr="session.connection.remote.uri"/> </log>
+			 
+			<script>
+		  					var splitparam=sessionid.split("_");
+		  						cirid=splitparam[1]; 
+		  					
+		  	</script>
+
+		  	<assign name ="operator" expr="'airm'"/>
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@operator is <value expr="operator"/> </log>
+
+			<!--<if cond="ANI=='8527000779'">
+				<goto next="#livestreamform"/>
+			</if>-->
+
+			<if cond="realDNIS=='55001699' &amp;&amp; (cirid==19)">
+				<!--<submit expr="'../ManchalaPremRiyaSub_MM/SelectLang.vxml'"/>-->
+				    <submit expr="'../MND/MND_SelectLang.vxml'"/>
+			</if>
+			<if cond="realDNIS=='5500169' &amp;&amp; (ANI=='9892049910' || ANI=='9892049719' || ANI=='9820949295' || ANI=='8420064256'  || ANI=='8011048219' || ANI=='9910040744' || ANI=='9958005414')">
+				<!-- <submit expr="'../ManchalaPremRiyaSub/SelectLang.vxml'"/> -->
+				<submit expr="'../MND/MND_SelectLang.vxml'"/>
+			</if>
+ 			<if cond="realDNIS=='5500169' &amp;&amp; (cirid==0 || cirid==1 || cirid==8 || cirid==12 || cirid==13 || cirid==14 || cirid==17 || cirid==18 || cirid==19 || cirid==3 || cirid==10)">
+				<!-- <submit expr="'../ManchalaPremRiyaSub/SelectLang.vxml'"/>-->
+				<submit expr="'../MND/MND_SelectLang.vxml'"/>
+			<elseif cond="realDNIS=='55001999'"/>
+				<submit expr="'../hungama_test/playContent.vxml'"/>
+			<elseif cond="realDNIS=='5500196'"/>
+				<submit expr="'../MND/MND_SelectLang.vxml'"/>
+			<elseif cond="(realDNIS=='55001961' || realDNIS=='55001962' || realDNIS=='55001963' || realDNIS=='55001964' || realDNIS=='55001965')"/>
+				<submit expr="'../MND/MND_SelectLang.vxml'"/>
+
+			</if>
+			 <if cond="DNIS=='55001000'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/rasoi_dbinteraction?PROCEDURE=RASOI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+				 		<![CDATA[
+					    		for(j=0; j< out_string.length;  j++)
+						  	{  	  
+						       	if(j==0)
+									usr_status_goodlife = out_string[j];
+						       }
+						]]>
+					</script>
+				
+		 		<script srcexpr="'http://'+IP+'/'+servlet_path+'/riya_dbinteraction?PROCEDURE=RIYA_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+				 		<![CDATA[
+					    		for(j=0; j< out_string.length;  j++)
+						  	{  	  
+						       	if(j==0)
+									usr_status_riya = out_string[j];
+						       }
+						]]>
+					</script>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/rasoi_dbinteraction?PROCEDURE=STARATONE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+						 <![CDATA[
+						    	for(j=0; j< out_string.length;  j++)
+							{  	  
+								if(j==0)
+									usr_status_storeone = out_string[j];
+								       							      								       							      
+							}
+						]]>
+					</script>
+				<if cond="usr_status_riya=='-1' &amp;&amp; usr_status_goodlife=='-1' &amp;&amp; usr_status_storeone=='-1'">
+				<else/>
+    					<submit expr="'../UnSubApp/manchalaRoot.vxml'"/>
+				</if>
+    					<!--<submit expr="'../UnSubApp/manchalaRoot.vxml'"/>-->
+		        </if> 	
+		        <assign name="dbservlet" expr="'rasoi_dbinteraction'"/>		        
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Airtel_IVR.CDS_IP_CIR&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+cirid+'&amp;INPARAM[1]='+ANI"/>
+			       <script>
+				       <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+					      {      
+						   if(j==0)
+							  CDSIP = out_string[j];
+						   if(j==1)
+							  circle = out_string[j];
+						   if(j==2)
+							  zone = out_string[j];
+					      }
+				       ]]>
+				</script>
+
+			       <log> @@@@circleid is <value expr="cirid"/> </log>
+			       <log> @@@@CDSIP is <value expr="CDSIP"/> </log>
+			       <log> @@@@circle name is <value expr="circle"/> </log>
+			       <log> @@@@zone name is <value expr="zone"/> </log>
+		        
+				<assign name ="promptpath" expr="'http://'+CDSIP+':8088/CDS/hungama/sanjeev_rasoi/'"/>
+			 	<assign name="contentpath" expr="'http://'+CDSIP+':8088/CDS/hungama/content'" />
+
+		<assign name="promptpath_lifestyle" expr="promptpath+'/LIFESTYLE/'"/>	
+		<assign name="promptpath_ans" expr="promptpath+'/LIFESTYLE/ANS/'"/>								
+								
+		
+		<assign name="lifestyle_dbinteraction" expr="'rasoi_dbinteraction'"/>
+
+		<assign name="MSISDN" expr="ANI"/>
+
+			<if cond="cirid==0 ||cirid==1 || cirid==2 ||  cirid==3 || cirid==4 || cirid==5 || cirid==6 || cirid==7 ">
+	 			<assign name="zone" expr="'north'"/>
+	 		<elseif cond="cirid==8 || cirid==9 ||  cirid==10 || cirid==11 || cirid==12 " />
+	 			<assign name="zone" expr="'west'"/>
+	 		<elseif cond="cirid==13 || cirid==14 ||  cirid==15 || cirid==16 || cirid==17 || cirid==18 "/>
+	 			<assign name="zone" expr="'east'"/>
+	 		<elseif cond="cirid==19 || cirid==20 ||  cirid==21 || cirid==22 || cirid==23 "/>
+	 			<assign name="zone" expr="'south'"/>
+	 		</if>
+				
+		<if cond="DNIS=='5500101'">
+			<assign name="timerflag" expr="'0'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=STARATONE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		<else/>
+			<if cond="circle=='del'">
+				<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_QUERY_TnbChk&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>-->
+				
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			</if>
+		</if>
+		<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>-->
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					lang = out_string[j];
+				       if(j==2)
+					balance = out_string[j];
+					if(j==3)
+					dishname = out_string[j];
+					if(j==4)
+					mainmenu= out_string[j];
+					if(j==5)
+					couponcnt= out_string[j];
+					if(j==6)
+					modesub= out_string[j];
+
+				  }
+
+			]]>
+		</script>
+		
+	
+		<if cond="DNIS=='5500101'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=STARATONE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2'"/>
+		<else/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2'"/>
+		</if>
+		<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2'"/>-->
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					key = out_string[j];
+				     
+				  }
+
+			]]>
+			
+			
+			key=parseInt(key);
+		</script>
+		
+		
+		<log>length of outstring  is	<value expr="out_string.length"/></log>
+		<log>@@@@@@@New usr_status	<value expr="usr_status"/></log>		
+		<log>@@@@@@@ lang is	<value expr="lang"/></log>		
+		<log>@@@@@@@ balance minutes is	<value expr="balance"/></log>		
+		<log>@@@@@@@ dishname is	<value expr="dishname"/></log>		
+		
+		<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+		
+
+	<if cond="DNIS=='550011' &amp;&amp; (circle=='hpd'||circle=='jnk'||circle=='pub'||circle=='har')">
+		<assign name="directaccess" expr="'true'"/>
+	</if>
+
+        <if cond="usr_status=='1'"> 
+        		
+		        	 <if cond="DNIS=='55001000'">
+         					<goto next="AccountManager.vxml#AcntUnsubscription"/>
+			         </if>
+		        	<log expr="'Lang Desc!!!!!!!!!!!!! =' + LANG_DESCRIPTION"/>       
+			    	<if cond="circle=='del'">
+					<if cond="DNIS=='5500101'">
+						<assign name="timerflag" expr="'0'"/>
+					<else/>
+			         		<assign name="timerflag" expr="'1'"/>
+					</if>
+				</if>
+			         	<assign name="initial_balance" expr="call_time()"/>
+			         	<script>
+			         		 balance=balance*60;
+					 	 curbalance=balance;
+			         	</script>
+        	
+		    
+		        	<log>@@@@@@@New timerflag	<value expr="timerflag"/></log>
+				<log>@@@@@@@New balance	<value expr="balance"/></log>
+
+				<if cond="lang=='01'">
+					<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+				<elseif cond="lang=='07'"/>
+					<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+				<elseif cond="lang=='09'"/>
+					<assign name="LANG_DESCRIPTION" expr="'MAL'"/>
+				<elseif cond="lang=='08'"/>
+					<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+				<elseif cond="lang=='10'"/>
+					<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+				<elseif cond="lang=='06'"/>
+					<assign name="LANG_DESCRIPTION" expr="'BEN'"/>					
+				<else/>
+					<assign name="LANG_DESCRIPTION" expr="'HIN'"/>				
+				</if>
+
+		        	<goto next="#Existing_User"/>
+    	
+    	<elseif cond="usr_status == '0'"/>        	
+    				 
+    				<log expr="'Lang Desc!!!!!!!!!!!!! =' + LANG_DESCRIPTION"/>
+				<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+				<assign name="lang" expr="'01'"/>
+				<assign name="s_flag" expr="'LIFE'"/>
+		        	<prompt bargein="false" timeout="0s">
+		        		<audio expr="promptpath+LANG_DESCRIPTION+'/charge_req_recd.wav'"/>	
+		        	</prompt>
+		        	<goto next="end.vxml"/>
+    	
+    	<elseif cond="usr_status=='-1'"/>
+			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+			<assign name="lang" expr="'01'"/>
+			<assign name="s_flag" expr="'LIFE'"/>
+			<!--<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_new.wav'"/>
+		       </prompt>-->		
+	
+			<goto next="Rasoi_Subs.vxml"/>
+
+			<if cond="DNIS=='5500101'">
+			<else/>
+			<if cond="circle=='mpd'">
+				
+				<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+				<assign name="lang" expr="'01'"/>
+				<assign name="s_flag" expr="'LIFE'"/>
+					<prompt bargein="true" timeout="0s">
+							    <audio expr="promptpath+LANG_DESCRIPTION+'/'+'welcome_new_6_mpd.wav'"/>		
+				    </prompt>		
+	
+					 <goto next="Rasoi_Subs.vxml"/> 
+
+			</if>
+			</if>
+			<if cond="circle=='apd' ||circle=='tnu' ||circle=='kar'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/lang/'+circle+'.cfg'"/>
+			<elseif cond="circle=='kol' ||circle=='wbl' ||circle=='ori'"/>	
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/lang/kwo.cfg'"/>
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/lang/del.cfg'"/>
+			</if>
+				
+				<script>
+					 <![CDATA[
+							lang = favSongs[0];	
+					]]>		
+				</script> 
+				<if cond="circle=='ori'">
+					<assign name="lang" expr="'01'"/>
+	       		</if>		       
+				<if cond="lang=='01'">
+					<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+				<elseif cond="lang=='07'"/>
+					<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+				<elseif cond="lang=='09'"/>
+					<assign name="LANG_DESCRIPTION" expr="'MAL'"/>
+				<elseif cond="lang=='08'"/>
+					<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+				<elseif cond="lang=='10'"/>
+					<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+				<elseif cond="lang=='06'"/>
+					<assign name="LANG_DESCRIPTION" expr="'BEN'"/>					
+				<else/>
+					<assign name="LANG_DESCRIPTION" expr="'HIN'"/>				
+				</if>
+				<if cond="DNIS=='5500101'">
+					<prompt bargein="true" timeout="0s">
+						    <audio expr="promptpath+LANG_DESCRIPTION+'/welcome_store.wav'"/>		
+					</prompt>
+				<else/>
+		    				<assign name="r" expr="getRandom(1,50)" />    				
+					<prompt bargein="true" timeout="0s" cond="directaccess!='true'">
+						 <audio expr="promptpath+LANG_DESCRIPTION+'/'+'welcome_new_'+r+'.wav'"/>
+						<!-- <audio expr="promptpath+LANG_DESCRIPTION+'/welcome_sona_new2.wav'"/>-->
+		
+				    	</prompt>
+
+					<prompt bargein="false" timeout="2s" cond="directaccess=='true'">
+						 <audio expr="promptpath+LANG_DESCRIPTION+'/'+'welcome_new_3_Zayka.wav'"/>		
+				    	</prompt>
+
+				</if>
+
+		    		<goto next="#New_User"/>
+		 <else/>
+		 			<prompt bargein="false" timeout="0s">
+		        		<audio expr="promptpath+LANG_DESCRIPTION+'/charge_req_recd.wav'"/>	
+		        	</prompt>
+		        	<goto next="end.vxml"/>
+    	</if>
+	</block>
+</form>
+
+<form id="Existing_User">
+<block>
+<assign name="lang" expr="'01'"></assign>
+
+		<if cond="lang==''">
+			<assign name="lang" expr="'01'"></assign>
+		</if>
+	<assign name="s_flag" expr="'LIFE'"/>
+	<goto next="#lastheard"/>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MULTIMODEL_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+DNIS+'&amp;INPARAM[1]='+lang"/>
+		<script>
+		 <![CDATA[ 
+		 			len=out_string.length;
+		 			i=0;
+			    for(j=0; j< len ;  j++)
+				  {  
+				  		if(j!=0)
+				  	{
+				  	multi[i]=  out_string[j];
+				    i=i+1;
+				    }
+				       if(j==0)
+					multi_recipe = out_string[j];				     
+				  }
+
+			]]>
+			key=parseInt(key);
+		</script>
+
+				<if cond="lang=='01'">
+					<!--<if cond="ANI=='8527000779' || ANI=='9910040744' || ANI=='9910998340'">-->
+						<assign name="s_flag" expr="'LIFE'"/>
+						<goto next="#lastheard"/>
+<!--					</if>-->
+					<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+				<elseif cond="lang=='07'"/>
+					<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+				<elseif cond="lang=='09'"/>
+					<assign name="LANG_DESCRIPTION" expr="'MAL'"/>
+				<elseif cond="lang=='08'"/>
+					<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+				<elseif cond="lang=='10'"/>
+					<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+				<elseif cond="lang=='06'"/>
+					<assign name="LANG_DESCRIPTION" expr="'BEN'"/>					
+				<else/>
+					<assign name="LANG_DESCRIPTION" expr="'HIN'"/>				
+				</if>
+				<if cond="DNIS=='5500101'">
+					<prompt bargein="true" timeout="0s">
+						    <audio expr="promptpath+LANG_DESCRIPTION+'/welcome_store.wav'"/>		
+						    
+					</prompt>
+
+					<assign name="isResume" expr="'FALSE'"/>
+					<goto next="playContentstoreatone.vxml"/>
+				</if>
+
+
+			<if cond="multi_recipe=='-1' &amp;&amp; len=='1'">
+		        
+		        <assign name="r" expr="getRandom(1,50)"/>			
+				<prompt bargein="false" timeout="2s" cond="directaccess !='true'">
+						    <audio expr="promptpath+LANG_DESCRIPTION+'/welcome_old_'+r+'.wav'"/>
+							<!-- <audio expr="promptpath+LANG_DESCRIPTION+'/welcome_sone_old2.wav'"/>-->
+				</prompt>
+				
+				<assign name="r" expr="getRandom(0,2)"/>			
+
+				<prompt bargein="false" timeout="2s" cond="directaccess=='true'">
+						 <audio expr="promptpath+LANG_DESCRIPTION+'/'+'welcome_old_'+r+'_Zayka.wav'"/>		
+				</prompt>
+
+				<if cond="DNIS=='55001100' || DNIS=='55001101' || DNIS=='55001102' || DNIS=='55001103' || DNIS=='55001104' || DNIS=='55001105' || DNIS=='55001106' || DNIS=='55001107' || DNIS=='55001108' || DNIS=='55001109' || DNIS=='55001110' || DNIS=='55001111' || DNIS=='55001112' || DNIS=='55001113' || DNIS=='55001114' || DNIS=='55001115' || DNIS=='55001116' || DNIS=='55001117' || DNIS=='55001118' || DNIS=='55001119' || DNIS=='55001120' || DNIS=='55001121' || DNIS=='55001122'">
+					<assign name="tiplisten" expr="1"/>
+    					<prompt bargein="true" timeout="3s">
+    						<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_state_mm.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_next_mm.wav'"/>
+    					</prompt>
+					<goto next="Rasoi_MainMenu.vxml"/>
+			    </if>
+	
+
+			<if cond="tiplisten==0 &amp;&amp; LANG_DESCRIPTION=='HIN'">
+            				<assign name="tiplisten" expr="1"/>
+            				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/songconfig/tip.cfg&amp;TOKEN=FREE'"/>
+            				<assign name="len" expr="favSongs.length" />
+            				<script>
+					 		<![CDATA[
+							for(j=0; j<len ;  j++)
+							{  	  
+							 
+								array1[j] = favSongs[j];
+													   
+							}
+							]]>		
+					</script> 
+            				<assign name="r" expr="getRandom(1,len)"/>
+					<assign name="song_begin" expr="start_time()"/>
+		 	 		<assign name="song_listen" expr="'START'" />
+            	   			<prompt bargein="false" cond="LANG_DESCRIPTION=='HIN'">
+            					<audio expr="promptpath+LANG_DESCRIPTION+'/tip_day.wav'"/>
+            					<audio expr="contentpath+'/rasoi/'+LANG_DESCRIPTION+'/' + array1[r] +'.wav'"/>
+            				</prompt>
+            				<assign name="song_listen" expr="'END'" />
+					<log> @@@@@@ content start time  <value expr="song_begin"/> </log>								 
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<log>@@@@@@@ content listen time  <value expr="compare_time"/> </log>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+					<log>@@@@@@@ content add time  <value expr="ContentTime"/> </log>							 
+					<assign name="contentlog" expr="contentlog+hash+array1[r]+hash+cat+hash+subcat+hash+compare_time"></assign> 
+            			</if>
+
+
+			<if cond="isResume=='FALSE'">
+				<if cond="dishname!='' &amp;&amp; dishname!='-1'">
+				<assign name="isResume" expr="'TRUE'"/>
+				
+				<assign name="ing_repeat" expr="'FALSE'"/>
+				<assign name="unike_play" expr="'0'"/>
+				<assign name="len" expr="1" />
+				
+				<assign name="array1[unike_play]" expr="dishname" />
+				
+				
+				<audio expr="promptpath+LANG_DESCRIPTION+'/listining_cat.wav'"/>		
+				<audio expr="contentpath+'/rasoi/hindi/'+dishname+'.wav'"/>
+				
+				
+				<goto next="playContent-pause.vxml#keypa"/>
+				</if>
+			</if>				
+
+
+
+
+				
+				<if cond="DNIS=='55001100' || DNIS=='55001101' || DNIS=='55001102' || DNIS=='55001103' || DNIS=='55001104' || DNIS=='55001105' || DNIS=='55001106' || DNIS=='55001107' || DNIS=='55001108' || DNIS=='55001109' || DNIS=='55001110' || DNIS=='55001111' || DNIS=='55001112' || DNIS=='55001113' || DNIS=='55001114' || DNIS=='55001115' || DNIS=='55001116' || DNIS=='55001117' || DNIS=='55001118' || DNIS=='55001119' || DNIS=='55001120' || DNIS=='55001121' || DNIS=='55001122'">
+				<else/>
+				<prompt bargein="true" timeout="0s" cond="LANG_DESCRIPTION=='HIN'">
+							<!--<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_next.wav'"/>	-->
+						    <audio expr="promptpath+LANG_DESCRIPTION+'/sanjeev_intro.wav'"/>		
+			    </prompt>			
+				</if>
+				<goto next="Rasoi_MainMenu.vxml"/>
+		
+		
+			<elseif cond="multi_recipe=='-1' &amp;&amp; len &gt; 1"/>
+				 <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+				 <assign name="lang" expr="01"/>
+			 	 <assign name="dishname" expr="multi[0]"/>
+			 	<prompt bargein="false" timeout="0s">
+			 		<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_script.wav'"/>
+					<audio expr="contentpath+'/rasoi/hindi/'+dishname+'.wav'"/>			 		
+			 	</prompt>
+			 	<goto next="multi_model.vxml#main"/>
+		
+		
+			<elseif cond="multi_recipe!='-1'&amp;&amp; len=='1'"/>
+			 	<assign name="dishname" expr="multi_recipe"/>
+			 	<prompt bargein="false" timeout="0s">
+			 		<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_script.wav'"/>
+					<audio expr="contentpath+'/rasoi/hindi/'+dishname+'.wav'"/>			 		
+			 	</prompt>
+			 	<goto next="multi_model.vxml#main"/>
+		
+			<else/>
+				
+			        <assign name="r" expr="getRandom(1,50)"/>			
+					<prompt bargein="false" timeout="2s">
+							    <audio expr="promptpath+LANG_DESCRIPTION+'/welcome_old_'+r+'.wav'"/>		
+							    
+					</prompt>
+				<if cond="DNIS=='55001100' || DNIS=='55001101' || DNIS=='55001102' || DNIS=='55001103' || DNIS=='55001104' || DNIS=='55001105' || DNIS=='55001106' || DNIS=='55001107' || DNIS=='55001108' || DNIS=='55001109' || DNIS=='55001110' || DNIS=='55001111' || DNIS=='55001112' || DNIS=='55001113' || DNIS=='55001114' || DNIS=='55001115' || DNIS=='55001116' || DNIS=='55001117' || DNIS=='55001118' || DNIS=='55001119' || DNIS=='55001120' || DNIS=='55001121' || DNIS=='55001122'">
+						<assign name="tiplisten" expr="1"/>
+    					<prompt bargein="true" timeout="3s">
+    						<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_state_mm.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_next_mm.wav'"/>
+    					</prompt>
+					<goto next="Rasoi_MainMenu.vxml"/>
+				</if>
+				<if cond="tiplisten==0 &amp;&amp; LANG_DESCRIPTION=='HIN'">
+            				<assign name="tiplisten" expr="1"/>
+            				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/songconfig/tip.cfg&amp;TOKEN=FREE'"/>
+            				<assign name="len" expr="favSongs.length" />
+            				<script>
+					 		<![CDATA[
+							for(j=0; j<len ;  j++)
+							{  	  
+							 
+								array1[j] = favSongs[j];
+													   
+							}
+							]]>		
+					</script> 
+            				<assign name="r" expr="getRandom(1,len)"/>
+					<assign name="song_begin" expr="start_time()"/>
+		 	 		<assign name="song_listen" expr="'START'" />
+            	   			<prompt bargein="false" cond="LANG_DESCRIPTION=='HIN'">
+            					<audio expr="promptpath+LANG_DESCRIPTION+'/tip_day.wav'"/>
+            					<audio expr="contentpath+'/rasoi/'+LANG_DESCRIPTION+'/' + array1[r] +'.wav'"/>
+            				</prompt>
+            				<assign name="song_listen" expr="'END'" />
+					<log> @@@@@@ content start time  <value expr="song_begin"/> </log>								 
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<log>@@@@@@@ content listen time  <value expr="compare_time"/> </log>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+					<log>@@@@@@@ content add time  <value expr="ContentTime"/> </log>							 
+					<assign name="contentlog" expr="contentlog+hash+array1[r]+hash+cat+hash+subcat+hash+compare_time"></assign> 
+            			</if>
+				<if cond="DNIS=='55001100' || DNIS=='55001101' || DNIS=='55001102' || DNIS=='55001103' || DNIS=='55001104' || DNIS=='55001105' || DNIS=='55001106' || DNIS=='55001107' || DNIS=='55001108' || DNIS=='55001109' || DNIS=='55001110' || DNIS=='55001111' || DNIS=='55001112' || DNIS=='55001113' || DNIS=='55001114' || DNIS=='55001115' || DNIS=='55001116' || DNIS=='55001117' || DNIS=='55001118' || DNIS=='55001119' || DNIS=='55001120' || DNIS=='55001121' || DNIS=='55001122'">
+				<else/>
+					<prompt bargein="true" timeout="0s" cond="LANG_DESCRIPTION=='HIN'">
+								<!--<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_next.wav'"/>	-->
+							    <audio expr="promptpath+LANG_DESCRIPTION+'/sanjeev_intro.wav'"/>		
+				    </prompt>
+				</if>		
+				<goto next="Rasoi_MainMenu.vxml"/>
+			</if> 
+			
+</block>
+</form>
+
+<form id="New_User">
+<block>
+	<if cond="directaccess=='true'">
+		<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+
+		 <goto next="Rasoi_Subs.vxml"/> 
+
+	</if>
+<script>
+favSongs.length=0;
+</script>
+
+			<if cond="circle=='apd' ||circle=='tnu' ||circle=='kar'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/lang/'+circle+'.cfg'"/>
+			<elseif cond="circle=='kol' ||circle=='wbl' ||circle=='ori'"/>	
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/lang/kwo.cfg'"/>
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/lang/del.cfg'"/>
+			</if>
+				<script>
+						array1.length=0;
+						movie_idx=0;
+						unike_play=0;
+				</script>					
+				<assign name="len" expr="favSongs.length" />					
+		
+				<script>
+					 <![CDATA[
+						for(j=0; j<len ;  j++)
+						{  	  
+							array1[j] = favSongs[j];
+						   
+						}
+	
+					]]>		
+				</script> 	       					       
+				
+
+</block>
+	<field name="langopt">
+			  <grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>						
+						<item> 1 </item>
+						<item> 2 </item>																												
+						<item> 3 </item>
+						<item> 4 </item>
+						<item> 5 </item>
+						<item> 6 </item>						
+					</one-of>
+				</rule>
+			  </grammar>
+				
+
+			<prompt bargein="true" timeout="1s">
+				<foreach item="names" array="array1">
+					<mark nameexpr="movie_idx++"/>
+					<audio expr="promptpath+names+'/lang'+names+'.wav'"/>					
+					<audio expr="promptpath+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+				</foreach>													
+			</prompt>
+								   		
+				
+				<filled>
+
+				      
+				      <if cond="langopt &lt; len+1">
+						
+						<script>
+				      			langopt=langopt-1;
+				      	</script>
+				      	
+				      	<assign name="lang" expr="array1[langopt]"/>	
+						
+						<if cond="lang=='01'">
+							<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+						<elseif cond="lang=='07'"/>
+							<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+						<elseif cond="lang=='09'"/>
+							<assign name="LANG_DESCRIPTION" expr="'MAL'"/>
+						<elseif cond="lang=='08'"/>
+							<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+						<elseif cond="lang=='10'"/>
+							<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+						<elseif cond="lang=='06'"/>
+							<assign name="LANG_DESCRIPTION" expr="'BEN'"/>					
+						<else/>
+							<assign name="LANG_DESCRIPTION" expr="'HIN'"/>				
+						</if>
+													      
+				      <else/>
+						 <throw event="nomatch"/> 
+				      </if>
+				      <if cond="lang=='01'">
+					    <assign name="s_flag" expr="'LIFE'"/>	
+				      <else/>				      		
+						<assign name="s_flag" expr="'FALSE'"/>	
+				      </if>	
+						
+					  <script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=RASOI_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>				      
+				      <if cond ="usr_status=='1'"> 
+						<if cond="DNIS=='5500101'">
+							<prompt bargein="true" timeout="0s">
+						    	<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_store.wav'"/>		
+						    
+							</prompt>
+							<goto next="playContentstoreatone.vxml"/>
+						</if>
+				      <if cond="s_flag=='LIFE'">
+					      <goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+				      <else/>
+					      <goto next="Rasoi_MainMenu.vxml"/>
+				      </if>
+				      <else/>
+						<goto next="Rasoi_Subs.vxml"/> 
+
+				 </if>
+				</filled>					
+			    <nomatch>
+					<prompt>						
+						<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>		 
+			   		</prompt>
+			   		<reprompt/>
+		   	    </nomatch>						
+				<noinput>
+					<prompt>						
+						<audio expr="promptpath+LANG_DESCRIPTION+'/waiting_response.wav'"/>		 
+			   		</prompt>
+					<reprompt/>
+				</noinput>					
+		</field>
+</form>
+<form id="multi_lang_select">
+	<field name="langopt">
+			  <grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>						
+						<item> 1 </item>
+						<item> 2 </item>																												
+						<item> 3 </item>
+						<item> 4 </item>
+						<item> 5 </item>
+					
+					</one-of>
+				</rule>
+			  </grammar>
+				
+			<prompt bargein="true" timeout="1s">
+				<foreach item="names" array="multi">
+					<mark nameexpr="movie_idx++"/>		
+					<audio expr="promptpath+names+'/lang'+names+'.wav'"/>					
+					<audio expr="promptpath+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+				</foreach>													
+			</prompt>	
+				<filled>
+				      <if cond="langopt &lt; len">
+				      	<script>
+				      			langopt=langopt-1;
+				      	</script>
+					    <assign name="lang" expr="multi[langopt]"/> 		
+						
+						
+						
+						<if cond="lang=='01'">
+							<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+						<elseif cond="lang=='07'"/>
+							<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+						<elseif cond="lang=='09'"/>
+							<assign name="LANG_DESCRIPTION" expr="'MAL'"/>
+						<elseif cond="lang=='08'"/>
+							<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+						<elseif cond="lang=='10'"/>
+							<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+						<elseif cond="lang=='06'"/>
+							<assign name="LANG_DESCRIPTION" expr="'BEN'"/>					
+						<else/>
+							<assign name="LANG_DESCRIPTION" expr="'HIN'"/>				
+						</if>
+				   <else/>
+					    <throw event="nomatch"/> 			      
+				    </if>
+						<goto next="#Existing_User"/>
+				</filled>					
+			    <nomatch>
+			    <script>
+			    movie_idx=0;
+			    </script>
+					<reprompt/>
+		   	    </nomatch>						
+				<noinput>
+			    <script>
+			    movie_idx=0;
+			    </script>				
+					<reprompt/>
+				</noinput>					
+		</field>
+
+</form>
+<form id="livestreamform">
+	<block>
+		<assign name="currentindex" expr="getminute()"/>
+		<log> @@@@@@ currentindex  <value expr="currentindex"/> </log>
+		<script>
+			currentindex = currentindex -2;
+		</script>
+		<log> @@@@@@ currentindex  <value expr="currentindex"/> </log>
+		<if cond="currentindex &gt; 59">
+			<assign name="currentindex" expr="0"/>
+		</if>
+		<log> @@@@@@ currentindex  <value expr="currentindex"/> </log>
+		<if cond="currentindex == -2">
+			<assign name="currentindex" expr="58"/>
+		</if>
+		<log> @@@@@@ currentindex  <value expr="currentindex"/> </log>
+		<if cond="currentindex == -1">
+			<assign name="currentindex" expr="59"/>
+		</if>
+		<log> @@@@@@ currentindex  <value expr="currentindex"/> </log>
+
+		
+				
+		<goto next="#livestreamnextform"/>
+	</block>
+	
+</form>
+
+<form id="livestreamnextform">
+	<block>
+		<if cond="currentindex &gt; 59">
+			<assign name="currentindex" expr="0"/>
+		</if>
+
+
+		<prompt bargein="false" timeout="1s">
+			<audio expr="'http://10.111.14.182:8088/CDS/hungama/hungamalive/contentname_9.wav'"/>
+		</prompt>
+		<script>
+			currentindex = currentindex +1;
+		</script>
+				
+		<goto next="#livestreamnextform"/>
+	</block>
+	
+</form>
+
+<form id="lastheard">
+<block>
+
+	             <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=LIFE_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=GET'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	last_listen = out_string[j];
+						  }
+					]]>
+			
+			</script>
+	             <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=LIFE_KEYPAD&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=GET'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	key_pad = out_string[j];
+						  }
+					]]>
+			
+			</script>
+			<log>keypad value is:<value expr="key_pad"/></log>
+			<if cond="key_pad=='NOK'">
+				<assign name="keypad_flag" expr="'false'" />
+			<else/>
+				<assign name="keypad_flag" expr="'true'" />
+			</if>
+			
+</block>
+
+		<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+						</one-of>
+					</rule>
+			</grammar>
+				
+			<prompt bargein="true" timeout="0s">		
+				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_old.wav'"/>
+
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="(last_listen!='NA' &amp;&amp; last_listen!='-1' &amp;&amp; last_listen!='0')">
+						<audio expr="promptpath_lifestyle+'/'+lang+'/listening_cat.wav'"/>
+						<audio expr="promptpath_lifestyle+'/'+lang+'/'+last_listen+'.wav'"/>
+						<!--<audio expr="promptpath_lifestyle+'/'+lang+'/main_menu.wav'"/>-->
+			</prompt>
+			<filled>
+			
+				<if cond="choice=='8'">
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="AccountManager_LIFE.vxml"/>	
+				<else/>	
+					<if cond="last_listen=='cat_lovecalc'">
+						<goto next="Love_cal.vxml"/>
+					<elseif cond="last_listen=='cat_dating'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_dating.wav'"/>
+						</prompt>   
+
+						<assign name="playconfig" expr="'dateing'"/>
+						<goto next="Playcontent_life.vxml"/>
+					<elseif cond="last_listen=='cat_relation'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_relation.wav'"/>
+						</prompt>   
+
+						<assign name="playconfig" expr="'relation'"/>
+						<goto next="Playcontent_life.vxml"/>
+					<elseif cond="last_listen=='cat_fashion'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_fashion.wav'"/>
+						</prompt>   
+
+						<assign name="playconfig" expr="'fashion'"/>
+						<goto next="Playcontent_life.vxml"/>
+					<elseif cond="last_listen=='cat_confession'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_confession.wav'"/>
+						</prompt>   
+						<goto next="Record_confession.vxml"/>
+					<elseif cond="last_listen=='cat_recipe'"/>
+						<goto next="Rasoi_MainMenu.vxml"/>
+					</if>
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+		   		</if> 	
+				
+				  
+			</filled>
+		</field>
+		<noinput>
+					<if cond="last_listen=='cat_lovecalc'">
+						<goto next="Love_cal.vxml"/>
+					<elseif cond="last_listen=='cat_dating'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_dating.wav'"/>
+						</prompt>   
+
+						<assign name="playconfig" expr="'dateing'"/>
+						<goto next="Playcontent_life.vxml"/>
+					<elseif cond="last_listen=='cat_relation'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_relation.wav'"/>
+						</prompt>   
+
+						<assign name="playconfig" expr="'relation'"/>
+						<goto next="Playcontent_life.vxml"/>
+					<elseif cond="last_listen=='cat_fashion'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_fashion.wav'"/>
+						</prompt>   
+
+						<assign name="playconfig" expr="'fashion'"/>
+						<goto next="Playcontent_life.vxml"/>
+					<elseif cond="last_listen=='cat_confession'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_confession.wav'"/>
+						</prompt>   
+						<goto next="Record_confession.vxml"/>
+					<elseif cond="last_listen=='cat_recipe'"/>
+						<goto next="Rasoi_MainMenu.vxml"/>
+					</if>
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+
+		</noinput>
+		<nomatch>
+					<if cond="last_listen=='cat_lovecalc'">
+						<goto next="Love_cal.vxml"/>
+					<elseif cond="last_listen=='cat_dating'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_dating.wav'"/>
+						</prompt>   
+
+						<assign name="playconfig" expr="'dateing'"/>
+						<goto next="Playcontent_life.vxml"/>
+					<elseif cond="last_listen=='cat_relation'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_relation.wav'"/>
+						</prompt>   
+
+						<assign name="playconfig" expr="'relation'"/>
+						<goto next="Playcontent_life.vxml"/>
+					<elseif cond="last_listen=='cat_fashion'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_fashion.wav'"/>
+						</prompt>   
+
+						<assign name="playconfig" expr="'fashion'"/>
+						<goto next="Playcontent_life.vxml"/>
+					<elseif cond="last_listen=='cat_confession'"/>
+						<prompt bargein="true"  timeout="0s">
+		          				<audio expr="promptpath_lifestyle+'/'+lang+'/welcome_cat_confession.wav'"/>
+						</prompt>   
+						<goto next="Record_confession.vxml"/>
+					<elseif cond="last_listen=='cat_recipe'"/>
+						<goto next="Rasoi_MainMenu.vxml"/>
+					</if>
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+		</nomatch>
+
+</form>
+
+</vxml>

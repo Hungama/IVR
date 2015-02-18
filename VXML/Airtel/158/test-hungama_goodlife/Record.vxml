@@ -1,0 +1,381 @@
+<vxml version="2.0" application="rasio_root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Record.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="UploadFileName" expr="''"/>
+	
+	<var name="DATE" expr="''"/>
+	<var name="TIME" expr="''"/>
+	<var name="month" expr="''"/>
+	<var name="day" expr="''"/>
+	
+<form id="CONFESSION_CHECK">
+	<block>
+		<if cond="timerflag=='1'">                       						   
+			   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+			   <script>
+			     total_used_bal=dur;
+			     curbalance=balance-total_used_bal;  						  
+			   </script>
+	
+			   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			   <log expr="'@@@@@@ left balance is '+curbalance"/>
+	 		   <if cond="curbalance &lt;= '0'">          
+ 			      <goto next="Topup.vxml"/>
+			   </if>
+		</if>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=recording_check&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=RELATION&amp;INPARAM[3]=GET'"/>
+		<script>
+					array1.length=0;
+		</script>
+		<assign name="len" expr="out_string.length" />
+		<assign name="movie_idx" expr="0" />
+		<assign name="i" expr="0" />
+		<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+		<script>
+			 <![CDATA[
+				   for(j=0; j<len ;  j++)
+				   {  	  
+					array1[j] = out_string[j];						   
+				   }
+			]]>		
+		</script> 	       					       
+		<log>Length  is	<value expr="len"/>    </log>
+		<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+		<if cond="array1[0]==''">
+			 <goto next="#RECORDINTRO"/>
+		<else/>	 	
+			<goto next="#RELATION"/>
+		</if>
+	</block>
+</form>	
+<form id="RELATION">
+ 	 <field name="choice">               
+		<grammar mode="dtmf" root="start2" version="1.0">
+                   	<rule id="start2" scope="public">
+                     	<one-of>     
+				   <item>1</item>
+				   <item>2</item>
+				   <item>8</item>
+				   <item>9</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+               	
+          	<prompt bargein="true"  timeout="4s">
+          		<audio expr="promptpath_lifestyle+'/'+lang+'/relation_option.wav'"/>
+		</prompt>   
+				 
+		<filled>  
+			<if cond="choice=='1'">
+				<assign name="recording_type" expr="'RELATION'"/>
+				<goto next="play_recording.vxml"/>
+			<elseif cond="choice=='2'"/>	
+				<goto next="#RECORDINTRO"/>
+			<elseif cond="choice=='8'"/>	
+				<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			<elseif cond="choice=='9'"/>	
+				<goto next="AccountManager_LIFE.vxml"/>
+
+			</if>
+		</filled>
+			  
+			<noinput count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#RELATION"/>
+			</noinput>
+			<noinput count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#RELATION"/>
+			</noinput>
+			<noinput count="3">
+					<goto next="#RECORDINTRO"/>
+			</noinput>
+			<nomatch count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#RELATION"/>
+			</nomatch>
+					<nomatch count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#RELATION"/>
+			</nomatch>
+			<nomatch count="3">
+					<goto next="#RECORDINTRO"/>
+			</nomatch>
+        </field>		
+</form>
+<form id="RECORDINTRO"> 
+  	 <field name="choice">               
+		<grammar mode="dtmf" root="start2" version="1.0">
+                   	<rule id="start2" scope="public">
+                     	<one-of>     
+				   <item>4</item>
+				   <item>7</item>
+				   <item>8</item>
+				   <item>9</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+               	
+          	<prompt bargein="true"  timeout="4s">
+          		<audio expr="promptpath_lifestyle+'/'+lang+'/start_recording.wav'"/>
+		</prompt>   
+				 
+		<filled>  
+			<if cond="choice=='4'">
+				<goto next="#RECORD"/>
+			<elseif cond="choice=='7'"/>
+				<if cond="array1[0]==''">
+					<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+				<else/>
+					<goto next="#CONFESSION_CHECK"/>	
+				</if>
+			<elseif cond="choice=='8'"/>
+				<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="AccountManager_LIFE.vxml"/>
+			</if>
+		</filled>
+			  
+			<noinput count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#RECORDINTRO"/>
+			</noinput>
+			<noinput count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<goto next="#RECORDINTRO"/>
+			</noinput>
+			<noinput count="3">
+					<goto next="#RECORD"/>
+			</noinput>
+			<nomatch count="1">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#RECORDINTRO"/>
+			</nomatch>
+					<nomatch count="2">
+					<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath_lifestyle+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<goto next="#RECORDINTRO"/>
+			</nomatch>
+			<nomatch count="3">
+					<goto next="#RECORD"/>
+			</nomatch>
+        </field>		
+		
+</form>
+
+<form id="RECORD">
+	<block>
+		<assign name="DATE" expr="getcurryyyymmdd()"/>
+		<assign name="TIME" expr="new Date().getHours()"/>
+		<assign name="TIME1" expr="new Date().getMinutes()"/>
+		<log>	TIME  isssss    <value expr="TIME"/> 	</log>
+		<log>	TIME 1 isssss    <value expr="TIME1"/> 	</log>
+		
+		<script>
+			month=DATE.substring(4,6);
+			day=DATE.substring(6,8);
+			TIME=TIME+''+TIME1;
+		</script>
+		
+		<assign name="month" expr="month"/>
+		<assign name="day" expr="day"/>
+		
+		<log>	DATE  isssss    <value expr="DATE"/> 	</log>
+		<log>	month isssss    <value expr="month"/> 	</log>
+		<log>	day isssss    <value expr="day"/> 	</log>
+		
+		
+		<script>UploadFileName=ANI+'_'+DATE+'_'+TIME+'.wav';</script>
+	</block>
+     
+       <record name="recording" beep="true" maxtime="240s" finalsilence="10s" dtmfterm="true" type="audio/wav;codec=alaw"/>
+
+	<subdialog name="messageUpload" srcexpr="'http://10.2.73.156:8080/hungama/recording_lifestyle'" enctype="multipart/form-data" method="post" namelist="ANI UploadFileName month day recording">	    	    							
+	</subdialog> 
+	
+        <field name="LGRecconfirmopt" type="boolean">
+		 <grammar mode="dtmf" root="start3" version="1.0">
+	           <rule id="start3" scope="public">
+		       <one-of>				 
+			  <item>4</item>	
+			  <item>8</item>
+			  <item>9</item>			  					 			      
+		       </one-of>
+	           </rule>
+               </grammar>
+               <prompt bargein="true"  timeout="1s">
+          		<audio expr="promptpath_lifestyle+'/'+lang+'/thanks_recording.wav'"/>
+		</prompt>   
+			 
+		<filled>
+			<if cond="LGRecconfirmopt=='4'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=recording_check&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+UploadFileName+'&amp;INPARAM[2]=RELATION&amp;INPARAM[3]=SET'"/>								
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+				<goto next="#RECORDINTRO"/>
+			<elseif cond="LGRecconfirmopt=='8'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=recording_check&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+UploadFileName+'&amp;INPARAM[2]=RELATION&amp;INPARAM[3]=SET'"/>					
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+				<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			<elseif cond="LGRecconfirmopt=='9'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=recording_check&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+UploadFileName+'&amp;INPARAM[2]=RELATION&amp;INPARAM[3]=SET'"/>					
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+				<goto next="AccountManager.vxml"/>
+			</if>
+		</filled>
+			  
+	       <noinput>	
+	       	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=recording_check&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+UploadFileName+'&amp;INPARAM[2]=RELATION&amp;INPARAM[3]=SET'"/>					
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+	             	<goto next="Playcontent_life.vxml"/>     
+               </noinput>
+              
+               <nomatch>
+               	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+lifestyle_dbinteraction+'?PROCEDURE=recording_check&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+UploadFileName+'&amp;INPARAM[2]=RELATION&amp;INPARAM[3]=SET'"/>					
+				<if cond="timerflag=='1'">                       						   
+				   <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				   <script>
+				     total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+				   </script>
+		
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		 		   <if cond="curbalance &lt;= '0'">          
+ 				      <goto next="Topup.vxml"/>
+				   </if>
+				</if>
+
+			<goto next="Playcontent_life.vxml"/>
+	       </nomatch>	
+	  </field>
+</form>
+
+
+<form id="RecordComplete"> 
+  	 <field name="choice">               
+		<grammar mode="dtmf" root="start4" version="1.0">
+                   	<rule id="start4" scope="public">
+                     	<one-of>     
+				   <item>4</item>
+				   <item>8</item>
+				   <item>9</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+               	
+          	<prompt bargein="true"  timeout="4s">
+          		<audio expr="promptpath_lifestyle+'/'+lang+'/thanks_recording.wav'"/>
+		</prompt>   
+				 
+		<filled>
+			<if cond="choice=='4'">
+				<goto next="#RECORDINTRO"/>
+			<elseif cond="choice=='8'"/>
+				<goto next="Hungama_Lifestyle_Mainmenu.vxml"/>
+			<elseif cond="'9'"/>
+				<goto next="AccountManager.vxml"/>
+			</if>
+			<assign name="record_type" expr="'true'"/>
+			<goto next="Playcontent_life.vxml"/>
+		</filled>
+			  
+	      <noinput>	
+			<assign name="record_type" expr="'true'"/>
+	             	<goto next="Playcontent_life.vxml"/>     
+              </noinput>
+              
+              <nomatch>
+			<assign name="record_type" expr="'true'"/>
+			<goto next="Playcontent_life.vxml"/>
+	      </nomatch>		
+        </field>		
+		
+</form>
+
+
+</vxml>

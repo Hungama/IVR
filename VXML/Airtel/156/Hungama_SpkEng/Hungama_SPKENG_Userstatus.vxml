@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+<property name="timeout" value="2s"/>
+<meta name="Hungama_SPKENG_Userstatus.vxml" content=""/>
+<meta name="Author" content=""/>
+<meta name="Date" content=""/>
+<meta name="Description" content=""/>
+<meta name="Support" content=""/>  
+<!-- ################################## USERSTATUS ############################################################################################ -->
+<form id="USERSTATUS">
+	<block>    
+	<assign name="Section_Name" expr="'SPKENG_USERSTATUSCHECK'"/>
+			<assign name="initial_balance" expr="call_time()"/>	
+	        	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=2&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+DNIS"/>
+		   		<script>
+		 			<![CDATA[
+		   				for(j=0; j< out_string.length;  j++)
+			 		 		{  	  
+			      				if(j==0)
+			      			 	usr_status = out_string[j];
+						        if(j==1)
+						       	lang = out_string[j];
+						        if(j==2)
+						       	balance = out_string[j];	
+							 if(j==3)
+								modesub = out_string[j];						      
+			  				}
+					]]>
+				</script>
+					<log>usr_status   is	<value expr="usr_status"/></log>	
+				<if cond="lang == '99'">
+			<script>
+				lang="01";
+			</script>
+				</if>						    
+		 	
+			<if cond="usr_status == '1'">						    
+				         <script> 	
+				         	balance=balance*60;
+						    timerflag=1;      
+						 </script>	
+ 						<log>balancebalancebalancebalancebalance   is	<value expr="balance"/></log>
+
+						 <if cond="timerflag=='1'">                       						   
+							 <script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+							 <script>
+						    	 total_used_bal=dur;
+							     curbalance=balance-total_used_bal;  						  
+						     </script>
+						   
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		                    
+		                  		</if>  
+	  				       <assign name="repeat_flag" expr="'1'"/>
+	  				       <prompt bargein="false">					 	
+					       		<audio expr="promptpath+'/'+lang+'/welcome_old.wav'"/>
+						</prompt>
+						<goto next="Hungama_SPKENG_ExistUser.vxml"/>
+						
+			<elseif cond="usr_status=='-1'"/>
+						 <log>usr_status   is	<value expr="usr_status"/>    </log>
+						 <assign name="dtmf_check" expr="1"/>
+  				         <assign name="dtmf_log" expr="ANI+hash+circle"/>
+						 <assign name="dtmfsub" expr="'First_level_input'"/>  
+						
+						<goto next="Hungama_SPKENG_sub.vxml"/>
+	  				      	
+			<else/>
+				<prompt bargein="false">					 	
+					<audio expr="promptpath+'/'+lang+'/charging_wait.wav'"/>
+				</prompt>
+					<goto next="Hungama_SPKENG_End.vxml"/>	
+			</if>				
+	</block>
+	
+</form>
+</vxml>
+
+

@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<grammar xml:lang="en-IN" version="1.0" root="ROOT" tag-format="swi-semantics/1.0" xmlns="http://www.w3.org/2001/06/grammar">
+
+<rule id="ROOT" scope="public">
+ <ruleref uri="#SubRule" />
+   <tag>
+	     SWI_meaning=SubRule.SWI_meaning;
+         recipe=SWI_meaning;
+       </tag>
+</rule>
+<rule id="SubRule">
+		<one-of>
+			<item><ruleref uri="#Disturb"/><tag>SWI_meaning ='Disturb'</tag></item>
+		</one-of>
+</rule>
+<rule id="Disturb">
+<one-of>
+<item>dihsturb</item>
+<item>Dishtub</item>
+<item>Deesturb</item>
+<item>Disturab</item>
+<item>Dishturub</item>
+<item>deetarab</item>
+<item>deestrub</item>
+<item>duhsturb</item>
+<item>distib</item>
+</one-of>
+</rule>
+</grammar>

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+
+<vxml version="2.0" application="rasio_root.vxml" 	
+xmlns="http://www.w3.org/2001/vxml" 	
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 	
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">  	
+<meta name="playMyContent.vxml" content="" /> 	
+<meta name="Author" content="" /> 	
+<meta name="Date" content="" /> 	
+<meta name="Description" content="" /> 	
+<meta name="Support" content="" />	
+
+<script>
+		var part=1;
+		var favSongs=new Object();
+		var out_string=new Object();				
+</script>
+
+        <form id="nav">
+            <block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_FAVORITE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=GET&amp;INPARAM[2]=GET'"/>
+				<script>
+							array1.length=0;
+				</script>
+				<assign name="len" expr="out_string.length" />
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+					 <![CDATA[
+						   for(j=0; j<len ;  j++)
+						   {  	  
+									array1[j] = out_string[j];						   
+						   }
+					]]>		
+				</script> 	       					       
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+				<if cond="array1[0]==''">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/notin_myzone.wav'"/>
+					</prompt>
+					<if cond="s_flag=='LIFE'">
+						<goto next="Hungama_Lifestyle_Mainmenu.vxml" />	
+					<else/>
+						<goto next="Rasoi_MainMenu.vxml" />	
+					</if>
+				</if>
+            </block>
+        	<field name="nac_opt">
+        		<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  0  </item>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+						 <item>  4  </item>
+						 <item>  5  </item>						 
+						 <item>  7  </item>
+						 <item>  8  </item>
+						 <item>  9  </item>
+						 <item>  #  </item>						
+					</one-of>
+				</rule>
+			</grammar>
+       		
+		<filled>
+			<goto next="#playclip" />	
+		</filled>
+        	</field>
+        	<noinput>
+        		<goto next="#playclip" />
+        	</noinput>
+        	<nomatch>
+		        <goto next="#playclip" />
+        	</nomatch>
+        </form>
+
+	
+	<form id="playclip">
+		<block>
+			<log> fetching songs </log>			
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+			</if>
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="array1[unike_play]"/>    </log>
+			<script>
+			    var songcheck1=array1[unike_play].split("/");
+				Song_Path=songcheck1[0];								
+				songID = songcheck1[1];
+			</script>
+			
+		</block>
+		<field name="choice">
+			
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  0  </item>								
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			
+			<prompt bargein="true" timeout="1s">
+					<audio expr="contentpath+'/rasoi/'+Song_Path+'/'+songID+'_'+part+'.wav'"/> 							
+			</prompt>
+			
+		<filled>
+				<if cond="choice=='1'">
+					<script> unike_play=unike_play-1</script>
+					<goto next="#playclip" />
+				<elseif cond="choice=='2'"/>
+					<script> unike_play=unike_play</script> 
+					<goto next="#playclip" />
+				<elseif cond="choice=='3'"/>
+					<script> unike_play=unike_play+1</script>
+					<goto next="#playclip" />
+				<elseif cond="choice=='4'"/>				
+					<script>
+						var menuchoice1=playconfig.split("_");
+						mainmenu1=menuchoice1[1];
+						mainmenu2=menuchoice1[0];
+					</script>
+					<if cond="mainmenu1=='veg'">
+						<assign name="playconfig" expr="''+mainmenu2+'_nonveg'"/>
+					<else/>
+						<assign name="playconfig" expr="''+mainmenu2+'_veg'"/>
+					</if>
+					<goto next="playContent-pause.vxml"/>
+				<elseif cond="choice=='5'"/>
+					<goto next="#pause"/>
+				<elseif cond="choice=='7'"/>
+					<goto next="#navigation"/>
+				<elseif cond="choice=='8'"/>
+					<if cond="s_flag=='LIFE'">
+						<goto next="Hungama_Lifestyle_Mainmenu.vxml"></goto>					
+					<else/>
+						<goto next="Rasoi_MainMenu.vxml"></goto>
+					</if>	
+				<elseif cond="choice=='9'"/>
+					<goto next="AccountManager.vxml"/>
+				<elseif cond="choice=='0'"/>				
+					<goto next="#DeleteFavorite"/>
+				<elseif cond="choice=='#'"/>
+					<goto next="Suggestion.vxml"/>
+				</if>				
+		</filled>
+
+		<noinput>
+				
+			<script> part=part+1</script>
+					<goto nextitem="choice" />
+		</noinput>
+		<nomatch>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption_m.wav'"/>
+			</prompt>
+		</nomatch>
+		</field>
+ <catch event="error.badfetch.http.404">
+					<script> 
+					unike_play=unike_play+1
+					</script>
+				<goto next="#playclip" />
+				
+ </catch>	
+	</form>
+	
+	<form id="DeleteFavorite">
+		<block>		    
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RASOI_FAVORITE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=DEL&amp;INPARAM[2]='+Song_Path+'/'+songID"/>
+			<script>
+			<![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+							fav_status = out_string[j];				       
+
+				  }
+
+			]]>
+			</script>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'recipe_delete.wav'"/>
+			</prompt>
+			<goto next="#nav"/>
+		</block>
+	</form>
+		
+	<form id="navigation">
+		<field name="nac_opt">
+        	<grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  0  </item>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+						 <item>  4  </item>
+						 <item>  5  </item>						 
+						 <item>  7  </item>
+						 <item>  8  </item>
+						 <item>  9  </item>
+						 <item>  #  </item>
+						 <item>  *  </item>						
+					</one-of>
+				</rule>
+			</grammar>			
+    		<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/atany_myzone.wav'"/>				
+			</prompt>
+		<filled>
+			<goto next="#playclip" />	
+		</filled>
+        </field>
+    	<noinput>
+    		<goto next="#playclip" />
+    	</noinput>
+    	<nomatch>
+	        <goto next="#playclip" />
+    	</nomatch>
+	</form>
+	
+	
+<form id="pause">
+			<field name="pause_opt">
+	        	<grammar mode="dtmf" root="start">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  5  </item>							 						
+						</one-of>
+					</rule>
+				</grammar>
+	    		<prompt bargein="true" timeout="5s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/resume_service.wav'"/>				
+			</prompt>
+			<filled>
+				<goto next="#playclip" />	
+			</filled>
+	        </field>
+	    	<noinput>
+	    		<goto next="#pause" />
+	    	</noinput>
+	    	<nomatch>
+		        <goto next="#pause" />
+	    	</nomatch>
+	</form>
+	
+</vxml>

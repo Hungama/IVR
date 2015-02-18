@@ -1,0 +1,48 @@
+Code path on 156 and 158 server
+
+54646 -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_54646v2_service_MM
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_54646
+
+PD -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_EDU
+
+Pause code -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_5464634_pausecode
+
+Comedy portal -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/comedyportal_5464612
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/comedyportal_5464640_TOLLMODEL
+
+Spoken English -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_SpkEng
+
+PKFlow -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/PKFLOW
+
+Tintumon -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/TINTUMON
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/TINTUMON_TOLLMODEL
+
+
+MND -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/MND
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/MND_55001965
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/MND-TOLL
+
+
+SARNAM-
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_devotional
+
+Goodlife -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/test-hungama_goodlife
+
+Vh1 -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_vh1
+
+
+ARM -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_ARM_5464614
+
+
+

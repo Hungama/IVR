@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_ServicesRoot.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="Root file for the Hungama_54646_Services project" />
+
+	<meta name="Support" content="" />
+
+
+	<var name = "sessionId" expr = "session.id"/>
+	<var name="modofsub" expr="'NA'"/>
+	<var name = "Lang" expr = "'eng'"/>
+	<var name = "MSISDN" expr = "''"/>
+	<var name = "ChargeAmount1" expr = "''"/>
+	<var name = "ChargeAmount2" expr = "''"/>
+	<var name = "Validity1" expr = "''"/>
+	<var name = "Validity2" expr = "''"/>
+	<var name = "ProductID" expr = "''"/>
+	<var name = "CpId" expr = "'83'"/>
+	<var name = "ApplicationType" expr = "'OTHER'"/>
+	<var name = "param1" expr = "'value1'"/>
+	<var name = "param2" expr = "'value2'"/>
+	<var name = "param3" expr = "'value3'"/>
+	<var name = "param4" expr = "'value4'"/>
+	<var name = "param5" expr = "'value5'"/>
+	<var name = "planid" expr = "''"/>
+	<var name="Amt" expr="''"/>
+	<var name="serviceid" expr="''"/>
+	<var name="SubAmount" expr="''"/>
+	<var name="SubPlanId" expr="''"/>
+	<var name = "channelName" expr = "'ivr'"/>
+	<var name = "cpName" expr = "'hungama'"/>
+	<var name = "centralIVRPwd" expr = "'hungama'"/>
+	<var name = "cpTransactionID" expr = "'0'"/>
+	<var name = "subProdID" expr = "'0'"/>
+	<var name = "songProdID" expr = "'0'"/>
+	<var name = "songVCode" expr = "'0'"/>
+	<var name = "msisdnGiftReceiver" expr = "'0'"/>
+	<var name = "msisdnDedicatee" expr = "'0'"/>
+	<var name = "msisdnStarCopy" expr = "'0'"/>
+	<var name = "aocMessage1" expr = "'1'"/>
+	<var name = "aocMessage2" expr = "'1'"/>
+
+
+
+	<var name = "zone" expr = "''"/>
+	<var name="lang" expr="'01'"/>
+	<var name="initial_balance" expr="0"/>
+	<var name="contentlog" expr="''"/>
+	<var name="length" expr="0"/>
+	<var name="j" expr="0"/>
+	<var name="alertCircle" expr=" '0' "/>
+
+	<var name="ciropr" expr=" '0' "/>
+	<var name="updatesunsign" expr=" '0' "/>
+
+	<var name="counter" expr="1"/>
+	<!--<var name="DNIS" expr=" '0' "/>
+	<var name="ANI" expr=" '0' "/>-->
+	<var name="gANI" expr=" '0' "/>
+	<var name="ANI" expr=""/>
+	<var name="DNIS" expr=""/>	
+	<var name="gUserCallID" expr=" '0' "/>
+	<var name="IP" expr="'localhost:8080'"/>
+	<var name="servlet_path" expr="'hungama'"/>
+	<var name="dbservlet" expr="''"/>
+
+	<var name="usr_status" expr=" '0' "/>
+	<var name="lang" expr="'01'"/>
+	<var name="balance" expr="0"/>
+	<var name="sunsign" expr="''"/>
+	<var name="LANG_DESCRIPTION" expr="'01'"/>
+	
+	<var name="contentpath1" expr="'http://10.43.248.137:8080/hungama_content/uni_jyotish'"/>
+
+	
+	<var name="gSunSign" expr=""/>
+	<var name="curbalance" expr=""/>
+
+	<var name="operator" expr="''"/>
+	<var name="circle" expr="''"/>
+	<var name="filetoplay" expr="'20120812'"/>
+	<var name="sunsignname" expr="''"/>
+	
+	<var name="selectedsunsign" expr="''"/>
+	<var name="userselectsunsign" expr="new Array()"/>
+	<var name="backmovepage" expr="''"/>
+	<var name="PROMPTS_CONTENT" expr="'localhost:8080'"/>
+	<var name="promptpath1" expr="'http://localhost:8080/hungama/promptFiles/uni_jyotish'"/>
+
+
+	<var name="realdnis" expr="''"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="C_Start" expr=""/>
+	<var name="C_End" expr=""/>
+	
+		<var name="total_used_bal" expr="'0'"/>
+	<var name="start_BalenceMinute" expr="'0'"/>
+	
+	<var name="CONTENT_PATH" expr="'localhost:8080/hungama_content'"/>
+
+ 	<var name="song_listen" expr="'End'"/>
+	<var name="compare_time" expr="0"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="starting_time" expr="0"/>
+	<var name="ContentTime" expr="0"/>
+	<var name="contentlog" expr="''"/>
+	<var name="song_begin" expr="'0'"/>
+ 	<var name="songID" expr="'0'"/>
+
+	<var name="cat" expr="''"/>
+	<var name="subcat" expr="'0'"/>
+	<var name="subcat_search" expr="'0'"/>
+	<var name="balance" expr="'0'"/>
+	<var name="scorepartfirst" expr="0"/>
+	<var name="playconfig" expr="''"/>
+	<var name="UploadFileName" expr="''"/>
+    <var name="timeinmilisec" expr="''"/>
+	<var name="LangFirstValue" expr="''"/>
+	<var name="scorepartsecond" expr="''"/>
+	<var name="scorepartthird" expr="0"/>
+	<var name="nomtch" expr="0"/>
+
+	<var name="score" expr="0"/>
+	<var name="questionnum" expr="0"/>
+	<var name="SCORE_STATUS" expr="'FALSE'"/>
+	<var name="var_wel" expr=""/>
+
+	<var name="amt" expr="''"/>
+	<var name="plan_id" expr="''"/>
+	<var name="service_id" expr="''"/>
+	<var name="movie_idx" expr="0"/>
+	<var name="name" expr=""/>
+	<var name="len_duration" expr=""/>
+	<var name="total_used_bal" expr=""/>
+	<var name="dbservlet" expr="''"/>
+	<var name="TOKEN" expr="''"/>
+	<var name="DATE" expr="''"/>
+	<var name="TIME" expr="''"/>
+	<var name="HEARD" expr="''"/>
+	<var name="C_End" expr="''"/>
+	<var name="CIRCLE_LANG" expr="''"/>
+	<var name="FLOW_FLAG" expr="'CATEGORY'"/>
+	<var name="CALCULATE_TIME" expr="'RESET'"/>
+	<var name="HeardCat" expr="0"/>
+	<var name="nextchoice" expr="'1'"/>
+	<var name="servlet_path" expr="'hungama'"/>
+	<var name="C_Start" expr=""/>	
+    <var name="ANI" expr="'9911718483'"/>
+	 <var name="length" expr="0"/>	
+	<var name="DNIS" expr="'54646'"/>
+	<var name="realDNIS" expr="'54646'"/>
+	<var name="Flag" expr="''"/>
+	<var name="tot" expr="5"/>
+	<var name="type" expr="'E'"/>
+	<var name="service_token" expr="'5006'"/>
+	<var name="sub_type" expr="'NA'"/>
+	<var name="mood_cnt" expr="0"/>
+	<var name="usr_status" expr="-1"/>
+	<var name="usrmovie" expr="0"/>
+	<var name="loc_balance" expr="0"/>
+	<var name="tarrif" expr="0"/>
+	<var name="songID" expr="''"/>	
+	<var name="circle" expr="''"/>
+	<var name="operator" expr="''"/>		
+	<var name="pref_counter" expr="1"/>
+	<var name="IP" expr="'10.2.73.156:8080'"/>
+	 <var name="RECORD_IP" expr="'10.2.73.156:8080'"/>
+	<var name="CDSIP" expr="'10.2.73.156'" />	
+	<var name="CDSPATH" expr="':8088/hungama/'" />	
+	<var name="LANG_DESCRIPTION" expr="'HIN'"/>
+	<var name="mxopt" expr="''"/>
+	<var name="bopt" expr="''"/>
+	<var name="lang_status1" expr="''"/>
+	<var name="lang_change_st" expr="'true'"/>
+	<var name="timerflag" expr="'0'"/>
+	<var name="start_BalenceMinute" expr="'0'"/>
+	<var name="end_BalenceMinute" expr="'0'"/>
+	<var name="total_used_bal" expr="'0'"/>
+	<var name="forcastyyyyddmm" expr="''"/>
+	<var name="forcastdd" expr="''"/>
+	<var name="contentdir" expr=""/>
+	<var name="Song_Path" expr=""/>
+	<var name="contentdir1" expr=""/>
+	<var name="CATEGORY" expr="''"/>
+	<var name="CATEGORYINTRO" expr="''"/>
+	<var name="song_begin" expr="'END'"/>
+    <var name="song_listen" expr="''" />
+    <var name="compare_time" expr="0"/>
+	<var name="ContentTime" expr="0"/>					 
+	<var name="contentlog" expr="''"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="starting_time" expr="0"/>
+	<var name="PROMPTS_CONTENT" expr="'10.2.73.156:8080'"/>
+
+	<var name="promptspath_54646" expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/54646V2'"/>
+	<var name="promptpath" expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/54646_version2_prompts/'"/>
+	<var name="Prompts_Path" expr="'hungama/promptFiles/54646'"/>
+	<var name="Prompts_Path_bigfm" expr="'hungama/promptFiles/Redfm/prompts'"/>	
+	<var name="moviectr" expr="0"/>
+	<var name="moviesetflag" expr="'false'"/>
+	<var name="clipflag" expr="1"/>
+	<var name="movieflag" expr="1"/>
+	<var name="firstmovie" expr="1"/>	
+	<var name="firstclip" expr="1"/>
+	<var name="moviename" expr="'@'"/>
+	<var name="prompt_name" expr="'NA'"/>
+	
+	<var name="CONTENT_PATH" expr="'file:/var/opt/OC/contentrepository/hungama/content/'"/>
+
+	<var name="contentpath" expr="'file:/var/opt/OC/contentrepository/hungama/content/'"/> 
+
+	<var name="unike_play" expr="0"/>
+	<!-- script srcexpr="'http://'+IP+'/hungama/ECMAScripts/common_files.es'"/ -->	
+	<script srcexpr="'../ECMAScripts/common_files.es'"/>		
+   	<script>
+			
+		var pricepoint=0;
+	        var TotalFM= 0;
+			var TotalTV= 0;
+			var TotalloveguruQA=0;
+			var TotalloveguruPQ=0;
+ 		    var len=0;    
+			var i=0; 
+		    var j=0;
+			var k=0;
+			var lastkey=0;	                  
+	        var aNavHistory=new Array();			
+		    var array=new Array();
+			var array_bal=new Array();
+		    var array1=new Array();
+			var FMFileNames=new Array();
+			var TVFileNames=new Array();
+		    var array2=new Array();
+		    var array3=new Array();
+			var songarray=new Array();
+			var ERFileNames=new Array();
+			var LGQarray=new Array();
+			var LGAarray=new Array();
+			var LGPRQarray=new Array();
+			var langarray=new Array();
+
+			var score=new Array();
+			var favSongs=new Object();
+			var songcheck=new Array();
+			var songcheck1=new Array();
+			var favLangs=new Object();
+			var song=new Object();
+
+			var get_duration=new Object();
+		    var AllSongs=new Object();		   
+			var FM_details=new Object();				
+			var TV_details=new Object();
+			var songs_details=new Object();	
+			var bollywood_details=new Object();
+			var startinterviewFileNames=new Object();
+			var LGQA_details=new Object();			
+			var LGPRQA_details=new Object();
+			var lang_status=new Object();
+			var usrlang=new Object();
+			var sub_status=new Object();
+			var usrbalance=new Object();
+			var totaltopup=new Object();
+			var topup1=new Object();
+			var topup2=new Object();
+			var topup3=new Object();			
+			var ASTRO_Compatibility=new Object();
+			var ASTRO_Forecast=new Object();
+			var out_string=new Object();
+			var ciropr=new Object();
+			var cur_mm=new Object();
+			var	cur_hh=new Object();
+			var	usrmovie=new Object();
+			var RECORD_FILE=new Object();
+     </script>
+      <catch event="error.badfetch">
+		 								
+    	  <log>Inside Error BadCatch catch  2222</log>  	      		  
+		   <goto next="Hungama_54646_End.vxml"></goto>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  3333</log> 		     
+		   <goto next="Hungama_54646_End.vxml"></goto>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  4444</log>			   				
+		   <goto next="Hungama_54646_End.vxml"></goto>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  5555</log>			   		
+		   <goto next="Hungama_54646_End.vxml"></goto>
+		  
+      </catch>
+
+
+
+
+</vxml>

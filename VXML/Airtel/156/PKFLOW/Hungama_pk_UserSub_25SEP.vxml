@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_pk_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="Hungama_pk_UserSub_TEST.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="double_switch" expr="-1"/>
+	<var name="prompt_switch" expr="0"/>
+    <script>		
+		var out_string=new Object();
+	</script>
+	<var name="confirmstatus" expr="''"/>
+	<var name="DirectSub" expr="''"/>
+   
+	<form id="SubOption">
+		<block>	
+		<assign name="Section_Name" expr="'PK_SUBSCRIPTION'"/>
+
+			       <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_CHKDIRECTSUB&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+					var DirectSub=out_string[0];
+				</script>
+				<log>Direct Sub : <value expr="DirectSub"/></log>
+				<if cond="DirectSub== '1'">
+					<assign name="amt" expr="'30'"/>
+					<assign name="plan_id" expr="'59'"/>
+					<assign name="service_id" expr="'1520'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=01&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+					<goto next="#BillStatusChk"></goto>
+				</if>
+
+  
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'59'"/>
+			<assign name="service_id" expr="'1520'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_CONFIRMATIONSTATUS&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]=1520'"/>
+			<script>
+				confirmstatus= out_string[0];
+			</script>
+			<log>ConfirmStatus:<value expr="confirmstatus"/></log>
+			<!-- <assign name="confirmstatus" expr="'double'"/> -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_DOUBLECONSENT&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+					double_switch=out_string[0];
+					prompt_switch=out_string[1];
+				</script>
+			<log>double_switch Sub : <value expr="double_switch"/></log>
+			<log>prompt_switch for msisdn : <value expr="prompt_switch"/></log>
+			<if cond="double_switch=='1' &amp;&amp; prompt_switch=='0'">
+				<assign name="var_wel" expr="getRandom(1,10)" />
+					<if cond="var_wel=='1' || var_wel=='2' || var_wel=='3' || var_wel=='4' || var_wel=='5'">
+						<assign name="var_wel" expr="'1'" />
+					<else/>
+						<assign name="var_wel" expr="'2'" />
+
+					</if>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptspath_54646+'/'+lang+'/Palleturi'+var_wel+'.wav'"/>		
+				</prompt>
+				<goto next="#Doubleconfirm"></goto>
+			</if>
+			<if cond="double_switch=='1' &amp;&amp; prompt_switch=='1'">
+				<assign name="var_wel" expr="getRandom(1,10)" />
+					<if cond="var_wel=='1' || var_wel=='2' || var_wel=='3' || var_wel=='4' || var_wel=='5'">
+						<assign name="var_wel" expr="'1'" />
+					<else/>
+						<assign name="var_wel" expr="'2'" />
+
+					</if>
+
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptspath_54646+'/'+lang+'/Palleturi'+var_wel+'.wav'"/>		
+				</prompt>
+				<goto next="#Doubleconfirm"></goto>
+			</if>
+
+			</block>
+
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+			
+			<prompt bargein="true" timeout="2s">
+				<!--<audio expr="promptspath_54646+'/'+lang+'/welcome_new_bg.wav'"/>-->
+				<audio expr="promptspath_54646+'/'+lang+'/welcome_new.wav'"/>			
+			</prompt>						
+			<filled>
+				<if cond="confirmstatus=='single'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+				        <goto next="#BillStatusChk"></goto>
+				<else/>
+					<goto next="#Doubleconfirm"></goto>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_pk_End.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<!--<audio expr="promptspath_54646+'/'+lang+'/no_input.wav'"/> -->
+				<audio expr="promptspath_54646+'/'+lang+'/wrong_input.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<!--<audio expr="promptspath_54646+'/'+lang+'/no_input.wav'"/> -->
+				<audio expr="promptspath_54646+'/'+lang+'/wrong_input.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_pk_End.vxml"></goto>
+		</nomatch>
+	</form>
+	
+<form id="Doubleconfirm">
+	<block>
+			<if cond="lang=='01'">
+				<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+			<elseif cond="lang=='07'"/>
+				<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+			<elseif cond="lang=='09'"/>
+				<assign name="LANG_DESCRIPTION" expr="'MAL'"/>
+			<elseif cond="lang=='08'"/>
+				<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+			<elseif cond="lang=='10'"/>
+				<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+			<elseif cond="lang=='06'"/>
+				<assign name="LANG_DESCRIPTION" expr="'BEN'"/>					
+			<else/>
+				<assign name="LANG_DESCRIPTION" expr="'HIN'"/>				
+			</if>
+			<assign name="MSISDN" expr="ANI"/>
+			<assign name="Lang" expr="LANG_DESCRIPTION"/>
+			<assign name="planid" expr="'59'"/>
+			<assign name="Amt" expr="'30'"/>
+			<assign name="serviceid" expr="'1520'"/>
+			<assign name="SubAmount" expr="30"/>
+			<assign name="SubPlanId" expr="59"/>
+			<assign name="ChargeAmount1" expr="30.0"/>
+			<assign name="ProductID" expr="1509035"/>
+		<assign name="Validity1" expr="30"/>
+		
+		<log expr = "'since user has selected a pack to subscribe to, taking him to the central confirmation app for second confirmation'"/>
+		<log>passing paaremeter MSISDN:<value expr="ANI"/></log>
+		<log>passing paaremeter Lang:<value expr="Lang"/></log>
+		<log>passing paaremeter ChargeAmount1 :<value expr="ChargeAmount1"/></log>
+		<log>passing paaremeter Validity1:<value expr="Validity1"/></log>
+		<log>passing paaremeter ApplicationType:<value expr="ApplicationType"/></log>
+		<log>passing paaremeter ProductID:<value expr="ProductID"/></log>
+		<log>passing paaremeter CpId :<value expr="CpId"/></log>
+		<log>passing paaremeter sessionId :<value expr="sessionId"/></log>
+		<log>zone:<value expr="zone"/></log>
+
+		<if cond="zone=='north' || zone=='west'">
+			<log>North API call</log>
+			<goto next="#AirtelApiNorth"/>
+		<else/>
+			<log>REST REGION API call</log>
+			<goto next="#AirtelApiREST"/>
+		</if>
+	</block> 
+ </form>
+
+<form id="AirtelApiNorth">
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DESCRIPTION+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">-->
+	     <subdialog name="confirmUserChoice" srcexpr="'http://10.2.89.75:8088/airtel/SecondConsent/SecondConsentHandler.vxml'" method = "post" namelist = "MSISDN Lang ChargeAmount1 ChargeAmount2 Validity1 Validity2 ApplicationType ProductID CpId sessionId channelName cpName centralIVRPwd aocMessage1 aocMessage2 cpTransactionID subProdID songProdID songVCode msisdnGiftReceiver msisdnDedicatee msisdnStarCopy param1 param2 param3 param4 param5">
+	<filled>
+				<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/SwitchCall_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=PK&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+'maxError'"/> 
+					<goto next="Hungama_pk_End.vxml"></goto>
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<goto next="#SubRequest"/>
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/SwitchCall_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=PK&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+'Star'"/> 
+					<goto next="#SubOption"/>
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+				       <script srcexpr="'http://'+IP+'/'+servlet_path+'/SwitchCall_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=PK&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+'callDrop'"/> 
+					<goto next="Hungama_pk_End.vxml"></goto>
+				<else/>
+					<goto next="#SubOption"/>
+				</if>			
+		</filled>
+	</subdialog>
+
+</form>
+
+<form id="AirtelApiREST">
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/ConfirmUserChoice.jsp?MSISDN='+ANI+'&amp;Lang='+LANG_DESCRIPTION+'&amp;ChargeAmount1='+ChargeAmount1+'&amp;Validity1='+Validity1+'&amp;ApplicationType='+ApplicationType+'&amp;CpId='+CpId+'&amp;sessionId='+sessionId+'&amp;ProductID='+ProductID+'&amp;param1='+param1+'&amp;param2='+param2+'&amp;param3='+param3+'&amp;param4='+param4+'&amp;param5='+param5">-->
+	
+	     <subdialog name="confirmUserChoice" srcexpr="'http://10.89.15.125:8088/airtel/SecondConsent/SecondConsentHandler.vxml'" method = "post" namelist = "MSISDN Lang ChargeAmount1 ChargeAmount2 Validity1 Validity2 ApplicationType ProductID CpId sessionId channelName cpName centralIVRPwd aocMessage1 aocMessage2 cpTransactionID subProdID songProdID songVCode msisdnGiftReceiver msisdnDedicatee msisdnStarCopy param1 param2 param3 param4 param5">
+		<filled>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userInput"/></log>
+			
+				<if cond="confirmUserChoice.userInput=='maxError'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/SwitchCall_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=PK&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+'maxError'"/> 
+					<goto next="Hungama_pk_End.vxml"></goto>
+				<elseif cond = "confirmUserChoice.userInput=='submitPackChosen'"/>
+					<goto next="#SubRequest"/>
+				<elseif cond = "confirmUserChoice.userInput=='goBackToPackChoices'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/SwitchCall_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=PK&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+'Star'"/> 
+					<goto next="#SubOption"/>
+				<elseif cond = "confirmUserChoice.userInput=='callDrop'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/SwitchCall_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=PK&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+'callDrop'"/> 
+					<goto next="Hungama_pk_End.vxml"></goto>
+				<else/>
+					<goto next="#SubOption"/>
+				</if>			
+		</filled>
+	</subdialog>
+
+</form>
+	
+	<form id="SubRequest">
+			<block>
+			    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+				
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/SwitchCall_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=PK&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+'Five'"/> 
+					<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_SUB_COUNT&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=SET&amp;INPARAM[1]='+circle"/>-->
+				
+			   
+			</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>							 
+							</one-of>
+						</rule>
+			</grammar>
+			<prompt bargein="false" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/sub_under_process.wav'"/>
+			</prompt>
+			<filled>
+				<goto next="#BillStatusChk"></goto>
+			</filled>
+			
+			<noinput>
+				<goto next="#BillStatusChk"></goto>
+			</noinput>
+			
+			<nomatch>
+				<goto next="#BillStatusChk"></goto>
+			</nomatch>
+		</field>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PK_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];	
+							 if(j==4)
+								modesub = out_string[j];						      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'lang @@@@@@@@@ '+lang"></log>
+			<log expr="'balance @@@@@@@@@ '+balance"></log>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/sub_under_process.wav'"/>
+				</prompt>
+				<goto next="Hungama_pk_End.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/thanks_sub_bg.wav'"/>
+				</prompt>
+				<script>
+					timerflag=1;
+					balance=balance*60;
+				</script>
+				<assign name="start_BalenceMinute" expr="starttime()"/>
+				<goto next="Hungama_pk_MainMenu.vxml"></goto>	
+			<else/> 
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/sub_under_process.wav'"/>
+				</prompt>
+				<goto next="Hungama_pk_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+</vxml>

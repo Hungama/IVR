@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	
+	<meta name="Hungama_54646_UserStatus_MM.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+
+	
+	<form id="USRSTATUS">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						       if(j==3)
+								   moviectr = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+			<if cond="usr_status=='-1'">
+				<assign name="prompt_name" expr="'NEW_USER'"/>
+				<goto next="Hungama_54646_NewUser_MM.vxml"></goto>
+			<elseif cond="usr_status=='1'"/>
+				<assign name="prompt_name" expr="'OLD_USER'"/>
+				<script> 					 
+					balance=balance*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=call_time();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+				<if cond="lang=='99' || lang=='12'">
+					<goto next="Hungama_54646_NewUser_MM.vxml"></goto>	
+				<else/>
+					<if cond="lang=='01'">
+						<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+					<elseif cond="lang=='02'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+					<elseif cond="lang=='06'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+					<elseif cond="lang=='07'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					<elseif cond="lang=='08'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+					<elseif cond="lang=='10'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+					<else/>
+                        			<assign name="lang" expr="'01'"/>
+                        			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+					</if>
+					<if cond="DNIS=='546462'">
+						 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+					<elseif cond="DNIS=='546463'"/>
+						<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+					<elseif cond="DNIS=='546469'"/>
+						<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+					</if>
+					
+				</if>
+			<else/>
+				<if cond="lang=='99'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/01/charge_req_recd.wav'"/>
+					</prompt>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/charge_req_recd.wav'"/>
+					</prompt>
+				</if>				
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+
+</vxml>

@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+<property name="timeout" value="2s"/>
+<meta name="Hungama_SPKENG_ExistUser.vxml" content=""/>
+<meta name="Author" content=""/>
+<meta name="Date" content=""/>
+<meta name="Description" content=""/>
+<meta name="Support" content=""/>  
+<!--*********************************************CHARGINGCHECK BASED ON DAYS********************************************************************************-->
+<form id="Existing_menu">
+	<block>
+	<assign name="Section_Name" expr="'SPKENG_EXISITINGUSER'"/>
+	<assign name="song_begin" expr="start_time()"/>
+				
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=AMMOUNT&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+DNIS"/>
+				<script>
+					<![CDATA[
+						for(j=0; j< out_string.length;  j++)
+							{  	  
+							   if(j==0)
+								charging_day = out_string[j];
+							}
+						]]>
+			</script>
+			<script>
+				temp_charging_day=charging_day;
+			</script>
+				<if cond="charging_day=='0' || charging_day==''">
+					<goto next="#Main_Menu"></goto>
+				<else/>
+					<prompt bargein="true" timeout="3s" cond="charging_day!='0'">	
+						<audio expr="promptpath+'/'+lang+'/upgrade_'+charging_day+'.wav'"/>
+					</prompt>
+					<script>
+						con_data='upgrade_'+charging_day;
+					</script>
+					
+					<assign name="var_wel" expr="getRandom(1,5)" />
+					<assign name="compare_time" expr="var_wel"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+					<goto nextitem="choice"></goto>
+				</if>
+				
+	</block>
+	
+	<field name="choice">
+	
+			    <grammar mode="dtmf" root="start">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>  1  </item>
+						<item>  2  </item>
+					</one-of>
+				</rule>
+			</grammar>
+				<filled>
+					<if cond="choice=='1'">
+						<goto next="#reconfirm_subs"></goto>
+					<elseif cond="choice=='2'"/>
+						<goto next="#Main_Menu"></goto>	
+					
+				    	</if>									
+				</filled>
+				<noinput>
+					<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>   
+					<goto next="#Existing_menu"/>
+				</noinput>
+
+				<noinput count="3">
+					  <goto next="#Main_Menu"></goto>	          
+				</noinput>
+
+				<nomatch>
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>		
+					<goto next="#Existing_menu"/>
+				</nomatch> 
+
+				<nomatch count="3">
+					<goto next="#Main_Menu"></goto>	               			
+				</nomatch>					
+		</field>	 
+</form>			
+<form id="reconfirm_subs">
+<block>
+	<if cond="charging_day=='10'">
+		<assign name="amt" expr="'349'"/>
+		<assign name="sid" expr="'1517'"/>
+		<assign name="pid" expr="'56'"/>
+	<elseif cond="charging_day=='20'"/>
+		<assign name="amt" expr="'299'"/>
+		<assign name="sid" expr="'1517'"/>
+		<assign name="pid" expr="'56'"/>
+	<elseif cond="charging_day=='30'"/>
+		<assign name="amt" expr="'249'"/>
+		<assign name="sid" expr="'1517'"/>
+		<assign name="pid" expr="'56'"/>
+	<elseif cond="charging_day=='40'"/>
+		<assign name="amt" expr="'199'"/>
+		<assign name="sid" expr="'1517'"/>
+		<assign name="pid" expr="'56'"/>
+	<elseif cond="charging_day=='60'"/>
+		<assign name="amt" expr="'99'"/>
+		<assign name="sid" expr="'1517'"/>
+		<assign name="pid" expr="'56'"/>
+	</if>
+</block>
+
+ <field name="reconfirm">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+					  <item>5</item>				  			  		      
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt bargein="true" timeout="3s">	
+               <audio expr="promptpath+'/'+lang+'/confirm_sub.wav'"/>		
+            </prompt>
+
+			<filled>
+				
+				<if cond="reconfirm=='5'">
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=01&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+sid+'&amp;INPARAM[6]='+pid"/>
+				    	 <goto next="#Status"/>	
+				</if>
+			</filled>
+			
+		<noinput>
+			<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>                
+			<reprompt/> 
+		</noinput>
+
+		<noinput count="3">
+			<goto next="#Main_Menu"></goto>	 
+		</noinput>
+
+		<nomatch>
+			<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>		
+			<reprompt/>
+		</nomatch> 
+		 <nomatch count="3">
+			<goto next="#Main_Menu"></goto>	 		
+		</nomatch>			
+	  </field>
+    </form> 			
+
+<form id="Status">
+<block>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=AMMOUNT&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+DNIS"/>
+				<script>
+				<![CDATA[
+				for(j=0; j< out_string.length;  j++)
+					{  	  
+					   if(j==0)
+						charging_day = out_string[j];
+					}
+				]]>
+				</script>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=1&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+DNIS"/>
+	   		<script>
+	 			<![CDATA[
+	   				for(j=0; j< out_string.length;  j++)
+		 		 		{  	  
+		      				if(j==0)
+		      			 	usr_status = out_string[j];
+					        if(j==1)
+					       	lang = out_string[j];
+					        if(j==2)
+					       	balance = out_string[j];							      
+		  				}
+				]]>
+			</script>		
+
+			<if cond="usr_status == '1'">						    
+		        	 <script> 	
+				    balance=balance*60;
+				    timerflag=1;      
+				 </script>
+			       		<if cond="temp_charging_day==charging_day">	
+			       			<prompt bargein="false">
+						   <audio expr="promptpath+'/'+lang+'/low_bal.wav'"/>		
+						</prompt>
+						<goto next="#Main_Menu"/>
+					<else/>
+						<prompt bargein="false">
+							 <audio expr="promptpath+'/'+lang+'/thanks_sub_upgrade.wav'"/>		
+						</prompt>
+						<goto next="#Main_Menu"/>
+					</if>
+								
+			</if>
+</block>
+</form>    	
+			
+<form id="Main_Menu">
+	<block>
+	
+	
+	
+		<log> @@@@ BEFORRRHEARD VALUEEEEEEEEEEEEEEEEE is  <value expr="HEARD"/> </log>	
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=@&amp;INPARAM[2]=@&amp;INPARAM[3]=@&amp;INPARAM[4]=@&amp;INPARAM[5]=@&amp;INPARAM[6]=@&amp;INPARAM[7]=GET'"/>
+			<script>
+				<![CDATA[
+					for(j=0; j< out_string.length;  j++)
+						{  	  
+						if(j==0)
+							HEARD = out_string[j];
+						if(j==1)
+							clip_no = out_string[j];
+						if(j==2)
+							test_flag = out_string[j];
+						if(j==3)
+							MENU_bar = out_string[j];
+						if(j==4)
+							WRC = out_string[j];
+						if(j==5)
+							MRC = out_string[j];
+						}
+					]]>
+			</script>
+			
+			<log> @@@@HEARD VALUEEEEEEEEEEEEEEEEE is  <value expr="HEARD"/> </log>
+			<log> @@@@clip_no VALUEEEEEEEEEEEEEEEEE is  <value expr="clip_no"/> </log>
+			<log> @@@@test_flag VALUEEEEEEEEEEEEEEEEE is  <value expr="test_flag"/> </log>
+			<log> @@@@MENU_bar VALUEEEEEEEEEEEEEEEEE is  <value expr="MENU_bar"/> </log>
+			<log> @@@@WRC VALUEEEEEEEEEEEEEEEEE is  <value expr="WRC"/> </log>
+			<log> @@@@MRC VALUEEEEEEEEEEEEEEEEE is  <value expr="MRC"/> </log>
+				
+				<if cond="MENU_bar=='MainMenu_Basic'">
+					<script>
+						coursetypeflag="b";
+					</script>
+				<elseif cond="MENU_bar=='MainMenu_Advanced'"/>
+					<script>
+						coursetypeflag="a";
+					</script>
+				<else/>
+					<script>
+						coursetypeflag="b";
+					</script>
+
+				</if>
+				
+				<if cond="HEARD=='0' || HEARD=='00'">
+					<if cond="MENU_bar=='MainMenu_Basic'">
+							<goto next="Hungama_SPKENG_MainMenu_Basic.vxml"></goto>
+						<elseif cond="MENU_bar=='MainMenu_Advanced'"/>
+							<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml"></goto>
+						<elseif cond="MENU_bar=='PRETEST'"/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+'/'+lang+'/pt_wc_old.wav'"/>	
+							</prompt>
+							<goto next="Hungama_SPKENG_Pretest.vxml"></goto>
+						<else/>
+							<goto next="Hungama_SPKENG_RootMenu.vxml"></goto>
+					</if>
+				<else/>
+					<assign name="module" expr="HEARD"></assign>	
+					<assign name="last_heard" expr="'true'"></assign>				
+					<goto next="#LASTHEARD"></goto>												
+				</if>									
+				
+	</block>
+
+</form>
+<form id="LASTHEARD">
+
+<block>
+<assign name="Section_Name" expr="'SPKENG_EXISITINGUSER_LASTHEARD'"/>
+		<assign name="song_begin" expr="start_time()"/>
+		<prompt bargein="true" timeout="1s">
+		<audio expr="promptpath+'/'+lang+'/listening_cat.wav'"/>
+		</prompt>
+		<assign name="con_data" expr="'listening_cat'" />
+		<assign name="var_wel" expr="getRandom(1,5)" />
+		<assign name="compare_time" expr="var_wel"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+		<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+		<assign name="song_begin" expr="start_time()"/>
+</block>
+		<field name="choice">
+		    <grammar mode="dtmf" root="start">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+
+			<prompt bargein="true" timeout="1s">
+				
+			 	<audio expr="promptpath+'/'+lang+'/'+HEARD+'.wav'"/>
+			</prompt>
+			<filled>
+				<assign name="con_data" expr="HEARD" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				<if cond="choice=='8'">
+					<if cond="MENU_bar=='MainMenu_Basic'">
+						<goto next="Hungama_SPKENG_MainMenu_Basic.vxml#Main_Menu"></goto>
+					<elseif cond="MENU_bar=='MainMenu_Advanced'"/>
+						<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#Main_Menu"></goto>
+					<elseif cond="MENU_bar=='PRETEST'"/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/'+lang+'/pt_wc_old.wav'"/>	
+						</prompt>
+					<goto next="Hungama_SPKENG_Pretest.vxml"></goto>
+					<else/>
+						<goto next="Hungama_SPKENG_RootMenu.vxml"></goto>
+					</if>
+				<elseif cond="choice=='9'"/>
+					<if cond="MENU_bar=='MainMenu_Basic' || MENU_bar=='MainMenu_Advanced'">
+ 						<goto next="Hungama_SPKENG_Help.vxml"/>
+ 					<else/>
+ 						<goto next="Hungama_SPKENG_Help.vxml#hungamaactmgrbMnusecond"/>	
+ 					</if>
+				<else/>			
+						<if cond="MENU_bar=='MainMenu_Basic'">
+							<goto next="Hungama_SPKENG_MainMenu_Basic.vxml#fetch_module"></goto>
+						<elseif cond="MENU_bar=='MainMenu_Advanced'"/>
+							<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+						<elseif cond="MENU_bar=='PRETEST'"/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+'/'+lang+'/pt_wc_old.wav'"/>	
+							</prompt>
+						<goto next="Hungama_SPKENG_Pretest.vxml"></goto>
+						<else/>
+							<goto next="Hungama_SPKENG_RootMenu.vxml"></goto>
+						</if>
+						
+				</if>									
+			</filled>
+		</field>
+			<noinput>
+					<assign name="con_data" expr="HEARD" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				
+
+					<if cond="MENU_bar=='MainMenu_Basic'">
+						<goto next="Hungama_SPKENG_MainMenu_Basic.vxml#fetch_module"></goto>
+					<elseif cond="MENU_bar=='MainMenu_Advanced'"/>
+						<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+					<elseif cond="MENU_bar=='PRETEST'"/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/'+lang+'/pt_wc_old.wav'"/>	
+						</prompt>
+						<goto next="Hungama_SPKENG_Pretest.vxml"></goto>
+					<else/>
+					
+						<goto next="Hungama_SPKENG_RootMenu.vxml"></goto>
+					</if>
+					
+			</noinput>
+			<nomatch>
+					<assign name="con_data" expr="HEARD" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>	
+				
+					
+
+					<if cond="MENU_bar=='MainMenu_Basic'">
+						<goto next="Hungama_SPKENG_MainMenu_Basic.vxml#fetch_module"></goto>
+					<elseif cond="MENU_bar=='MainMenu_Advanced'"/>
+						<goto next="Hungama_SPKENG_MainMenu_Advanced.vxml#fetch_module"></goto>
+					<elseif cond="MENU_bar=='PRETEST'"/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/'+lang+'/pt_wc_old.wav'"/>	
+						</prompt>
+						<goto next="Hungama_SPKENG_Pretest.vxml"></goto>
+					<else/>
+						<goto next="Hungama_SPKENG_RootMenu.vxml"></goto>
+					</if>
+				
+			</nomatch>
+</form>
+
+</vxml>

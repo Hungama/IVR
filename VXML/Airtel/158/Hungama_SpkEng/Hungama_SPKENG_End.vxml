@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+	
+<meta name="Hungama_EDU_End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<script>
+			var out_string=new Object();
+	</script>
+
+	<form id="EndLogin">
+		<block>
+		    <assign name="C_End" expr="call_time()"/>
+		   <if cond="test_complete=='true'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TEST_UPDATETIME&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+score+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+ans_count"/>
+				
+		    </if>
+				
+   			<log> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!value of song_listen is <value expr="song_listen"/>     </log> 
+		    <if cond="song_listen=='START'">
+				<if cond="con_data!='0'">
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+MENU_bar+hash+subcat+hash+compare_time"></assign>		
+				</if>
+			</if>
+			<log> value of MENU_bar is <value expr="MENU_bar"/>     </log>
+			<log> value of pre_heard is <value expr="pre_heard"/>     </log>
+			
+			<if cond="pre_heard=='false'">
+					<if cond="MENU_bar!='0'"> 
+							  <if cond="MENU_bar=='BASIC' || MENU_bar=='ADVANCED'">
+								 <assign name="HEARD" expr="'0'" />
+							  </if>
+
+							<log> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!value of heard is <value expr="HEARD"/>     </log>  
+							<if cond="MENU_bar!='NONE'"> 
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=8&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]='+clip_no+'&amp;INPARAM[3]='+test_flag+'&amp;INPARAM[4]='+MENU_bar+'&amp;INPARAM[5]='+WRC+'&amp;INPARAM[6]='+MRC+'&amp;INPARAM[7]=SET'"/>
+							</if>
+					</if>
+			</if>
+			<log>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! value of heard is <value expr="HEARD"/>     </log>
+				<if cond="WAtest_complete=='true'">
+					<assign name="clip_no" expr="index"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_WA_UPDATETIME&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+wa_score+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+wa_ans_count"/>
+				</if>
+				<if cond="MAtest_complete=='true'">
+						<assign name="clip_no" expr="index"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_MA_UPDATETIME&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+wa_score+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+wa_ans_count"/>
+				</if>
+			<if cond="timerflag=='1'">
+				<script srcexpr="'http://10.2.73.158:8080/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+				 <script>
+			    	 total_used_bal=dur;
+				     curbalance=balance-total_used_bal;  						  
+			     </script>
+					   
+				<if cond="curbalance=='NaN'">
+						<assign name="current_balance" expr="start_time()"/>
+					   <script>
+					     total_used_bal=CheckUserBalance(initial_balance,current_balance);
+					     curbalance=balance-total_used_bal;  						  
+					   </script>
+				</if>		   
+			  <script> curbalance=Math.floor(curbalance/60); </script>
+			 </if>
+			 <if cond="curbalance &lt; 0">
+			 	<script>curbalance=0;</script>
+			 </if>
+			<if cond="dtmf_check=='1'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/dtmf_logs?service=SPKENG&amp;SONG='+dtmf_log"/>
+			</if>
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+curbalance+'&amp;INPARAM[2]='+timerflag"/>
+			
+			
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CHANGECOUSRE_LEVEL&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SET&amp;INPARAM[2]='+MENU_bar"/>-->
+			<if cond="usr_status == '1'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=airtel_spkeng_callhistory&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+circle+'&amp;INPARAM[2]='+DNIS"/>
+
+			</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=SPKENG&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<!--<script srcexpr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=SPKENG&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>-->
+			<throw event="connection.disconnect.hangup"/>
+		</block>
+	  <catch event="error.badfetch">
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      
+		  <exit/>
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+	      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 
+		  <exit/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+		   <log>Inside Telephonet Disconnected catch  End4444</log>	
+		   <exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+		   <log>Inside connection.disconnect.hangup catch  End5555</log>	
+		   <exit/>
+      </catch>
+	</form>
+</vxml>

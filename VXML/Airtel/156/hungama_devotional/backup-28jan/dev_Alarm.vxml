@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="devRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="ExistingUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<script>
+		var out_string=new Object();
+	</script>
+	
+	<form id="SETALARM">
+		<block>
+			 <assign name="AlarmCat" expr="playconfigcat+vinaycat"/>
+			 <log>@@@@@@@@@RELIGION	<value expr="playconfigcat+vinaycat"/>    </log>
+			<log>alarm for cat	<value expr="AlarmCat"/>    </log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/devo_dbinteraction?PROCEDURE=USERALARM&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+AlarmCat+'&amp;INPARAM[2]=SET'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	HEARD = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			<goto next="#WelcomeIntroRandom"/>			
+		</block>
+</form>
+<form id="WelcomeIntroRandom">
+	<!--	<block>
+			<assign name="k" expr="getRandom(1,50)" />
+		</block>	-->
+		<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							
+						</one-of>
+					</rule>
+			</grammar>
+		<!--	<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_old_'+k+'.wav'"/>
+				
+			</prompt> -->
+			<filled>
+			
+			  <if cond="choice &lt; 10">
+					 <assign name="playconfigcat" expr="AlarmCat"/>	
+			  		 <goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+				<else/>
+					<throw event="nomatch"/>											
+				</if>
+												
+		</filled>
+	</field>
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/waiting_response.wav'"/>
+			</prompt>
+		</noinput>
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+		</nomatch>
+	</form>
+	
+
+</vxml>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="ComedyPortalRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+ 
+	<meta name="End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+<meta http-equiv="Cache-control" content="max-age=7200"/> 
+	<meta name="Support" content="" />
+	<script>
+		var out_string=new Object();
+		
+	</script>
+	
+
+	<form id="EndLogin">
+	<block>
+		<assign name="C_End" expr="call_time()"/>
+					<if cond="song_listen=='START'">
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+						<!--<assign name="contentlog" expr="contentlog+hash+song+hash+'08'+cat+hash+'08'+subcat+hash+compare_time"></assign>-->
+						<assign name="contentlog" expr="contentlog+hash+song+hash+'08'+cat+hash+'08'+subcat+hash+compare_time+hash"></assign>
+	
+					</if>
+							
+						<if cond="timerflag=='1'">
+							<script>
+							total_used_bal=rim(start_BalenceMinute);
+							balance=balance-total_used_bal;  						  
+							</script>
+							 <script>balance=Math.floor(balance/60);</script>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt; 0">
+								<script>balance=0;</script>
+							</if>
+					
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=COMEDY_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]=5464612&amp;INPARAM[3]='+timerflag"/>
+					</if>
+		<if cond="dtmf_check=='1'">
+			<script srcexpr="'http://10.2.73.156:8080/'+servlet_path+'/dtmf_logs?service=COMEDYPORTAL&amp;SONG='+dtmf_log"/>
+		</if>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=COMEDYPORTAL&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+		
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=COMEDYPORTAL&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>-->
+		<exit/>
+			
+	</block>
+		<catch event="error.badfetch">
+			<exit/>
+		 </catch>      
+
+		<catch event="telephone.disconnect.hangup">
+			 <exit/>							
+		</catch>
+
+		<catch event="telephone.disconnect">
+			<exit/>
+		</catch>   
+		<catch event="connection.disconnect.hangup">
+			 <exit/>
+		</catch>
+	</form>
+</vxml>

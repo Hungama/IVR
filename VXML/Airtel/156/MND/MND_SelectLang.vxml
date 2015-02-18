@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MND_SelectLang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<script>
+	   var	ciropr1 = new Object();	
+	    var CDSIP=0;
+		var mndcloseflag=0;
+	</script>
+	
+<form id="Main">
+	<block>		
+		<assign name="C_Start" expr="call_time()"/>
+		
+		
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+	    </script>
+	    
+
+	    <script>
+         		var	length = ANI.length;
+			ANI = ANI.substring(length-10,length);
+	    </script>
+
+						
+			 <assign name="DNIS" expr="realDNIS"/>
+         	         <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+			 
+	         	 <assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 
+				    	
+			 <log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+			 <log> @@@@DNIS is 		<value expr="session.connection.local.uri"/> </log>	
+			 <log> @@@@ANI is 		<value expr="session.connection.remote.uri"/> </log>
+			 
+			<script>
+		  			var splitparam=sessionid.split("_");
+		  			cirid=splitparam[1]; 
+		  	</script>
+
+		  	 <assign name ="operator" expr="'airm'"/>
+		  	 <assign name="dbservlet" expr="'MND_dbinteraction'"/>
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@operator is <value expr="operator"/> </log>
+			 <log> @@@@ANI is <value expr="ANI"/> </log>
+
+						
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Airtel_IVR.CDS_IP_CIR&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+cirid+'&amp;INPARAM[1]='+ANI"/>
+			 <script>
+				  <![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+							CDSIP = out_string[j];
+					       if(j==1)
+							circle = out_string[j];
+					       if(j==2)
+							zone = out_string[j];
+					  }
+				  ]]>
+		         </script>
+
+			 <log> @@@@circleid is <value expr="cirid"/> </log>
+			 <log> @@@@CDSIP is <value expr="CDSIP"/> </log>
+			 <log> @@@@circle name is <value expr="circle"/> </log>
+			 <log> @@@@zone name is <value expr="zone"/> </log>
+
+			<script>
+				mndcloseflag = realDNIS.match(5500196);
+			 </script>
+			<goto next="MND_end.vxml"/>
+			<if cond="mndcloseflag=='5500196'">
+				<goto next="MND_end.vxml"/> 
+			</if>
+
+			<if cond="circle =='und' || circle =='UND'">
+				<goto next="MND_end.vxml"/> 
+			</if>	
+
+			 <assign name ="promptpath" expr="'http://'+CDSIP+':8088/CDS/hungama/MND_Newprompts'"/>
+			 <assign name="contentpath" expr="'http://'+CDSIP+':8088/CDS/hungama/content/'" /> 
+			
+
+			 <log> promptpath issss is <value expr="promptpath"/> </log>
+			 <log> contentpath isssss is <value expr="contentpath"/> </log>
+
+
+			 <assign name="dtmf_log" expr="ANI+hash+circle"/>
+			
+				
+			<if cond="DNIS=='54646196'">
+				<if cond="circle=='kar'">
+					<goto next="MND_Userstatus.vxml"/>
+				<else/>
+					<goto next="MND_MTV.vxml"/>
+				</if>
+			<else/>
+				<goto next="MND_Userstatus.vxml"/> 
+			</if>		
+	</block>
+  </form>
+
+</vxml>

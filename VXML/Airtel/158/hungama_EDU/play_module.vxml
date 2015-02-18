@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="MSDRoot.vxml">
+<property name="timeout" value="2s"/>
+<meta name="play_module.vxml" content=""/>
+<meta name="Author" content=""/>
+<meta name="Date" content=""/>
+<meta name="Description" content=""/>
+<meta name="Support" content=""/>   
+<property name="caching" value="fast"/>
+<property name="documentfetchhint" value="safe"/>
+<property name="grammarfetchhint" value="safe"/>
+<property name="documentmaxage" value="3600"></property>
+<property name="fetchminimumbuffersize" value="54272"/>
+<property name="fetchhint" value="safe"/>
+<property name="timeout" value="1s" />
+<property name="maxage" value="1800s"/>
+<property name="audiofetchhint" value="safe"/>
+
+	<var name="q_num" expr="'0'"/>
+	<var name="anns" expr="'0'"/>		
+	
+	<script>
+		var ques=new Object();
+		var que=new Object();
+	</script>
+<form id="modules">
+<block>
+<assign name="Section_Name" expr="'PD_CONTENT'"/>
+</block>
+	<field name="clipoptions">
+			<grammar mode="dtmf" root="start" version="1.0">
+                   <rule id="start" scope="public">
+                     <one-of>
+				          <item>1</item>
+				          <item>2</item>	
+                          <item>3</item>	
+                          <item>4</item>	
+                          <item>5</item>	
+                          <item>6</item>	
+                          <item>7</item>	
+                          <item>8</item>	
+                          <item>9</item>	
+                          <item>0</item>	               			 
+				          <item>#</item>
+				          <item>*</item>			      
+                    </one-of>
+                </rule>
+               </grammar>
+<!--               <prompt bargein="true">
+					  <audio expr="promptpath+'/'+lang+'/'+module+'.wav'"/>	           			
+		       </prompt> 		 -->
+	           <prompt bargein="true" timeout="0s">
+					  <audio expr="promptpath+'/'+lang+'/keypad.wav'"/>	           			
+		       </prompt> 
+		       <prompt bargein="true" timeout="0s">
+					  <audio expr="promptpath+'/'+lang+'/bookmark.wav'"/>	           			
+		       </prompt> 
+		       <filled>              
+                     	
+			   <if cond="clipoptions=='8'">	
+			   		   <if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 	
+    			       <goto next="Hungama_EDU_MainMenu.vxml"/>				 
+    		   <elseif cond="clipoptions=='9'"/>	
+    		   			<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if>    
+ 					    <goto next="Hungama_EDU_Help.vxml"/>		  			            		       
+			   <else/>                    
+                       <goto next="#play_mod"/>
+			   </if>	
+              </filled>
+			  
+			  <noinput>		  
+		          <goto next="#play_mod"/>	     
+              </noinput>		
+	</field>
+</form>
+
+<form id="play_mod">
+	<block>
+			<if cond="last_heard=='true'">
+					<if cond="clip_no=='9' &amp;&amp; test_flag=='1'">
+							<goto next="#mod_next" />
+					</if>
+					<assign name="last_heard" expr="'false'" />
+					<script>
+						mod_play=clip_no;
+						mod_play=parseInt(mod_play);
+					</script>
+			</if>
+			<assign name="test_flag" expr="0"/>
+			<if cond="mod_play &gt; len-1">
+				<script>lastplay_index=9</script>
+				<script>test_flag=1</script>				
+				<goto next="#mod_next" />
+			<elseif cond="mod_play &lt; 0" />
+				<assign name="mod_play" expr="0" />
+			</if>
+			<script>lastplay_index=mod_play;</script>			
+			
+			<log>	len############  is ==	<value expr="len"/>    </log>
+			<log>	mod_play == <value expr="array2[0]"/>    </log>
+	
+			<script>
+				songID = array2[mod_play];
+			</script>
+			<assign name="song_listen" expr="'START'" />
+			<assign name="song_begin" expr="start_time()"/>
+			<assign name="con_data" expr="songID" />
+	</block>
+	
+	<field name="choice">
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>								 
+ 								 <item>  5  </item>		
+ 								 <item>  6  </item>
+ 								 <item>  8  </item>
+ 								 <item>  9  </item>
+							</one-of>
+						</rule>
+			</grammar>
+			<prompt bargein="true" timeout="0s">
+                <audio expr="promptpath+'/'+lang+'/'+songID+'.wav'"/>	
+			</prompt>			
+			
+			<filled>
+				 <if cond="choice=='1'">
+				 		<script> mod_play=mod_play+1</script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="con_data" expr="songID" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if>
+                      <if cond="mod_play=='2' || mod_play=='3' || mod_play=='4'"> 
+							<goto next="#play_ques"/>	                      	
+                      <else/>
+							<goto next="#play_mod"/>	
+					  </if>		
+				<elseif cond="choice=='2'"/>
+						<script> mod_play=mod_play</script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="con_data" expr="songID" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+					  <if cond="mod_play=='2' || mod_play=='3' || mod_play=='4'"> 
+							<goto next="#play_ques"/>	                      	
+                      <else/>
+							<goto next="#play_mod"/>	
+					  </if>	
+				<elseif cond="choice=='3'"/>
+						<script> mod_play=mod_play-1</script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="con_data" expr="songID" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+					  <if cond="mod_play=='2' || mod_play=='3' || mod_play=='4'"> 
+							<goto next="#play_ques"/>	                      	
+                      <else/>
+							<goto next="#play_mod"/>	
+					  </if>		
+				<elseif cond="choice=='5'"/>
+						<goto next="Hungama_EDU_PlayList.vxml#Add"/>
+				<elseif cond="choice=='6'"/>														
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+ 						<goto next="#pdu"/>	
+
+				<elseif cond="choice=='8'"/>														
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+						<assign name="song_listen" expr="'END'" />
+						<assign name="con_data" expr="songID" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+       			        <goto next="Hungama_EDU_MainMenu.vxml"/>	       			        
+				<elseif cond="choice=='9'"/>														
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+						<assign name="song_listen" expr="'END'" />
+						<assign name="con_data" expr="songID" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+
+ 					    <goto next="Hungama_EDU_Help.vxml"/>		  			        
+				</if>
+			</filled>
+
+			<noinput>				
+					<script> mod_play=mod_play+1</script>
+					<assign name="song_listen" expr="'END'" />
+					<assign name="con_data" expr="songID" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 			
+					<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+					  <if cond="mod_play=='2' || mod_play=='3' || mod_play=='4'"> 
+							<goto next="#play_ques"/>	                      	
+                      <else/>
+							<goto next="#play_mod"/>	
+					  </if>	
+			</noinput>
+			<nomatch>			
+	                <audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>					
+					<script> mod_play=mod_play</script>			
+					<assign name="song_listen" expr="'END'" />
+					<assign name="con_data" expr="songID" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+con_data+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+					<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+					  <if cond="mod_play=='2' || mod_play=='3' || mod_play=='4'"> 
+							<goto next="#play_ques"/>	                      	
+                      <else/>
+							<goto next="#play_mod"/>	
+					  </if>					
+			</nomatch>
+	</field>
+</form>
+
+<form id="mod_next">
+<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATE_MODULE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+module+'&amp;INPARAM[2]=SET'"/>
+</block>
+	<field name="choice">
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+                <audio expr="promptpath+'/'+lang+'/thanks_module.wav'"/>	
+			</prompt>
+			
+			<filled>
+ 					<if cond="choice=='1'">
+ 						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+		              <goto next="test_module.vxml"/>   
+					<elseif cond="choice=='2'"/>
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+						<goto next="Hungama_EDU_MainMenu.vxml"/>
+					</if>			
+			</filled>
+
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+	               <audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</noinput>
+			
+			<noinput count="3">	
+					<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 			
+					<goto next="Hungama_EDU_MainMenu.vxml"/>
+			</noinput>
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+	               <audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">		
+					<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 		
+					<goto next="Hungama_EDU_MainMenu.vxml"/>				
+			</nomatch>
+	</field>
+</form>
+
+<form id="pdu">
+	<field name="choice">
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							
+                 <one-of>				 
+				  <item>1</item>
+				  <item>2</item>	
+				  <item>3</item>			  			 
+				  <item>8</item>	
+				  <item>9</item>	
+                </one-of>
+              </rule>
+            </grammar>
+	   
+			<prompt bargein="true">
+				<audio expr="promptpath+'/'+lang+'/keypad_section.wav'"/>
+	   	    </prompt>
+   			<filled>
+					   <log expr="'@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ choice balance is '+choice"/>
+   					<if cond="choice=='1'">
+   						<if cond="timerflag=='1'">                       						   
+								 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+								 <script>
+							    	 total_used_bal=dur;
+								     curbalance=balance-total_used_bal;  						  
+							     </script>
+							   
+							   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		                         <if cond="curbalance &lt;= '0'">          
+		                             <goto next="TopupRenew.vxml"/>
+		                        </if>
+                      </if> 
+	   					<script>
+					     	mod_play=mod_play+1;
+					    </script> 
+						<goto next="#play_mod"/>					    
+					<elseif cond="choice=='2'"/>  
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+	   					<script>
+					     	mod_play=mod_play;
+					    </script> 
+						<goto next="#play_mod"/>						  
+					<elseif cond="choice=='3'"/>  
+						<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+	   					<script>
+					     	mod_play=mod_play-1;
+					    </script> 
+						<goto next="#play_mod"/>						  					
+					<elseif cond="choice=='8'"/>    
+							<if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+	    			       <goto next="Hungama_EDU_MainMenu.vxml"/>												
+					<elseif cond="choice=='9'"/>    		
+					  <if cond="timerflag=='1'">                       						   
+						 <script srcexpr="'http://'+IP+'/hungama/duration?starttime='+initial_balance+'&amp;endtime='+call_time()"/>
+						 <script>
+					    	 total_used_bal=dur;
+						     curbalance=balance-total_used_bal;  						  
+					     </script>
+					   
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>
+                      </if> 
+						   <goto next="Hungama_EDU_Help.vxml"/>									
+   					</if>	
+			</filled>
+	</field>
+</form>
+
+<form id="play_ques">
+	<block>			
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+module+'&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+DNIS"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						score = out_string[j];
+					       if(j==1)
+						questionnum = out_string[j];
+						
+					  }
+				]]>
+		</script>
+		<script>
+			score=parseInt(score);
+			questionnum=parseInt(questionnum);
+		</script>
+			<log> score of user @@@@@@@@@ <value expr="score"/></log>
+			<log> questionnum of user @@@@@@@@@ <value expr="questionnum"/></log>
+			<assign name="index" expr="questionnum"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/Edu_default?clip='+mod_play+'&amp;path=DEFAULT/'+module+'&amp;TOKEN=FREE'"/>
+			<assign name="que" expr="ques.value"/>
+			<log expr="'que @@@@@@@@@@@@@@@@@@@@ =' +que"/>	
+			<script>
+				var quecheck=que.split("#");
+				q_num=quecheck[0];
+				anns=quecheck[1];
+			</script>
+			<log expr="'que  @@@@@@@@@@@@@@@@@@@@ =' +q_num"/>	
+			<log expr="'anns @@@@@@@@@@@@@@@@@@@@ =' +anns"/>				
+	</block>
+
+	<field name="Play">
+		<grammar mode="dtmf" root="start">      <!--  inline dtmf grammar    -->
+	    		 <rule id="start" scope="public">
+				<one-of>
+			   		 <item>1</item>
+			  		 <item>2</item>
+			   		 <item>3</item>
+				</one-of>
+	    		 </rule>
+		</grammar>
+	
+		<prompt bargein="true" timeout="2s">
+			<audio expr="promptpath+'/'+lang+'/'+module+'_q'+q_num+'.wav'"/>
+		</prompt>
+	
+		<filled>
+				<if cond="Play == anns">
+					<assign name="score" expr="score+10"/>
+					<assign name="index" expr="index+1"/>
+					<prompt bargein="true" timeout="3s">							
+						<audio expr="promptpath+'/'+lang+'/right_ans1.wav'"/>
+					</prompt>
+				<else/>	
+					<assign name="index" expr="index+1"/>
+					<prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/'+lang+'/wrong_ans1.wav'"/>
+					</prompt>
+				</if>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TEST_UPDATETIME&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=clip&amp;INPARAM[2]='+score+'&amp;INPARAM[3]=1&amp;INPARAM[4]='+module"/>
+				<goto next="#play_mod"/>	
+		</filled>
+		<noinput>
+			<prompt bargein="true" timeout="0s">  
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+
+		<nomatch>
+			<prompt bargein="true" timeout="0s"> 
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+    </field>
+</form>
+</vxml>

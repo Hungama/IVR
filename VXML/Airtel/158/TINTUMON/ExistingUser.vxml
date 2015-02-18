@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="TintuRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+<meta name="ExistingUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<var name="length" expr="0"/>
+	
+	<script>
+		var out_string=new Object();
+	</script>
+	
+	<form id="LASTHEARD_PROFILE">
+		<block>
+		<assign name="Section_Name" expr="'TINTUMON_EXISITING'"/>
+			
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_old.wav'"/>
+				</prompt>
+			<goto next="TintuMainMenu.vxml"></goto>
+								
+		</block>
+	</form>
+	
+</vxml>
