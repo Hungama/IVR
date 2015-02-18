@@ -1,0 +1,453 @@
+<vxml version="2.0" application="FMJRoot.vxml">      
+    
+    <property name="documentmaxstale" value="0s"></property>
+    <property name="documentmaxage" value="0s"></property>
+	
+    <var name="len" expr="''"/>	
+    <var name="Digit1st" expr="0"/>
+    <var name="Digit2nd" expr="0"/>
+    <var name="Digit3rd" expr="0"/>
+    <var name="Digit4th" expr="0"/>
+    <var name="PlayOnce" expr="true"/>		
+    <var name="names"/> 
+    <script>
+	<!-- var favSongs=new Object(); -->
+	var out_string=new Object();
+	var newopt1=new Object();
+    </script>
+	
+    <!--<form id="SubIntro">
+	   <block>
+		<prompt bargein="true" timeout="0s">
+		    <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/'+LANG_DESCRIPTION+'/'+'subscriptionpack_details.wav'"/>		
+      	        </prompt>
+		<goto next="#SubOption"/>
+	    </block>
+        </form>-->
+	
+	
+	<form id="SubOption">
+	<block>
+   		       <assign name="prompt_name" expr="'SUBSCRIPTION'"/>
+			<if cond="ANI=='8459078905' || ANI=='9667890489' || ANI=='9143844338' || ANI=='8693945793' || ANI=='8925332082' || ANI=='8459780905' || ANI=='9142112398'">
+				<goto next="Hungama_startclub_subscription_DC.vxml"/>
+			</if>
+	</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">	
+              			<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'sub_intro.wav'"/>		
+            		</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#double_conf"></goto>	
+				</if>
+			</filled>
+			
+			<noinput timeout="0s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>                
+        	         	<reprompt/> 
+             		</noinput>        
+                 
+             		<nomatch>
+             	   		<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+                		<reprompt/>
+             		</nomatch> 
+             
+		</field>
+	</form>
+	
+	<form id="double_conf">
+	<block>
+   		       <assign name="prompt_name" expr="'DOUBLECONF'"/>
+	</block>
+   		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+               			<rule id="start" scope="public">
+                 			<one-of>				 
+				  		<item>5</item>
+				  		<item>2</item>				  			  		      				  			  		      
+                			</one-of>
+              			</rule>
+            		</grammar>
+	     		<prompt bargein="true" timeout="3s">
+	     			<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'conf_subs.wav'"/>		
+	     		</prompt> 				 
+            		<filled>
+ 				<if cond="choice=='5'">
+					<goto next="#SubRequest"/>
+				<else/>
+					<goto next="starclub_End.vxml"/>
+            			</if>
+            		</filled>
+            	</field>
+            	<noinput count="1">
+            		<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>
+            		<reprompt/>
+            	</noinput>
+            	<noinput count="2">	
+            		<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>
+            		<reprompt/>
+            	</noinput>
+            	<noinput count="3">
+            		<goto next="starclub_End.vxml"/>
+            	</noinput>
+		<nomatch count="1">
+			 <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			<reprompt/>
+		</nomatch>
+		<nomatch count="2">
+			 <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			<reprompt/>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="starclub_End.vxml"/>
+		</nomatch>
+   	</form>
+	
+	
+	<form id="SubRequest">
+		<block>
+			<!-- SUB REQUEST -->
+			
+                        <!--	<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?TOKEN=2&ANI='+ANI+'&amp;DNIS='+DNIS+'&amp;LANG='+lang+'&amp;MOS=IVR&amp;AMT=30&amp;operatorid='+operator+'&amp;circleid='+circle+'&amp;servicesid='+serviceid+'&amp;planid='+planid"/>-->	
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=15&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+			<goto next="#BillStatusChk"/>	
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+	
+		<block>
+   		       <assign name="prompt_name" expr="'BILLINGCHECK'"/>			
+ 		        <prompt bargein="false">
+		     		<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'charging_wait.wav'"/>
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'wait_music.wav'"/>
+			</prompt>
+			
+			<!-- SUB REQUEST STATUS -->
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						 {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'delay_charging.wav'"/>
+				</prompt>
+				<exit/>
+			<elseif cond="usr_status=='1'"/>
+				<script> 					 
+			    	            balance=balance*60;
+					    timerflag=1;      
+				 </script>				 
+				
+				 <log expr="'@@@@@@ user start balance is '+balance"/>	
+				 <log expr="'@@@@@@ start_BalenceMinute is '+current_balance"/>
+				 <if cond="timerflag=='1'">      
+			 		<assign name="current_balance" expr="start_time()"/>                 						   
+			  		<script>
+				     		 total_used_bal=CheckUserBalance(initial_balance,current_balance);
+			  	     		 curbalance=balance-total_used_bal; 						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+curbalance/60"/>
+                         		<if cond="curbalance &lt;= '0'">          
+                             			<goto next="TopupRenew.vxml"/>
+                        		</if>  
+                       	</if>    
+				<prompt bargein="true" timeout="0s">	
+               				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'thank_sub.wav'"/>		
+            			</prompt>				 	     
+			 	<goto next="#hungamasubcatMenu"/>	
+			 	
+			<elseif cond="usr_status == '3'"/>		
+				     <goto nextitem="hungamasublowbalintro"/>			  	 				  				  
+				     
+		    	<else/>		
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'delay_charging.wav'"/>
+				</prompt>
+				<exit/>
+			</if>
+		</block>
+		
+		<field name="hungamasublowbalintro" cond="usr_status=='3'">               
+		    	 <grammar mode="dtmf" root="start" version="1.0">
+                   	 	<rule id="start" scope="public">
+                   			<one-of>
+				          <item>1</item>
+				          <item>2</item>	
+                   		          <item>3</item>	
+                   		          <item>4</item>	
+                   			  <item>5</item>	
+                   		          <item>6</item>	
+                      			  <item>7</item>	
+                   		          <item>8</item>	
+                   		          <item>9</item>	
+                   		          <item>0</item>	               			 
+				          <item>#</item>
+				          <item>*</item>			      
+                   			 </one-of>
+                  		</rule>
+              		 </grammar> 	
+			   	 
+              		 <prompt bargein="true" timeout="0s">
+				    <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'subscription-notsuccessful.wav'"/>		
+	   		 </prompt> 
+				 
+              		<filled>                            
+              	   	     	<clear namelist="hungamasublowbalintro"/> 
+              	     		<assign name="current_balance" expr="start_time()"/>
+				   <script>
+				      					 
+					  total_used_bal=CheckUserBalance(initial_balance,current_balance);
+					     curbalance=balance-total_used_bal;				 
+			     	   </script>				  
+				  
+				  <!--<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>-->                  				  				  
+				   		                  			     
+			 	   <throw event="connection.disconnect.hangup"/>	   
+              		</filled>
+			  
+		        <noinput>		  
+	                	<clear namelist="hungamasublowbalintro"/> 
+	               		<assign name="current_balance" expr="start_time()"/>
+				<script>
+					total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 					curbalance=balance-total_used_bal;   					 
+				</script>				  
+				
+				<!--<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+curbalance"/> -->                 				  				  
+				   	 	                  
+				<throw event="connection.disconnect.hangup"/>	   
+              		</noinput>	
+        	</field>
+        
+	</form>
+	
+    
+   <form id="hungamasubcatMenu">
+        <block>
+	       <assign name="prompt_name" expr="'MAINMENU'"/>
+		 <log expr="'@@@@@@ call start_BalenceMinute is '+start_BalenceMinute"/> 
+		 <log> cat order servlet </log>
+	  	 <log expr="'operator : ' + operator"/>
+  		 <log expr="'circle: ' + circle"/>											   
+		
+		 <!--<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=starclubconfig/'+operator+'/'+circle+'/mainmenuorder.cfg'"/> -->
+		 <script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=starclubconfig/mainmenuorder.cfg&amp;TOKEN=FREE'"/>
+		 <script>
+		    	array1.length=0;
+		 </script>
+		 <assign name="len" expr="favSongs.length" />
+		 <assign name="i" expr="0" />
+		
+		 <!--<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>-->
+		 <script>
+			 <![CDATA[
+				   for(j=0; j<len ;  j++)
+				   {  	  
+					array1[j] = favSongs[j];						   
+				   }
+					
+
+			]]>		
+		</script> 	       					       
+		
+		 <log>Length  is	<value expr="len"/>    </log>
+		
+		<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+       
+	</block>
+	<!-- <log expr="'welcome to the hungama sub category main menu '"/>
+        <log expr="' Server ip is :' + IP"/>
+	<log expr="'Ani IS : ' + ANI"/> 	
+	<log expr="'DNIS IS : ' + DNIS"/> -->			
+		 
+	<field name="mnuopt">
+		 <grammar mode="dtmf" root="start" version="1.0">
+               	 	 <rule id="start" scope="public">
+                 		 <one-of>				 
+					    <item>1</item>
+		  			    <item>2</item>
+					    <item>3</item>				  			 
+				    	    <item>4</item>
+				            <item>5</item>
+				            <item>6</item>	
+				            <item>9</item>					  		      
+                                 </one-of>
+                          </rule>
+                 </grammar>
+	 	 <prompt bargein="true" timeout="3s" cond="len==6">	
+            	     <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'select_menu.wav'"/>		
+            	     <!--	<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'select_menu2.wav'"/>-->
+                 </prompt>
+            
+            	 <prompt bargein="true" timeout="3s" cond="len==5">	
+			<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'select_menu2.wav'"/>
+            	 </prompt>
+		    			
+		 <filled>
+				
+			<if cond="mnuopt=='9'">	
+                             <clear namelist="mnuopt"/>
+				 <log expr="'%%%%%%%%Initial balance is '+initial_balance"/>
+           			 
+	 	   	        <if cond="timerflag=='1'">
+				   <assign name="current_balance" expr="start_time()"/>
+				   <log expr="'%%%%%%%%Curr balance is '+current_balance"/>
+				   <script>
+				   	total_used_bal=CheckUserBalance(initial_balance,current_balance);
+				        curbalance=balance-total_used_bal;    						  
+				   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                                   <if cond="curbalance &lt;= '0'">          
+                         		    <goto next="TopupRenew.vxml"/>
+                                   </if>     
+			        </if>
+			        <goto next="actmanager.vxml"/>		
+			</if>
+				
+			<if cond="mnuopt &lt;= len+1">
+				<assign name="usropt" expr="mnuopt"/>
+				<assign name="newopt1" expr="mnuopt"/>
+				<log expr="'New option cat is '+newopt1"></log>
+				<script>
+					newopt1=newopt1-1;
+				</script>
+				
+				<assign name="cat" expr="array1[newopt1]"/>
+				<log expr="'selected cat is '+cat"></log>
+				<assign name="playconfig" expr="cat"></assign>
+				<log expr="'Honey User Input value==============>'+usropt+playconfig  +mnuopt"/>
+				<if cond="timerflag=='1'">
+					<assign name="current_balance" expr="start_time()"/>
+			  	        <script>
+					      total_used_bal=CheckUserBalance(initial_balance,current_balance);
+					      curbalance=balance-total_used_bal;   						  
+					</script>
+					<log expr="'@@@@@@ Smita start_BalenceMinute is '+current_balance"/>
+					<log expr="'@@@@@@ Smita used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ Smita left balance is '+curbalance"/>
+                    	       	<if cond="curbalance &lt;= '0'">          
+                             			<goto next="TopupRenew.vxml"/>
+                        		</if>     
+			 	</if>
+					 
+			        <if cond="len==6">
+					<if cond="usropt==1">
+						
+				 		<goto next="../celebrity_chat/celebritychat_MainMnu.vxml"/> 
+				 		<!-- <goto next="../hungama_celeb_chat/celeb-SelectLang.vxml"/> -->
+
+				        <else/>
+						<goto next="playContent.vxml"/>
+					</if>
+			        <elseif cond="len==5"/>
+					<if cond="usropt==1">
+						<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+						<goto next="#hungamasubcatMenu"/>
+
+						
+				        <else/>
+						<goto next="playContent.vxml"/>
+					</if>
+
+					
+				</if>
+			</if>
+			
+		</filled>
+			
+		
+		<noinput timeout="3s">
+		     <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>                
+                     <reprompt/> 
+                </noinput>       
+             
+             	<noinput count="3">		  
+                	<assign name="usropt" expr="2"/>
+			<assign name="cat" expr="array1[1]"/>
+			<!--<log expr="'default cat is '+cat"></log>-->
+			<assign name="playconfig" expr="cat"></assign>
+			<if cond="timerflag=='1'">
+				<assign name="current_balance" expr="start_time()"/>
+		        	<script>
+				   	total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 					curbalance=balance-total_used_bal;  						  
+				</script>
+				<log expr="'@@@@@@ Smita start_BalenceMinute is '+current_balance"/>
+				<log expr="'@@@@@@ Smita used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ Smita left balance is '+curbalance"/>
+                    		<if cond="curbalance &lt;= '0'">          
+                                	<goto next="TopupRenew.vxml"/>
+                        	</if>     
+			</if>
+					
+			<goto next="playContent.vxml"/>
+							
+                </noinput> 
+             
+	        
+             	<nomatch>
+                	<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+                	<reprompt/>
+             	</nomatch> 
+             
+             	<nomatch count="3">
+	     	        <assign name="usropt" expr="2"/>
+			<assign name="cat" expr="array1[1]"/>
+			<!--<log expr="'default cat is '+cat"></log>-->
+			<assign name="playconfig" expr="'cat'"></assign>
+			<if cond="timerflag=='1'">
+				<assign name="current_balance" expr="start_time()"/>
+			        <script>
+				    	total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 					curbalance=balance-total_used_bal;   						  
+		                </script>
+		  	       <!--<log expr="'@@@@@@ Smita start_BalenceMinute is '+start_BalenceMinute"/>
+			       <log expr="'@@@@@@ Smita used balance is '+total_used_bal"/>
+			       <log expr="'@@@@@@ Smita left balance is '+curbalance"/>-->
+                               <if cond="curbalance &lt;= '0'">          
+                               		<goto next="TopupRenew.vxml"/>
+                               </if>     
+			</if>
+					
+			<goto next="playContent.vxml"/>				
+	         </nomatch> 	                
+ 						
+	  </field>	 
+  		
+    </form> 
+	
+	
+</vxml>
+
+
+
+   

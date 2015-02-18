@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="devRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<meta name="ManageAccount.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<var name="cRBTMODE" expr="''"></var>
+	<var name="CLIPID" expr="''"></var>
+       <var name="len_rng" expr="0"/>
+       <var name="cRBTSTATUS" expr="''"/>	
+	
+
+	<script>
+		var UserStatus1=new Object();
+		var out_string=new Object();		
+	</script>
+	
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>-->
+   <var name="PlayOnce" expr="'true'"/>		
+   <var name="names"/> 
+   
+<form id="accountmanager">
+     <block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+		<assign name="total_time_used" expr="get_duration[0]"/>
+		<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+		<if cond="total_time_used  &gt; 3000">
+			<goto next="End.vxml"/>
+		</if>
+	 
+             <script>
+		       <![CDATA[
+  		       if(timerflag==1)
+                 start_BalenceMinute=start_time();
+		       ]]>	 	
+ 		     </script>					   
+		 
+	</block> 
+	    <field name="actmgrmnuopt">
+		
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>			
+				  <item>2</item>				
+				  <item>3</item>				  
+				  <item>8</item>					 	  			  		      
+                </one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_acmanager.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/acmanager_option.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/main_menu.wav'"/>
+								
+			</prompt>
+		    			
+			
+			<filled>
+				<if cond="actmgrmnuopt=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>
+					
+					 <goto next="#ChangeLang"/>              
+				<elseif cond="actmgrmnuopt=='8'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>
+				
+					<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+			  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+                </if> 
+				    
+				<if cond="actmgrmnuopt=='3'">		
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+						<assign name="total_time_used" expr="get_duration[0]"/>
+						<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+						<if cond="total_time_used  &gt; 3000">
+							<goto next="End.vxml"/>
+						</if>
+				        <clear namelist="actmgrmnuopt"/> 				 
+					<goto next="#unsubscription"/>
+					
+				<elseif cond="actmgrmnuopt=='2'"/>		
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>
+					
+				       <clear namelist="actmgrmnuopt"/> 					 
+					<goto next="New_MainMenu.vxml#selectReligion"/>	
+				</if>
+		</filled>
+			
+			 <noinput timeout="3s">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+				<assign name="total_time_used" expr="get_duration[0]"/>
+				<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				<if cond="total_time_used  &gt; 3000">
+					<goto next="End.vxml"/>
+				</if>
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			     <reprompt/> 
+             </noinput>
+	        
+				<noinput count="3"> 
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>
+					<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+					<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>	
+              </noinput>
+	        
+             <nomatch>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+				<assign name="total_time_used" expr="get_duration[0]"/>
+				<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				<if cond="total_time_used  &gt; 3000">
+					<goto next="End.vxml"/>
+				</if>
+			 
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+               <reprompt/>
+             </nomatch> 
+	
+	         <nomatch count="3">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+				<assign name="total_time_used" expr="get_duration[0]"/>
+				<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				<if cond="total_time_used  &gt; 3000">
+					<goto next="End.vxml"/>
+				</if>
+				
+				<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+				<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>					
+	         </nomatch>                
+    						
+	 </field>	  		
+</form> 
+   
+<form id="unsubscription">
+    <block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+		<assign name="total_time_used" expr="get_duration[0]"/>
+		<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+		<if cond="total_time_used  &gt; 3000">
+				<goto next="End.vxml"/>
+		</if>
+	
+	</block>
+	<field name="mnuopt">	
+		<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+			</grammar>
+
+			<prompt bargein="true">	
+			       <audio expr="promptpath+LANG_DESCRIPTION+'/acmanager_unsub_confirm.wav'"/>
+<!--					<audio expr="promptpath+LANG_DESCRIPTION+'/main_menu.wav'"/>-->
+			 </prompt>
+		    			
+			
+			<filled>	
+				<if cond="mnuopt=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DIGI_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+					<prompt bargein="true" timeout="3s">	
+						<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_unsub.wav'"/>		
+					</prompt>				    
+					<if cond="ANI=='8459078905'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=USERSTATUS&amp;OPERATOR='+operator"/>
+						<assign name="cRBTSTATUS" expr="UserStatus1.value"/>			
+						<!--	<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>				-->
+						<!--<assign name="cRBTSTATUS" expr="'EAUC'"/>-->
+						<if cond="cRBTSTATUS=='EAUC'">		
+							<goto next="#UCT_Unsubscription"></goto>
+						<else/>
+							<goto next="End.vxml"></goto>
+						</if>
+					</if>
+					<throw event="connection.disconnect.hangup"/>	
+				<elseif cond="mnuopt=='2'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>								
+					<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+			 		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>   		     				  				    
+				<elseif cond="mnuopt=='8'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>				
+					<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+			 		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+				</if>
+			       
+			</filled>
+			<noinput count="2">
+ 				<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+			</noinput>
+
+
+			
+			<noinput>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+				<assign name="total_time_used" expr="get_duration[0]"/>
+				<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				<if cond="total_time_used  &gt; 3000">
+					<goto next="End.vxml"/>
+				</if>
+    		 		
+   					<prompt>						
+   						<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>		 
+   			   		</prompt>
+   					<reprompt></reprompt>
+   					
+			 </noinput>
+
+			<nomatch count="2">
+			 		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>				
+   		   	</nomatch>	
+
+			 <nomatch>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+				<assign name="total_time_used" expr="get_duration[0]"/>
+				<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				<if cond="total_time_used  &gt; 3000">
+					<goto next="End.vxml"/>
+				</if>
+   					<prompt>						
+   						<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>		 
+   			   		</prompt>
+   			   		<reprompt></reprompt>
+   		   	  </nomatch>	
+              	
+	</field>	  
+</form> 
+
+
+<form id="UCT_Unsubscription">
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  0  </item>
+								 <item>  *  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/crbt_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=DEACTIVATE&amp;OPERATOR='+operator"/>					
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>			
+					<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_unsub.wav'"/>
+					</prompt>
+					<goto next="End.vxml"></goto>
+				<else/>
+					<goto next="End.vxml"></goto>
+				</if>
+			</filled>
+		</field>	
+	</form>
+    
+<form id="balanceminute">
+	 <block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+			<assign name="total_time_used" expr="get_duration[0]"/>
+			<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+			<if cond="total_time_used  &gt; 3000">
+					<goto next="End.vxml"/>
+			</if>
+	 
+	 	<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction?PROCEDURE=DIGI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=4&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+	    
+				<script>
+				 <![CDATA[
+							    for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==2)
+								       	balanceminutes = out_string[j];								       							      
+								  }
+		
+					]]>
+				</script>
+         
+			<prompt bargein="false" >
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_acmanager_balanceis.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_'+balanceminutes+'.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_minutes.wav'"/>
+			</prompt>
+			
+			<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+			  <goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+	</block>
+  </form>
+	
+	   
+<form id="ChangeLang">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+		<assign name="total_time_used" expr="get_duration[0]"/>
+		<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+		<if cond="total_time_used  &gt; 3000">
+			<goto next="End.vxml"/>
+		</if>
+	
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/'+circle+'/navlang.cfg&amp;TOKEN=FREE'"/>
+					 <script>
+								array1.length=0;
+								dishes.length=0;
+								
+					</script>	
+					<assign name="len" expr="favSongs.length" />
+					<assign name="i" expr="0" />
+					<script>
+						 <![CDATA[
+							   for(j=0; j<len ;  j++)
+							   {  	  
+										array1[j] = favSongs[j];						   
+							   }
+
+						]]>		
+					</script> 	       					       
+					
+					<if cond="len &lt; 8 || len==8">
+						<assign name="end_index" expr="len"/>
+						<assign name="OTHER_lang" expr="'FALSE'"/>
+					<else/>
+						<assign name="end_index" expr="8"/>
+						<assign name="OTHER_lang" expr="'TRUE'"/>
+					</if>
+				
+					<assign name="start_index_pre" expr="0"/>
+					<assign name="start_index" expr="0"/>
+					<assign name="movie_idx" expr="0" />
+					<goto next="#select_lang"/>
+
+	</block>
+</form>
+
+<form id="select_lang">
+	<block>				
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+		<assign name="total_time_used" expr="get_duration[0]"/>
+		<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+		<if cond="total_time_used  &gt; 3000">
+			<goto next="End.vxml"/>
+		</if>
+	
+		<assign name="movie_idx" expr="0" />
+		<assign name="i" expr="0" />
+						<script>
+							 <![CDATA[
+								for(j=start_index; j<end_index ;  j++)
+								{  	  
+								language[i] = array1[j];
+								i++;													   
+								}
+							]]>		
+						</script>
+			<log>Array[0]  is	<value expr="array1[0]"/>    </log>
+				<log>Array[1]  is	<value expr="language[1]"/>    </log>
+				<log>Array[2]  is	<value expr="language[2]"/>    </log>
+				<log>Array[3]  is	<value expr="language[3]"/>    </log>
+				<log>Array[4]  is	<value expr="language[4]"/>    </log>
+				<log>Array[5]  is	<value expr="language[5]"/>    </log>			
+				<log>Array[6]  is	<value expr="language[6]"/>    </log>
+				<log>Array[7]  is	<value expr="language[7]"/>    </log>
+				<log>Array[8]  is	<value expr="language[8]"/>    </log>	
+	</block>
+<field name="langopt">
+	
+		<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>						
+						<item> 1 </item>
+						<item> 2 </item>
+						<item> 3 </item>						
+						<item> 4 </item>						
+						<item> 5 </item>						
+						<item> 6 </item>						
+						<item> 7 </item>						
+						<item> 8 </item>
+						<item> 9 </item>
+						<item> 0 </item>	
+					</one-of>
+				</rule>
+			  </grammar>
+					<prompt bargein="true" timeout="3s">
+					   <foreach item="names" array="language">
+						<mark nameexpr="movie_idx++"/>
+								<audio expr="promptpath+names+'/lang'+names+'.wav'"/>
+	                  			<audio expr="promptpath+names+'/press_dtmf'+movie_idx+'.wav'"/>
+					    </foreach>													
+			       </prompt>					
+			       <prompt bargein="true" cond="OTHER_lang=='TRUE'">
+							    <audio expr="promptpath+lang+'/lang_other_option.wav'"/>
+							<!--	<audio expr="promptpath+lang+'/press_dtmf9.wav'"/> -->
+			       </prompt>
+				
+                <filled>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>
+				     <if cond="langopt=='9'">
+				      		<if cond="OTHER_lang=='TRUE'">
+				      		<assign name="start_index" expr="end_index"/>
+				      		<assign name="end_index" expr="len"/> 
+				      		<log>START INDEX<value expr="start_index"/>    </log>
+							<log>END INDEX<value expr="end_index"/>    </log>
+							<script>
+									language.length=0;
+							</script>
+							<assign name="OTHER_lang" expr="'FALSE'"/>
+				             	<goto next="#select_lang"/>		
+				             <else/>
+				             	<throw event="nomatch"/>
+				          	</if>    
+					<elseif cond="langopt=='0'"/>
+						     <if cond="OTHER_lang=='FALSE'">
+						        <assign name="end_index" expr="'8'"/>
+						        <assign name="start_index" expr="'0'"/>
+						        <assign name="OTHER_lang" expr="'TRUE'"/>
+						        <script>
+									language.length=0;
+								</script>
+								<goto next="#select_lang"/>			
+							 <else/>												     
+				      			<throw event="nomatch"/>								
+						     </if>	
+					<elseif cond="langopt &lt; i+1"/>
+							<if cond="langopt &lt; end_index+1">
+								<assign name="lang" expr="language[--langopt]"/>
+								<assign name="LANG_DESCRIPTION" expr="lang"/> 
+								<goto next="#LanguageThanks"/>  		
+							<else/>
+						      <throw event="nomatch"/>
+							</if>			        
+				     <else/>
+				      				      <throw event="nomatch"/>
+				      </if>
+				      
+				      <assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+			  		  <goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>	
+			  		  
+				</filled>
+					
+			   			
+   
+		<noinput>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+				<assign name="total_time_used" expr="get_duration[0]"/>
+				<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				<if cond="total_time_used  &gt; 3000">
+					<goto next="End.vxml"/>
+				</if>
+		
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<assign name="movie_idx" expr="0"/>
+			<goto nextitem="langopt"/>
+		</noinput>
+
+
+
+		<nomatch>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+				<assign name="total_time_used" expr="get_duration[0]"/>
+				<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				<if cond="total_time_used  &gt; 3000">
+					<goto next="End.vxml"/>
+				</if>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<assign name="movie_idx" expr="0"/>
+			<goto nextitem="langopt"/>
+		</nomatch>
+
+	</field>
+</form>
+
+
+<form id="LanguageThanks">
+			
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+		<assign name="total_time_used" expr="get_duration[0]"/>
+		<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+		<if cond="total_time_used  &gt; 3000">
+					<goto next="End.vxml"/>
+		</if>
+	
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DIGI_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>
+					 <prompt bargein="false"  timeout="1s">
+					         <audio expr="promptpath+LANG_DESCRIPTION+'/language_change.wav'"/>
+		  			 </prompt> 
+		  			 <goto next="ExistingUser.vxml"/> 	 
+	</block>		  
+</form>
+
+
+</vxml>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Hungama_ModMngAccnt.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<var name="timeinmilisec" expr="''"/>
+	<var name="UploadFileName" expr="''"/>	
+<var name="MM_Value" expr="0"/>
+	<script>
+		var UserStatus1=new Object();		
+	</script>
+    <form id="RecordSession">
+    <block>
+    
+     <script>
+    	    		       <![CDATA[
+    	    		       
+    	                            timeinmilisec = new Date().getTime();                                 
+    	    		       ]]>	 	
+    	     		     </script>
+    	     		     
+    	         <assign name="UploadFileName" expr="'LOVEGURU_'+ANI+'_'+timeinmilisec"/> 
+
+    <prompt bargein="true" timeout="1s">
+    				
+    				<audio expr="Prompt_Path+'/'+lang+'/welcome_acmanager.wav'"/>
+    				
+    			</prompt>
+</block>
+        <record name="message" 
+                beep="true" 
+                finalsilence="15s" 
+                maxtime="15s" 
+                dtmfterm="true">
+
+            <catch event="connection.disconnect.hangup">
+                <goto nextitem="postrecording"/>
+            </catch>
+        </record>
+
+<block>
+
+<log expr="message$.duration"/> 
+
+
+				<audio expr="message"/>			
+			</block>
+        <subdialog name="postrecording" 
+                   src="http://10.130.14.106:8088/hungama/uploadrec" 
+                   namelist="ANI UploadFileName message" 
+                   method="post" 
+                   enctype="multipart/form-data"/>
+                   <block>
+                   <goto next="record.vxml"/>
+                   </block>
+    </form>
+    
+</vxml>

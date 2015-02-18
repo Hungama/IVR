@@ -1,0 +1,679 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="JOKEMMRoot.vxml"
+
+xmlns="http://www.w3.org/2001/vxml"
+
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+
+<meta name="playcontent.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+
+<script>
+var favSongs=new Object();
+var len=0;
+var TotalFM=0;
+
+</script>
+
+<form id="loadcliptoplay">
+  <block>  	
+				<if cond="ANI=='84590789051'">
+					 <assign name="circle" expr="'tnu'"/>
+				</if>
+
+	  <log expr="'config name ===> '+playconfig"/> 
+	  <if cond="DNIS=='54646221' &amp;&amp; circle=='tnu' &amp;&amp; lang=='07'">
+	 	  <script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646V2/'+operator+'/JOKEPORTAL/54646221_'+lang+'.cfg'"/>
+	  <else/>
+	 	 <script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646V2/'+operator+'/JOKEPORTAL/'+lang+'.cfg'"/>
+	  </if>
+	
+	<script>
+				array.length=0;
+				unike_play=1;
+	</script>
+	<assign name="len" expr="favSongs.length" />
+	<assign name="HEARD" expr="'01'" />
+	<script>
+	<![CDATA[
+	   for(k=0; k<len ;  k++)
+	   {  	  
+		array[k] = favSongs[k];						   
+	   }
+	]]>		
+	</script> 	       				
+	
+	<assign name="cat" expr="'JOKES'" />
+	<assign name="subcat" expr="'JOKES'" />
+	 <log expr="'array length ===> '+len"/>
+	<log expr="'@@@@@@ array val '+array[0]"/>
+	<goto next="#PlayFullSongs"/>  					
+   </block>
+</form>
+
+
+
+<form id="PlayFullSongs"> 
+
+<block>
+<script>
+    <![CDATA[
+	if(timerflag==1)
+	start_BalenceMinute=start_time();
+       ]]>	 	
+     </script>					   
+</block>	
+
+<field name="keypadoption">               
+
+<grammar mode="dtmf" root="start10" version="1.0">
+	<rule id="start10" scope="public">
+	<one-of>
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+		<item>6</item>
+		<item>8</item>
+		<item>9</item>
+	</one-of>
+	</rule>
+</grammar>
+
+<prompt bargein="true"  timeout="1s">
+	<audio expr="promptpath+lang+'/welcome_jokes.wav'"/>
+	 <audio expr="promptpath+lang+'/keypad.wav'"/>
+</prompt> 
+
+<filled>              
+		<script>
+				end_BalenceMinute=start_time();
+			</script>
+
+			<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													array[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+	<if cond="keypadoption=='6'">
+
+		<goto next="#playoption"/>
+
+	<elseif cond="keypadoption=='8'"/>
+
+		
+		 <goto next="NineXMMainMenu.vxml#nav"/>
+
+    <elseif cond="keypadoption=='9'"/>
+
+	
+		 <goto next="ManageAccount.vxml"/>	 
+	<else/>
+				<goto next="#StartToPlaysongs"/>
+	</if>	
+</filled>
+
+<noinput>
+			 <script>
+				end_BalenceMinute=start_time();
+			</script>
+
+		<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													array[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+	<goto next="#StartToPlaysongs"/>	     
+</noinput>	
+<nomatch>   
+			<script>
+				end_BalenceMinute=start_time();
+			</script>
+
+	<prompt bargein="false">
+	      <audio expr="promptpath+lang+'/invalidoption.wav'"/>          
+       </prompt>
+		<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													array[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+      <goto next="#StartToPlaysongs"/>
+</nomatch>	
+</field>		
+
+
+</form>
+
+<form id="StartToPlaysongs">
+
+	<block>
+	
+	 <script>
+	       <![CDATA[
+	       if(timerflag==1)
+		 start_BalenceMinute=start_time();
+	       ]]>	 	
+     </script>
+	<log expr="'@@@@@@ unike_play  is '+unike_play"/>
+	<log expr="'@@@@@@ len  is '+len"/>
+<assign name="unike_play" expr="getRandom(1,len)" />
+
+	<if cond="unike_play &gt; len-1">
+		<assign name="unike_play" expr="1" />
+	<elseif cond="unike_play &lt; 1" />
+		<assign name="unike_play" expr="len-1" />
+	</if>
+					<!--<log expr="'@unike_playunike_playunike_playunike_playunike_play name isssssssssssssssssss '+unike_play"/>
+						<script>
+							<![CDATA[
+							     if(array[unike_play].indexOf("_")>0)
+								    TotalFM=1;
+							     else
+								    TotalFM=0;
+							]]>
+						</script>
+						<if cond="TotalFM=='0'">
+							<log expr="'@in config data havent split name isssssssssssssssssss '+array[unike_play]"/>
+							<goto next="End.vxml"></goto>
+						</if>-->
+	<!--<assign name="unike_play" expr="getRandom(1,len)" />-->
+	<if cond="unike_play=='0'">
+		<assign name="unike_play" expr="1"/>
+	</if>
+	<script>
+		songcheck=array[unike_play].split("_");
+		contentdir=songcheck[0]; 
+		song = array[unike_play];
+
+	</script>
+<log expr="'@@@@@@ songcheck  is '+songcheck"/>
+
+ <assign name="song_begin" expr="start_time()"/>
+ <assign name="song_listen" expr="'START'" />
+ <assign name="Section_Name" expr="'JOKES_CONTENT'"/>
+
+</block>
+
+
+   <field name="selectoption">
+
+		    <grammar mode="dtmf" root="start8" version="1.0">
+			<rule id="start8" scope="public">
+			  <one-of>
+
+				<item>1</item>
+				<item>2</item>	
+				<item>3</item>
+				<item>6</item>
+				<item>8</item>
+				<item>9</item>
+			 </one-of>
+			</rule>
+		</grammar>						
+
+      <prompt bargein="true"  timeout="1s">
+	   <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+      </prompt> 			 
+
+<filled>
+			<script>
+				end_BalenceMinute=start_time();
+			</script>
+
+				<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													array[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+ <if cond="selectoption=='1'">
+				 <script> unike_play=unike_play-1</script>
+				<assign name="song_listen" expr="'END'" />
+								 <assign name="compare_time" expr="time_duration(song_begin)"/>
+								 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>	
+		<goto next="#StartToPlaysongs"/>
+
+
+
+ <elseif cond="selectoption=='2'"/>
+
+	
+	 <script> unike_play=unike_play</script>
+
+				<assign name="song_listen" expr="'END'" />
+								 <assign name="compare_time" expr="time_duration(song_begin)"/>
+								 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 			 	
+
+		<goto next="#StartToPlaysongs"/>
+
+
+ <elseif cond="selectoption=='3'"/>	
+
+		 <script> unike_play=unike_play+1</script>
+
+				<assign name="song_listen" expr="'END'" />
+								 <assign name="compare_time" expr="time_duration(song_begin)"/>
+								 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>						 				 						 								 
+
+		<goto next="#StartToPlaysongs"/>
+
+
+ <elseif cond="selectoption=='6'"/>
+
+					<assign name="song_listen" expr="'END'" />
+								 <assign name="compare_time" expr="time_duration(song_begin)"/>
+								 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>	
+ <goto next="#playoption"/>
+
+
+ <elseif cond="selectoption=='8'"/>
+
+				<assign name="song_listen" expr="'END'" />
+								 <assign name="compare_time" expr="time_duration(song_begin)"/>
+								 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>	
+
+ <goto next="NineXMMainMenu.vxml#nav"/>
+
+ <elseif cond="selectoption=='9'"/>
+
+				<assign name="song_listen" expr="'END'" />
+								 <assign name="compare_time" expr="time_duration(song_begin)"/>
+								 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>	
+
+ <goto next="ManageAccount.vxml"/>
+
+ <else/>				 
+				<script> unike_play=unike_play+1</script>
+						<assign name="song_listen" expr="'END'" />
+								 <assign name="compare_time" expr="time_duration(song_begin)"/>
+								 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>	
+
+
+    <goto next="#StartToPlaysongs"/> 		
+ </if>				 
+</filled>				  
+
+
+<noinput>	
+<script> 
+	unike_play=unike_play+1;
+</script> 
+			<script>
+				end_BalenceMinute=start_time();
+			</script>
+
+
+				<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													array[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+	
+
+				<assign name="song_listen" expr="'END'" />
+								 <assign name="compare_time" expr="time_duration(song_begin)"/>
+								 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>			
+<goto next="#StartToPlaysongs"/> 	
+</noinput>
+
+
+<nomatch>   
+	<prompt bargein="false">
+	      <audio expr="promptpath+lang+'/invalidoption.wav'"/>          
+       </prompt>
+<script>
+				end_BalenceMinute=start_time();
+			</script>
+
+		<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													array[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+      <goto next="#StartToPlaysongs"/> 
+</nomatch>
+
+<catch event="error.badfetch">
+<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+song+'/JOKES/'+playconfig+'.cfg"/>
+<if cond="selectoption=='1'">
+	<script>unike_play=unike_play-1;</script> 				 				 	
+	<goto next="#StartToPlaysongs"/> 
+<else/>
+	<script>unike_play=unike_play+1;</script> 				 				 	
+	<goto next="#StartToPlaysongs"/> 
+</if>
+</catch> 
+
+</field>
+
+</form>	
+
+<form id="playoption">
+
+<block>
+    <script>
+       <![CDATA[
+       if(timerflag==1)
+       start_BalenceMinute=start_time();
+       ]]>	 	
+     </script>					   
+</block>
+<field name="playclipOptionInfo">
+	<grammar mode="dtmf" root="start9" version="1.0">
+	<rule id="start9" scope="public">
+	<one-of>				 
+			  <item>1</item>
+			  <item>2</item>	
+			  <item>3</item>
+			  <item>6</item>
+			  <item>8</item>
+			  <item>9</item>
+		 </one-of>
+	</rule>
+	</grammar>
+
+	<prompt bargein="true">
+	     <audio expr="promptpath+lang+'/keypad_options.wav'"/>
+	</prompt>
+
+<filled>
+<script>
+				end_BalenceMinute=start_time();
+			</script>
+
+				<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													array[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+	    <if cond="playclipOptionInfo=='1'">
+
+				     <script> unike_play=unike_play-1</script> 
+
+
+		     <goto next="#StartToPlaysongs"/> 
+
+	   <elseif cond="playclipOptionInfo=='2'"/>
+
+				     <script> unike_play=unike_play</script>
+
+			<goto next="#StartToPlaysongs"/> 
+
+	   <elseif cond="playclipOptionInfo=='3'"/>
+
+		
+		     <script> unike_play=unike_play+1</script>
+		     <goto next="#StartToPlaysongs"/> 
+
+	   <elseif cond="playclipOptionInfo=='6'"/>
+
+				     <goto next="#playoption"/> 	     
+
+
+	   <elseif cond="playclipOptionInfo=='8'"/>
+			<goto next="NineXMMainMenu.vxml#nav"/>
+
+		
+
+	   <elseif cond="playclipOptionInfo=='9'"/>
+
+		
+		     <goto next="ManageAccount.vxml"/>
+
+	    </if>
+
+</filled>		
+
+<noinput count="1">
+	<prompt bargein="true" timeout="0s">
+		<audio expr="promptpath+lang+'/nodtmf.wav'"/>
+	</prompt>
+			<script>
+				end_BalenceMinute=start_time();
+			</script>
+			  <script> unike_play=unike_play+1;</script>
+
+
+				<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													array[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+ <goto next="#StartToPlaysongs"/>
+</noinput>
+
+
+<nomatch count="1">
+	<prompt bargein="true" timeout="0s">
+		<audio expr="promptpath+lang+'/invalidoption.wav'"/>
+	</prompt>
+	<script>
+				end_BalenceMinute=start_time();
+			</script>
+			  <script> unike_play=unike_play+1;</script>
+
+
+				<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													array[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+ <goto next="#StartToPlaysongs"/>
+</nomatch>
+
+</field>	
+
+</form>
+
+</vxml>

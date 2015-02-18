@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Hungama_ModMngAccnt.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<var name="timeinmilisec" expr="''"/>
+	<var name="UploadFileName" expr="''"/>	
+<var name = "mycli" expr ="'222'+ANI"/>
+
+
+<var name="MM_Value" expr="0"/>
+	<script>
+		var UserStatus1=new Object();		
+	</script>
+   
+
+  
+<form id="nameing">
+<block>
+	  <prompt bargein="true" timeout="1s">
+	    				
+	    				<audio expr="Prompt_Path+'/'+lang+'/welcome_acmanager.wav'"/>
+	    				
+    			</prompt>
+</block>
+ 
+
+	 <transfer name="mytransfer" dest="isup:09910883325" bridge="true" connecttimeout="2000s" namelist="mycli">  
+			
+   			<filled>
+				<log> transfer done now</log>
+			      	<clear namelist="mytransfer"/>
+			</filled>
+	       </transfer></form>
+</vxml>

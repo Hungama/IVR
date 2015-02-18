@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="HoneyBee_Root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="HoneyBee_Dedication.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	
+	<var name="SONG_PATH" expr="0"/>
+	<var name="BNI" expr="0"/>
+	<form id="Navigation">
+		<block>
+			<assign name="SONG_PATH" expr="contentpath+Song_Path+'/'+songID+'.wav'"/>
+			<log>	SONG_PATH IS   <value expr="SONG_PATH"/> </log>
+			<assign name="movie_idx" expr="0"/>
+			<prompt bargein="false" timeout="1s">
+				<audio expr="Promptpath+'/'+lang+'/wel_dedication1.wav'"/>
+			</prompt>
+		</block>
+		<field name="choice" type="digits?length=10" modal="true">
+		<!--<field name="choice" type="digits?minlength=1;maxlength=10">-->
+			 <grammar mode="dtmf" root="start2" version="1.0">
+				<rule id="start2" scope="public">
+				<one-of>     
+					   <item>1</item>
+					   <item>2</item>
+					   <item>3</item>
+					   <item>4</item>
+					   <item>5</item>
+					   <item>6</item>
+					   <item>7</item>
+					   <item>8</item>
+					   <item>9</item>
+					   <item>0</item>
+				</one-of>
+				</rule>
+			</grammar>
+			
+			<prompt bargein="true" timeout="20s">
+			 	<audio expr="Promptpath+'/'+lang+'/enter_mobile.wav'"/>
+			</prompt>
+			
+			<filled>
+				<log>	B-Party number is   <value expr="choice"/> </log>
+				<script>					
+					length = choice.length;
+					if(length==10)
+					{
+						BNI=choice;
+					}			
+				</script>
+				<if cond="length=='10'">				
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_DEDICATION&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+BNI+'&amp;INPARAM[2]='+songID+'&amp;INPARAM[3]='+SONG_PATH"/>
+					<prompt bargein="false" timeout="1s">
+						<audio expr="Promptpath+'/'+lang+'/thanks-dedication.wav'"/>
+					</prompt>
+					<goto next="HoneyBee_MusicPlay.vxml#next"/>
+				<else/>
+					<prompt bargein="false" timeout="1s">
+						<audio expr="Promptpath+'/'+lang+'/wrong_mobile.wav'"/>
+					</prompt>	
+					<script>movie_idx=movie_idx+1;</script>
+					<if cond="movie_idx &gt; 2">		   
+						<goto next="HoneyBee_MusicPlay.vxml#next"/>
+					<else/>
+						<reprompt/>
+				        </if>					
+				</if>
+			</filled>
+			<noinput count="1">
+				<prompt bargein="true" timeout="2s">
+					<audio expr="Promptpath+'/'+lang+'/sys_nokeypress.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="2">
+				<goto next="HoneyBee_MusicPlay.vxml#next"/>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="2s">
+					<audio expr="Promptpath+'/'+lang+'/sys_wrongkeypress.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+				<goto next="HoneyBee_MusicPlay.vxml#next"/>
+			</nomatch>
+
+		</field>
+	</form>
+</vxml>

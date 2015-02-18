@@ -1,0 +1,218 @@
+<vxml version="2.1" application="Regional_PortalRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="Regional_Play.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<var name="cRBTMODE" expr="''"></var>
+	<var name="CLIPID" expr="''"></var>
+        <var name="len_rng" expr="0"/>
+        <var name="cRBTSTATUS" expr="''"/>
+        <var name="Song_counter" expr="0"/>
+	<var name="nextchoice" expr="'0'"/>  
+	<!--<var name="total_time" expr="0"/>-->	
+	<var name="TotalFM" expr="0"/>	      
+	<!--<var name="Song_Path" expr="0"/>-->
+	<script>
+		var UserStatus1=new Object();
+		var out_string = new Object();
+	</script>
+
+	
+	<script>		
+		var out_string=new Object();
+		<!--KeyPad_Cnt=parseInt(KeyPad_Cnt);-->
+		Song_counter=parseInt(Song_counter);
+	</script>
+	
+	<form id="next">
+		<block>		
+			<assign name="Section_Name" expr="'SONG_PLAY'+playconfig"/>
+			<log>Section Name isssssss  <value expr="Section_Name"/>  </log>
+			
+			<assign name="total_time" expr="rim(C_Start)"/>
+			<!--<if cond="bal &lt; total_time">
+				<goto next="Regional_End.vxml"></goto>
+			</if>-->
+			<log>valuEEEEEEEEEEEEEEEEEEEE unike_play  is	<value expr="unike_play"/>    </log>
+					
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+			</if>
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="array1[unike_play]"/>    </log>
+			<script>
+				<![CDATA[
+				     if(array1[unike_play].indexOf("_")>0)
+					    TotalFM=1;
+				     else
+					    TotalFM=0;
+				]]>
+			</script>
+			<!--<if cond="TotalFM=='0'">
+				<log expr="'@in config data havent split name isssssssssssssssssss '+array[unike_play]"/>
+				<goto next="Regional_End.vxml"></goto>
+			</if>-->
+			<script>
+				var songcheck1=array1[unike_play].split("_");
+				Song_Path=songcheck1[0];
+				songID = array1[unike_play];
+			</script>
+			<log>AFTER    valuEEEEEEEEEEEEEEEEEEEE unike_play  is	<value expr="unike_play"/>    </log>					
+	<!--**********************************CRBTCHECK**********************************************************************-->
+	<!--		<if cond="directaccess!='ComedyPortal' &amp;&amp; playconfig!='00'">		
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_rngmenu?SONGID='+songID+'&amp;IN_TYPE=CRBT&amp;CIRCLE='+circle+'&amp;OPERATOR='+operator"/>
+				<log expr="'CLIPID=='+out_string[0]"></log>
+				<assign name="len_rng" expr="out_string.length" />
+				<log>previous Array[1]  is	<value expr="CLIPID"/>    </log>
+				<script>
+					 CLIPID = out_string[0];		
+				</script>
+				<log>after Array[1]  is	<value expr="CLIPID"/>    </log>
+				<if cond="CLIPID==''">
+				<script srcexpr="'http://'+IP+'/hungama/CRBT_unavailable_log?SONG='+songID+hash+playconfig"/>
+					<script>unike_play=unike_play+1;</script> 				 				 	
+					<goto next="#next"/> 
+
+				</if>  
+			</if>
+	-->		
+	<!--*******************************************************************************************************************-->
+			 <assign name="song_begin" expr="starttime()"/>
+			 <assign name="song_listen" expr="'START'" />
+			 
+
+			<prompt bargein="true" timeout="1s">
+				<audio expr="contentpath+Song_Path+'/'+songID+'.wav'"/>	
+			</prompt>				
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  0  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>								 
+								 <item>  6  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  *  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<filled>
+				<assign name="nextchoice" expr="choice"></assign>
+				<goto next="#contentlogin" />				
+			</filled>
+
+			<noinput>
+				<assign name="nextchoice" expr="'1'"/>
+				<goto next="#contentlogin" />
+			</noinput>
+			<nomatch>
+				<goto next="#nomatch" />
+			</nomatch>
+		</field>
+			
+	</form>
+	
+	<form id="nomatch">
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  6  </item>								 
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+		
+		<filled>
+			<assign name="nextchoice" expr="choice"></assign>
+			<goto next="#contentlogin" />				
+		</filled>
+		<noinput>
+			<goto next="Regional_Navigation.vxml"/>
+		</noinput>
+		<nomatch>
+			<goto next="Regional_Navigation.vxml"/>
+		</nomatch>
+</field>	
+	  	
+
+	</form>
+	
+	<form id="contentlogin">
+		<block>
+				 <assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="rim(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log expr="'compare_time=='+compare_time"></log>
+				 <log expr="'ContentTime=='+ContentTime"></log>
+				 <log expr="'hash=='+hash"></log>
+				 <log expr="'songID=='+songID"></log>
+				 <log expr="'cat=='+cat"></log>
+				 <log expr="'subcat=='+subcat"></log>
+				 <log expr="'contentlog=='+contentlog"></log>
+				 <assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+
+				 <if cond="nextchoice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<goto next="#next" />
+				<elseif cond="nextchoice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="#next" />
+				<elseif cond="nextchoice=='3'"/>
+					<script> unike_play=unike_play-1</script>
+					<goto next="#next" />
+				<elseif cond="nextchoice=='6'"/>
+					<goto next="Regional_Navigation.vxml"/>				
+				<elseif cond="nextchoice=='8'"/>
+					<goto next="Regional_MainMenu.vxml#MAINMENU"/>
+				<elseif cond="nextchoice=='9'"/>
+					<goto next="Regional_MngAccnt.vxml"/>
+				<!--<elseif cond="nextchoice=='*'"/>
+					<goto next="Regional_CRBT.vxml"/>-->				
+				<else/>
+					<script> unike_play=unike_play+1</script>
+					<goto next="#next" />
+				</if>
+		</block>
+
+	</form>
+ 	<error>
+		<if cond="nextchoice=='3'">
+			<script>unike_play=unike_play-1;</script> 				 				 	
+			<goto next="#next"/> 
+		<else/>
+			<script>unike_play=unike_play+1;</script> 				 				 	
+			<goto next="#next"/> 
+		</if>
+	</error> 	
+</vxml>

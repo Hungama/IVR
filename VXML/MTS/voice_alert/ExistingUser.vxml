@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="voiceRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="ExistingUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	
+	<form id="cat">
+		<block>
+			<assign name="prompt_name" expr="'EXISTINGUSER'"/>
+			<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ circle  is$$$$$$$$$$$$$$$$$$$$$	<value expr="circle"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+			<script srcexpr="'http://'+IP+'/ar_ReadConfigSong?ConfigPath=voice/'+operator+'/cat.cfg&amp;TOKEN=FREE'"/>
+			<script>
+				array1.length=0;
+				dishes.length=0;
+			</script>	
+			<assign name="len" expr="favSongs.length" />
+			<assign name="i" expr="0" />
+			<script>
+				 <![CDATA[
+				   for(j=0; j<len ;  j++)
+				   {  	  
+					array1[j] = favSongs[j];						   
+				   }
+				]]>		
+			</script> 	       					       
+			<if cond="len &lt; 8 || len==8">
+				<assign name="end_index" expr="len"/>
+				<assign name="OTHER_lang" expr="'FALSE'"/>
+			<else/>
+				<assign name="end_index" expr="8"/>
+				<assign name="OTHER_lang" expr="'TRUE'"/>
+			</if>
+			<assign name="start_index_pre" expr="0"/>
+			<assign name="start_index" expr="0"/>
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+		</block>	
+		
+	</form>
+
+</vxml>

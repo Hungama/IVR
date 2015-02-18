@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Regional_PortalRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Regional_Navigation.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<form id="NAV">
+		<block>
+			<if cond="playconfig=='TAM_TAMILNADU' || playconfig=='GUJ_GUJARAT' || playconfig=='KAN_KARNATAKA' || playconfig=='MAL_KERALA' || playconfig=='BEN_WESTBEN' || playconfig=='RAJ_RAJASTHAN' || playconfig=='TAM_TAMILNADU' || playconfig=='HIN_UPW' || playconfig=='HIN_del' || playconfig=='REGCAT32' || playconfig=='REGCAT31' || playconfig=='REGCAT27' || playconfig=='REGCAT28'|| playconfig=='REGCAT35' || playconfig=='REGCAT36' || playconfig=='REGCAT37' || playconfig=='REGCAT38' || playconfig=='REGCAT34' || playconfig=='REGCAT33' || playconfig=='REGCAT29' || playconfig=='REGCAT30' || playconfig=='REGCAT32' || playconfig=='REGCAT31' || playconfig=='REGCAT266' || playconfig=='REGCAT255' || playconfig=='REGCAT26' || playconfig=='REGCAT25'">
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/keypad_options_clip.wav'"/>
+				</prompt>
+			<else/>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/keypad_options.wav'"/>							
+				</prompt>	
+			</if>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>						 
+						 <item>  8  </item>
+						 <item>  9  </item>
+						 <item>  *  </item> 
+					</one-of>
+				</rule>
+			</grammar>
+			
+			<filled>
+				<if cond="choice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<goto next="Regional_Play.vxml#next" />
+				<elseif cond="choice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="Regional_Play.vxml#next" />
+				<elseif cond="choice=='3'"/>
+					<script> unike_play=unike_play-1</script>
+					<goto next="Regional_Play.vxml#next" />				
+				<elseif cond="choice=='9'"/>
+					<goto next="Regional_MainMenu.vxml"/>
+				<elseif cond="choice=='8'"/>
+					<goto next="Regional_MngAccnt.vxml"/>
+				<elseif cond="choice=='*'"/>				
+					<goto next="Regional_CRBT.vxml"/>
+				</if>
+			</filled>
+		</field>
+			<noinput>
+				<script> unike_play=unike_play</script>
+				<goto next="Regional_Play.vxml#next" />
+			</noinput>
+			<nomatch>
+				<script> unike_play=unike_play</script>
+				<goto next="Regional_Play.vxml#next" />
+			</nomatch>
+	</form>
+
+
+
+</vxml>

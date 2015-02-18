@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="CricketRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="UserStatus.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+<var name="blacklist_status" expr="0"/>
+ <property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+
+
+	<script>
+		var ciropr1 = new Object();
+		var ciropr =new Object();
+		var out_string=new Object();
+		var length=0;
+	</script>
+	<script>
+		function GetDate()
+		{
+			var currentDT = new Date();
+			var day = currentDT.getDate();
+			var month = currentDT.getMonth() + 1;
+		 	var year = currentDT.getFullYear();
+			var hours = currentDT.getHours();
+		  	var minutes = currentDT.getMinutes();
+		  	var seconds = currentDT.getSeconds();
+		
+			if (month.length == 1) {month = "0" + month; }
+			if (day.length == 1) {day = "0" + day; }
+			
+			var strDateTime =  year + "-" + month + "-" + day;
+			return strDateTime;
+	}
+	</script>
+
+	<form id="CIRCLEID">
+		<block>
+		
+		<assign name="SECTION" expr="'Userstatus'"/>
+		<assign name="Section_Name" expr="'USER_CHECK'"/>
+		<assign name="C_Start" expr="start_time()"/>
+		<assign name="call_stime" expr="getcurryyyymmdd()+start_time()"/>
+		<assign name = "matchscheduledate" expr = "GetDate() " />
+		<log> FIRST matchscheduledate 	<value expr="matchscheduledate"/>    </log>
+		<log> FIRST C_Start  is	<value expr="C_Start"/>    </log>
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;						   
+		</script>
+		 <assign name="operator" expr="'mtsm'"/>
+		 <assign name="dbservlet" expr="'JOKE_dbinteraction'"/>
+                <script>
+					var length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				</script>         
+		
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_hungama.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+					 <![CDATA[
+						  for(j=0; j< out_string.length;  j++)
+						  {  	  
+							  if(j==0)
+								circle = out_string[j];
+						 }
+						]]>
+					</script>
+				<log> FIRST DB FETCH circle  is	<value expr="circle"/>    </log>
+	
+	
+								      					       
+				<log>circle  is	<value expr="circle"/>    </log>
+				<log>operator is <value expr="operator"/>    </log>
+                		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+				<if cond="realDNIS=='5244401'">
+					<assign name="TOLLMODEL" expr="'CHARGED'"/>
+					<assign name="DNIS" expr="'5244401'"/>
+					<assign name="operator" expr="'mtsm'"/>
+				
+				<else/>
+					<assign name="TOLLMODEL" expr="'FREE'"/>
+					<assign name="DNIS" expr="'52444'"/>
+					<assign name="operator" expr="'mtsm'"/>
+				
+				</if>		
+	        		
+	        		<if cond="TOLLMODEL=='FREE'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MTS_cricket.CRICKET_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2'"/>
+					<script>
+					 <![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+									usr_status = out_string[j];
+								       if(j==1)
+									lang = out_string[j];
+								       if(j==3)
+									 frc_status = out_string[j];
+									if(j==4)
+									 modesub = out_string[j];
+
+								   }
+
+							]]>
+
+					</script>
+					<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+					<log expr="'modesub  @@@@@@@@@ '+modesub"></log>
+
+
+					<assign name="hh" expr="start_time()"/>
+
+					<log expr="'now time======='+hh"/>
+					<script>
+						 hh=hh.substring(0,2);
+					</script>
+					<log expr="'HOUR time======='+hh"/>
+					<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+					<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+					<assign name="Usagelog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+					<log expr="'contentlog=='+contentlog"></log>
+					<goto next="#USRSTATUS"></goto>
+			<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MTS_cricket.CRICKET_QUERY_TM&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+							<script>
+							 <![CDATA[
+									   for(j=0; j< out_string.length;  j++)
+										  {  	  
+										       if(j==0)
+
+											lang = out_string[j];
+										 }
+
+									]]>
+
+							</script>
+
+
+							<assign name="hh" expr="start_time()"/>
+
+							<log expr="'now time======='+hh"/>
+							<script>
+								 hh=hh.substring(0,2);
+							</script>
+							<log expr="'HOUR time======='+hh"/>
+							<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+							<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+							<log expr="'contentlog=='+contentlog"></log>
+							<goto next="#TOLLMODALUSRSTATUS"></goto>
+			</if>
+			
+			<log>dbservlet is <value expr="dbservlet"/>    </log>
+			<log>TOLLMODEL is <value expr="TOLLMODEL"/>    </log>
+		</block>		
+	</form>
+	
+	
+	<form id="USRSTATUS">
+			<block>
+					<if cond="usr_status=='-1'">
+						<if cond="circle=='del' || circle=='raj' || circle=='upw'">
+							<assign name="lang" expr="'1'"/>
+						<else/>
+							<assign name="lang" expr="'2'"/>
+
+						</if>
+						<goto next="NewUser.vxml"></goto>
+					
+				<elseif cond="usr_status=='1'"/>
+					<if cond="lang=='99'">
+						 <assign name="lang" expr="'1'"/>
+						 <goto next="NewUser.vxml#LANGSEL1"/>
+					<else/>
+						<if cond="hh &gt; '00' &amp;&amp; hh &lt; '12'">
+							<prompt bargein="true" timeout="0s">			
+								<audio expr="promptspath+'/'+lang+'/welcome_morning.wav'"/>
+							</prompt>
+						<elseif cond="(hh &gt; '12' || hh == '12') &amp;&amp; (hh &lt; '16')"/>
+							<prompt bargein="true" timeout="0s">			
+								<audio expr="promptspath+'/'+lang+'/welcome_noon.wav'"/>
+							</prompt>
+						<else/>
+							<prompt bargein="true" timeout="0s">			
+								<audio expr="promptspath+'/'+lang+'/welcome_evening.wav'"/>
+							</prompt>
+						</if>
+						
+						<goto next="MainMenu.vxml"></goto>
+					</if>	
+				<elseif cond="usr_status=='5'"/>
+					
+					<if cond="lang=='99'">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath+'/1/delay_charging.wav'"/>
+						</prompt>
+					<else/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath+'/'+lang+'/delay_charging.wav'"/>
+						</prompt>
+					</if>
+					<goto next="End.vxml"></goto>
+
+				 
+				<else/>
+					<if cond="lang=='99'">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath+'/1/delay_charging.wav'"/>
+						</prompt>
+					<else/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath+'/'+lang+'/delay_charging.wav'"/>
+						</prompt>
+					</if>
+					<goto next="End.vxml"></goto>
+				</if>
+			</block>
+	</form>
+	<form id="TOLLMODALUSRSTATUS">
+				<block>
+						<assign name="callcharge" expr="'1'" />
+						<if cond="lang=='-1'">
+						<assign name="usr_status" expr="'-1'"/>
+							<if cond="circle=='del' || circle=='raj' || circle=='upw'">
+								<assign name="lang" expr="'1'"/>
+							<else/>
+								<assign name="lang" expr="'2'"/>
+
+							</if>
+						<prompt bargein="true" timeout="3s">	
+							<audio expr="promptspath+'/'+lang+'/welcome_toll.wav'"/>
+						</prompt> 
+								
+							<goto next="NewUser.vxml"></goto>
+						<else/>
+						<assign name="usr_status" expr="'1'"/>
+							
+							<if cond="lang=='99'">
+								<assign name="lang" expr="'1'"/>
+								<goto next="NewUser.vxml#LANGSEL1"/>
+							<else/>
+								<if cond="hh &gt; '00' &amp;&amp; hh &lt; '12'">
+									<prompt bargein="true" timeout="0s">			
+										<audio expr="promptspath+'/'+lang+'/welcome_morning.wav'"/>
+									</prompt>
+								<elseif cond="(hh &gt; '12' || hh == '12') &amp;&amp; (hh &lt; '16')"/>
+									<prompt bargein="true" timeout="0s">			
+										<audio expr="promptspath+'/'+lang+'/welcome_noon.wav'"/>
+									</prompt>
+								<else/>
+									<prompt bargein="true" timeout="0s">			
+										<audio expr="promptspath+'/'+lang+'/welcome_evening.wav'"/>
+									</prompt>
+								</if>
+								<goto next="MainMenu.vxml"></goto>
+							</if>	
+
+
+						</if>
+				</block>
+		</form>
+	
+</vxml>

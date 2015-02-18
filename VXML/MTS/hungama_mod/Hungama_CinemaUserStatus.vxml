@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_CinemaUserStatus.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="DirectSCAVAIL" expr="'false'"/> 
+<var name="crbtdnis" expr="'false'"/> 
+<var name="daccrbtflag" expr="'0'"/> 
+<var name="DirectSC" expr="'false'"/>
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<script>
+		var ciropr1 = new Object();
+		var out_string=new Object();
+		var ciropr = new Object();
+	</script>	
+	<form id="USRSTATUS">
+		<block>
+			<assign name="Section_Name" expr="'USER_STATUS_CHECK'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CINEMA_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+						       	if(j==3)
+						       	mod_of_sub = out_string[j];
+						       
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'lang @@@@@@@@@ '+lang"></log>
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+			<log expr="'contentlog=='+contentlog"></log>
+			<if cond="lang=='null' || lang==''">
+				<assign name="lang" expr="'07'"/>
+
+			</if>
+			<if cond="usr_status=='-1'">
+				<assign name="Section_Name" expr="'USER_STATUS_CHECK_NON_LIVE'"/>
+				<!--<assign name="directaccess" expr="'AudioCinema'"></assign>-->
+				<goto next="Hungama_AudioNewSub.vxml"/>
+				<!--<goto next="Hungama_AudioNewSubTnb.vxml"/>-->
+			<elseif cond="usr_status=='1'"/>
+				<assign name="Section_Name" expr="'USER_STATUS_CHECK_LIVE'"/>
+				<script>bal=bal*60;</script>
+				<goto next="Hungama_ModExistUser.vxml"></goto>
+			<elseif cond="usr_status=='3'"/>	
+				<script>bal=bal*60;</script>
+				<assign name="mod_of_sub" expr="'TNB'"/>
+				<if cond="mod_of_sub=='TNB'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/welcome_old_1.wav'"/>
+					</prompt>			
+				</if>
+				<goto next="Hungama_ModExistUser.vxml"></goto>
+			<elseif cond="usr_status=='11'"/>	
+				<assign name="Section_Name" expr="'REQUEST_UNDER_PROCESS_GRACE'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/charge_req_recd.wav'"/>
+				</prompt>								
+				<goto next="Hungama_ModEnd.vxml"></goto>
+			<elseif cond="usr_status=='2'"/>
+				<assign name="usr_status" expr="'1'"/>
+				<assign name="mod_of_sub" expr="'T'"/>
+				
+				<script>bal=bal*60;</script>
+				<if cond="lang=='99'">
+					<goto next="Hungama_ModNewUser.vxml"></goto>	
+				<else/>
+					<goto next="Hungama_ModExistUser.vxml"></goto>
+				</if>	
+			<else/>
+				<assign name="Section_Name" expr="'USER_STATUS_CHECK_NON_LIVE_RUP'"/>
+				<if cond="lang=='99'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/01/charge_req_recd.wav'"/>
+					</prompt>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/charge_req_recd.wav'"/>
+					</prompt>
+				</if>				
+				<goto next="Hungama_ModEnd.vxml"></goto>
+			</if>
+		</block>
+	</form>	
+</vxml>

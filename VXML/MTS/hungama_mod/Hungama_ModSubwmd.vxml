@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_ModSubwmd.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>	
+<!--********************************MTS DOUBLE CONSENT *************************************************-->	
+<var name="DBTRANS_ID" expr="'0'"/>
+<var name="DBCCG_ID" expr="'0'"/>
+<var name="vas_id" expr="''"/>
+<var name="Lang" expr="''"/>
+<var name="trx_id" expr="''"/>
+<var name="msisdn" expr="''"/>
+<var name="lang_id" expr="''"/>
+<var name="channel" expr="'IVR'"/>
+<var name="channel_code" expr="''"/>
+<var name="event_type" expr="''"/>
+<var name="event_cost" expr="''"/>
+<var name="Validity" expr="''"/>
+<var name="validity" expr="''"/>
+<var name="circle_id" expr="''"/>
+<var name="product_name" expr="''"/>
+<var name="content_id" expr="''"/>
+<var name="cp_id" expr="''"/>
+<var name="opt1" expr="''"/>
+<var name="opt2" expr="''"/>
+<var name="opt3" expr="''"/>
+<var name="opt4" expr="''"/>
+<var name="opt5" expr="''"/>
+<var name ="CG_URL" expr="'http://10.132.249.170:8080/CGW_IVR/cg.vxml'"/>
+<!--****************************************************************************************--> 
+<var name="doubleconfirm" expr="'1'"/>
+<var name="trybuy" expr="'1'"/>
+<var name="MOS" expr="'IVR'"/>
+<var name="double_switch" expr="-1"/>
+<var name="prompt_switch" expr="0"/>
+<script>
+	var out_string=new Object();
+</script>
+<script>
+	function gettransidtime() 
+	{
+		var currentDT = new Date();
+		var day = currentDT.getDate()+1;
+		var month = currentDT.getMonth() + 1;
+		var year = currentDT.getFullYear();
+		var hours = currentDT.getHours()+1;
+		var minutes = currentDT.getMinutes()+1;
+		var seconds = currentDT.getSeconds()+1;
+		if (month==1 || month==2 || month==3 || month==4 || month==5 || month==6 || month==7 || month==8 || month==9) {month = "0" + month; }
+		if (day==1 ||day==2 || day== 3 || day== 4 || day== 5 || day== 6 || day== 7 || day== 8 || day== 9 ) {day = "0" + day; }
+		if (hours==1 || hours==2 || hours==3 || hours==4 || hours==5 || hours==6 || hours==7 || hours==8 || hours==9) {hours = "0" + hours; }
+		if (minutes ==1 ||minutes ==2 || minutes == 3 || minutes == 4 || minutes == 5 || minutes == 6 || minutes == 7 || minutes == 8 || minutes == 9 ) {minutes = "0" + minutes ; }
+		if (seconds ==1 ||seconds ==2 || seconds == 3 || seconds == 4 || seconds == 5 || seconds == 6 || seconds == 7 || seconds == 8 || seconds == 9 ) {seconds = "0" + seconds ; }
+		
+		var strDateTime =  year+ month+day+hours+minutes+seconds ;	
+		return strDateTime;						
+	}
+</script>
+
+<form id="SubIntro">
+	<block>	
+		<assign name="planid" expr="'7'"/>
+		<assign name="Amt" expr="'30'"/>
+		<assign name="serviceid" expr="'1101'"/>
+		<prompt bargein="true" timeout="3s">
+			<!--<audio expr="Prompt_Path+'/'+lang+'/Welcome_New_NewMM.wav'"/>-->
+			<audio expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/digiprompts/07/Welcome_New_NewMM.wav'"/>
+		</prompt>
+		<goto next="#SubOption"/>			
+	</block>
+</form>		
+	
+<form id="SubOption">
+	<block>
+		<assign name="Section_Name" expr="'SUBSCRIPTION_PROMPT'"/>
+		<prompt bargein="true" timeout="3s">
+			<!--<audio expr="Prompt_Path+'/'+lang+'/Sub_Intro_NewMM.wav'"/>-->
+			<audio expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/digiprompts/07/Sub_Intro_NewMM.wav'"/>
+		</prompt>
+	</block>
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+							</one-of>
+						</rule>
+				</grammar>								
+			<filled>
+				<assign name="firstconsent" expr="'Y'"/>
+				<assign name="firstconsenttime" expr="start_time()"/>
+				<assign name="sub_flag" expr="'true'"/>	
+				<if cond="choice=='1'">
+					<assign name="planid" expr="'7'"/>
+					<assign name="Amt" expr="'30'"/>
+            				<assign name="serviceid" expr="'1101'"/>
+				</if>
+				<goto next="#DOUBLE_CONSENT"></goto>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>
+<form id="SubOptionRaj">
+	<block>
+		<assign name="Section_Name" expr="'SUBSCRIPTION_PROMPT'"/>
+		<assign name="var_wel" expr="getRandom(0,20)" />
+		
+		<if cond="var_wel=='1' || var_wel=='6' || var_wel=='11' || var_wel=='16'">
+			<assign name="var_wel" expr="'1'" />
+		<elseif cond="var_wel=='2' || var_wel=='7' || var_wel=='12' || var_wel=='17'"/>
+			<assign name="var_wel" expr="'2'" />
+		<elseif cond="var_wel=='3' || var_wel=='8' || var_wel=='13' || var_wel=='18'"/>
+			<assign name="var_wel" expr="'3'" />				
+		<elseif cond="var_wel=='4' || var_wel=='9' || var_wel=='14' || var_wel=='19'"/>
+			<assign name="var_wel" expr="'4'" />				
+		<else/>
+			<assign name="var_wel" expr="'5'" />
+		</if>				
+	</block>
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+						</one-of>
+					</rule>
+			</grammar>								
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/HUN-CON-00000'+var_wel+'.wav'"/>
+			</prompt>
+			<filled>
+				<assign name="firstconsent" expr="'Y'"/>
+				<assign name="firstconsenttime" expr="start_time()"/>
+				<assign name="sub_flag" expr="'true'"/>	
+				<if cond="choice=='1'">
+					<assign name="planid" expr="'90'"/>
+					<assign name="Amt" expr="'2'"/>
+            				<assign name="serviceid" expr="'1101'"/>
+            				<goto next="#DOUBLE_CONSENT"></goto>
+				<elseif cond="choice=='2'"/>
+					<assign name="planid" expr="'90'"/>
+					<assign name="Amt" expr="'2'"/>
+            				<assign name="serviceid" expr="'1101'"/>
+            				<goto next="#DOUBLE_CONSENT"></goto>
+				<elseif cond="choice=='3'"/>
+					<assign name="planid" expr="'90'"/>
+					<assign name="Amt" expr="'2'"/>
+            				<assign name="serviceid" expr="'1101'"/>            				
+            				<goto next="#DOUBLE_CONSENT"></goto>
+				<elseif cond="choice=='4'"/>
+					<assign name="planid" expr="'90'"/>
+					<assign name="Amt" expr="'2'"/>
+            				<assign name="serviceid" expr="'1101'"/>            			
+            				<goto next="#DOUBLE_CONSENT"></goto>
+				</if>			
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>	
+	
+	<form id="team_cond">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>																							
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">						
+				<audio expr="Prompt_Path+'/'+lang+'/terms_c.wav'"/>
+			</prompt>					
+			<filled>
+				<assign name="firstconsent" expr="'Y'"/>
+				<assign name="firstconsenttime" expr="start_time()"/>
+				<assign name="sub_flag" expr="'true'"/>	
+				<if cond="choice=='1'">
+					<assign name="planid" expr="'7'"/>
+					<assign name="Amt" expr="'30'"/>
+            				<assign name="serviceid" expr="'1101'"/>				
+				</if>
+				<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>-->
+				<!--<if cond="ANI=='8459078905' || ANI=='9667890489' || ANI=='9143844338' || ANI=='8693945793' || ANI=='8925332082' || ANI=='8459780905' || ANI=='9142112398'">
+					<goto next="#DOUBLE_CONSENT"></goto>
+				<else/>
+					<goto next="#subscription"></goto>
+				</if>-->
+				<goto next="#DOUBLE_CONSENT"></goto>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>
+	<form id="DOUBLE_CONSENT">				
+			<block>
+				<assign name="vas_id" expr="'Hungama_MU'"/>
+				<assign name="trx_id" expr="gettransidtime()"/>
+				<assign name="msisdn" expr="ANI"/>
+				<assign name="lang_id" expr="'HIN'"/>
+				<assign name="channel_code" expr="'IVR'"/>
+				<assign name="event_type" expr="'2'"/>	
+				<assign name="event_cost" expr="'30.00'"/>
+				<assign name="Validity" expr="30"/>
+				<assign name="circle_id" expr="circle"/>
+				<assign name="product_name" expr="'Hungama-Music Unlimited'"/>
+				<assign name="content_id" expr="'Hungama'"/>
+				<assign name="cp_id" expr="'Hungama'"/>
+				<assign name="opt1" expr="'1'"/>
+				<assign name="opt2" expr="'2'"/>
+				<assign name="opt3" expr="'3'"/>
+				<assign name="opt4" expr="'4'"/>
+				<assign name="opt5" expr="'5'"/>
+
+				<if cond="Amt=='2'">
+					<assign name="event_cost" expr="'2.00'"/>
+					<assign name="Validity" expr="'1'"/>
+				<elseif cond="Amt=='30'"/>
+					<assign name="event_cost" expr="'30.00'"/>
+					<assign name="Validity" expr="'15'"/>
+				</if>				
+
+
+				<if cond="lang=='01'">
+					<assign name="Lang" expr="'HIN'"/>
+				<elseif cond="lang=='02'"/>
+					<assign name="Lang" expr="'ENG'"/>
+				<elseif cond="lang=='11'"/>
+					<assign name="Lang" expr="'MAR'"/>
+				<elseif cond="lang=='10'"/>
+					<assign name="Lang" expr="'KAN'"/>
+				<elseif cond="lang=='08'"/>
+					<assign name="Lang" expr="'TEL'"/>
+				<elseif cond="lang=='09'"/>
+					<assign name="Lang" expr="'MAL'"/>
+				<elseif cond="lang=='07'"/>
+					<assign name="Lang" expr="'TAM'"/>
+				<elseif cond="lang=='13'"/>
+					<assign name="Lang" expr="'ORI'"/>
+				<elseif cond="lang=='06'"/>
+					<assign name="Lang" expr="'BEN'"/>
+				<elseif cond="lang=='12'"/>
+					<assign name="Lang" expr="'GUJ'"/>
+				<elseif cond="lang=='17'"/>
+					<assign name="Lang" expr="'ASM'"/>
+				<elseif cond="lang=='18'"/>
+					<assign name="Lang" expr="'MAW'"/>
+				<elseif cond="lang=='03'"/>
+					<assign name="Lang" expr="'PUN'"/>
+				<elseif cond="lang=='05'"/>
+					<assign name="Lang" expr="'HAR'"/>
+				<elseif cond="lang=='04'"/>
+					<assign name="Lang" expr="'BOJ'"/>
+
+				<else/>
+					<assign name="Lang" expr="'HIN'"/>
+				</if>		
+			</block>
+				<subdialog name="confirmUserChoice" fetchtimeout="25s" srcexpr="CG_URL">
+				<param name="vas_id" expr="vas_id"/>
+				<param name="trx_id" expr="trx_id"/>
+				<param name="msisdn" expr="msisdn"/>
+				<param name="channel" expr="'IVR'"/>
+				<param name="event_type" expr="event_type"/>
+				<param name="event_cost" expr="event_cost"/>
+				<param name="lang_id" expr="Lang"/>
+				<param name="product_name" expr="product_name"/>
+				<param name="content_id" expr="content_id"/>
+				<param name="cp_id" expr="cp_id"/>
+				<param name="circle_id" expr="circle_id"/>
+				<param name="validity" expr="Validity"/>
+				<param name="opt1" expr="'a'"/>
+				<param name="opt2" expr="'b'"/>
+				<param name="opt3" expr="'c'"/>
+				<param name="opt4" expr="'d'"/>
+				<param name="opt5" expr="'e'"/>	
+	   	      <filled> 
+				
+				<assign name="secondconsent" expr="'Y'"/>
+				<assign name="secondconsenttime" expr="start_time()"/>
+				<assign name="IVRtransid" expr="trx_id"/>
+				<assign name="cg_id" expr="confirmUserChoice.cg_id"/>
+				<assign name="error_desc" expr="confirmUserChoice.error_desc"/>
+				<assign name="cons_time" expr="confirmUserChoice.cons_time"/>
+				<assign name="cons_stat" expr="confirmUserChoice.cons_stat"/>
+
+			      	<log> URL_Hit parameter will contain the ip and port of Subdialog Consent VXML page </log>
+			   	<log expr="'Subdialog_Response.errCode resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.error_code"/>
+ 				<log expr="'Subdialog_Response.cg_id resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.cg_id"/>
+				<log expr="'Subdialog_Response.t_id resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.t_id"/>
+				<log expr="'Subdialog_Response.error_desc resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.error_desc"/>
+				<log expr="'Subdialog_Response.cons_time resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.cons_time"/>
+				<log expr="'Subdialog_Response.cons_stat resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.cons_stat"/>
+				<assign name="DBTRANS_ID" expr="confirmUserChoice.t_id"/>
+				<assign name="DBCCG_ID" expr="confirmUserChoice.cg_id"/>
+				
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/SwitchCall_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=MOD&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+trx_id+'&amp;error_code='+confirmUserChoice.error_code+'&amp;cg_id='+confirmUserChoice.cg_id+'&amp;t_id='+confirmUserChoice.t_id+'&amp;error_desc='+confirmUserChoice.error_desc+'&amp;cons_time='+confirmUserChoice.cons_time+'&amp;cons_stat='+confirmUserChoice.cons_stat"/>
+			      <if cond="confirmUserChoice.error_code=='0'">  
+					  <goto next="#subscription"/>	
+			      <else/>
+				   <goto next="Hungama_ModEnd.vxml"/>
+			      </if> 
+	     </filled>
+	     </subdialog>
+</form>	
+	<form id="subscription">
+			<block>	
+				<if cond="tnb_usr_status=='-1'">				
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB_RAJTNB&amp;INTOKEN=9&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=TIVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid+'&amp;INPARAM[7]='+DBTRANS_ID+'&amp;INPARAM[8]='+DBCCG_ID"/>
+				<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=9&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid+'&amp;INPARAM[7]='+DBTRANS_ID+'&amp;INPARAM[8]='+DBCCG_ID"/>
+				</if>
+				<goto next="#SubRequest"></goto>
+			</block>
+	</form>
+	
+	<form id="Sub_Contest">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>																							
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">						
+				<audio expr="Prompt_Path+'/'+lang+'/Welcomejune13.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/subintrojune13.wav'"/>
+			</prompt>					
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="planid" expr="'4'"/>
+					<assign name="Amt" expr="'2'"/>
+            				<assign name="serviceid" expr="'1101'"/>				
+				</if>				
+				<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>-->
+				<!--<if cond="ANI=='8459078905' || ANI=='9667890489' || ANI=='9143844338' || ANI=='8693945793' || ANI=='8925332082' || ANI=='8459780905' || ANI=='9142112398'">
+					<goto next="#DOUBLE_CONSENT"></goto>
+				<else/>
+					<goto next="#subscription"></goto>
+				</if>-->
+				<goto next="#DOUBLE_CONSENT"></goto>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>	
+	
+	<form id="Doubleconfirm">
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>																
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/doubleconf.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+					<goto next="#SubRequest"></goto>				
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>
+	
+	<form id="SubRequest">
+	
+	     <!--
+	     
+		<field name="choice">
+		    <assign name="backendsub" expr="'false'"/>			
+			<prompt bargein="false" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/charging_wait.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/charging_wait.wav'"/>
+			</prompt>
+			<goto next="#BillStatusChk"/>	
+		</field>
+		
+	     -->	
+		<field name="choice" type="digits?length=1">
+					
+					<prompt bargein="false" timeout="3s">
+						<audio expr="Prompt_Path+'/'+lang+'/charging_wait.wav'"/>
+						<audio expr="Prompt_Path+'/'+lang+'/charging_wait.wav'"/>
+					</prompt>
+					<filled>
+						<goto next="#BillStatusChk"/>					
+					</filled>
+					
+					<nomatch>
+					   <goto next="#BillStatusChk"/>	
+					</nomatch>
+					
+					<noinput>
+					   <goto next="#BillStatusChk"/>	
+					</noinput>
+		</field>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<assign name="Section_Name" expr="'CHARGING_HIT'"/>			
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+						  }
+
+					]]>
+			
+			</script>			
+			<if cond="usr_status=='-1'">
+				<assign name="Section_Name" expr="'DELAY_CHARGING'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_ModEnd.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<assign name="Section_Name" expr="'USER_STATUS_CHECK_LIVE'"/>
+				<script>bal=bal*60;</script>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/thank_sub.wav'"/>
+				</prompt>
+				<if cond="Flag_Newuser=='rng'">
+			   		<goto next="Hungama_ModRngMenuDac.vxml"/>
+			   	<else/>	
+					<goto next="Hungama_ModExistUser.vxml"></goto>	
+				</if>					
+			<else/>
+				<assign name="Section_Name" expr="'DELAY_CHARGING'"/>
+				<goto next="Hungama_ModEnd.vxml"/>
+			</if>
+		</block>
+	</form>
+
+
+</vxml>

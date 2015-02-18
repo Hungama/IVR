@@ -1,0 +1,718 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModNewUser.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<var name="movie_idx" expr="0"/>
+
+	<form id="WELNEW">
+		<block>
+			<if cond="directaccess=='ComedyPortal'">
+				<if cond="circle=='apd'">
+					<assign name="lang" expr="'08'"/>
+					<goto next="Comedy_Newuser.vxml"/>
+				</if>
+			</if>
+			<if cond="circle=='tnu' &amp;&amp; DNIS=='522224'">
+				<assign name="lang" expr="'07'"/>
+				<goto next="Hungama_ModSubwmd.vxml"/>
+			</if>
+			<if cond="directaccess=='SAU'">
+				<if cond="circle=='apd'">
+					<assign name="lang" expr="'08'"/>
+				<elseif cond="circle=='tnu'"/>
+					<assign name="lang" expr="'07'"/>
+				</if>
+			</if>
+			<!--<assign name="var_wel" expr="getRandom(1,50)" />-->
+			<if cond="circle=='apd'">
+				<assign name="lang" expr="'02'"/>
+			<elseif cond="circle=='bih'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='chn'"/>
+				<assign name="lang" expr="'02'"/>
+			<elseif cond="circle=='hpd'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='del'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='guj'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='hry'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='kar'"/>
+				<assign name="lang" expr="'02'"/>
+			<elseif cond="circle=='ker'"/>
+				<assign name="lang" expr="'09'"/>
+			<elseif cond="circle=='kol'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='mpd'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='mah'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='mum'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='ori'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='pub'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='raj'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='tnu'"/>
+				<assign name="lang" expr="'02'"/>
+			<elseif cond="circle=='upw'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='upe'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='wbl'"/>
+				<assign name="lang" expr="'01'"/>
+			<else/>
+				<assign name="lang" expr="'01'"/>
+			</if>
+			<if cond="circle=='raj'">
+				<assign name="lang" expr="'01'"/>
+				<assign name="var_wel" expr="getRandom(1,9)"/>
+				<if cond="var_wel=='1' || var_wel=='2' || var_wel=='3'">
+					<assign name="var_wel" expr="'1'" />
+				<elseif cond="var_wel=='3' || var_wel=='4' || var_wel=='5'"/>
+					<assign name="var_wel" expr="'2'" />
+				<elseif cond="var_wel=='6' || var_wel=='7' || var_wel=='8' || var_wel=='9'"/>
+					<assign name="var_wel" expr="'3'" />
+				<else/>
+					<assign name="var_wel" expr="'1'" />
+				</if>
+				<assign name="Section_Name" expr="'WEL_PROMPT_NEW_USER'"/>
+				<log expr="'this is special welcome for raj circle'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/welcome_new_0'+var_wel+'.wav'"/>
+					</prompt>
+					<goto next="Hungama_ModSub.vxml"/>
+			</if>
+			<if cond="(lang=='01' || lang=='06' )  &amp;&amp; (circle=='kol' || circle=='wbl')">
+				<goto next="Hungama_ModSub.vxml#Sub_Contest"/>
+			</if>			
+			
+			<if cond="circle=='del' || circle=='guj' || circle=='hry' || circle=='mum' || circle=='raj' || circle=='upe' || circle=='upw'|| circle=='kol' || circle=='wbl'">
+					<assign name="lang" expr="'01'"/>
+					<assign name="var_wel" expr="getRandom(1,9)"/>
+					<if cond="var_wel=='1' || var_wel=='2' || var_wel=='3'">
+						<assign name="var_wel" expr="'1'" />
+					<elseif cond="var_wel=='3' || var_wel=='4' || var_wel=='5'"/>
+						<assign name="var_wel" expr="'2'" />
+					<elseif cond="var_wel=='6' || var_wel=='7' || var_wel=='8' || var_wel=='9'"/>
+						<assign name="var_wel" expr="'3'" />
+					<else/>
+						<assign name="var_wel" expr="'1'" />
+					</if>
+					<assign name="Section_Name" expr="'WEL_PROMPT_NEW_USER'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/welcome_new_0'+var_wel+'.wav'"/>
+					</prompt>
+				<goto next="Hungama_ModSub.vxml"/>
+			</if>
+			<!--<if cond="circle=='kol' || circle=='wbl'">
+				<assign name="lang" expr="'06'"/>
+				<goto next="Hungama_ModSub.vxml"/>
+			</if>
+			 <if cond="circle=='tnu'">
+				<assign name="lang" expr="'07'"/>
+				<goto next="Hungama_ModSub.vxml"/>
+			</if>	
+			<goto next="#LANGSEL1"></goto>-->		
+		</block>
+		<field name="nochoice" type="digits?length=1">					
+					
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/welcome_new_1.wav'"/>
+			</prompt>			
+ 			<!--<prompt bargein="true" timeout="0s" cond="lang=='09'">
+				<audio expr="Prompt_Path+'/'+lang+'/MU_Welcome_09.wav'"/>
+			</prompt>-->
+			<filled>
+				<goto next="#LANGSEL1"></goto>				
+			</filled>
+		</field>
+		<noinput>
+			<goto next="#LANGSEL1"></goto>
+		</noinput>
+		<nomatch>
+			<goto next="#LANGSEL1"></goto>
+		</nomatch>
+	</form>
+			
+	<form id="LANGSEL1">
+		<block>
+		<assign name="Section_Name" expr="'LANG_SELECTION'"/>
+		<if cond="directaccess=='SAU'">
+				<if cond="circle=='apd'">
+					<assign name="lang" expr="'08'"/>
+				<elseif cond="circle=='tnu'"/>
+					<assign name="lang" expr="'07'"/>
+				</if>
+			</if>
+
+			<assign name="var_wel" expr="getRandom(1,5)"/>
+			<prompt bargein="true" timeout="2s" cond="usr_status=='-1'&amp;&amp; directaccess!='SAU' ">
+				<!--<audio expr="Prompt_Path+'/'+lang+'/lang_option_'+circle+'_'+var_wel+'.wav'"/>-->										
+				<audio expr="Prompt_Path+'/'+lang+'/lang_option_'+circle+'.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="2s" cond="usr_status=='-1'&amp;&amp; directaccess=='SAU' ">
+				<audio expr="Prompt_Path+'/'+lang+'/lang_option_'+circle+'.wav'"/>										
+			</prompt>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/'+circle+'/langorder.cfg'"/>
+			<script>
+					    	array1.length=0;
+			</script>
+			<assign name="movie_idx" expr="0" />
+			<assign name="len" expr="2" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j< len ;  j++)
+					   {  	  	
+								array1[j] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="2s">
+					<foreach item="names" array="array1">
+
+						<mark nameexpr="movie_idx++"/>
+							<!-- <assign name="movie_idx" expr="movie_idx+1" />
+						<log>	song is is    	<value expr="movie_idx"/>  	</log>
+						<log>	names is is    	<value expr="names"/>  	</log> -->
+						<audio expr="Prompt_Path+'/'+names+'/lang'+names+'.wav'"/>
+						<audio expr="Prompt_Path+'/'+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+					</foreach>
+					<!--<audio expr="Prompt_Path+'/'+lang+'/lang_other_option.wav'"/>-->																
+				</prompt>
+			<filled>
+				<if cond="choice &lt; len+1">
+						<assign name="lang" expr="array1[--choice]"/>
+						<log expr="'selected language is '+lang"></log>
+						
+						
+						<if cond="usr_status=='-1'">
+						    <prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+							</prompt>
+							<goto next="Hungama_ModSub.vxml"/>
+						<else/>
+							<if cond="directaccess=='SAU'">
+									<if cond="circle=='apd'">
+										<assign name="lang" expr="'08'"/>
+									<elseif cond="circle=='tnu'"/>
+										<assign name="lang" expr="'07'"/>
+									</if>
+							</if>
+						    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks_acc.wav'"/>
+							</prompt>							
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						</if>
+				
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="Hungama_ModSub.vxml"/>
+			<else/>
+				<goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="Hungama_ModSub.vxml"/>
+			<else/>
+				<goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+		</nomatch>
+	</form>
+	<form id="EXISITNGLANGSEL1">
+				<block>
+				<assign name="Section_Name" expr="'ACCOUNT_MANAGER_LANGUAGE_CHANGE'"/>
+				<if cond="directaccess=='SAU'">
+						<if cond="circle=='apd'">
+								<assign name="lang" expr="'08'"/>
+						<elseif cond="circle=='tnu'"/>
+							<assign name="lang" expr="'07'"/>
+						</if>
+					</if>
+						
+					<assign name="var_wel" expr="getRandom(1,5)"/>
+					<prompt bargein="true" timeout="0s" cond="usr_status=='-1'&amp;&amp; directaccess!='SAU' ">
+							<audio expr="Prompt_Path+'/01/lang_option_'+circle+'_'+var_wel+'.wav'"/>
+												
+					</prompt>
+						<prompt bargein="true" timeout="0s" cond="usr_status=='-1'&amp;&amp; directaccess=='SAU' ">
+							<audio expr="Prompt_Path+'/'+lang+'/lang_option_'+circle+'.wav'"/>
+						</prompt>
+					<if cond="circle=='del' || circle=='guj' || circle=='hry' || circle=='mum' || circle=='raj' || circle=='upe' || circle=='upw' || circle=='apd' ||circle=='bih' || circle=='ker' || circle=='kar' ||circle=='kol'|| circle=='mah' || circle=='tnu' ||circle=='wbl'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/'+circle+'/langorder_existing.cfg'"/>
+					<else/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/'+circle+'/langorder.cfg'"/>
+					</if>
+					<script>
+							    	array1.length=0;
+					</script>
+					<assign name="movie_idx" expr="0" />
+					<assign name="len" expr="6" />
+					<assign name="i" expr="0" />
+					<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+					<script>
+						 <![CDATA[
+							   for(j=0; j< len ;  j++)
+							   {  	  	
+										array1[j] = favSongs[j];						   
+							   }
+		
+						]]>		
+					</script> 	       					       
+					<log>Length  is	<value expr="len"/>    </log>
+					<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+				</block>
+				<field name="choice">
+						<grammar mode="dtmf" root="start" version="1.0">
+								<rule id="start" scope="public">
+									<one-of>
+										 <item>  1  </item>
+										 <item>  2  </item>
+										 <item>  3  </item>
+										 <item>  4  </item>
+										 <item>  5  </item>
+										 <item>  6  </item>
+										 <item>  7  </item>
+										 <item>  8  </item>
+										 <item>  9  </item>
+		
+									</one-of>
+								</rule>
+						</grammar>
+						<prompt bargein="true" timeout="1s">
+							<foreach item="names" array="array1">
+		
+								<mark nameexpr="movie_idx++"/>
+									<!-- <assign name="movie_idx" expr="movie_idx+1" />
+								<log>	song is is    	<value expr="movie_idx"/>  	</log>
+								<log>	names is is    	<value expr="names"/>  	</log> -->
+								<audio expr="Prompt_Path+'/'+names+'/lang'+names+'.wav'"/>
+								<audio expr="Prompt_Path+'/'+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+							</foreach>
+							<audio expr="Prompt_Path+'/'+lang+'/lang_other_option.wav'"/>																
+						</prompt>
+					<filled>
+						<if cond="choice &lt; len+1">
+								<assign name="lang" expr="array1[--choice]"/>
+								<log expr="'selected language is '+lang"></log>
+								<!-- STAYMEV JAYTE MM -->
+								<!--<if cond="directaccess=='SMM'">	
+										<if cond="(lang!='10' || lang!='09' || lang!='07' || lang!='08')">
+											<assign name="lang" expr="'01'"></assign>
+										</if>							
+									</if>-->
+								<if cond="usr_status=='-1'">
+								    <prompt bargein="true" timeout="0s">
+										<audio expr="Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+									</prompt>
+									<goto next="Hungama_ModSub.vxml"/>
+								<else/>
+									<if cond="directaccess=='SAU'">
+											<if cond="circle=='apd'">
+												<assign name="lang" expr="'08'"/>
+											<elseif cond="circle=='tnu'"/>
+												<assign name="lang" expr="'07'"/>
+											</if>
+									</if>
+								    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+									<prompt bargein="true" timeout="0s">
+										<audio expr="Prompt_Path+'/'+lang+'/lang_thanks_acc.wav'"/>
+									</prompt>							
+									<goto next="Hungama_ModMainMenu.vxml"/>
+								</if>
+						<elseif cond="choice == '7'"/>
+								<goto next="Hungama_ModMngAccnt.vxml"></goto>
+						<elseif cond="choice == '8'"/>
+								<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+						<elseif cond="choice == '9'"/>
+								<goto next="#LANGSEL2"></goto>
+						</if>
+					</filled>
+				</field>
+				<noinput count="1">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<reprompt></reprompt>
+				</noinput>
+				<noinput count="2">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<reprompt></reprompt>
+				</noinput>
+				<noinput count="3">
+					<if cond="usr_status=='-1'">
+					    <assign name="lang" expr="array1[0]"/>
+						<log expr="'selected language is '+lang"></log>			    
+						<goto next="Hungama_ModSub.vxml"/>
+					<else/>
+						<goto next="Hungama_ModMainMenu.vxml"/>
+					</if>
+				</noinput>
+				<nomatch count="1">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<reprompt></reprompt>
+				</nomatch>
+				<nomatch count="2">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<reprompt></reprompt>
+				</nomatch>
+				<nomatch count="3">
+					<if cond="usr_status=='-1'">
+					    <assign name="lang" expr="array1[0]"/>
+						<log expr="'selected language is '+lang"></log>			    
+						<goto next="Hungama_ModSub.vxml"/>
+					<else/>
+						<goto next="Hungama_ModMainMenu.vxml"/>
+
+					</if>
+				</nomatch>
+	</form>
+	<form id="LANGSEL2">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT_MANAGER_LANGUAGE_CHANGE'"/>
+			<!--<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/language_option.wav'"/>					
+			</prompt>-->
+			<script>
+					    	array1.length=0;
+			</script>
+			<assign name="movie_idx" expr="0" />
+			<assign name="len" expr="6" />
+			<assign name="i" expr="0" />
+			<script>
+				 <![CDATA[
+					   for(j=6; j<12 ;  j++)
+					   {  	  	
+								array1[i++] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  7  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array1">
+						<mark nameexpr="movie_idx++"/>
+							<!-- <assign name="movie_idx" expr="movie_idx+1" /> 
+						<log>	song is is    	<value expr="movie_idx"/>  	</log>
+						<log>	names is is    	<value expr="names"/>  	</log> -->
+						<audio expr="Prompt_Path+'/'+names+'/lang'+names+'.wav'"/>
+						<audio expr="Prompt_Path+'/'+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+					</foreach>
+						<audio expr="Prompt_Path+'/'+lang+'/lang_other_option.wav'"/> 	
+						<audio expr="Prompt_Path+'/'+lang+'/lang_prev_option.wav'"/>										
+				</prompt>
+			<filled>
+				<if cond="choice == '7'">
+						<goto next="#EXISITNGLANGSEL1"></goto>
+				<elseif cond="choice &lt; len+1"/>
+						<assign name="lang" expr="array1[--choice]"/>
+						<log expr="'selected language is '+lang"></log>
+						<!-- STAYMEV JAYTE MM -->
+							<!--<if cond="directaccess=='SMM'">	
+								<if cond="(lang!='10' || lang!='09' || lang!='07' || lang!='08')">
+									<assign name="lang" expr="'01'"></assign>
+								</if>							
+							</if>-->
+						<if cond="usr_status=='-1'">
+						    <prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+							</prompt>
+							<goto next="Hungama_ModSub.vxml"/>
+						<else/>
+						
+								<if cond="directaccess=='SAU'">
+									<if cond="circle=='apd'">
+										<assign name="lang" expr="'08'"/>
+									<elseif cond="circle=='tnu'"/>
+										<assign name="lang" expr="'07'"/>
+									</if>
+								</if>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks_acc.wav'"/>
+							</prompt>
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						</if>
+				 <elseif cond="choice == '9'"/>
+						<goto next="#LANGSEL3"></goto> 
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="Hungama_ModSub.vxml"/>
+			<else/>
+				<goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="Hungama_ModSub.vxml"/>
+			<else/>
+				<goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+		</nomatch>
+	</form>
+	
+	<form id="LANGSEL3">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT_MANAGER_LANGUAGE_CHANGE'"/>	
+			<!--<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/language_option.wav'"/>					
+			</prompt>-->
+			<script>
+					    	array1.length=0;
+			</script>
+			<assign name="movie_idx" expr="0" />
+			<assign name="len" expr="2" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=12; j< 14 ;  j++)
+					   {  	  	
+								array1[i++] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  7  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 								 
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array1">
+						<mark nameexpr="movie_idx++"/>
+							<!-- <assign name="movie_idx" expr="movie_idx+1" /> 
+						<log>	song is is    	<value expr="movie_idx"/>  	</log>
+						<log>	names is is    	<value expr="names"/>  	</log> -->
+						<audio expr="Prompt_Path+'/'+names+'/lang'+names+'.wav'"/>
+						<audio expr="Prompt_Path+'/'+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+					</foreach>	
+						<audio expr="Prompt_Path+'/'+lang+'/lang_prev_option.wav'"/>									
+				</prompt>
+			<filled>
+				<if cond="choice == '7'">
+						<goto next="#LANGSEL2"></goto>
+				<elseif cond="choice &lt; len+1"/>
+						<assign name="lang" expr="array1[--choice]"/>
+						<log expr="'selected language is '+lang"></log>	
+						<!-- STAYMEV JAYTE MM -->
+							<!--<if cond="directaccess=='SMM'">	
+								<if cond="(lang!='10' || lang!='09' || lang!='07' || lang!='08')">
+									<assign name="lang" expr="'01'"></assign>
+								</if>							
+							</if>-->
+
+						<if cond="usr_status=='-1'">
+						    <prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+							</prompt>
+							<goto next="Hungama_ModSub.vxml"/>
+						<else/>
+						
+							<if cond="directaccess=='SAU'">
+								<if cond="circle=='apd'">
+									<assign name="lang" expr="'08'"/>
+								<elseif cond="circle=='tnu'"/>
+									<assign name="lang" expr="'07'"/>
+								</if>
+							</if>
+
+						    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks_acc.wav'"/>
+							</prompt>
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						</if>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="Hungama_ModSub.vxml"/>
+			<else/>
+				<goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">			
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="Hungama_ModSub.vxml"/>
+			<else/>
+			
+			
+				<goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+		</nomatch>
+	</form>
+	
+</vxml>

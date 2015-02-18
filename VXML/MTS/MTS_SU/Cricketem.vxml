@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="CricketRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Cricketem.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="songcheck" expr=""/>
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+<script>
+	var favSongs=new Object();
+</script>
+
+	<form id="match_schedule">
+		<block>
+		
+
+			
+			<assign name="SECTION" expr="'CRICKETM'"/>
+			<assign name="Section_Name" expr="'CRICKETM'"/>
+			<assign name="section_begin" expr="start_time()"/>
+			<assign name="cat" expr="'cm'"/>
+			<assign name="subcat" expr="'cm'"/>
+			<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath+'/'+lang+'/Keypad.wav'"/>
+			</prompt>
+			<script>today=getcurryyyymmdd()</script>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=cricketconfig/cricktem.cfg&amp;TOKEN=FREE'"/>
+				<script>
+								array1.length=0;
+								unike_play=0;
+				</script>
+				<assign name="len" expr="favSongs.length" />
+				<log>Length Match Center  is	<value expr="len"/>    </log>
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+						 <![CDATA[
+							   for(j=0; j<len ;  j++)
+							   {  	  
+										array1[j] = favSongs[j];						   
+							   }
+
+						]]>		
+				</script>
+				
+				<log>	unike_play  is ==<value expr="unike_play"/>    </log>
+				<log>	array == <value expr="array1[unike_play]"/>    </log>
+			
+			<goto next="#play_schedule"/>
+		</block>
+	</form>
+	
+	<form id="play_schedule">
+		<block>
+			<script>
+				songcheck=array1[unike_play];
+			</script>
+			<log>	songcheck == <value expr="songcheck"/>    </log>
+			<assign name="song" expr="songcheck"></assign>
+			<log expr="'@@@@@@@@@@@@@@@@@@@@@@@@@@@@@song=='+song"></log>
+				
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+				<log>	Smita Match Schedule Counter== <value expr="unike_play"/>    </log>
+				<goto next="#play_option"/>
+			</if>
+	    		<assign name="song_begin" expr="start_time()"/>
+     	 	        <assign name="song_listen" expr="'START'" />
+		</block>
+	<field name="choice">
+			<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath+'/cricktem/'+songcheck+'.wav'"/>
+			</prompt>
+			<grammar mode="dtmf" root="start23" version="1.0">
+						<rule id="start23" scope="public">
+							<one-of>
+								<item> 1 </item>
+								<item> 2 </item>
+								<item> 3 </item>
+								<item> 4 </item>
+								<item> 9  </item>
+								<item> 0  </item>
+							</one-of>
+						</rule>
+			</grammar>
+			<filled>
+				<assign name="nextchoice" expr="choice"></assign>
+				<assign name="song" expr="songcheck"></assign>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!song=='+song"></log>
+				<goto next="#contentlogin" />
+			</filled>
+				
+			<noinput>
+				<script> unike_play=unike_play+1</script>
+				<log>	Match Schedule Counter== <value expr="unike_play"/>    </log>
+				<goto next="#play_schedule"/>
+			</noinput>
+				
+			<nomatch>
+				<script> unike_play=unike_play+1</script>
+				<log>	Match Schedule Counter== <value expr="unike_play"/>    </log>
+				<goto next="#play_schedule"/>
+			</nomatch>
+			
+			
+		</field>
+	</form>
+	
+	
+	<form id="contentlogin">
+	<block>
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!compare_time=='+compare_time"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!ContentTime=='+ContentTime"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!hash=='+hash"></log>
+
+				<log expr="'!!!!!!!!!!!!!!!!!!!!cat=='+cat"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!subcat=='+subcat"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!contentlog=='+contentlog"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!contentfileg=='+song"></log>
+				<!--<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign> -->
+				<assign name="contentlog" expr="contentlog+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				<if cond="nextchoice=='4'">
+					<script> unike_play=unike_play</script>
+					<goto next="#play_schedule"/>
+				<elseif cond="nextchoice=='1'"/>
+					<script> unike_play=unike_play+1</script>
+					<goto next="#play_schedule"/>
+				<elseif cond="nextchoice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="#play_schedule"/>
+				<elseif cond="nextchoice=='3'"/>
+					<script> unike_play=unike_play-1</script>
+					<goto next="#play_schedule"/>
+				<elseif cond="nextchoice=='9'"/>
+					<goto next="MainMenu.vxml"/>
+				<elseif cond="nextchoice=='0'"/>
+					<goto next="AccountManager.vxml"/>
+				</if>
+				
+	</block>
+</form>
+	
+	<form id="play_option">
+		<field name="option">
+		
+			<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath+'/'+lang+'/matchcenter_cricketum.wav'"/>
+			</prompt>
+			
+			<grammar mode="dtmf" root="start24" version="1.0">
+						<rule id="start24" scope="public">
+							<one-of>
+								 
+								 <item> 4 </item>
+								 <item> 1 </item>
+								 <item> 2 </item>
+								 <item> 3 </item>
+								 <item> 9  </item>
+								 <item> 0  </item>
+							</one-of>
+						</rule>
+			</grammar>
+				
+			<filled>
+					<if cond="(option=='4' || option=='1' || option=='2' || option=='3')">
+						<goto next="#play_schedule"/>
+					<elseif cond="option=='9'"/>
+						<goto next="MainMenu.vxml"/>
+					<elseif cond="option=='0'"/>
+						<goto next="AccountManager.vxml"/>
+					</if>
+			</filled>
+				
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+			</noinput>
+			
+			<noinput count="3">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<goto next="MainMenu.vxml"/>
+			</noinput>
+				
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				
+			</nomatch>
+			
+			<nomatch count="3">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<goto next="MainMenu.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+</vxml>

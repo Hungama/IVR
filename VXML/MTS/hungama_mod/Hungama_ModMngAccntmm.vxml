@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_AMMngAccntmm.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+  <var name="MOS" expr="'IVR'"/>	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<var name="cRBTSTATUS" expr="''"/>	
+<var name="MM_Value" expr="0"/>
+<script>
+		
+		var out_string=new Object();
+		
+	</script>
+
+	<script>
+		var UserStatus1=new Object();		
+	</script>
+	<form id="AcntOption">
+
+<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=FREE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						      		 if(j==0)
+						       	usr_status1 = out_string[j];
+						     }
+
+					]]>
+			
+			</script>
+						<if cond="usr_status1=='-1'">
+							<goto next="#AcntUnsubscription"></goto>
+						</if>
+</block>
+
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+ 						  <item>  3 </item>
+						 <item>  8  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/deactivation_reason.wav'"/>
+			</prompt>
+			<filled>
+					<if cond="choice=='1'">
+						
+	
+
+
+						<goto next="#ACT1"></goto>
+					<elseif cond="choice=='2'"/>
+
+						<goto next="#ACT2"></goto>
+						<elseif cond="choice=='3'"/>
+						
+						<goto next="#ACT3"></goto>
+					<elseif cond="choice=='8'"/>
+						<goto next="Hungama_ModMainMenu.vxml"/>
+					</if>
+				
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			
+				
+		<goto next="Hungama_ModMainMenu.vxml"/>
+			
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModMainMenu.vxml"/>
+		</nomatch>
+	</form>
+	
+	<form id="ACT1">
+	
+	<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3 </item>
+
+							 <item>  8  </item>
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="Prompt_Path+'/'+lang+'/reason_a.wav'"/>
+				</prompt>
+				<filled>
+						
+						<if cond="choice=='1'">
+							
+	
+							<goto next="#ACTOPTION1"></goto>
+						<elseif cond="choice=='2'"/>
+	
+							<goto next="#ACTOPTION2"></goto>
+							<elseif cond="choice=='3'"/>
+							
+							<goto next="#AcntUnsubscription"></goto>
+						<elseif cond="choice=='8'"/>
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						</if>
+					
+				</filled>
+			</field>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				
+					
+			<goto next="Hungama_ModMainMenu.vxml"/>
+				
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="Hungama_ModMainMenu.vxml"/>
+		</nomatch>
+		
+	</form>
+<form id="ACTOPTION1">
+	
+	<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  8  </item>
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="Prompt_Path+'/'+lang+'/reason_a_free.wav'"/>
+				</prompt>
+				<filled>
+					<if cond="choice=='1'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=FREE_SUB&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3&amp;INPARAM[2]='+DNIS"/>
+					<elseif cond="choice=='2'"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=FREE_SUB&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5&amp;INPARAM[2]='+DNIS"/>
+					<elseif cond="choice=='8'"/>
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						</if>
+						
+						<goto next="#changeplan"/>
+				
+					
+				</filled>
+			</field>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				
+					
+			<goto next="Hungama_ModMainMenu.vxml"/>
+				
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="Hungama_ModMainMenu.vxml"/>
+		</nomatch>
+		</form>
+		
+		<form id="ACTOPTION2">
+			
+			<field name="choice">
+						<grammar mode="dtmf" root="start" version="1.0">
+							<rule id="start" scope="public">
+								<one-of>
+									 <item>  1  </item>
+									
+									 <item>  8  </item>
+								</one-of>
+							</rule>
+						</grammar>
+						<prompt bargein="true" timeout="3s">
+							<audio expr="Prompt_Path+'/'+lang+'/reason_a_bigger.wav'"/>
+						</prompt>
+						<filled>
+							<if cond="choice=='1'">
+								<assign name="planid" expr="'24'"/>
+								<assign name="Amt" expr="'45'"/>
+		            					<assign name="serviceid" expr="'1101'"/>
+								<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+
+							<goto next="#SubRequest11"/>
+							<elseif cond="choice=='8'"/>
+									<goto next="Hungama_ModMainMenu.vxml"/>
+								</if>
+								
+								<goto next="#SubRequest"/>
+						
+							
+						</filled>
+					</field>
+					<noinput count="1">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</noinput>
+					<noinput count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</noinput>
+					<noinput count="3">
+						
+							
+					<goto next="Hungama_ModMainMenu.vxml"/>
+						
+					</noinput>
+					<nomatch count="1">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</nomatch>
+					<nomatch count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</nomatch>
+					<nomatch count="3">
+						<goto next="Hungama_ModMainMenu.vxml"/>
+				</nomatch>
+		</form>
+<form id="changeplan">
+
+	<block>
+
+		
+		
+		<prompt bargein="true" timeout="3s">
+			<audio expr="Prompt_Path+'/'+lang+'/thanks_continue.wav'"/>
+		</prompt>
+<goto next="Hungama_ModEnd.vxml"></goto>
+
+</block>
+
+</form>
+<form id="SubRequest11">
+
+	<block>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+		<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/thank_sub.wav'"/>
+		</prompt>
+
+		<prompt bargein="true" timeout="3s">
+			<audio expr="Prompt_Path+'/'+lang+'/thanks_continue.wav'"/>
+		</prompt>
+<goto next="Hungama_ModEnd.vxml"></goto>
+
+	</block>
+
+</form>
+
+		
+		
+<form id="ACT2">
+	
+	<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  8  </item>
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="Prompt_Path+'/'+lang+'/reason_b.wav'"/>
+				</prompt>
+				<filled>
+						<if cond="choice=='1'">
+	
+	
+							<goto next="#ACT2"></goto>
+						<elseif cond="choice=='2'"/>
+	
+							<goto next="#AcntUnsubscription"></goto>
+							
+						<elseif cond="choice=='8'"/>
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						</if>
+					
+				</filled>
+			</field>
+			<noinput count="1">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</noinput>
+					<noinput count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</noinput>
+					<noinput count="3">
+						
+							
+					<goto next="Hungama_ModMainMenu.vxml"/>
+						
+					</noinput>
+					<nomatch count="1">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</nomatch>
+					<nomatch count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</nomatch>
+					<nomatch count="3">
+						<goto next="Hungama_ModMainMenu.vxml"/>
+				</nomatch>
+		</form>
+
+
+
+<form id="ACT3">
+	
+	<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  8  </item>
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="Prompt_Path+'/'+lang+'/reason_c.wav'"/>
+				</prompt>
+				<filled>
+						<if cond="choice=='1'">
+							
+							<assign name="unsubflag" expr="'0'"/>
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						<elseif cond="choice=='2'"/>
+	
+							<goto next="#AcntUnsubscription"></goto>
+							
+						<elseif cond="choice=='8'"/>
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						</if>
+					
+				</filled>
+			</field>
+			<noinput count="1">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</noinput>
+					<noinput count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</noinput>
+					<noinput count="3">
+						
+							
+					<goto next="Hungama_ModMainMenu.vxml"/>
+						
+					</noinput>
+					<nomatch count="1">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</nomatch>
+					<nomatch count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</nomatch>
+					<nomatch count="3">
+						<goto next="Hungama_ModMainMenu.vxml"/>
+				</nomatch>
+		</form>
+
+
+<form id="AcntUnsubscription">
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  *  </item>
+ 									<item>  1  </item>
+
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/acmanager_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<!-- UNSUB REQUEST -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/thanks_unsubscribe.wav'"/>
+					</prompt>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=USERSTATUS&amp;OPERATOR='+operator"/>
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>			
+					<!--	<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>					-->
+					<if cond="cRBTSTATUS=='EAUC'">		
+						<goto next="#UCT_Unsubscription"></goto>
+					<else/>
+						<goto next="Hungama_ModEnd.vxml"></goto>
+					</if>
+				<else/>
+					<goto next="Hungama_ModMainMenu.vxml"/>
+					
+				</if>
+			</filled>
+		</field>	
+	</form>
+
+	<form id="UCT_Unsubscription">
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  *  </item>
+ 								<item>  1  </item>
+
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/crbt_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=DEACTIVATE&amp;OPERATOR='+operator"/>					
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>			
+					<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				<else/>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				</if>
+			</filled>
+		</field>	
+	</form>
+
+</vxml>

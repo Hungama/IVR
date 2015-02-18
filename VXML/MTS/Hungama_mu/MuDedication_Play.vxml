@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="HoneyBee_Root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="MuDedication_Play.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+
+	<var name="SONG_PATH" expr="0"/>	
+	<form id="Navigation">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_DED_SONG_CHECK&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						SONG_PATH = out_string[j];
+					  }
+				]]>
+			</script>
+		</block>		
+		<field name="choice">
+			 <grammar mode="dtmf" root="start2" version="1.0">
+				<rule id="start2" scope="public">
+				<one-of>     
+					   <item>1</item>
+				</one-of>
+				</rule>
+			</grammar>
+			
+			<prompt bargein="false" timeout="1s">
+				<audio expr="Promptpath+'/1/wel_dedication1.wav'"/>
+			</prompt>
+			<prompt bargein="false" timeout="1s">
+				<audio expr="SONG_PATH"/>
+			</prompt>			
+			
+			<filled>
+				<goto next="MuDedication_End.vxml"></goto>
+			</filled>
+			<noinput>
+				<goto next="MuDedication_End.vxml"></goto>
+			</noinput>
+
+			<nomatch>
+				<goto next="MuDedication_End.vxml"></goto>
+			</nomatch>
+		</field>
+	</form>
+</vxml>

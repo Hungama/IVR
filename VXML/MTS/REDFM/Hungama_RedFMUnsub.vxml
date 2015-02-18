@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Lradio_Unsub.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property> 
+	<script>
+			aNavHistory.push("Hungama_RedFMUnsub.vxml");	
+			var bill_min=new Object();
+	    	var billing_code=new Object();	 
+	</script>
+
+	<form id="Main_Menu">
+		
+		
+		<field name="option" >
+        	<grammar mode="dtmf" root="start" version="1.0">
+ 		    	<rule id="start" scope="public">
+ 		     		<one-of>
+ 		     			 <item>  1	</item>
+ 		     			 <item>  *  </item>
+					 <item>  #  </item>
+ 		     		</one-of>
+ 		     	</rule>
+       		</grammar>
+       		
+	        <prompt bargein="true" timeout="3s" >
+				<audio expr="promptpath+'/'+lang+'/confirm-unsub.wav'"></audio>
+			</prompt>	
+	       
+	        <filled>
+	        
+	        	<script srcexpr="'http://'+IP+'/'+servlet_path+'/WriteDTMFLogging?ANI='+ANI+'&amp;Prompt=confirm-unsub-&amp;DTMF='+option+'&amp;DNIS='+DNIS+'&amp;event=Hungama_RedFMUNSUB'"/>
+	        	<if cond="option=='1'">
+	        		<script srcexpr="'http://'+IP+'/'+servlet_path+'/Hungama_RedFMUNSUB?ANI='+ANI+'&amp;unsub_rsn=USER_REQS'"/>
+	        		<prompt bargein="true" timeout="3s" cond="DNIS=='54646935'">
+	        			<audio expr="promptpath+'/'+lang+'/thanks_unsub54646935.wav'"></audio>
+	       		</prompt>
+				<prompt bargein="true" timeout="3s" cond="DNIS!='54646935'">
+	        			<audio expr="promptpath+'/'+lang+'/thanks_unsub55935.wav'"></audio>
+	       		</prompt>
+	       		   <goto expr="End.vxml"/>
+	        	<elseif cond="option=='*'"/>
+	        		
+		          <goto next="Hungama_RedFMHELP.vxml#Menu"/>
+		          
+	        	<elseif cond="option=='#'"/>
+	        			<goto next="Hungama_RedFMexisting.vxml#navi"/>
+	        	<else/>
+	        		<clear namelist="option"/>
+	        		<throw event="nomatch"/>
+        	 	</if>
+        	</filled>  
+        
+	       	<noinput count="1">
+	        	<prompt bargein="true">
+	       			<audio expr="promptpath+'/'+lang+'/no-response-'+lang+'.wav'" />
+	       		</prompt>
+	       		<reprompt/>
+	        </noinput>
+        	<noinput count="2">
+	        	<prompt bargein="true">
+	       			<audio expr="promptpath+'/'+lang+'/no-response-'+lang+'.wav'" />
+	       		</prompt>
+	       		<reprompt/>
+	        </noinput>
+        	<noinput count="3">
+	       		<goto expr="Hungama_RedFMHELP.vxml#Menu"/>
+	        </noinput>
+	        
+	        <nomatch count="1">
+	       		<prompt bargein="true">
+	       			<audio expr="promptpath+'/'+lang+'/invalid-input-'+lang+'.wav'" />
+	       		</prompt>
+	       		<reprompt/>
+	       	</nomatch>
+	       	<nomatch count="2">
+	       		<prompt bargein="true">
+	       			<audio expr="promptpath+'/'+lang+'/invalid-input-'+lang+'.wav'" />
+	       		</prompt>
+	       		<reprompt/>
+	        </nomatch>
+	       	<nomatch count="3">
+       			<goto expr="Hungama_RedFMHELP.vxml#Menu"/>
+	            
+	       	</nomatch>
+       </field>
+	</form>
+</vxml>

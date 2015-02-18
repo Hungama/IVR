@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Rasoi_root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Rasoi_free_recipe_Nu.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+   	<property name="documentmaxage" value="0s"></property>   	
+
+	<var name="type" expr="''"/>	
+	<var name="unike_play" expr="0"/>	
+	<var name="logs" expr="''"/>
+	<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var random=1;
+		var recipe_counter=1;		
+	</script>
+	<form id="FETCHRECIPES">
+		<block>
+			<assign name="program_name" expr="'FETCHRECIPES'"/>													
+			<script>
+					array1.length=0;
+					unike_play=0;
+			</script>		
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=rasoiconfig/'+operator+'/songconfig/free.cfg&amp;TOKEN=FREE'"/>
+			<assign name="len" expr="favSongs.length" />
+			<script>
+					<![CDATA[
+					for(j=0; j<len ;  j++)
+					{  	  
+
+						array1[j] = favSongs[j];
+					}
+					]]>		
+			</script> 
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+			<assign name="unike_play" expr="getRandom(1,len)"/>
+			<log>Random Recipe number is <value expr="unike_play"/>    </log>
+			<goto next="#playcontent"/>
+		</block>
+	</form>	
+    <form id="playcontent">
+	<block>		
+		<assign name="program_name" expr="'PLAYRECIPES'"/>
+		<script>
+			songID = array1[unike_play];
+		</script>		
+		<if cond="flag_recipe_nu=='true' &amp;&amp; recipe_counter &gt;3">
+			<assign name="recipe_counter" expr="1" />				
+			<goto next="Rasoi_Subs.vxml"/> 
+		</if>
+		<if cond="unike_play &gt; len-1">
+			<assign name="unike_play" expr="0" />
+		<elseif cond="unike_play &lt; 0" />
+			<assign name="unike_play" expr="len-1" />
+		</if>										
+ 	 		
+		<assign name="song_begin" expr="start_time()"/>
+		<assign name="song_listen" expr="'START'" />
+	</block>
+	
+	<field name="choice">			
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">
+				<one-of>							
+					 <item>  1  </item>
+				</one-of>
+			</rule>
+		</grammar>
+			
+		<prompt bargein="true" timeout="1s">
+			<audio expr="contentpath+'/rasoi/'+LANG_DESCRIPTION+'/'+songID+'.wav'"/>
+		</prompt>			
+		<filled>
+			<assign name="logs" expr="choice"/>
+			<goto next="#contentlogs"/>
+		</filled>
+
+		<noinput>
+			<assign name="logs" expr="'1'"/>
+			<goto next="#contentlogs" />
+		</noinput>
+		<nomatch>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption_m.wav'"/>
+			</prompt>
+			<goto next="#playcontent" />			
+		</nomatch>
+		</field>
+	</form>
+<form id="contentlogs">
+	<block>
+		<assign name="program_name" expr="'CONTENT_LOGS_RECIPES'"/>
+		 <assign name="song_listen" expr="'END'" />
+		 <log> @@@@@@ content start time  <value expr="song_begin"/> </log>								 
+		 <assign name="compare_time" expr="time_duration(song_begin)"/>
+		 <log>@@@@@@@ content listen time  <value expr="compare_time"/> </log>
+		 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+		 <log>@@@@@@@ content add time  <value expr="ContentTime"/> </log>							 
+		 <assign name="contentlog" expr="contentlog+hash+'744_'+songID+hash+cat+hash+subcat+hash+compare_time"></assign>
+		 
+		<if cond="logs=='1'">
+			<script>
+				unike_play=unike_play+1;
+				recipe_counter=recipe_counter+1;
+			</script>
+			<goto next="#playcontent" />
+
+		<elseif cond="logs=='2'"/>
+			<script>
+				unike_play=unike_play;
+				recipe_counter=recipe_counter+1;
+			</script>
+			<goto next="#playcontent" />				
+		<elseif cond="logs=='3'"/>
+			<script>
+				unike_play=unike_play-1;
+				recipe_counter=recipe_counter+1;
+			</script>
+			<goto next="#playcontent" />				
+		<else/>				
+			<script>
+				recipe_counter=recipe_counter+1;
+				unike_play=unike_play+1;
+			</script>
+			<goto next="#playcontent" />
+		</if>
+	</block>
+    </form>	
+</vxml>

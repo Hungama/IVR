@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_ModRngMenuDac.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<var name="rngid" expr="''"/>
+	<var name="rng_len" expr=""/>
+       <var name="rngmenu" expr="''"/>
+	<var name="rngid" expr="''"/>
+
+	<script>
+		var out_string=new Object();
+	</script>	
+	
+	
+	
+	 <form id="Menu">
+		<block>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_rngmenu?SONGID='+songID+'&amp;IN_TYPE=RNG&amp;CIRCLE='+circle+'&amp;OPERATOR=MTSM'"/>
+			
+			<script>
+						array2.length=0;
+			</script>
+			<assign name="rng_len" expr="out_string.length" />
+			<log>previous Array[1]  is	<value expr="array2[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<rng_len ;  j++)
+					   {  	  
+								var temp = out_string[j].split("@");						   
+								array2[j] = temp[0];
+								array3[j] = temp[1];
+					   }
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="rng_len"/>    </log>
+			<log>Array2[1]  is	<value expr="array2[0]"/>    </log>	
+			<log>Array3[1]  is       <value expr="array3[0]"/>    </log>
+			<if cond="array2[0]==''">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/no-ringtone-avail.wav'"/>
+				</prompt>
+				<goto next="Hungama_ModMainMenu.vxml"/>
+			</if>			
+			<assign name="rngmenu" expr="array2[0]"/>
+			<assign name="rngid" expr="array3[0]"/>
+
+			<log expr="'selected rng category is '+rngmenu"></log>
+			<log expr="'selected rng id is '+rngid"></log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+rngid+'&amp;INPARAM[3]=rngtone&amp;INPARAM[4]='+circle"/>
+			<assign name="RINGTONE_SMS" expr="'TRUE'"/>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/thanks-download.wav'"/>
+			</prompt>										
+			<goto next="Hungama_ModMainMenu.vxml"/>
+
+		</block>
+
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>								 
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/select_mt.wav'"/>				
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">					
+					<log expr="'selected rng category is '+rngmenu"></log>
+					<log expr="'selected rng id is '+rngid"></log>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+rngid+'&amp;INPARAM[3]=rngtone&amp;INPARAM[4]='+circle"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/thanks-download.wav'"/>
+					</prompt>										
+					<goto next="Hungama_ModMainMenu.vxml"/>
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<goto next="Hungama_ModMainMenu.vxml"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<goto next="Hungama_ModMainMenu.vxml"/>
+		</nomatch>
+	</form>
+	
+	
+</vxml>

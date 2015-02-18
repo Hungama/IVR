@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="ManageAccount.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	<var name="cRBTSTATUS" expr="''"/>	
+	<var name="MM_Value" expr="0"/>
+		<script>
+			var UserStatus1=new Object();		
+		</script>
+		<form id="AcntOption">
+		
+			<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+							<rule id="start" scope="public">
+								<one-of>
+									 <item>  1  </item>
+									 <item>  2  </item>
+									 <item>  8  </item>
+								</one-of>
+							</rule>
+					</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/help_welcome.wav'"/>
+					<audio expr="Comedy_PromptPath+'/'+lang+'/help_menu.wav'"/>
+				</prompt>
+				<filled>
+					<if cond="choice=='1'">
+						<prompt bargein="true" timeout="3s">
+						<audio expr="Comedy_PromptPath+'/'+lang+'/About_Service.wav'"/>
+										
+						</prompt>
+	
+						<goto next="comedy_main_menu.vxml"></goto>
+					<elseif cond="choice=='2'"/>
+		
+						<goto next="#AcntUnsubscription"></goto>
+					<elseif cond="choice=='8'"/>
+						<goto next="comedy_main_menu.vxml"></goto>
+					</if>
+				</filled>
+			</field>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<goto next="comedy_main_menu.vxml"></goto>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="comedy_main_menu.vxml"></goto>
+			</nomatch>
+		</form>
+		
+		
+	
+		<form id="AcntUnsubscription">
+				<field name="choice" type="digits?length=1">
+						<grammar mode="dtmf" root="start" version="1.0">
+									<rule id="start" scope="public">
+										<one-of>
+											 <item>  1  </item>
+											 <item>  2  </item>
+										</one-of>
+									</rule>
+							</grammar>
+						<prompt bargein="true" timeout="3s">
+							<audio expr="Comedy_PromptPath+'/'+lang+'/unsubscribe.wav'"/>
+						</prompt>
+						<filled>	
+							<if cond="choice=='1'">
+								<goto next="#AcntUnsubscription_confirm"></goto>
+
+							<else/>
+								<goto next="comedy_main_menu.vxml"></goto>
+							</if>
+						</filled>
+				</field>
+			<noinput count="1">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</noinput>
+					<noinput count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</noinput>
+					<noinput count="3">
+						<goto next="comedy_main_menu.vxml"></goto>
+					</noinput>
+					<nomatch count="1">
+
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</nomatch>
+					<nomatch count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</nomatch>
+					<nomatch count="3">
+						<goto next="comedy_main_menu.vxml"></goto>
+			</nomatch>
+		</form>
+		
+		<form id="AcntUnsubscription_confirm">
+			<field name="choice" type="digits?length=1">
+				<grammar mode="dtmf" root="start" version="1.0">
+							<rule id="start" scope="public">
+								<one-of>
+									 <item>  5 </item>
+									
+								</one-of>
+							</rule>
+					</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/unsubscribe_confirm.wav'"/>
+				</prompt>
+				<filled>	
+					<if cond="choice=='5'">
+						<!-- UNSUB REQUEST -->
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=COMEDY_REQ'"/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Comedy_PromptPath+'/'+lang+'/unsub_confirmed.wav'"/>
+						</prompt>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=USERSTATUS&amp;OPERATOR='+operator"/>
+						<assign name="cRBTSTATUS" expr="UserStatus1.value"/>			
+						<!--	<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>					-->
+						<if cond="cRBTSTATUS=='EAUC'">		
+							<goto next="#UCT_Unsubscription"></goto>
+						<else/>
+							<goto next="Hungama_ModEnd.vxml"></goto>
+						</if>
+					<else/>
+						<if cond="directaccess=='false'">
+							<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+						<else/>
+							<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+						</if>
+					</if>
+				</filled>
+			</field>	
+		</form>
+	
+		<form id="UCT_Unsubscription">
+			<field name="choice" type="digits?length=1">
+				<grammar mode="dtmf" root="start" version="1.0">
+							<rule id="start" scope="public">
+								<one-of>
+									 <item>  *  </item>
+									 <item>  #  </item>
+								</one-of>
+							</rule>
+					</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/crbt_unsub_confirm.wav'"/>
+				</prompt>
+				<filled>	
+					<if cond="choice=='1'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=DEACTIVATE&amp;OPERATOR='+operator"/>					
+						<assign name="cRBTSTATUS" expr="UserStatus1.value"/>			
+						<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>
+						<prompt bargein="true" timeout="0s">
+									<audio expr="Prompt_Path+'/'+lang+'/thanks_unsub.wav'"/>
+						</prompt>
+						<goto next="Hungama_ModEnd.vxml"></goto>
+					<else/>
+						<goto next="Hungama_ModEnd.vxml"></goto>
+					</if>
+				</filled>
+			</field>	
+		</form>
+	
+</vxml>

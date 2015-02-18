@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="BossKeyRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="BossKey_SelectLang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	
+	
+<form id="Main">
+	<block>		
+		<assign name="C_Start" expr="start_time()"/>
+				
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+	        </script>
+	    
+
+	    <script>
+         		var	length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		</script>
+			
+		<assign name="DNIS" expr="realDNIS"/>
+         	         <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+	         	   	
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+	      				
+	      			<assign name="ciropr" expr="ciropr1.value"/>
+	      			<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>
+	      			<script>
+					var splitstr=ciropr.split("#");
+					operator=splitstr[1];
+					circle=splitstr[2];
+				</script>
+	      				       					       
+	      		        <log>circle  is	<value expr="circle"/>    </log>
+				<log>operator is <value expr="operator"/>    </log>
+
+
+		  	 <assign name ="operator" expr="'mtsm'"/>
+		  	 <assign name="dbservlet" expr="'MND_dbinteraction'"/>
+
+			
+
+			 <goto next="BossKey_Userstatus.vxml"/> 
+					
+		 
+		
+	</block>
+  </form>
+
+</vxml>

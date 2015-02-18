@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<vxml version="2.0"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	<meta name="HoneyBee_Root.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content="Root file for the HoneyBee project"/>
+	<meta name="Support" content=""/>
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<!--********************variable decalartion for call entry flow ******************-->
+	<var name="aNavHistory" expr ="new Array()"/>
+	<var name="previous_menu" expr="0"/>
+	<var name="Section_Name" expr="'0'"/>
+	<var name="CATEGORY" expr="'0'"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="C_Start" expr=""/>
+	<var name="C_End" expr=""/>
+	<var name="realDNIS" expr="''"/>
+	<var name="DNIS" expr="''"/>
+	<var name="ANI" expr="''"/>
+	<var name="length" expr="0"/>
+	<var name="circle" expr="''"/>
+	<var name="operator" expr="''"/>
+	<var name="dbservlet" expr="''"/>
+	<var name="lang" expr="'1'"/>
+	<var name="contentlog" expr="''"/>
+	<var name="usr_status" expr="-1"/>
+	<var name="balance" expr="'0'"/>
+	<var name="mode_of_sub" expr="'0'"/>
+	<var name="lang_selection" expr="0"/>
+	<var name="def_lang_selection" expr="0"/>
+	<var name="prefe_lang" expr="'01'"/>
+	<var name="movie_idx" expr="0"/>
+	<var name="IP" expr="'10.130.14.106:8088'"/>
+	<var name="servlet_path" expr="'hungama'"/>
+	<var name="Promptpath" expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/mu_prompts'"/>
+	
+	<!--********************variable decalartion for TNB  flow **************************-->
+	<var name="tnb_status" expr="-1"/>
+	<var name="tnb_no_day" expr="-1"/>
+	<var name="tnb_type" expr="0"/>
+	<var name="tnb_min" expr="0"/>
+	<var name="tnb_auto_churn" expr="0"/>
+	<var name="tnb_prompt_name" expr="0"/>	
+	<var name="service_id" expr="'1101'"/>
+	<var name="plan_id" expr="'7'"/>
+	<var name="pricepoint" expr="'NA'"/>
+	<var name="ContentTime" expr="'0'"/>
+	
+	<!--********************variable decalartion for AD ENgine  flow ******************-->
+	<var name="Add_status" expr="0"/>
+	<var name="Add_id" expr="0"/>
+	<var name="Add_name" expr="0"/>
+	<var name="Add_placment" expr="0"/>
+	<var name="Add_lang" expr="0"/>
+	<var name="Add_type" expr="0"/>
+	<var name="Add_loop_play" expr="0"/>
+	<var name="ADPrompt_Path" expr="'http://10.130.14.106:8088/promptFiles/ADVERTISMENT/'"/>
+	
+	<!--********************variable decalartion for subscription Engine flow *********-->
+	<var name="Amt" expr="0"/>
+	<var name="amt" expr="0"/>
+	<var name="firstconsent" expr="0"/>
+	<var name="firstconsenttime" expr="0"/>
+	<var name="sub_flag" expr="0"/>
+	<var name="cRBTSTATUS" expr="''"/>		 
+	<var name="cRBTMODE" expr="''"/>
+	<var name="UserStatus1" expr="''"/>
+	<var name="CCGresponse" expr="''"/>
+	
+	<!--********************************MTS DOUBLE CONSENT *************************************************-->
+	<var name="DBTRANS_ID" expr="'0'"/>
+	<var name="DBCCG_ID" expr="'0'"/>
+	<var name="vas_id" expr="''"/>
+	<var name="Lang" expr="''"/>
+	<var name="trx_id" expr="''"/>
+	<var name="msisdn" expr="''"/>
+	<var name="lang_id" expr="''"/>
+	<var name="channel" expr="'IVR'"/>
+	<var name="channel_code" expr="''"/>
+	<var name="event_type" expr="''"/>
+	<var name="event_cost" expr="''"/>
+	<var name="Validity" expr="''"/>
+	<var name="validity" expr="''"/>
+	<var name="circle_id" expr="''"/>
+	<var name="product_name" expr="''"/>
+	<var name="content_id" expr="''"/>
+	<var name="cp_id" expr="''"/>
+	<var name="opt1" expr="''"/>
+	<var name="opt2" expr="''"/>
+	<var name="opt3" expr="''"/>
+	<var name="opt4" expr="''"/>
+	<var name="opt5" expr="''"/>
+	<var name ="CG_URL" expr="'http://10.132.249.170:8080/CGW_IVR/cg.vxml'"/>
+	<var name="IVRtransid" expr="0"/>
+
+	<!--*********************************Consent log *********************************************-->
+	<var name="pressdtmf" expr="'0'"/>
+	<var name="secondconsent" expr="'N'"/>
+	<var name="secondconsenttime" expr="'NA'"/>
+	<var name="ccgresult" expr="'NA'"/>
+	<var name="sub_flag" expr="'false'"/>
+	<var name="consent_flag" expr="'false'"/>
+	<var name="IVRtransid" expr="0"/>
+	<var name="cg_id" expr="0"/>
+	<var name="error_desc" expr="0"/>
+	<var name="cons_time" expr="0"/>
+	<var name="cons_stat" expr="0"/>
+	<var name="mm_flag" expr="'false'"/>
+	<!--*********************************Consent log *********************************************-->
+	
+	<!--********************variable decalartion for RootMenu  flow ******************-->
+	<var name="unike_play" expr="0"/>
+	<var name="k" expr="0"/>
+	<var name="dnislen" expr="'0'"/>
+	<var name="multimodaldnis" expr="'0'"/>
+	<var name="mm_flag" expr="'0'"/>
+
+	<!--********************variable decalartion for DAC flow ******************-->
+	<var name="DirectSCAVAIL" expr="'false'"/> 
+	<var name="crbtdnis" expr="'false'"/> 
+	<var name="daccrbtflag" expr="'0'"/> 
+	<var name="DirectSC" expr="'false'"/>	
+	<var name="Flag_Newuser" expr="'false'"/>
+
+	<!--********************variable decalartion for EventSpecial  flow ******************-->
+	<var name="cat" expr="0"/>
+	<var name="subcat" expr="0"/>
+	<var name="playconfig" expr="''"/>
+	<var name="EventName" expr="''"/>
+	
+	<!--********************variable decalartion for  CRBTSHUFFLEFLOW  flow ******************-->
+	<var name="cRBTUserStatus" expr="''"/>
+	<var name="cRBTPackName" expr="''"/>
+	<var name="cRBTStatus" expr="''"/>
+	
+	<!--********************variable decalartion for MusicPlaySectionflow ******************-->	
+	<var name="Song_counter" expr="0"/>        
+	<var name="total_used_bal" expr="'0'"/>
+	<var name="bal" expr="'0'"/>
+	<var name="total_time" expr="0"/>		
+	<var name="Song_Path" expr="0"/>			
+	<var name="timerflag" expr="'0'"/>
+	<var name="songID" expr="'NA'"/>
+	<var name="song_begin" expr="''"/>	
+	<var name="song_listen" expr="'END'"/>	
+	<var name="compare_time" expr="0"/>
+	<var name="TotalFM" expr="'FALSE'"/>
+	<var name="flag_FB" expr="'FALSE'"/>
+	<var name="rngmenu" expr="'0'"/>
+	<var name="rngid" expr="'0'"/>
+	<var name="movie_idx" expr="'0'"/>
+	<var name="rng_len" expr="'0'"/>
+	<var name="maxlang" expr="'0'"/>	
+	<var name="CLIPID" expr="''"/>
+	<var name="len_rng" expr="''"/>
+	<var name="dbservlet" expr= "'radio_dbinteraction'"/>
+	<var name="contentpath" expr="'file:/var/opt/OC/contentrepository/hungama/content/'"/>
+	<var name="nextchoice" expr="'0'"/>
+	<var name="FilePlay" expr="''"></var>
+	<var name="delay" expr="''"/>
+	<var name="SongCount" expr="0"/>
+	<!--********************V2D info ***************************************************-->	
+	<var name="mp3_status" expr="0"/>
+	<var name="video_status" expr="0"/>
+	<var name="RT_status" expr="0"/>
+	<var name="PT_status" expr="0"/>
+	<var name="TT_status" expr="0"/>
+	<!--**********************Ecma declaration ***************************************-->
+	<script src="../ECMAScripts/common_files.es"/>
+	<script src="../ECMAScripts/PlayNum.es"/>	
+	<script>
+		var ciropr1 = new Object();
+		var ciropr = new Object();
+		var out_string=new Object();
+		var CrbtShuffleUserStatus1=new Object();
+
+		var array=new Array();
+		var array1=new Array();
+		var array2=new Array();
+		var array3=new Array();
+		var temp= new Array();
+		var arrayPlayContent=new Array();
+		var favSongs=new Object();
+		var len=0;  
+		var i=0;
+		var j=0;
+		var cat=0;
+		var subcat=0;
+
+	</script>	
+	<!--*********************************Event handling*******************************-->
+	
+	<catch event="error.badfetch">
+		<goto next="HoneyBee_End.vxml"/>
+	</catch>
+	<catch event="telephone.disconnect.hangup">
+		<goto next="HoneyBee_End.vxml"/>
+	</catch>
+	<catch event="telephone.disconnect">
+		<goto next="HoneyBee_End.vxml"/>
+	</catch>
+	<catch event="connection.disconnect.hangup">
+		<goto next="HoneyBee_End.vxml"/>
+	</catch>
+	<catch event="error.*">
+		<goto next="HoneyBee_End.vxml"/>
+	</catch>
+	<!--******************************************************************************-->
+</vxml>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><vxml version="2.0" application="HoneyBee_Root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="HoneyBee_RootMENU.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	
+	<var name="checkcat" expr="0"/>
+	<var name="specialzonedate" expr="0"/>	
+	<script>
+		aNavHistory.push("HoneyBee_RootMENU.vxml#ROOTMENU");
+	</script>
+	<script>
+		function GetDate()
+		{
+		var currentDT = new Date();
+		var day = currentDT.getDate();
+		var month = currentDT.getMonth() + 1;
+		var year = currentDT.getFullYear();
+		var hours = currentDT.getHours();
+		var minutes = currentDT.getMinutes();
+		var seconds = currentDT.getSeconds();
+
+		if (month.length == 1) {month = "0" + month; }
+		if (day.length == 1) {day = "0" + day; }
+
+		var strDateTime =  year + "-" + month + "-" + day;
+		return strDateTime;
+		}
+	</script>		
+	
+<form id ="CallADD">
+	<block>
+		<assign name="Section_Name" expr="'ROOT_MENU_WELCOME'"/>
+		<assign name = "specialzonedate" expr = "GetDate()"/>
+		<log expr="'Track ['+ANI+'] CallADD called'"/>
+		<if cond="DNIS=='522224' &amp;&amp; lang=='7'">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/digiprompts/07/Welcomeback_existing_NewMM.wav'"/>
+			</prompt>
+			<assign name="cat" expr="'MM_522224'"></assign>
+			<assign name="subcat" expr="'MM_522224'"></assign>					
+			<assign name="playconfig" expr="'522224'"></assign>
+			<goto next="HoneyBee_Top20.vxml.vxml#FETCHSONGS"></goto>
+		</if>
+		<if cond="(circle=='tnu')&amp;&amp; DNIS=='522223'">
+			<assign name="lang" expr="'7'"/>
+			<submit expr="'../hungama_mod/Hungama_Mod_ACMainMenu.vxml'"/>
+		</if>
+		<!--<if cond="(specialzonedate=='2015-2-7' || specialzonedate=='2015-2-8' || specialzonedate=='2015-2-9' || specialzonedate=='2015-2-10' || specialzonedate=='2015-2-11' || specialzonedate=='2015-2-12' || specialzonedate=='2015-2-13' || specialzonedate=='2015-2-14')  &amp;&amp; (lang=='1' || lang=='6' || lang=='7' || lang=='8' || lang=='10' || lang=='12' || lang=='18' || lang=='2')">
+			<goto next="HoneyBee_RootMENU_VAL_SPL.vxml"></goto>
+		</if>-->
+		<!--<if cond="ANI=='8459059193'">
+			<goto next="HoneyBee_RootMENU_VAL_SPL.vxml"></goto>
+		</if>-->
+		<prompt bargein="true" >
+			<audio expr="Promptpath+'/'+lang+'/wel_old5.wav'"/>
+		</prompt>
+		<goto next="#ROOTMENU"/>
+	</block>
+</form>
+
+<form id="ROOTMENU">
+	<block>
+		<assign name="Section_Name" expr="'PLAY_CAT_MENU'"/>
+		<log expr="'Track ['+ANI+'] Root menu called'"/>
+		<script>
+			movie_idx=0;
+		</script>
+		<script>
+			array.length=0;
+			unike_play=0;
+		</script>
+		  	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_FETCHCATLIST&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+			<assign name="len" expr="out_string.length" />
+			<log>Length  is	<value expr="len"/>    </log>
+			<assign name="i" expr="0" />
+			<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+				<log expr="'Track ['+ANI+'] No cat available'"/>
+				<goto next="HoneyBee_End.vxml"></goto>
+			</if>
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+						array[k] = out_string[k];						   
+					   }
+				]]>
+			</script> 
+
+			<log>Array[1]  is	<value expr="array[0]"/>    </log>		       				
+			<log>Array[2]  is	<value expr="array[1]"/>    </log>		       				
+			<log>Array[3]  is	<value expr="array[2]"/>    </log>		       				
+			<log>Array[4]  is	<value expr="array[3]"/>    </log>		       				
+			<log>Array[5]  is	<value expr="array[4]"/>    </log>		       				
+			<log>Array[6]  is	<value expr="array[5]"/>    </log>		       				
+
+			<log expr="'Track ['+ANI+'] Category list fetched'"/>
+			<log expr="'Track ['+ANI+'] movie_idx value'+movie_idx"/>
+		</block>			
+			<field name="choice">
+				<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								<item>  1  </item>
+								<item>  2  </item>
+								<item>  3  </item>
+								<item>  4  </item>	
+								<item>  5  </item>
+								<item>  6  </item>	
+								<item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>				
+
+				<prompt bargein="true" timeout="1s">
+						<foreach item="names" array="array">
+							<log expr="'Track ['+ANI+']	dtmf is '+movie_idx"/>
+							<log expr="'Track ['+ANI+'] category names is '+names"/>
+							<audio expr="Promptpath+'/'+lang+'/sel_mus_cat_'+names+'.wav'"/>
+							<audio expr="Promptpath+'/'+lang+'/sel_dtmf'+ ++movie_idx+'.wav'"/>							
+						</foreach>						
+				</prompt>
+				<prompt bargein="true" timeout="2s">
+					<audio expr="Promptpath+'/'+lang+'/keyinfo_help.wav'"/>
+				</prompt>
+				
+				<filled>
+					<log>press dtmf is:<value expr="choice"/></log>
+					<if cond="choice!=''">
+						<assign name="cat" expr="array[choice-1]"/>
+						<assign name="subcat" expr="array[choice-1]"/>
+						<log expr="'selected cat is: '+cat"></log>
+
+						<log>press dtmf:<value expr="choice"/></log>
+						<assign name="playconfig" expr="array[choice-1]"></assign>
+						<log expr="'playconfig is: '+playconfig"></log>						
+				
+						<log expr="'Track ['+ANI+'] length is:'+len"/>
+						<log expr="'selected sub cat is :'+subcat"></log>
+						<if cond="choice!='9'">
+							<script>
+								checkcat = cat.substring(0,6);
+							</script>						
+						</if>
+						<if cond="choice=='1' &amp;&amp; checkcat=='espl01'">
+							<goto next="HoneyBee_SpecialZone.vxml"/>
+						<elseif cond="choice=='9'"/>
+							<goto next="HoneyBee_Help.vxml"/>
+						<else/>
+							<if cond="array[choice-1]=='undefined'">
+								<throw event="nomatch"/>
+							<else/>
+								<goto next="HoneyBee_Top20.vxml"/>
+							</if>
+						</if>
+					<else/>
+						<throw event="noinput"/>
+					</if>
+				</filled>				
+				<noinput>
+					<prompt bargein="true" >
+						<audio expr="Promptpath+'/'+lang+'/sys_nokeypress.wav'"/>
+					</prompt>					
+					<script>
+						movie_idx=0;
+					</script>
+					<reprompt/>
+				</noinput>
+
+				<nomatch>
+					<prompt bargein="true" >
+						<audio expr="Promptpath+'/'+lang+'/sys_wrongkeypress.wav'"/>
+					</prompt>
+					<script>
+						movie_idx=0;
+					</script>	
+
+					<reprompt/>
+				</nomatch>
+			</field>
+	</form>	
+</vxml>

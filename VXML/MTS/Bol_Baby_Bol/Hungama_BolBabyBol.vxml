@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_BolBabyBolRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Hungama_BolBabyBol.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+     	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+        
+
+<form id="Welcome">
+	<block>
+	<assign name="C_Start" expr="start_time()"/>
+ 	    <script>  
+		  realDNIS=session.connection.local.uri;                   
+		  ANI=session.connection.remote.uri;	   
+	    </script>
+	    
+	    	    <script>
+				var length = ANI.length;     
+				if(length == 15)
+					ANI = ANI.substring(5,15);
+				if(length == 14)
+					ANI = ANI.substring(4,14);
+				if(length == 13)
+					ANI = ANI.substring(3,13);
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+		   </script>
+			
+				  <assign name="DNIS" expr="realDNIS"/>
+	    		  
+                         
+              	  <log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+              	  <log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>  
+			<log expr="'HELLLOOOOOOOOO'"/>  
+
+              	  
+              	  <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/>    
+        
+	 	         <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+	      				
+	      			<assign name="ciropr" expr="ciropr1.value"/>
+	      			<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>
+	      			<script>
+					var splitstr=ciropr.split("#");
+					operator=splitstr[1];
+					circle=splitstr[2];
+				</script>
+	      				       					       
+	      		        <log>circle  is	<value expr="circle"/>    </log>
+				<log>operator is <value expr="operator"/>    </log>
+
+	 			<assign name="dbservlet" expr="'mts_dbinteraction'"/>
+				<assign name="operator" expr="'mtsm'"/>
+ 
+		     
+                           
+		
+		<goto next="#CheckingUser"/>
+	</block>
+</form>
+
+<form id="CheckingUser">
+	<block>
+		<assign name="drop_point" expr="'MainMenu'"/>
+	</block>
+	<field name="choice">
+    	    <grammar mode="dtmf" root="start10" version="1.0">
+		   <rule id="start10" scope="public">
+			<one-of>
+				 <item>  1  </item>
+				 <item>  2  </item>
+			</one-of>
+		   </rule>
+	    </grammar>
+		<prompt bargein="true" timeout="1s">
+			<audio expr="promptpath+'/menu_opt.wav'"/>
+	    	</prompt>	   			
+	   <filled>
+	    		<if cond="choice=='1'">
+				<goto next="Hungama_BolBabyBol_Record_Guess.vxml"/>
+	    		<elseif cond="choice=='2'"/>
+				<goto next="#WelcomeIntro"/>
+			</if>
+	   </filled>				
+		<noinput>
+			<audio expr="promptpath+'/nodtmf.wav'"/>
+			<reprompt/> 
+		</noinput> 
+		
+		<nomatch>
+			<audio expr="promptpath+'/invalidoption.wav'"/>
+			<reprompt/>
+		</nomatch> 
+		
+   </field>
+</form>
+
+<form id="WelcomeIntro">
+		<block>
+		    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_BOL_BABY_BOL&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator+'&amp;INPARAM[2]='+circle+'&amp;INPARAM[3]='+songid+'&amp;INPARAM[4]=1'"/>
+			<script>
+			 <![CDATA[
+				    for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						usr_status = out_string[j];
+					       if(j==1)
+						songid = out_string[j];
+					       if(j==2)
+						ldatetime = out_string[j];
+					  }
+
+				]]>
+			</script>
+			<log>length of outstring  is	<value expr="out_string.length"/></log>
+			<log>	user status isssss    <value expr="usr_status"/> 	</log>
+
+		
+
+		<if cond="usr_status=='1'">
+			<assign name="drop_point" expr="'Repeat_User'"/>
+			<goto next="#Active_User"/>
+
+		<elseif cond="usr_status == '-1'"/>
+			<assign name="drop_point" expr="'New_User'"/>
+			<goto next="#NewUser"/>
+		<else/>
+			<assign name="drop_point" expr="'New_User'"/>
+			<goto next="#NewUser"/>
+		</if>
+
+		</block>
+	
+</form>
+<form id="NewUser">
+	 <field name="choice" type="digits?minlength=1;maxlength=2">
+    	    <grammar mode="dtmf" root="start0" version="1.0">
+		   <rule id="start0" scope="public">
+			<one-of>
+				 <item>  1  </item>
+				 <item>  2  </item>
+				 <item>  3  </item>
+				 <item>  4  </item>
+				 <item>  5  </item>
+				 <item>  6  </item>
+				 <item>  7  </item>
+				 <item>  8  </item>
+				 <item>  9  </item>
+				 <item>  0  </item>
+			</one-of>
+		   </rule>
+	    </grammar>
+		<prompt bargein="true" timeout="1s">
+			<audio expr="promptpath+'/welcome_new.wav'"/>
+	    	</prompt>	   			
+	   <filled>
+	    		<assign name="songid" expr="choice"/>
+	    		<log expr="'SONG ID ISSSS-'+songid"></log>
+	    		<goto next="Hungama_BolBabyBol_Record.vxml"/>
+	   </filled>				
+		<noinput>
+			<audio expr="promptpath+'/nodtmf.wav'"/>
+			<reprompt/> 
+		</noinput> 
+		<noinput count="3">
+			<goto next="Hungama_BolBabyBol_End.vxml"/>
+		</noinput> 
+
+		<nomatch>
+			<audio expr="promptpath+'/invalidoption.wav'"/>
+			<reprompt/>
+		</nomatch> 
+		<nomatch count="3">
+			<goto next="Hungama_BolBabyBol_End.vxml"/>
+		</nomatch>
+   </field>
+	
+	
+</form>
+
+
+
+<form id="Active_User">
+	<block>
+				
+		<assign name="DATE" expr="getcurryyyymmdd()"/>
+		<script>
+			month=DATE.substring(4,6);
+			day=DATE.substring(6,8);
+		</script>
+		
+		<log>	month isssss    <value expr="month"/> 	</log>
+		<log>	day isssss    <value expr="day"/> 	</log>
+
+	</block>
+		
+       <field name="choice" type="digits?minlength=1;maxlength=2">
+    	    <grammar mode="dtmf" root="start1" version="1.0">
+		   <rule id="start1" scope="public">
+			<one-of>
+				 <item>  1  </item>
+				 <item>  2  </item>
+				 <item>  3  </item>
+				 <item>  4  </item>
+				 <item>  5  </item>
+				 <item>  6  </item>
+				 <item>  7  </item>
+				 <item>  8  </item>
+				 <item>  9  </item>
+				 <item>  0  </item>
+			</one-of>
+		   </rule>
+	    </grammar>
+			   			
+	    <prompt bargein="true" timeout="2s">
+		  <audio expr="promptpath+'/welcome_old.wav'"/>
+	    </prompt>
+	    <filled>
+	    		<assign name="songid" expr="choice"/>
+			<log>	SONG ID ISSSS    <value expr="songid"/> 	</log>
+	    		<goto next="#CheckUser"/>
+	   </filled>				
+		<noinput>
+			<audio expr="promptpath+'/nodtmf.wav'"/>
+			<reprompt/> 
+		</noinput> 
+		<noinput count="3">
+			<goto next="Hungama_BolBabyBol_End.vxml"/>
+		</noinput> 
+
+		<nomatch>
+			<audio expr="promptpath+'/invalidoption.wav'"/>
+			<reprompt/>
+		</nomatch> 
+		<nomatch count="3">
+			<goto next="Hungama_BolBabyBol_End.vxml"/>
+		</nomatch>
+   </field>
+</form>
+
+
+<form id="CheckUser">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_BOL_BABY_BOL&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator+'&amp;INPARAM[2]='+circle+'&amp;INPARAM[3]='+songid+'&amp;INPARAM[4]=3'"/>
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					ldatetime = out_string[j];
+				  }
+
+			]]>
+		</script>
+		
+			<log>	user status iss    <value expr="usr_status"/> 	</log>
+
+			
+		<if cond="usr_status=='1'">
+			<script>
+				Rmonth=ldatetime.substring(5,7);
+				Rday=ldatetime.substring(8,10);
+			</script>
+				<log>	Rmonth iss    <value expr="Rmonth"/> 	</log>
+				<log>	Rday iss    <value expr="Rday"/> 	</log>
+			<if cond="Rmonth==month &amp;&amp; Rday==day">
+				<assign name="drop_point" expr="'AlreadyRecorded'"/>
+				  <log> you are already recorded song  <value expr="songid"/> 	</log>
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptpath+'/sorry_song.wav'"/>
+				</prompt>
+				<goto next="Hungama_BolBabyBol_End.vxml"/>
+			<else/>
+				<log> you are going to recorded song  <value expr="songid"/> 	</log>
+				<goto next="Hungama_BolBabyBol_Record.vxml"/>
+	    		</if>
+		
+		<else/>
+			<log> you have -1 status and going to recording  <value expr="songid"/> </log>
+			<goto next="Hungama_BolBabyBol_Record.vxml"/>
+		</if>
+		
+	</block>
+
+
+</form>
+
+
+</vxml>

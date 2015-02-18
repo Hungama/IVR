@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Regional_PortalRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+ 
+	<meta name="RegionalUserStatus.vxml" content=""/>
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	
+	<!--<var name="song" expr="''" />
+	<var name="VDay_Date" expr="''" />
+	<var name="Song_Type" expr="''" />
+	<var name="Song_Path" expr="''" />
+	<var name="sessionid" expr="''" /> -->
+	<var name="ciropr" expr="''" />
+		
+	<script>
+		var ciropr1 = new Object(); 
+		var out_string=new Object();
+		
+	</script>
+	
+<form id="Main">
+	<block>
+		<assign name="Section_Name" expr="'UserStatusChk'"/>
+		<log>Section Name isssssss  <value expr="Section_Name"/>  </log>
+
+		<assign name="C_Start" expr="start_time()"/>
+ 		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+	    	</script>
+	    
+		<script>
+			var length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		  </script>
+
+		<assign name="DNIS" expr="realDNIS"/>                                   	               	  
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"/>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+
+		<assign name="ciropr" expr="ciropr1.value"/>
+		<!-- <log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/> -->
+		<script>
+			var splitstr=ciropr.split("#");
+			operator=splitstr[1];
+			circle=splitstr[2];
+		</script>
+		
+
+		<assign name="dbservlet" expr="'Regional_dbinteraction'"/>
+		<assign name="operator" expr="'mtsm'"/>	
+
+		<log>circle  is	<value expr="circle"/>    </log>
+		<assign name="initial_balance" expr="start_time()"/>
+		<if cond="circle=='del'">
+			<assign name="lang" expr="'01'"/>
+		<elseif cond="circle=='chn'"/>
+			<assign name="lang" expr="'07'"/>
+		<elseif cond="circle=='guj'"/>
+			<assign name="lang" expr="'12'"/>
+		<elseif cond="circle=='kar'"/>
+			<assign name="lang" expr="'10'"/>
+		<elseif cond="circle=='ker'"/>
+			<assign name="lang" expr="'09'"/>
+		<elseif cond="circle=='kol'"/>
+			<assign name="lang" expr="'06'"/>
+		<elseif cond="circle=='raj'"/>
+			<assign name="lang" expr="'18'"/>
+		<elseif cond="circle=='tnu'"/>
+			<assign name="lang" expr="'07'"/>
+		<elseif cond="circle=='upw'"/>
+			<assign name="lang" expr="'upw'"/>
+		<elseif cond="circle=='wbl'"/>
+			<assign name="lang" expr="'06'"/>
+		<else/>
+			<assign name="lang" expr="'01'"/>
+		</if>
+		<log>langugage  is	<value expr="lang"/>    </log>
+		
+		
+		<if cond="ANI=='189253320821' || ANI=='84595064421'">
+			 <prompt bargein="true" timeout="0s">
+				<!--<audio expr="promptpath+lang+'/welcome_new.wav'"/>-->
+				<audio expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/MND_Prompts/01/ch2/welcome_old.wav'"/>
+			</prompt>
+			<assign name="playconfig" expr="'MPD'"></assign>
+			<assign name="lang" expr="'01'"/>
+			<goto next="Regional_MPD_Play.vxml"/>
+		</if>		
+		
+	   	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REGIONAL_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+						    for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+								usr_status = out_string[j];
+							       if(j==1)
+								lang = out_string[j];
+							       if(j==2)
+								balance = out_string[j];
+								if(j==3)
+								modesub = out_string[j];									
+							  }
+				]]>
+			</script>
+			<!-- <log>length of outstring  is	<value expr="out_string.length"/></log> -->
+			<!-- <log expr="'@@@@@@@New usr_status===>' +usr_status"/> -->
+		<if cond="usr_status=='1'">				
+			<script> 					 
+				balance=balance*60;
+				timerflag=1;
+			</script>
+
+			<script>
+				    <![CDATA[
+				       if(timerflag==1)
+					start_BalenceMinute=starttime();
+				   ]]>	 	
+			</script>
+			<assign name="rateplanid" expr="'83'" />
+			<assign name="pricepoint" expr="'1'"/>
+			<if cond="DNIS=='51111223'">
+				<goto next="Regional_MngAccnt.vxml#AcntUnsubscription"/>
+			</if>
+			<if cond="lang=='01'">
+				<assign name="circle" expr="'del'"/>
+			</if>
+			<log expr="'rateplanid  @@@@@@@@@@@@@@@@@@@@ =' + rateplanid"/>
+			<send event="invokechargingsession" namelist="rateplanid ANI"/>
+			<!--<if cond="circle=='tnu' || circle=='chn'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+lang+'/Welcome_prompt_cookry.wav'"/>				
+				</prompt>
+				<assign name="playconfig" expr="'TAM_TAMILNADU'"></assign>
+				<goto next="Regional_MainMenu.vxml#FETCHSONGS"></goto>
+                 	</if>-->				
+			<goto next="Regional_ExistingUser.vxml"/>
+			
+	       <elseif cond="usr_status == '-1'"/>
+			<if cond="circle=='del'">
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='chn'"/>
+				<assign name="lang" expr="'07'"/>
+			<elseif cond="circle=='guj'"/>
+				<assign name="lang" expr="'12'"/>
+			<elseif cond="circle=='kar'"/>
+				<assign name="lang" expr="'10'"/>
+			<elseif cond="circle=='ker'"/>
+				<assign name="lang" expr="'09'"/>
+			<elseif cond="circle=='kol'"/>
+				<assign name="lang" expr="'06'"/>
+			<elseif cond="circle=='raj'"/>
+				<assign name="lang" expr="'18'"/>
+			<elseif cond="circle=='tnu'"/>
+				<assign name="lang" expr="'07'"/>
+			<elseif cond="circle=='upw'"/>
+				<assign name="lang" expr="'upw'"/>
+			<elseif cond="circle=='wbl'"/>
+				<assign name="lang" expr="'06'"/>
+			<else/>
+				<assign name="lang" expr="'01'"/>
+			</if>
+      			<goto next="Regional_Subscription.vxml"/>       			
+	       <else/>
+			<prompt bargein="true" timeout="3s">
+			   <audio expr="promptpath+lang+'/delay_charging.wav'"/>
+			</prompt>
+		 </if>	
+	</block>
+  </form>
+
+
+</vxml>

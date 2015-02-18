@@ -1,0 +1,515 @@
+<vxml version="2.1" application="FMJRoot.vxml">    
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>  
+	<var name="len" expr="''"/>	
+	<var name="UNSUB_ALL"/>		
+   	<var name="names"/> 
+   	<var name="index" expr="0"/>
+   	<script>
+   		var flag=1;
+		var index=0;
+		var startindex=0;
+		var totalbalminute=0;
+		var out_string=new Object();
+		var unfollow_celeb=new Array();				
+	</script>
+   	<form id="accountmanager">
+   		<block>
+   			<goto next="#hungamaactmgrbMnu"/>
+       	</block>
+      </form>
+      <form id="hungamaactmgrbMnu">
+	<block>
+   		       <assign name="prompt_name" expr="'ACTMANAGER'"/>
+	</block>
+      	    <field name="actmgrmnuopt">
+		    <prompt bargein="true" timeout="3s">	
+              	 <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'welcome_acmanager.wav'"/>		
+            	    </prompt>
+            	
+		    <grammar mode="dtmf" root="start" version="1.0">
+               		<rule id="start" scope="public">
+		                 <one-of>
+					  <item>1</item>				
+					  <item>2</item>				
+					  <item>3</item>
+					  <item>4</item>
+					  <item>8</item>					 	  			  		      
+              		  </one-of>
+		              </rule>
+            	    </grammar>	    			
+  		    <filled>
+			        <if cond="actmgrmnuopt=='1'">
+				      <!-- <clear namelist="actmgrmnuopt"/> -->
+     					<if cond="timerflag=='1'">
+	     				    <assign name="current_balance" expr="start_time()"/>
+					    <script>
+				 			total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 				 			curbalance=balance-total_used_bal; 						  
+					    </script>
+					    <if cond="curbalance &lt;= '0'">          
+                           			  <goto next="TopupRenew.vxml"/>
+                           		    </if>     
+				        </if>		
+				        <goto next="#select_lang"/>
+					 <!-- <goto next="starclub-SelectLang.vxml#select_lang"/> -->
+
+ 				 <elseif cond="actmgrmnuopt=='2'"/>		
+				        <clear namelist="actmgrmnuopt"/> 	
+     					 <if cond="timerflag=='1'">
+	     				    <assign name="current_balance" expr="start_time()"/>
+						<script>
+				 			total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 				 			curbalance=(balance-total_used_bal)/60;
+							curbalance=Math.round(curbalance);
+							var len=curbalance.length;						  
+						</script>
+					  
+                           			<if cond="curbalance &lt;= '0'">          
+                           				  <goto next="TopupRenew.vxml"/>
+                           			</if>     
+			   	        </if>
+								 
+					 <!--	<goto next="TopupRenew.vxml#hungamatopupmnu"/>		-->
+					 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					 <log expr="'@@@@@@ left balance is '+curbalance"/>
+					 <goto next="#hungamablanceminute"/>
+
+				  <elseif cond="actmgrmnuopt=='3'"/>		
+				       <clear namelist="actmgrmnuopt"/> 	
+     					 <if cond="timerflag=='1'">
+	     				    <assign name="current_balance" expr="start_time()"/>
+						<script>
+				 			total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 				 			curbalance=balance-total_used_bal; 						  
+						</script>
+					  
+                           			<if cond="curbalance &lt;= '0'">          
+                           				  <goto next="TopupRenew.vxml"/>
+                           			</if>     
+			   	        </if>						 
+					<goto next="TopupRenew.vxml#hungamatopupmnu"/>		
+				
+				  <elseif cond="actmgrmnuopt=='4'"/>
+					<goto next="#unsub_menu"/>	
+				  <elseif cond="actmgrmnuopt=='8'"/>
+				       <if cond="timerflag=='1'">
+					    <assign name="current_balance" expr="start_time()"/>
+						<script>
+				 			total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 				 			curbalance=balance-total_used_bal; 						  
+						</script>
+			             		<if cond="curbalance &lt;= '0'">          
+                             			<goto next="TopupRenew.vxml"/>
+                        			</if>     
+				       </if>		
+				       <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>					
+				  </if>
+			</filled>
+			
+			 <noinput timeout="3s">
+			     <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>                
+	                   <reprompt/> 
+         	        </noinput>
+	        
+             		 <noinput count="3">	
+			     <!-- <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/starclub/'+LANG_DESCRIPTION+'/'+'MM _maxerroroptions.wav'"/>	-->	
+				 
+     		 	 	<if cond="timerflag=='1'">
+	     			    <assign name="current_balance" expr="start_time()"/>
+				    <script>
+				 		total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 				 		curbalance=balance-total_used_bal; 						  
+				    </script>
+			           <if cond="curbalance &lt;= '0'">          
+                      		       <goto next="TopupRenew.vxml"/>
+	                         </if>     
+  			     </if>						 
+       	            <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>		
+                     </noinput>
+	        
+             		<nomatch>
+                		<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+                		<reprompt/>
+            		</nomatch> 
+	
+	         	<nomatch count="3">
+			     <!-- <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/starclub/'+LANG_DESCRIPTION+'/'+'MM_maxerroroptions.wav'"/>	-->
+				 <if cond="timerflag=='1'">
+	     			    	<assign name="current_balance" expr="start_time()"/>
+					<script>
+				 		total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 				 		curbalance=balance-total_used_bal; 						  
+					</script>
+                           		<if cond="curbalance &lt;= '0'">          
+		                            <goto next="TopupRenew.vxml"/>
+              	              </if>     
+				  </if>						 
+	             		<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>					
+	         	</nomatch>              				
+	  </field>	 		
+    </form> 
+     
+   
+   
+   <form id="unsub_menu">
+  
+	<block>
+   		       <assign name="prompt_name" expr="'UNSUBMENU'"/>
+	</block>
+   		<field name="menuopt">
+		
+		<prompt bargein="true">	
+       		       <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'Acmanager_unsub_confirm.wav'"/>		
+	       </prompt>
+	     		
+            	<grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>
+			  <item>1</item>				
+			  <item>2</item>				
+	          </one-of>
+               </rule>
+             </grammar>
+            
+             <filled>
+            	<if cond="menuopt==1">
+            		<!-- <goto next="#hungamaunsubmnu"/> -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+			<prompt bargein="false">	
+                        <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'Thanks_unsub.wav'"/>		
+                     </prompt>	
+			<goto next="starclub_End.vxml"/>
+			
+            	</if>
+            	<if cond="menuopt==2">
+            		
+			<if cond="playconfig==''">
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<else/>
+				<!-- <goto next="playContent.vxml#StartToPlaystarclub"/> -->
+
+
+				<if cond="timerflag=='1'">
+	     				   <assign name="current_balance" expr="start_time()"/>
+						<script>
+				 			total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 				 			curbalance=balance-total_used_bal; 						  
+						</script>
+					       <!--<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					       <log expr="'@@@@@@ left balance is '+curbalance"/>-->
+                           			<if cond="curbalance &lt;= '0'">          
+			                             <goto next="TopupRenew.vxml"/>
+                     		      </if>     
+				</if>						 
+		             	<if cond="song_listen=='END'">
+       	     			<goto next="playContent.vxml#StartToPlaystarclub"/>
+            			<else/>
+       				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+  	            		</if>	
+			</if>
+            	</if>
+            </filled>
+            
+            <noinput timeout="3s">
+		   <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>                
+                 <reprompt/> 
+             </noinput>
+	        
+             <noinput count="3">	
+			<if cond="timerflag=='1'">
+	     		    <assign name="current_balance" expr="start_time()"/>
+				<script>
+					total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 					curbalance=balance-total_used_bal; 						  
+				</script>
+			       <if cond="curbalance &lt;= '0'">          
+                     	       <goto next="TopupRenew.vxml"/>
+	                     </if>     
+	 		 </if>						 
+	             <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>	
+              </noinput>
+	        
+             <nomatch>
+                <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+                <reprompt/>
+             </nomatch> 
+	
+	         <nomatch count="3">
+				<if cond="timerflag=='1'">
+	     			    <assign name="current_balance" expr="start_time()"/>
+				    	<script>
+				 		total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 				 		curbalance=balance-total_used_bal; 						  
+					</script>
+					     
+                           		<if cond="curbalance &lt;= '0'">          
+                             		<goto next="TopupRenew.vxml"/>
+                           		</if>     
+				</if>						 
+	             <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>				
+	         </nomatch>
+	         
+   		</field>
+	</form> 
+	<form id="hungamablanceminute"> 
+	       <block>
+   		       <assign name="prompt_name" expr="'BALMIN'"/>
+		     <if cond="timerflag=='1'">
+				   <assign name="current_balance" expr="start_time()"/>
+				   <script>
+				   	total_used_bal=CheckUserBalance(initial_balance,current_balance);
+				        curbalance=balance-total_used_bal;    						  
+				   </script>
+				   <log expr="'##########@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'########@@@@@@ used balance is '+curbalance"/>
+				   <log expr="'########@@@@@@ balance is '+balance"/>
+                                   <if cond="curbalance &lt;= '0'">          
+                         		    <goto next="TopupRenew.vxml"/>
+                                   </if>     
+	            </if>
+	
+	           <script>
+       		 array[index++]="acmanager_balanceis";	
+   		        totalbalminute=Math.floor(curbalance/60);				      
+                  </script>    	
+                  <log> Total balance minute is <value expr="totalbalminute"/>     </log>				  				  
+		    <script>
+			    <![CDATA[
+			    while(flag==1)     
+                         {
+                               if(totalbalminute==0)
+		                 {           
+                        		  array[index++]=totalbalminute;
+                     	         flag=0;
+					  totalbalminute=0;
+		                  }
+                                else if((totalbalminute>=1) && (totalbalminute<=99))
+		                  {
+                                     flag=0;			
+            	 			  array[index++]=totalbalminute;
+								  totalbalminute=0;
+	                         }
+                                else if((totalbalminute>=100) && (totalbalminute<=999))
+		                  {
+                                  if((totalbalminute % 100)== 0 )			
+                                     flag=0;              
+			     		  array[index++]=Math.floor(totalbalminute/100); 			
+		                       array[index++]="100";             
+			     		  totalbalminute=totalbalminute % 100;           
+		                  }
+                                else if((totalbalminute >=1000 ) && (totalbalminute <=99999)) 		  
+				    {
+                                   if((totalbalminute % 1000)== 0) 
+                                     flag=0;            
+            
+                                    array[index++]=Math.floor(totalbalminute / 1000) ; 
+				        array[index++]="1000";
+                                    totalbalminute=totalbalminute % 1000;			
+		                   }
+				     else if((totalbalminute >=100000) && (totalbalminute <=999999)) 
+		                   {
+                                   if((totalbalminute % 100000)== 0 ) 
+                                     flag=0;
+                                    array[index++]=Math.floor(totalbalminute/100000);
+	                             array[index++]="Lack";
+                           	        totalbalminute=totalbalminute % 100000;
+            
+                                 }
+	                        } 				
+				   array[index++]="minutes";			   												
+											
+        			  ]]>
+					  
+			    </script>				  
+ 	                  <script>
+				  startindex=0;
+			    </script>
+			    <goto next="#speak"/>	 		   
+	     </block>     
+	  
+   </form>	
+   <form id="speak">
+	 <block>
+	 	<prompt bargein="false">
+			<!-- <audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/'+LANG_DESCRIPTION+'/'+array[startindex]+'.wav'" name="fetchminiumbuffersize" value="141312"/>--> 
+			<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+array[startindex]+'.wav'"/>
+			<!--<audio expr="'http://'+CDSIP+CDSPATH+'promptFiles/'+LANG_DESCRIPTION+'/g_'+array[startindex]+'.wav'"/>-->
+		</prompt>
+		<script>
+			  startindex=startindex+1;
+		</script>
+		<if cond="startindex &lt; index">
+			   <goto next="#speak"/>
+		<else/>
+		     <script>
+		         <![CDATA[							 
+           		   for(var x in array)
+			   {
+			            array[x]="";
+			   }							  					    
+			   ]]>  
+		     </script>
+		     <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"></goto>	
+		</if>		
+	</block>
+	
+    </form>
+
+   
+<form id="select_lang">
+    		<block>
+   		       <assign name="prompt_name" expr="'LANGCHANGE'"/>
+			<prompt bargein="true" timeout="3s">					        				
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/language_option.wav'"/>				   		
+			</prompt>
+			<goto nextitem="langopt"/>				
+		</block>		
+			
+		<field name="langopt">
+			  <grammar mode="dtmf" root="start" version="1.0">
+			  <rule id="start" scope="public">
+					<one-of>						
+						<item>1</item>
+						<item>2</item>												
+					</one-of>
+			  </rule>
+			  </grammar>
+				
+			  <prompt bargein="true"  timeout="0s">
+			        <audio expr="Prompt_Path+LANG_DESCRIPTION+'/lang0'+langcntr+'.wav'"/>
+  	   	         </prompt> 			 
+			  <!--<log expr="'Inbetween dtmf' "/>-->
+			  <prompt bargein="true"  timeout="1s">
+			       <audio expr="Prompt_Path+LANG_DESCRIPTION+'/press_dtmf'+langcntr+'.wav'"/>
+  	   	         </prompt>
+					
+					
+			   <filled>
+				<if cond="langopt=='1'">
+				       <assign name="lang" expr="'01'"/> 
+						 <!--<log>LANGUAGE SELECTED first IS == <value expr="lang"/></log>-->
+					<prompt bargein="false">	
+                    			<audio expr="Prompt_Path+'HIN/'+'lang_thanks.wav'"/>		
+                                        </prompt> 
+               		 		<if cond="timerflag=='1'">	
+		               		 	 <assign name="current_balance" expr="start_time()"/>
+							 <!-- <script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?TOKEN=17&mp;ANI='+ANI+'&amp;DNIS='+DNIS+'&amp;LANG='+lang+'&amp;operatorid='+operator+'&amp;circleid='+circle+'&amp;servicesid=1005'"/>	-->
+								<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>	
+								<script>
+								  total_used_bal=CheckUserBalance(initial_balance,current_balance);
+							     	  curbalance=balance-total_used_bal; 					
+								  <!-- total_used_bal=chkBalenceMinute(start_BalenceMinute);
+            				   		    	  curbalance=balance-total_used_bal;  -->						  
+								  </script>
+						                <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+ 							    	   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		    	       	 			<if cond="curbalance &lt;= '0'">          
+            	                					 <goto next="TopupRenew.vxml"/>
+			  	                            </if>     
+						</if>						  			
+						<!-- <if cond="playconfig==''">
+							<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+						<else/>
+							<goto next="playContent.vxml#StartToPlaystarclub"/>
+						</if> -->
+						
+		
+	       		    <elseif cond="langopt=='2'"/>
+					     <assign name="lang" expr="'02'"/> 
+						 <prompt bargein="false">	
+              			               <audio expr="Prompt_Path+'ENG/'+'lang_thanks.wav'"/>								 	
+		                             </prompt> 
+					
+                         
+			                         <if cond="timerflag=='1'">
+                     				    	<assign name="current_balance" expr="start_time()"/>
+								  <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>	
+							       <script>
+						 		        total_used_bal=CheckUserBalance(initial_balance,current_balance);
+					     	  			curbalance=balance-total_used_bal; 					  
+							       </script>
+							       <!--<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							       <log expr="'@@@@@@ left balance is '+curbalance"/>-->
+       				               	<if cond="curbalance &lt;= '0'">          
+                     			       		<goto next="TopupRenew.vxml"/>
+			                           		 </if>     
+						      </if>						  
+			  			   
+							
+				   	  </if>
+					  <goto next="#Mania"/>
+		
+				</filled>
+					
+			    <nomatch>				    
+					<script>
+						langcntr=1; 
+					</script>          		     
+					
+					<prompt>						
+						<audio expr="Prompt_Path+LANG_DESCRIPTION+'/invalidoption.wav'"/>		 
+			   		</prompt>
+			   		
+			   		<goto nextitem="langopt"/>	
+		   	    </nomatch>
+				<noinput>
+					<script>
+			  			langcntr=langcntr+1; 
+			  		</script>
+			  			        
+			  	 <if cond="langcntr &gt; maxlang">		   
+			       	 <script>	
+			       	     langcntr=1; 
+			       	 </script>
+			      </if>		
+          		     			
+          		  <goto nextitem="langopt"/>	
+				</noinput>
+				
+		</field>
+		
+	  
+    </form>
+
+<form id="Mania" scope="dialog" >
+		<block>
+		<if cond="lang=='01'">
+    			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+    		<elseif cond="lang=='02'" />
+    			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+    		<else/>
+    			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>		
+    		</if>  			
+			
+		
+			
+		<if cond="timerflag=='1'">
+		 	<assign name="current_balance" expr="start_time()"/>
+		 	<script>
+			     total_used_bal=CheckUserBalance(initial_balance,current_balance);
+			     curbalance=balance-total_used_bal;  						  
+		       </script>
+			<!--<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+curbalance"/>-->
+	              <if cond="curbalance &lt;= '0'">          
+                   		<goto next="TopupRenew.vxml"/>
+	              </if>     
+		  </if>	
+		  <if cond="usr_status=='1'">		
+    				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+    		  <else/>
+    				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml"/>
+    		  </if>
+  	  			
+    	</block>  
+		
+	  
+    </form>
+
+	
+</vxml>
+
+
+
+   

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Monsoon_ContestRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Monsoon_Contest_Sub.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<property name="documentmaxstale" value="0s"/>
+	<property name="documentmaxage" value="0s"/>
+
+	<script>
+		var delaycharg=0;
+	</script>
+	
+	
+	<form id="SubMainmenu">
+		 <block>
+				<assign name="drop_point" expr="'SUB_MENU'"/>
+				<assign name="amt" expr="'30'" />
+				<assign name="service_id" expr="'1123'" />
+				<assign name="plan_id" expr="'49'" />
+		 </block>
+		 <field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">	
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+						</one-of>
+					</rule>
+				</grammar>
+					
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/Subintro.wav'"/>
+					</prompt>
+								      
+			  <filled>
+			            	     <if cond="choice=='1'">
+							<assign name="firstconsent" expr="'Y'"/>
+							<assign name="firstconsenttime" expr="start_time()"/>
+							<assign name="sub_flag" expr="'true'"/>	
+			            			<goto next="#DOUBLE_CONSENT"></goto>	
+					     <elseif cond="choice=='2'"/>
+							<!-- As per Kunal Sir request -->
+							<assign name="C_End" expr="start_time()"/>
+							<assign name="game_Start" expr="starttime()"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+drop_point+hash+modofsub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=Monsoon-Contest&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+							<assign name="C_Start" expr="start_time()"/>
+							<script>pricepoint=3; </script>
+								<assign name="TollModel" expr="'true'" />
+								<assign name="rateplanid" expr="'80'" />
+				            		<log expr="'rateplanid  @@@@@@@@@@@@@@@@@@@@ =' + rateplanid"/>
+				            		<send event="invokechargingsession" namelist="rateplanid ANI"/>
+				            		<goto next="Monsoon_Contest_MainMenu.vxml"/>
+					     </if>
+			 </filled>				    
+				
+				<noinput>
+						<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+						<reprompt/>
+				</noinput>
+				<noinput count="3">
+						<goto next="Monsoon_Contest_end.vxml"/>
+				</noinput>
+				
+				<nomatch>
+						<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+					<reprompt/>
+				</nomatch>
+				<nomatch count="3">
+						<goto next="Monsoon_Contest_end.vxml"/>
+				</nomatch>
+			      
+		</field>
+</form>
+
+<form id="DOUBLE_CONSENT">
+				<block>
+					<assign name="drop_point" expr="'DOUBLE_CONSENT'"/>
+						<assign name="event_cost" expr="'30.00'"/>
+						<assign name="Validity" expr="30"/>
+						<assign name="vas_id" expr="'HUN_CONTEST@PORTAL'"/>
+						<assign name="trx_id" expr="gettransidtime()"/>
+						<assign name="msisdn" expr="ANI"/>
+						<assign name="lang_id" expr="'HIN'"/>
+						<assign name="channel_code" expr="'IVR'"/>
+						<assign name="event_type" expr="'2'"/>	
+						
+						<assign name="circle_id" expr="circle"/>
+						<assign name="product_name" expr="'Hungama-MTS Contest Portal'"/>
+						<assign name="content_id" expr="'Hungama'"/>
+						<assign name="cp_id" expr="'Hungama'"/>
+						<assign name="opt1" expr="'1'"/>
+						<assign name="opt2" expr="'2'"/>
+						<assign name="opt3" expr="'3'"/>
+						<assign name="opt4" expr="'4'"/>
+						<assign name="opt5" expr="'5'"/>
+			
+						<if cond="lang=='01'">
+							<assign name="Lang" expr="'HIN'"/>
+						<elseif cond="lang=='02'"/>
+							<assign name="Lang" expr="'ENG'"/>
+						<elseif cond="lang=='10'"/>
+							<assign name="Lang" expr="'KAN'"/>
+						<elseif cond="lang=='07'"/>
+							<assign name="Lang" expr="'TAM'"/>
+						<elseif cond="lang=='09'"/>
+							<assign name="Lang" expr="'MAL'"/>
+
+
+						<else/>
+
+							<assign name="Lang" expr="'HIN'"/>
+						</if>  
+   
+					<if cond="ANI=='8459506442'">
+						<log>Calling consent gateway</log>
+						<assign name="CG_URL" expr="'http://10.132.249.234:8080/CGW_IVR/cg_234.vxml'"/>
+					</if>
+
+				</block>
+
+					<subdialog name="confirmUserChoice" fetchtimeout="25s" srcexpr="CG_URL">
+						<param name="vas_id" expr="vas_id"/>
+						<param name="trx_id" expr="trx_id"/>
+						<param name="msisdn" expr="msisdn"/>
+						<param name="channel" expr="'IVR'"/>
+						<param name="event_type" expr="event_type"/>
+						<param name="event_cost" expr="event_cost"/>
+						<param name="lang_id" expr="Lang"/>
+						<param name="product_name" expr="product_name"/>
+						<param name="content_id" expr="content_id"/>
+						<param name="cp_id" expr="cp_id"/>
+						<param name="circle_id" expr="circle_id"/>
+						<param name="validity" expr="Validity"/>
+						<param name="opt1" expr="'a'"/>
+						<param name="opt2" expr="'b'"/>
+						<param name="opt3" expr="'c'"/>
+						<param name="opt4" expr="'d'"/>
+						<param name="opt5" expr="'e'"/>
+	   	      <filled> 
+
+			    <log> URL_Hit parameter will contain the ip and port of Subdialog Consent VXML page </log>
+			   	<log expr="'Subdialog_Response.errCode resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.error_code"/>
+ 				<log expr="'Subdialog_Response.cg_id resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.cg_id"/>
+				<log expr="'Subdialog_Response.t_id resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.t_id"/>
+				<log expr="'Subdialog_Response.error_desc resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.error_desc"/>
+				<log expr="'Subdialog_Response.cons_time resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.cons_time"/>
+				<log expr="'Subdialog_Response.cons_stat resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.cons_stat"/>
+				
+			    <script srcexpr="'http://'+IP+'/'+servlet_path+'/SwitchCall_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=Monsoon-Contest&amp;dnis='+DNIS+'&amp;realdnis='+DNIS+'&amp;IVRtransid='+trx_id+'&amp;error_code='+confirmUserChoice.error_code+'&amp;cg_id='+confirmUserChoice.cg_id+'&amp;t_id='+confirmUserChoice.t_id+'&amp;error_desc='+confirmUserChoice.error_desc+'&amp;cons_time='+confirmUserChoice.cons_time+'&amp;cons_stat='+confirmUserChoice.cons_stat"/> 
+				<assign name="DBTRANS_ID" expr="confirmUserChoice.t_id"/>
+				<assign name="DBCCG_ID" expr="confirmUserChoice.cg_id"/>
+
+				<assign name="secondconsent" expr="'Y'"/>
+				<assign name="secondconsenttime" expr="start_time()"/>
+				<assign name="IVRtransid" expr="trx_id"/>
+				<assign name="cg_id" expr="confirmUserChoice.cg_id"/>
+				<assign name="error_desc" expr="confirmUserChoice.error_desc"/>
+				<assign name="cons_time" expr="confirmUserChoice.cons_time"/>
+				<assign name="cons_stat" expr="confirmUserChoice.cons_stat"/>
+
+
+			      <if cond="confirmUserChoice.error_code=='0'">  
+					 <goto next="#BillingHit"/>
+			      <else/>
+					 <goto next="Monsoon_Contest_end.vxml"/>
+			      </if> 
+	     </filled>
+	     </subdialog>
+</form>
+
+<form id="BillingHit">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_SUB&amp;INTOKEN=9&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id+'&amp;INPARAM[7]='+DBTRANS_ID+'&amp;INPARAM[8]='+DBCCG_ID"/>
+		<goto next="#ChargingWait"></goto>
+	</block>
+</form>
+
+	<form id="ChargingWait">
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+				<rule id="start1" scope="public">
+					<one-of>
+						<item> 1 </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="false" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/charging_wait.wav'"/>
+			</prompt>
+			<filled>
+				<goto next="#BillingChk"/>
+			</filled>
+			<noinput>
+					<goto next="#BillingChk"/>
+			</noinput>
+			<nomatch>
+					<goto next="#BillingChk"/>
+			</nomatch>
+		</field>
+	</form>
+	
+	<form id="BillingChk">
+		<block>
+			<assign name="drop_point" expr="'Billing_Check'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+					 usr_status=out_string[0];
+					 lang=out_string[1];
+					 circle=out_string[2];
+					 modofsub=out_string[3];
+			</script>
+			<log>circle  is<value expr="circle"/></log>
+			<log>operator is<value expr="operator"/></log>
+			<log>usr_status is<value expr="usr_status"/></log>
+			<log>lang is<value expr="lang"/></log>
+			<log>modofsub is<value expr="modofsub"/></log>
+			
+			<if cond="usr_status=='1'">
+					<prompt bargein="false" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/thank_sub.wav'"/>
+					</prompt>
+
+
+					<!-- As per Kunal Sir request -->
+					<assign name="C_End" expr="start_time()"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+drop_point+hash+modofsub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=Monsoon-Contest&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+					<assign name="C_Start" expr="start_time()"/>
+					<assign name="game_Start" expr="starttime()"/>
+					<script>pricepoint=1;</script>
+					<assign name="rateplanid" expr="'81'" />
+				        <log expr="'rateplanid  @@@@@@@@@@@@@@@@@@@@ =' + rateplanid"/>
+				        <send event="invokechargingsession" namelist="rateplanid ANI"/>
+					<goto next="Monsoon_Contest_MainMenu.vxml"/>
+			<else/>
+					<if cond="delaycharg &lt; 3">
+						<script> delaycharg=delaycharg+1; </script>
+						<goto next="#ChargingWait"/>
+					<else/>
+						<prompt bargein="false" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/delay_charging.wav'"/>
+						</prompt>
+						<goto next="Monsoon_Contest_end.vxml"/>
+					</if>
+			</if>
+		</block>
+</form>
+
+
+</vxml>

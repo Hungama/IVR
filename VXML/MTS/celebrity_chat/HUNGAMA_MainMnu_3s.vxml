@@ -1,0 +1,86 @@
+
+<vxml version="2.1" application="FMJRoot.vxml">      
+    <property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+   <var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="true"/>		
+   <var name="names"/> 
+   
+   <form id="hungamamainMenu3s">
+         <block>
+         
+		<!--<log expr="'welcome to the hungama main menu '"/>
+        
+        	<log expr="' Server ip is :' + IP"/>
+	    	<log expr="'Ani IS : ' + ANI"/> 	
+			<log expr="'DNIS IS : ' + DNIS"/> 		-->	
+		 </block>
+	    <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>
+				  <item>2</item>
+				  <item>3</item>				  			 
+				  <item>4</item>
+				  <item>5</item>				  		      
+                </one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true" timeout="3s">	
+               <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'MM_MainmenuOptions_new.wav'"/>		
+            </prompt>
+		    			
+			
+			<filled>
+				<if cond="mnuopt=='1'">
+				     <clear namelist="mnuopt"/> 		
+					<goto next="aajkahhungama_MainMnu.vxml"/>	
+				<elseif cond="mnuopt=='2'"/>
+				    <clear namelist="mnuopt"/> 
+					<goto next="bollywood_MainMnu.vxml"/>		
+				<elseif cond="mnuopt=='3'"/>
+				    <clear namelist="mnuopt"/> 
+				  	<goto next="musicexpress_MainMnu.vxml"/>
+				<elseif cond="mnuopt=='4'"/>	
+				    <clear namelist="mnuopt"/> 
+				    <goto next="hungamasubscribe3s.vxml"/>	
+				<elseif cond="mnuopt=='5'"/>	
+				    <clear namelist="mnuopt"/> 
+				    <goto next="SelectLang.vxml"/>		
+				</if>
+			</filled>
+			
+			 <noinput timeout="0s">
+			     <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>                
+                 <reprompt/> 
+             </noinput>
+	        
+              <noinput count="3">		  
+                 <goto next="aajkahhungama_MainMnu.vxml"/>	
+              </noinput>
+	        
+             <nomatch>
+                <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'MM_invalid.wav'"/>		
+                <reprompt/>
+             </nomatch> 
+	
+	         <nomatch count="3">
+	             <goto next="aajkahhungama_MainMnu.vxml"/>					
+	         </nomatch>                
+	  </field>	 
+	  
+	  
+    </form> 
+</vxml>
+
+
+
+   

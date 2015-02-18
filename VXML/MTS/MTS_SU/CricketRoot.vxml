@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="CricketRoot.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="Root file for the Hungama_Mod project" />
+	<meta name="Support" content="" />
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	<var name="IP" expr="'10.130.14.106:8088'"/>
+	<var name="ciropr1" expr="''"/>
+	<var name="contentpath" expr="'file:/var/opt/OC/contentrepository/hungama/content/'"/>
+	<var name="promptspath" expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/SU'"/>
+	
+<!--*****************NEWLOGICfor WCMIN*****************************************************************************-->
+	<var name="WCstart_Minute" expr="'0'"/>
+	<var name="amt" expr="0"/>
+	<var name="WC_Used" expr="'0'"/>
+	<var name="WC_flag" expr="0"/>
+	<!--********************IPL***********************-->
+	<var name="ipl_flag" expr="0"/>
+	<var name="IPL_quscounter" expr="1"/>
+	<var name="match_id" expr="0"/>
+	<var name="amt" expr="0"/>
+	<var name="T1" expr="0"/>
+	<var name="T2" expr="0"/>
+	<var name="qusplayed" expr="0"/>
+	<var name="IPLPrompt_Path" expr="'/promptFiles/cricket_unim/IPL'"/>
+	<!--**************************FIFA*******************-->
+<var name="fifa_status" expr="0"/>
+	<var name="fifa_day_remain" expr="0"/>
+	<var name="fifamonth" expr="0"/>
+	<var name="fifamonth_name" expr="0"/>
+	<var name="fifaschdule" expr="0"/>
+	<var name="contentdir" expr=""/>
+	<var name="unike_play_news" expr="0"/>
+	<var name="Match_summary_stat" expr="0"/>
+	<var name="FIFAPrompt_Path" expr="'/promptFiles/cricket_unim/FIFA'"/>
+	<var name="contentpath" expr="'http://192.168.100.212:6666/hungama/'"/> 
+<var name="aNavHistory" expr ="new Array()"/>
+<var name="previous_menu" expr="0"/>
+<!--*********************************Consent log *********************************************-->
+	<var name="consentsub_flag" expr="'false'"/>
+	<var name="pressdtmf" expr="'0'"/>
+	<var name="firstconsent" expr="'N'"/>
+	<var name="firstconsenttime" expr="'NA'"/>
+	<var name="secondconsent" expr="'N'"/>
+	<var name="secondconsenttime" expr="'NA'"/>
+	<var name="ccgresult" expr="'NA'"/>
+	<var name="sub_flag" expr="'false'"/>
+	<var name="IVRtransid" expr="0"/>
+	<var name="cg_id" expr="0"/>
+	<var name="error_desc" expr="0"/>
+	<var name="cons_time" expr="0"/>
+	<var name="cons_stat" expr="0"/>
+	<!--**************************************COMMON CONSENT GATWAY***************************************************************-->
+	<var name="vas_id" expr="''"/>
+	<var name="trx_id" expr="''"/>
+	<var name="msisdn" expr="''"/>
+	<var name="lang_id" expr="''"/>
+	<var name="channel_code" expr="''"/>
+	<var name="event_type" expr="''"/>
+	<var name="event_cost" expr="''"/>
+	<var name="Validity" expr="''"/>
+	<var name="circle_id" expr="''"/>
+	<var name="product_name" expr="''"/>
+	<var name="content_id" expr="''"/>
+	<var name="cp_id" expr="''"/>
+	<var name="opt1" expr="''"/>
+	<var name="opt2" expr="''"/>
+	<var name="opt3" expr="''"/>
+	<var name="opt4" expr="''"/>
+	<var name="opt5" expr="''"/>
+	<var name="Section_Name" expr="'0'" />
+	<var name="modesub" expr="'ND'"/>
+	<var name="pricepoint" expr="'0'"/>
+	<!--***************************************************************************************************************************-->
+<!--********************************UNINOR DOUBLE CONSENT *************************************************-->
+	<var name="PATH" expr="''"/>
+	<var name="LANG" expr="''"/>
+	<var name="trans_id" expr="''"/>
+	<var name="SCHN" expr="''"/>
+	<var name="CP" expr="''"/>
+	<var name="CPPID" expr="''"/>
+	<var name="PRODTYPE" expr="''"/>
+	<var name="PMARKNAME" expr="''"/>
+	<var name="PRICE" expr="''"/>
+	<var name="SE" expr="''"/>
+	<var name="CPTID" expr="''"/>
+	<var name="DT" expr="''"/>
+	<var name="PD" expr="''"/>
+	<var name="SCODE" expr="''"/>
+	<var name="RSV" expr="''"/>
+	<var name="RSV2" expr="''"/>
+<!--*****************NEWLOGIC5MIN***********************************************************************8******-->
+	<var name="balance" expr="'0'"/>
+	<var name="timerflag" expr="'0'"/>
+	<var name="start_BalenceMinute" expr="'0'"/>
+	<var name="total_used_bal" expr="'0'"/>
+	<var name="new_flag" expr="0"/>
+<!--*****************ADVERTISMENT COMPIGN***********************************************************************8******-->
+	<var name="Ad_switch" expr="'0'"/>
+	<var name="ADskip_flag" expr="'0'"/>
+	<var name="AD_id" expr="'0'"/>
+	<var name="AD_name" expr="'0'"/>
+	<var name="ADPrompt_Path" expr="'http://192.168.100.226:8081/promptFiles/ADVERTISMENT/'"/>
+	<var name="add_starttime" expr="0"/>
+	<var name="add_endtime" expr="0"/>
+<var name="Ad_flag" expr="0"/>
+<var name="block_flag" expr="0"/>
+<!--************************************Consent Logs****************************************************-->
+ <var name="pressdtmf" expr="'0'"/>
+<var name="firstconsent" expr="'N'"/>
+<var name="firstconsenttime" expr="'NA'"/>
+<var name="secondconsent" expr="'N'"/>
+<var name="secondconsenttime" expr="'NA'"/>
+<var name="ccgresult" expr="'NA'"/>
+<var name="sub_flag" expr="'false'"/>
+<var name="new_flag" expr="0"/>
+<var name="block_flag" expr="0"/>
+<!--*************************************************************************************************-->
+
+<var name="match_user" expr="0"/>
+<var name="matchscheduledate" expr="0"/>
+<var name="Usagelog" expr="''"/>
+<var name="SECTION" expr="'Userstatus'"/>
+<var name="Section_Name" expr="'0'" />
+<var name="modesub" expr="'ND'" />
+<var name="callcharge" expr="0" />
+
+<var name="Usage_time" expr="0"/>
+	<var name="promo_status" expr="0"/>
+	<var name="ciropr" expr="''"/>
+	<var name="serviceid" expr="'1408'"/>
+	<var name="planid" expr="''"/>
+	<var name="lang" expr="'1'"/>
+	<var name="Prompt_Path" expr="'/promptFiles/cricket_unim'"/>
+	<var name="ball_opt" expr="''"/>
+	<var name="ball" expr="''"/>
+	<var name="ball_counter" expr="1"/>
+	<var name="Total_Run" expr="0"/>
+	<var name="hs" expr="''"/>
+	<var name="quest_no" expr="1"/>
+	<var name="scorepartfirst" expr="0"/>
+	<var name="TOLLMODEL" expr="0"/>
+	<var name="scorepartsecond" expr="''"/>
+	<var name="scorepartthird" expr="0"/>
+	 <var name="score" expr="0"/>
+	<var name="index" expr="1"/>
+	<var name="questionnum" expr="1"/>
+	<var name="SCORE_STATUS" expr="'FALSE'"/>
+	<var name="USER_TYPE" expr="'FALSE'"/>
+	<var name="SCORE_MESSAGE" expr="'FALSE'"/>
+	<var name="FLOW_FLAG_SCORE" expr="'FALSE'"/>
+	<var name="GAME_OVER" expr="'FALSE'"/>
+
+<var name="Sit_Counter" expr="1"/>
+<var name="round" expr="1"/>
+<var name="ANI" expr="'9910883325'"/>
+	<var name="DNIS" expr="'54433'"/>
+	<var name="realDNIS" expr="'54433'"/>
+	<var name="CIRCLE_LANG" expr="0"/>
+	
+	<var name="LANG_DESCRIPTION" expr="'HIN'"/>
+	<var name="LIVE_LANG" expr=""/>
+	
+	<var name="C_Start" expr=""/>
+	<var name="rectime" expr=""/>
+	<var name="feedtime" expr=""/>
+	
+	<var name="currtime" expr=""/>
+	<var name="hash" expr="'%23'"/>
+	<var name="cat" expr="''"/>
+	<var name="subcat" expr="'0'"/>
+	<var name="contentlog" expr="''"/>
+	<var name="song_listen" expr="'End'"/>
+	<var name="compare_time" expr="0"/>
+	<var name="starting_time" expr="0"/>
+	<var name="ContentTime" expr="0"/>
+	<var name="call_stime" expr="'0'"/>
+	
+	<var name="whitelist_user" expr="-1"/>
+    <var name="short_code" expr="'54433'"/>
+    <var name="whitelist_circle" expr="'del'"/>
+     <var name="circle" expr="'del'"/>
+      <var name="operator" expr="'relc'"/>
+    <var name="whitelist_opt" expr="'relc'"/>
+	
+	<var name="unike_play" expr="0"/>
+	
+	<var name="sub_type" expr="'NA'"/>
+	<var name="usr_status" expr="0"/>
+	<var name="frc_status" expr="0"/>
+	<var name="welFlag" expr="'0'"/>
+	<var name="clipFlag" expr="'0'"/>
+	<var name="mcflag" expr="0"/>
+	
+	<var name="servlet_path" expr="'hungama'"/>
+	<var name="dbservlet" expr="'relcricket_dbinteraction'"/>
+	<var name="servlet_path_1" expr="'hungamas'"/>
+	
+	<var name="record_ip" expr="'192.168.100.227:8081'"/>
+	
+	
+	<script srcexpr="'../ECMAScripts/common_files.es'"/>
+	<script srcexpr="'../ECMAScripts/PlayNum.es'"/>		
+	<var name="section_begin" expr="start_time()"/>
+	<script>
+		           
+			var i=0;
+			var j=0;
+			var len=0;
+			var movie_idx=0;
+			var array=new Array();
+			var array1=new Array();
+			var array2=new Array();
+			var amount=0;
+			var planid=0;
+			var ciropr1 = new Object();
+			var ciropr =new Object();
+			var out_string=new Object();
+			var hh=0;
+			var C_End=0;
+			var feedback_status=0;
+			var feedtime=0;
+			var curtime=0;
+			var len=0;
+			var scorepartfirstnew=0;
+			var v=0;
+			var livescore=0;
+			var today=0;
+			var song=0;
+			var movie_idx=0;
+			var song_begin=0;
+			var contestarray=0;
+			var temp=0;
+			var question=0;
+			var rule=0;
+			var matchid=0;
+			var questid=0;
+			var fbmsg=0;
+			var samplefile=0;
+			var nextchoice=0;
+			var sms_status=0;
+			var songcheck=new Array();
+			var songcheck1=new Array();
+			var favSongs=new Object();
+			
+	 </script>
+	<catch event="error.badfetch">
+
+	  <log>Inside Error BadCatch catch  2222</log>  	      		  
+		   <goto next="MTS_End.vxml"></goto>
+
+	 </catch>      
+
+	 <catch event="telephone.disconnect.hangup">
+
+	      <log>Inside Telephone Disconnect Hangup catch  3333</log> 		     
+		   <goto next="MTS_End.vxml"></goto>							
+	 </catch>
+
+	 <catch event="telephone.disconnect">
+
+		   <log>Inside Telephonet Disconnected catch  4444</log>			   				
+		   <goto next="MTS_End.vxml"></goto>
+	 </catch>   
+
+	  <catch event="connection.disconnect.hangup">
+
+		   <log>Inside connection.disconnect.hangup catch  5555</log>			   		
+		   <goto next="MTS_End.vxml"></goto>
+
+	</catch>
+</vxml>
+
+
+

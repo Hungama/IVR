@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModNewUser_TNB.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<var name="movie_idx" expr="0"/>
+
+	<form id="WELNEW">
+		<block>	
+			<if cond="circle=='apd'">
+				<assign name="lang" expr="'02'"/>
+			<elseif cond="circle=='bih'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='chn'"/>
+				<assign name="lang" expr="'02'"/>
+			<elseif cond="circle=='hpd'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='del'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='guj'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='hry'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='kar'"/>
+				<assign name="lang" expr="'02'"/>
+			<elseif cond="circle=='ker'"/>
+				<assign name="lang" expr="'02'"/>
+			<elseif cond="circle=='kol'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='mpd'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='mah'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='mum'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='ori'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='pub'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='raj'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='tnu'"/>
+				<assign name="lang" expr="'02'"/>
+			<elseif cond="circle=='upw'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='upe'"/>
+				<assign name="lang" expr="'01'"/>
+			<elseif cond="circle=='wbl'"/>
+				<assign name="lang" expr="'02'"/>
+			<else/>
+				<assign name="lang" expr="'01'"/>
+			</if>
+				
+			<goto next="#LANGSEL1"></goto>		
+		</block>
+		<field name="nochoice" type="digits?length=1">					
+					
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/welcome_new_1.wav'"/>
+						
+			</prompt>			
+			<filled>
+				<goto next="#LANGSEL1"></goto>				
+			</filled>
+		</field>
+		<noinput>
+			<goto next="#LANGSEL1"></goto>
+		</noinput>
+		<nomatch>
+			<goto next="#LANGSEL1"></goto>
+		</nomatch>
+	</form>
+			
+	<form id="LANGSEL1">
+		<block>
+		
+			<assign name="Section_Name" expr="'LANG_SELECTION'"/>
+			<assign name="var_wel" expr="getRandom(1,5)"/>
+			<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/01/lang_option_'+circle+'_'+var_wel+'.wav'"/>
+										
+			</prompt>
+			
+
+			
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  9  </item>
+
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+						<audio expr="Prompt_Path+'/01/lang01.wav'"/>
+						<audio expr="Prompt_Path+'/01/press_dtmf1.wav'"/>
+						<audio expr="Prompt_Path+'/01/lang02.wav'"/>
+						<audio expr="Prompt_Path+'/01/press_dtmf2.wav'"/>
+						<audio expr="Prompt_Path+'/01/lang12.wav'"/>
+						<audio expr="Prompt_Path+'/01/press_dtmf3.wav'"/>
+																					
+				</prompt>
+			<filled>
+				<if cond="choice=='1'">
+						<assign name="lang" expr="'01'"/>
+						<if cond="usr_status=='-1'">
+						    <prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+							</prompt>
+							<goto next="Hungama_ModSub_TNB.vxml"/>
+						<else/>
+							
+						    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks_acc.wav'"/>
+							</prompt>							
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						</if>
+				<elseif cond="choice == '2'"/>
+						<assign name="lang" expr="'02'"/>
+							<if cond="usr_status=='-1'">
+							    <prompt bargein="true" timeout="0s">
+									<audio expr="Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+								</prompt>
+								<goto next="Hungama_ModSub_TNB.vxml"/>
+							<else/>
+
+							    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+								<prompt bargein="true" timeout="0s">
+									<audio expr="Prompt_Path+'/'+lang+'/lang_thanks_acc.wav'"/>
+								</prompt>							
+								<goto next="Hungama_ModMainMenu.vxml"/>
+						</if>
+				<elseif cond="choice == '3'"/>
+					<assign name="lang" expr="'12'"/>
+						<if cond="usr_status=='-1'">
+						    <prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+							</prompt>
+							<goto next="Hungama_ModSub_TNB.vxml"/>
+						<else/>
+
+						    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks_acc.wav'"/>
+							</prompt>							
+							<goto next="Hungama_ModMainMenu.vxml"/>
+					</if>
+				<elseif cond="choice == '9'"/>
+						<goto next="Hungama_ModMngAccnt.vxml"></goto>
+				
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="usr_status=='-1'">
+				<assign name="lang" expr="'01'"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="Hungama_ModSub_TNB.vxml"/>
+			<else/>
+				<goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="usr_status=='-1'">
+				<assign name="lang" expr="'01'"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="Hungama_ModSub_TNB.vxml"/>
+			<else/>
+				<goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+		</nomatch>
+	</form>
+</vxml>

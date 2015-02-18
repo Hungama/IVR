@@ -1,0 +1,146 @@
+<vxml version="2.1" application="Regional_PortalRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="Regional_MPD_Play.vxml" content="" />
+
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<var name="cRBTMODE" expr="''"></var>
+	<var name="CLIPID" expr="''"></var>
+        <var name="len_rng" expr="0"/>
+        <var name="cRBTSTATUS" expr="''"/>
+        <var name="Song_counter" expr="0"/>
+	<var name="nextchoice" expr="'0'"/>  
+	<!--<var name="total_time" expr="0"/>-->	
+	<var name="TotalFM" expr="0"/>	      
+	<!--<var name="Song_Path" expr="0"/>-->
+	<script>
+		var UserStatus1=new Object();
+		var out_string = new Object();
+		var favSongs=new Object();
+		var out_string=new Object();
+		var spzone=new Object();			
+		var out_string=new Object();
+		<!--KeyPad_Cnt=parseInt(KeyPad_Cnt);-->
+		Song_counter=parseInt(Song_counter);
+	</script>
+	
+	<form id="FETCHSONGS">
+		<block>
+			<assign name="Section_Name" expr="'FETCHSONGS'"/>													
+			<log> fetching songs </log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Regional_Portal/'+operator+'/songconfig/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+				array1.length=0;
+				unike_play=0;
+			</script>					
+			<assign name="len" expr="favSongs.length" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+				<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+				<goto next="Regional_End.vxml"></goto>
+			</if>
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+						array1[j] = favSongs[j];						   
+					   }
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>					
+			<assign name="unike_play" expr="getRandom(1,len)"/>
+			<goto next="#next" />				
+		</block>
+	</form>
+	
+	<form id="next">
+		<block>		
+			<assign name="Section_Name" expr="'SONG_PLAY'+playconfig"/>
+			<log>Section Name isssssss  <value expr="Section_Name"/>  </log>			
+			<assign name="total_time" expr="rim(C_Start)"/>
+			<log>valuEEEEEEEEEEEEEEEEEEEE unike_play  is	<value expr="unike_play"/>    </log>					
+
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="array1[unike_play]"/>    </log>
+			<script>
+				songID = array1[unike_play];
+			</script>
+			<log>AFTER    valuEEEEEEEEEEEEEEEEEEEE unike_play  is	<value expr="unike_play"/>    </log>					
+			 <assign name="song_begin" expr="starttime()"/>
+			 <assign name="song_listen" expr="'START'" />
+			 
+	
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+lang+'/'+songID+'.wav'"/>
+			</prompt>				
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<filled>
+				<assign name="nextchoice" expr="choice"></assign>
+				<goto next="#contentlogin" />				
+			</filled>
+
+			<noinput>
+				<assign name="nextchoice" expr="'1'"/>
+				<goto next="#contentlogin" />
+			</noinput>
+			<nomatch>
+				<assign name="nextchoice" expr="'1'"/>
+				<goto next="#contentlogin" />
+			</nomatch>
+		</field>			
+	</form>		
+	<form id="contentlogin">
+		<block>
+				 <assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="rim(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log expr="'compare_time=='+compare_time"></log>
+				 <log expr="'ContentTime=='+ContentTime"></log>
+				 <log expr="'hash=='+hash"></log>
+				 <log expr="'songID=='+songID"></log>
+				 <log expr="'cat=='+cat"></log>
+				 <log expr="'subcat=='+subcat"></log>
+				 <log expr="'contentlog=='+contentlog"></log>
+				 <assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+
+				 <if cond="nextchoice=='1'">
+					 <prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+lang+'/tollmodal_3rs_del.wav'"/>
+					</prompt>
+					<submit expr="'../MND/MND_SelectLang.vxml'"/>
+				<else/>
+					 <prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+lang+'/tollmodal_3rs_del.wav'"/>
+					</prompt>
+					<submit expr="'../MND/MND_SelectLang.vxml'"/>
+				</if>
+		</block>
+
+	</form>
+ 	<error>
+		<if cond="nextchoice=='3'">
+			<submit expr="'../MND/MND_SelectLang.vxml'"/>
+		<else/>
+			<submit expr="'../MND/MND_SelectLang.vxml'"/>
+		</if>
+	</error> 	
+</vxml>

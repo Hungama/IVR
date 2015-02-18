@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="voiceRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="SelectLang.vxml" content="" />
+
+	<meta name="Author" content="anita " />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="catnam" expr="''"/>
+	<var name="catname" expr="''"/>
+	<var name="catnum" expr="''"/>
+	
+	 <var name="wellang" expr="''" />
+	 
+<var name="c_test" expr="''"/>
+<var name="c_test_day" expr="1"/>		
+	<script>
+		var ciropr1 = new Object();
+   		var maxlang=5;
+		var totarray=new Array();
+		var max_len=0;
+		var cnt=0;
+		var lngcntr=1;
+	</script>
+<form id="contentlogin">
+	<block>
+	  	<assign name="song_listen" expr="'END'" />
+		<log expr="'!!!!!!!!!!!!!!!!!!!!song_begin=='+time_duration(song_begin)"></log>
+		<assign name="compare_time" expr="time_duration(song_begin)"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+		<log expr="'!!!!!!!!!!!!!!!!!!!!compare_time=='+compare_time"></log>
+		<log expr="'!!!!!!!!!!!!!!!!!!!!ContentTime=='+ContentTime"></log>
+		<log expr="'!!!!!!!!!!!!!!!!!!!!hash=='+hash"></log>
+		<log expr="'!!!!!!!!!!!!!!!!!!!!catnum=='+catnum"></log>
+		<log expr="'!!!!!!!!!!!!!!!!!!!!contentlog=='+contentlog"></log>
+		<log expr="'!!!!!!!!!!!!!!!!!!!!contentfileg=='+catnam"></log>
+		<!--<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign> -->
+		<assign name="contentlog" expr="contentlog+catname+hash+catnum+hash+compare_time+hash"></assign>
+		<goto next="IVRPORTAL.vxml"/>
+	</block>
+
+</form>
+
+	
+</vxml>

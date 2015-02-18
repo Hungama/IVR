@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="HoneyBee_Root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="HoneyBee_End.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+	<form id="END">
+		<block>
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			</if>
+			<!--<if cond="ANI=='8459506442' &amp;&amp; (Section_Name=='First_Consent' || Section_Name=='HELP_SECTION' || Section_Name=='ROOT_MENU_WELCOME'  || Section_Name=='WELCOME_CAT')">-->
+			<if cond="ANI=='84595064421' &amp;&amp; songID!='NA'">
+			  	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.FETCH_TOPSONG_CAT&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+				<assign name="len" expr="out_string.length" />
+				<log>Length  is	<value expr="len"/>    </log>
+				<script>
+					playconfig = out_string[0];
+				</script>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ReadConfigSongShuffle10?ConfigPath=MuConfig/'+operator+'/songconfig/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+				<script>
+					arrayPlayContent.length=0;
+					unike_play=0;				
+				</script>
+				<assign name="len" expr="favSongs.length"/>
+				<assign name="unike_play" expr="getRandom(1,len)" />
+				<script>
+					<![CDATA[
+						   for(j=0; j<len ;  j++)
+						   {  	  
+							arrayPlayContent[j] = favSongs[j];
+						   }
+					]]>			
+				</script>
+				<script>
+					var songcheck1=arrayPlayContent[unike_play].split("_");
+					Song_Path=songcheck1[0];
+					songID = arrayPlayContent[unike_play];
+				</script>	
+				<log>	Song ID  is<value expr="songID"/></log>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.GET_SONGNAME_DAC&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+songID"/>
+				<script>
+					DNIS = out_string[0];
+				</script>
+				<log>	DAC code is<value expr="DNIS"/></log>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_CT_DETAILS&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+service_id+'&amp;INPARAM[3]='+usr_status+'&amp;INPARAM[4]='+songID+'&amp;INPARAM[5]='+lang+'&amp;INPARAM[6]='+Section_Name"/>
+			</if>
+			<if cond="sub_flag=='true'">
+			         <script srcexpr="'http://'+IP+'/hungama/MTS_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1101&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;IVRtransid='+IVRtransid+'&amp;cg_id='+cg_id+'&amp;error_desc='+error_desc+'&amp;cons_time='+cons_time+'&amp;cons_stat='+cons_stat"/>
+			</if>
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_CT_DETAILS&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+service_id+'&amp;INPARAM[3]='+usr_status+'&amp;INPARAM[4]='+songID+'&amp;INPARAM[5]='+lang+'&amp;INPARAM[6]='+Section_Name"/>-->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_CT_SMS&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+mode_of_sub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=MOD&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<exit/>
+		</block>
+	</form>
+	
+	<catch event="error.badfetch">		 								
+		<exit/>
+	</catch>      
+
+	<catch event="telephone.disconnect.hangup">
+		<exit/>
+	</catch>
+
+	<catch event="telephone.disconnect">
+		<exit/>
+	</catch>   
+
+	<catch event="connection.disconnect.hangup">
+		<exit/>
+	</catch>
+
+</vxml>

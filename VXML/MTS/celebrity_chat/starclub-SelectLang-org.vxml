@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="FMJRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="starclub-SelectLang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	
+	<var name="song" expr="''" />
+	
+	<var name="VDay_Date" expr="''" />
+	
+	<var name="Song_Type" expr="''" />
+	
+	<var name="Song_Path" expr="''" />
+	<var name="sessionid" expr="''" />
+	 <var name="wellang" expr="''" />
+	 
+	 <var name="langcntr" expr="1" />
+	 <var name="count" expr="0" />
+	 
+	<script>
+		var out_string=new Object();
+	</script>
+
+
+
+   <form id="Main">	
+   
+			  <block>
+			  
+				
+					<assign name="C_Start" expr="start_time()"/>
+			  			<script>  
+			                       DNIS=session.connection.local.uri;                   
+			                       ANI=session.connection.remote.uri;
+			   
+                         </script>
+						 
+			  <if cond="ANI==''">
+      	         <assign name="ANI" expr="'9999216077'"/>		  	
+    		  </if>			 
+              <script>
+				var length = ANI.length;
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+			  </script>
+			    
+			    
+	     	<assign name="realDNIS" expr="DNIS"/>
+						
+			
+			
+             <!-- <log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+              <log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/> 
+              <log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>    -->
+
+				<script srcexpr="'http://'+IP+'/hungama/hungama_check?ANI='+ANI"/>
+                 <!-- <assign name="ciropr" expr="ciropr1.value"/> -->
+				<script>ciropr=ciropr1.value;</script>
+		  			<!--	<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/> -->
+		  				<script>
+		  					var splitstr=ciropr.split("#");
+		  					operator=splitstr[1];
+		  					circle=splitstr[2];
+		  				</script>
+		  				       					       
+		  			<!--	<log>circle  is	<value expr="circle"/>    </log> 
+				<log>operator is <value expr="operator"/>    </log>-->
+              
+			   <!-- <script srcexpr="'http://'+IP+'/'+SERVLETPATH+'/hungama_billing?TOKEN=16&amp;ANI='+ANI"/>	
+                <script> lang_status1=lang_status.value; </script>			
+				
+	          	-->		
+		  
+         		<!-- <log expr="'@@@@@@ call start_BalenceMinute is '+start_BalenceMinute"/> -->
+				 
+				<assign name ="sessionid" expr="session.connection.ccxml.sessionid"/> 
+				    	
+			<!-- <log> @@@@sessionid is <value expr="session.connection.ccxml.sessionid"/> </log>	   
+			 <log> @@@@DNI is <value expr="session.connection.local.uri"/> </log>	
+			 <log> @@@@ANI is <value expr="session.connection.remote.uri"/> </log> -->
+			 
+			 
+			<if cond="operator=='relm' || operator=='relc'">
+					<assign name="dbservlet" expr="'docomo_fmjdbinteraction'"/>
+					<assign name="serviceid" expr="'1005'"/>
+					<assign name="planid" expr="'0'"/>
+					<assign name="c_planid" expr="'0'"/>
+					<assign name="f_planid" expr="'0'"/>
+			<elseif cond="operator=='unim'"/>
+					<assign name="dbservlet" expr="'docomo_fmjdbinteraction'"/>
+					<assign name="serviceid" expr="1005''"/>
+					<assign name="planid" expr="'0'"/>
+					<assign name="c_planid" expr="'0'"/>
+			<elseif cond="operator=='tatm'"/>
+					<assign name="dbservlet" expr="'docomo_fmjdbinteraction'"/>
+					<assign name="serviceid" expr="'1005'"/>
+ 					<assign name="planid" expr="'18'"/>
+ 					<assign name="f_planid" expr="'19'"/>
+ 					<assign name="c_planid" expr="'20'"/>
+ 			<elseif cond="operator=='tatc'"/>
+				<assign name="dbservlet" expr="'indicom_fmjdbinteraction'"/>
+				<assign name="serviceid" expr="'1605'"/>
+ 				<assign name="planid" expr="'28'"/>
+ 				<assign name="c_planid" expr="'31'"/>
+ 				<assign name="f_planid" expr="'30'"/>
+ 			
+       		<else/>
+					<assign name="dbservlet" expr="'docomo_fmjdbinteraction'"/>
+					<assign name="serviceid" expr="'1005'"/>
+ 					<assign name="planid" expr="'18'"/>
+ 					<assign name="f_planid" expr="'19'"/>
+ 					<assign name="c_planid" expr="'20'"/>
+			</if>
+						
+			 <if cond="DNIS=='66291698' || DNIS=='30781979'|| DNIS=='011566660' || DNIS=='566660' || DNIS=='0111566660'">
+			 	<assign name="DNIS" expr="'566660'"/>
+			  <!--  <log expr="'Altacart App'"/> -->
+					<goto next="#select_lang"/>
+    				
+			<else if cond="DNIS=='66291032' || DNIS=='01156666' || DNIS=='56666' || DNIS=='011156666'"/>
+					<assign name="DNIS" expr="'56666'"/>
+					<goto next="#USRSTATUS"></goto>
+			</if>
+		</block>
+</form>
+
+<form id="USRSTATUS">
+		<block>
+		
+			  
+			<!--<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?TOKEN=1&amp;ANI='+ANI+'&amp;DNIS='+DNIS"/>
+			<script> usr_status=sub_status.value; </script> -->
+								
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						 {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						  }
+
+					]]>
+			
+			</script>					
+								
+			<!--<log expr="'usr_status @@@@@@@@@ '+usr_status"></log> -->
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+		<!--	<log expr="'contentlog=='+contentlog"></log> -->
+			<if cond="usr_status=='-1'">
+				<assign name="newuser" expr="1"/>
+				<goto next="#select_lang"></goto>
+			
+			
+			<elseif cond="usr_status=='0'"/>
+			
+			
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'HIN/charge_req_recd.wav'"/>
+				</prompt>
+			
+			<if cond="count==3">
+				<exit/>
+			<else/>
+				<script>count=count+1;</script>
+				<goto next="#USRSTATUS"></goto>
+			</if>	
+			
+			
+			<elseif cond="usr_status=='1'"/>
+				<script> 					 
+					    balance=balance*60;
+					    timerflag=1;   
+				</script>
+				
+				<script>
+  				       if(timerflag==1)
+                		 start_BalenceMinute=start_time();
+ 	
+ 			     </script>  
+ 			   <!--  <log expr="'Call Start Balance Minute @@@@@@@@@ '+start_BalenceMinute"></log> -->
+ 			     	
+			<if cond="lang=='01'">
+    			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+    		<elseif cond="lang=='02'" />
+    			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+    		<elseif cond="lang=='07'" />
+    			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+    		<elseif cond="lang=='08'" />
+    			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+     		<else/>
+    			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>		
+    		</if> 
+    		
+    		<if cond="newuser==0">
+    			<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+LANG_DESCRIPTION+'/welcome_afternoon_mon.wav'"/>
+				</prompt>
+			</if>
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"></goto>	
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+LANG_DESCRIPTION+'/charge_req_recd.wav'"/>
+				</prompt>
+				<exit/>
+			</if>
+		</block>
+	</form>
+	
+	<form id="select_lang">
+    
+		<field name="starclubintro">               
+		    	 
+				 <grammar mode="dtmf" root="start" version="1.0">
+                   <rule id="start" scope="public">
+                     <one-of>
+				          <item>1</item>
+				          <item>2</item>	
+                          <item>3</item>	
+                          <item>4</item>	
+                          <item>5</item>	
+                          <item>6</item>	
+                          <item>7</item>	
+                          <item>8</item>	
+                          <item>9</item>	
+                          <item>0</item>	               			 
+				          <item>#</item>
+				          <item>*</item>			      
+                    </one-of>
+                </rule>
+               </grammar> 
+			     	
+			     <if cond="usr_status=='-1'">		 
+                 <prompt bargein="true">
+				    <audio expr="Prompt_Path+'HIN/'+'welcome_new.wav'" offsetexpr="150s"/>		
+	   	         </prompt> 
+	   	         </if>
+				 
+              <filled>                            
+                   <clear namelist="starclubintro"/> 
+          
+	
+			        <goto nextitem="langopt"/>				   	
+   			       
+              </filled>
+			  
+			  <noinput>		  
+	             <clear namelist="starclubintro"/> 	
+     
+					<prompt bargein="true" timeout="3s">					        				
+						<audio expr="Prompt_Path+LANG_DESCRIPTION+'/language_option.wav'"/>				   		
+				    </prompt>
+			        <goto nextitem="langopt"/>				   	
+   		
+              </noinput>	
+            </field>			
+			
+			
+			<field name="langopt">
+			  <grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>						
+						<item>1</item>
+						<item>2</item>												
+					</one-of>
+				</rule>
+			  </grammar>
+			<!--	<log expr="'Before language Promptd========lang'+langcntr+'.wav' "/> -->
+			  <prompt bargein="true"  timeout="0s">
+			        <audio expr="Prompt_Path+LANG_DESCRIPTION+'/lang'+langcntr+'.wav'"/>
+  	   	      </prompt> 			 
+			  <!-- <log expr="'Inbetween dtmf' "/> -->
+			  <prompt bargein="true"  timeout="1s">
+			       <audio expr="Prompt_Path+LANG_DESCRIPTION+'/press_dtmf'+langcntr+'.wav'"/>
+  	   	      </prompt>
+					
+					
+				<filled>
+				      <if cond="langopt=='1'">
+					     <assign name="lang" expr="'01'"/> 
+					<!--	 <log>LANGUAGE SELECTED first IS == <value expr="lang"/></log> -->
+						  <prompt bargein="false">	
+                             <audio expr="Prompt_Path+'HIN/'+'lang_thanks.wav'"/>		
+                          </prompt> 
+                          <if cond="timerflag=='1'">	
+							 <!-- <script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?TOKEN=17&mp;ANI='+ANI+'&amp;DNIS='+DNIS+'&amp;LANG='+lang+'&amp;operatorid='+operator+'&amp;circleid='+circle+'&amp;servicesid=1005'"/>	-->
+							 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>	
+						       <script>
+						         total_used_bal=chkBalenceMinute(start_BalenceMinute);
+            	                 curbalance=balance-total_used_bal;  						  
+						       </script>
+						    <!--   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					    	   <log expr="'@@@@@@ left balance is '+curbalance"/> -->
+    	                       	<if cond="curbalance &lt;= '0'">          
+            	                	 <goto next="TopupRenew.vxml"/>
+	                           </if>     
+						      </if>						  			
+							 <goto next="#Mania"/>		
+				      <elseif cond="langopt=='2'"/>
+					     <assign name="lang" expr="'02'"/> 
+						<!-- <log>LANGUAGE SELECTED second IS == <value expr="lang"/></log> -->
+						 <prompt bargein="false">	
+                             <audio expr="Prompt_Path+'ENG/'+'lang_thanks.wav'"/>								 	
+                          </prompt> 
+                          <if cond="timerflag=='1'">
+							  <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>	
+						       <script>
+						         total_used_bal=chkBalenceMinute(start_BalenceMinute);
+        	                     curbalance=balance-total_used_bal;  						  
+						       </script>
+						      <!-- <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						       <log expr="'@@@@@@ left balance is '+curbalance"/> -->
+                        	   <if cond="curbalance &lt;= '0'">          
+                            	 <goto next="TopupRenew.vxml"/>
+	                           </if>     
+					      </if>						  
+						 <goto next="#Mania"/>		
+				      <elseif cond="langopt=='07'"/>
+				  	     <assign name="lang" expr="'t'"/> 
+						<!-- <log>LANGUAGE SELECTED third IS == <value expr="lang"/></log> -->
+						 <prompt bargein="false">	
+                             <audio expr="Prompt_Path+'TAM/'+'lang_thanks.wav'"/>		
+                          </prompt> 
+                          <if cond="timerflag=='1'">
+						  	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>	
+					         <script>
+					        	 total_used_bal=chkBalenceMinute(start_BalenceMinute);
+	                             curbalance=balance-total_used_bal;  						  
+						       </script>
+						     <!--  <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						       <log expr="'@@@@@@ left balance is '+curbalance"/> -->
+                	           <if cond="curbalance &lt;= '0'">          
+                    	         <goto next="TopupRenew.vxml"/>
+                        	   </if>     
+					      </if>						  
+						 <goto next="#Mania"/>																												
+				      <elseif cond="langopt=='08'"/>
+				         <assign name="lang" expr="'tel'"/> 
+						<!-- <log>LANGUAGE SELECTED fourth IS == <value expr="lang"/></log> -->
+						 <prompt bargein="false">	
+                             <audio expr="Prompt_Path+'TEL/'+'lang_thanks.wav'"/>		
+                          </prompt> 
+                          <if cond="timerflag=='1'">
+						  	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>	
+	                        <script>
+					        	 total_used_bal=chkBalenceMinute(start_BalenceMinute);
+	                             curbalance=balance-total_used_bal;  						  
+					       	</script>
+						      <!-- <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						       <log expr="'@@@@@@ left balance is '+curbalance"/> -->
+            	               <if cond="curbalance &lt;= '0'">          
+                	             <goto next="TopupRenew.vxml"/>
+                    	       </if>     
+					    	  </if>						  
+						 <goto next="#Mania"/>		     				  				    
+				      </if>
+							
+				</filled>
+					
+			    <nomatch>				    
+					<script>langcntr=1; </script>          		     
+					<prompt>						
+						<audio expr="Prompt_Path+LANG_DESCRIPTION+'/invalidoption.wav'"/>		 
+			   		</prompt>
+			   		 <goto nextitem="langopt"/>	
+		   	    </nomatch>
+				<noinput>
+				<!--	<log expr="'1....Language Counter=========>'+langcntr"/>	-->		     
+  			         <script>langcntr=langcntr+1; </script>
+  			      <!--   <log expr="'111....Language Counter=========>'+langcntr"/> -->
+             		 <if cond="langcntr &gt; maxlang">		   
+       	               <script>	langcntr=1; </script>
+       	            <!--   <log expr="'2222222222....Language Counter=========>'+langcntr"/> -->
+          		     </if>		
+          		  <!--   <log expr="'2....Language Counter=========>'+langcntr"/>	-->		
+					 <goto nextitem="langopt"/>	
+				</noinput>
+				
+		</field>
+		
+	  
+    </form>
+
+
+	<form id="Mania" scope="dialog" >
+		<block>
+		
+		
+		  
+		<!-- <log expr="'@@@@@@ call start_BalenceMinute is '+start_BalenceMinute"/> -->
+		     
+			<if cond="lang=='01'">
+    			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+    		<elseif cond="lang=='02'" />
+    			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+    		<elseif cond="lang=='p'" />
+    			<assign name="LANG_DESCRIPTION" expr="'PUN'"/>
+    		<elseif cond="lang=='mr'" />
+    			<assign name="LANG_DESCRIPTION" expr="'MAR'"/>
+    		<elseif cond="lang=='k'" />
+    			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+    		<elseif cond="lang=='07'" />
+    			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+    		<elseif cond="lang=='08'" />
+    			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+    		<elseif cond="lang=='c'" />
+    			<assign name="LANG_DESCRIPTION" expr="'CHATTISGARHI'"/>
+    		<elseif cond="lang=='b'" />
+    			<assign name="LANG_DESCRIPTION" expr="'BENGALI'"/>
+    		<elseif cond="lang=='guj'" />
+    			<assign name="LANG_DESCRIPTION" expr="'GUJRATI'"/>
+    		<elseif cond="lang=='v'" />
+    			<assign name="LANG_DESCRIPTION" expr="'BHOJPURI'"/>
+    		<elseif cond="lang=='m'" />
+    			<assign name="LANG_DESCRIPTION" expr="'MALYALAM'"/>
+    		<elseif cond="lang=='o'" />
+    			<assign name="LANG_DESCRIPTION" expr="'ORRIYA'"/>
+    		<elseif cond="lang=='hr'" />
+    			<assign name="LANG_DESCRIPTION" expr="'HARYANVI'"/>
+    		<elseif cond="lang=='rj'" />
+    			<assign name="LANG_DESCRIPTION" expr="'RAJASTHANI'"/>
+    		<elseif cond="lang=='a'" />
+    			<assign name="LANG_DESCRIPTION" expr="'ASSAMESE'"/>
+    		<elseif cond="lang=='hm'" />
+    			<assign name="LANG_DESCRIPTION" expr="'HIMACHALI'"/>
+    		<elseif cond="lang=='mn'" />
+    			<assign name="LANG_DESCRIPTION" expr="'MANIPURI'"/>
+    		<elseif cond="lang=='ks'" />
+    			<assign name="LANG_DESCRIPTION" expr="'KASHMIRI'"/>
+    		<elseif cond="lang=='km'" />
+    			<assign name="LANG_DESCRIPTION" expr="'KAMAUNI'"/>
+    		<else/>
+    			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>		
+    		</if>  			
+			
+		<!--	<log> #### select language is <value expr="LANG_DESCRIPTION"/> </log> -->
+			
+			<if cond="DNIS=='56666'">
+				<if cond="timerflag=='1'">
+					 <script>
+					     total_used_bal=chkBalenceMinute(start_BalenceMinute);
+                         curbalance=balance-total_used_bal;  						  
+				    </script>
+				 <!--   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				    <log expr="'@@@@@@ left balance is '+curbalance"/> -->
+                    <if cond="curbalance &lt;= '0'">          
+                       <goto next="TopupRenew.vxml"/>
+                    </if>     
+				</if>	
+				<if cond="usr_status=='1'">		
+    				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>						
+    			<else/>
+    				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml"/>
+    			</if>
+  		
+    		<elseif cond="DNIS=='566660'" /> <!--Alacart Model -->
+			   
+				<goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/>
+					
+    		<else/>
+    			<if cond="timerflag=='1'">
+					 <script>
+					     total_used_bal=chkBalenceMinute(start_BalenceMinute);
+                         curbalance=balance-total_used_bal;  						  
+				    </script>
+				  <!--  <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				    <log expr="'@@@@@@ left balance is '+curbalance"/> -->
+                    <if cond="curbalance &lt;= '0'">          
+                       <goto next="TopupRenew.vxml"/>
+                    </if>     
+				</if>	
+				<if cond="usr_status=='1'">		
+    				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>						
+    			<else/>
+    				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml"/>
+    			</if>		
+		</if>	  
+				  			
+    	</block>  
+		
+	  
+    </form>    
+
+</vxml>

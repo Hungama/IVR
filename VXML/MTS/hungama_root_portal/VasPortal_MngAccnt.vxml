@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="VasPortal_PortalRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="VasPortal_MngAccnt.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<var name="cRBTSTATUS" expr="''"/>	
+	<var name="MM_Value" expr="0"/>
+	<script> 	
+		var UserStatus1=new Object();		
+	</script>
+	<form id="AcntOption">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT_MANAGER'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  8  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/lang_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="Section_Name" expr="'AcntLanguageChange'"/>		
+					<goto next="VasPortallangSelection.vxml#EXISITNGLANGSEL1"/>
+				<elseif cond="choice=='8'"/>
+					<goto next="VasPortalUserStatus.vxml"/>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<goto next="VasPortallangSelection.vxml#EXISITNGLANGSEL1"/>
+		</noinput>
+		<noinput count="2">
+			<goto next="VasPortallangSelection.vxml#EXISITNGLANGSEL1"/>
+		</noinput>
+		<noinput count="3">
+			<goto next="VasPortalUserStatus.vxml"/>
+		</noinput>
+		<nomatch count="1">
+			<goto next="VasPortallangSelection.vxml#EXISITNGLANGSEL1"/>
+		</nomatch>
+		<nomatch count="2">
+			<goto next="VasPortallangSelection.vxml#EXISITNGLANGSEL1"/>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="VasPortalUserStatus.vxml"/>
+		</nomatch>
+	</form>
+</vxml>

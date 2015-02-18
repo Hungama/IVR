@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="CricketRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="SMSScoreAlert.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	<script>
+		var out_string=new Object();
+	</script>
+	<form id="deactivate">
+		<block>
+		
+				<assign name="SECTION" expr="'SCOREALERT'"/>
+		<assign name="section_begin" expr="start_time()"/>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MTS_cricket.CRICKET_SMS_ALERT&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+			
+			<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath+'/'+lang+'/nosms_thanks.wav'"/>
+			</prompt>
+					
+			<goto next="MainMenu.vxml"/>
+
+	</block>
+
+	</form>
+</vxml>

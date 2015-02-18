@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="CricketRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="AccountManager.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	<script>
+		var array2=new Array();
+	</script>
+
+
+	<form id="AccountManager">
+	<block>
+			
+	
+		<assign name="Usage_time" expr="time_duration(section_begin)"/>
+		<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+		<assign name="SECTION" expr="'ACCOUNTMANAGER'"/>
+		<assign name="Section_Name" expr="'ACCOUNTMANAGER'"/>
+		<assign name="section_begin" expr="start_time()"/>
+
+	</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  0  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath+'/'+lang+'/welcome_acmanager.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#ChngLanguage"></goto>
+				<elseif cond="choice=='2'"/>
+					<goto next="#Unsubscription"></goto>
+				<elseif cond="choice=='9'"/>
+					<goto next="MainMenu.vxml"></goto>
+				<elseif cond="choice=='0'"/>
+					<goto next="#AccountManager"></goto>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="MainMenu.vxml" />
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="MainMenu.vxml" />
+		</nomatch>
+	</form>
+	<form id="ChngLanguage">
+	
+			<block>
+			
+				<assign name="Section_Name" expr="'ACCOUNTMANAGER_LANGSEL'"/>
+				
+				<assign name="section_begin" expr="start_time()"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=cricketconfig/lang/acm_langorder_'+circle+'.cfg'"/>
+				<script>
+					array2.length=0;
+				</script>
+				<assign name="movie_idx" expr="0"/>
+				
+				<assign name="len" expr="favSongs.length" />
+				<assign name="i" expr="0" />
+				<script>
+					<![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  	
+								array2[j] = favSongs[j];						   
+					   }
+	
+					]]>		
+				</script> 
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[2]  is	<value expr="array2[0]"/>    </log>	
+				
+			</block>
+				<field name="choice">
+						<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item> 9  </item>
+								 <item> 0  </item>
+							</one-of>
+						</rule>
+						</grammar>
+						
+				
+					<prompt bargein="true" timeout="1s">
+						<foreach item="names" array="array2">
+							<mark nameexpr="movie_idx++"/>
+	
+							<log>	song is is    	<value expr="movie_idx"/>  	</log>
+							<log>	names is is    	<value expr="names"/>  	</log>
+							<audio expr="promptspath+'/'+names+'/language_'+names+'.wav'"/>
+							<audio expr="promptspath+'/'+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+						</foreach>						
+					
+				</prompt>
+	
+					<filled>
+					<if cond="choice=='9'">
+						<goto next="MainMenu.vxml"></goto>
+					<elseif cond="choice=='0'"/>
+						<goto next="#AccountManager"></goto>
+					</if>
+						<if cond="choice &lt; len+1">
+						<assign name="lang" expr="array2[--choice]"/>
+	
+						<log expr="'selected language is '+lang"/>
+							
+									<prompt bargein="true" timeout="0s">
+										<audio expr="promptspath+'/'+lang+'/lang_thanks.wav'"/>
+									</prompt>
+									
+									<if cond="TOLLMODEL=='FREE'">
+										<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MTS_cricket.CRICKET_UPDATELANG&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+										<goto next="MainMenu.vxml"/>
+									<else/>
+										 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MTS_cricket.CRICKET_LANG_TM&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=UPDATE&amp;INPARAM[2]='+lang"/>
+										 <assign name="usr_status" expr="'1'"/>
+										 <goto next="MainMenu.vxml"/>
+									</if>
+							
+	
+						</if>
+					</filled>
+				
+					<noinput count="1">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</noinput>
+					<noinput count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</noinput>
+					<noinput count="3">
+						 <goto next="MainMenu.vxml#category_selection"/>
+					</noinput>
+					<nomatch count="1">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<reprompt></reprompt>
+					</nomatch>
+					<nomatch count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<reprompt></reprompt>
+					</nomatch>
+	
+					<nomatch count="3">
+					 <goto next="MainMenu.vxml#category_selection"/>
+					</nomatch>
+				</field>
+			
+		</form>
+	
+	
+	
+	
+	<form id="Unsubscription">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNTMANAGER_UNSUB'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start2" version="1.0">
+						<rule id="start2" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  9 </item>
+								 <item>  0  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath+'/'+lang+'/acmanager_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<!-- UNSUB REQUEST -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MTS_cricket.CRICKET_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+										
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath+'/'+lang+'/thanks_nosub.wav'"/>
+					</prompt>
+					<goto next="MTS_End.vxml"></goto>
+				<elseif cond="choice=='2'"/>
+					<goto next="MainMenu.vxml"></goto>
+				<elseif cond="choice=='9'"/>
+					<goto next="MainMenu.vxml"></goto>
+				<elseif cond="choice=='0'"/>
+					<goto next="#AccountManager"></goto>					
+				</if>
+			</filled>
+			
+			<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+						<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			 <goto next="MainMenu.vxml#category_selection"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			 <goto next="MainMenu.vxml#category_selection"/>
+		</nomatch>
+		</field>	
+	</form>
+
+
+</vxml>

@@ -1,0 +1,49 @@
+<vxml version="2.1" application="HoneyBee_Root.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="Hungama_TESTURL.vxml" content="" />
+
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<var name="cRBTMODE" expr="''"></var>
+	<var name="CLIPID" expr="''"></var>
+        <var name="len_rng" expr="0"/>
+        <var name="cRBTSTATUS" expr="''"/>
+        <var name="Song_counter" expr="0"/>
+        <var name="Number" expr="0"/>        
+        <var name="SongCount" expr="0"/>
+        
+	<script>
+		var UserStatus1=new Object();
+		var out_string = new Object();
+	</script>
+
+	
+	<script>		
+		var out_string=new Object();
+	</script>
+	
+	<form id="MU_FaceBook">
+		<block>
+			<assign name="Section_Name" expr="'MAIN'"/>
+			<log>Section Name isssssss  <value expr="Section_Name"/>  </log>
+
+			<!--<data name="query_sub" src="http://10.130.14.106/mts/test.php"/>-->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_facebook?ANI=91'+ANI+'&amp;SONGID='+songID+'&amp;POST=post'"/>	
+			<assign name="cRBTSTATUS" expr="UserStatus1.value"/>
+			<log expr="'cRBTSTATUS=='+cRBTSTATUS"></log>
+
+				<prompt bargein="true" timeout="1s">
+					<audio expr="Promptpath+'/'+lang+'/sys_subs_thanks.wav'" />
+				</prompt>
+				<goto next="HoneyBee_End.vxml"></goto>
+		</block>
+	</form>	
+</vxml>

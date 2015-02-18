@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="LRADIO_main.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>      	
+	<var name="j"/>
+	<var name="var_wel" expr=""/>
+	<form id="Main">
+		<block>
+		    <assign name="start_BalenceMinute" expr="start_time()"/>						
+		    <if cond="circle=='mum'">
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='kol'"/>
+		    	<assign name="lang" expr="'06'"/>
+		    <elseif cond="circle=='apd'"/>
+		    	<assign name="lang" expr="'08'"/>
+		    <elseif cond="circle=='upw'"/>
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='upe'"/>
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='guj'"/>
+		    	<assign name="lang" expr="'12'"/>
+		    <elseif cond="circle=='mah'"/>
+		    	<assign name="lang" expr="'13'"/>
+		    <elseif cond="circle=='chn'"/>
+		    	<assign name="lang" expr="'07'"/>
+		    <elseif cond="circle=='ker'"/>
+		    	<assign name="lang" expr="'09'"/>
+		    <elseif cond="circle=='ori'"/>
+		    	<assign name="lang" expr="'13'"/>
+		    <elseif cond="circle=='bih'"/>
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='tnu'"/>
+		    	<assign name="lang" expr="'07'"/>
+		    <elseif cond="circle=='wbl'"/>
+		    	<assign name="lang" expr="'06'"/>
+		    <elseif cond="circle=='kar'"/>
+		    	<assign name="lang" expr="'10'"/>
+		    <else/>
+		    	<assign name="lang" expr="'01'"/>
+		    </if>		    		    		    		    		    		    
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+							 if(j==3)
+						       	modofsub = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+		
+		<!--	<prompt bargein="true" timeout="0s" cond="lang=='01'">
+				    				<audio expr="promptpath+'/'+lang+'/Hun-13-89348.wav'" />
+					</prompt>  -->
+
+			
+			<if cond="usr_status=='1'">								
+				<assign name="drop_point" expr="'Old_User'"/>
+				<script>balance=balance*60</script>
+				<script>timerflag=1</script>				
+				<log>	lang is	<value expr="lang"/>  </log>
+				<log>	balance is	<value expr="balance"/>  </log>
+
+				<if cond="circle=='tnu' || circle=='chn'">
+					<prompt bargein="true" timeout="0s">
+					    	<audio expr="promptpath+'/common/sweeper_10_sec_tnu.wav'" />
+					</prompt>
+
+				<else/>
+
+					<prompt bargein="true" timeout="0s">
+					    	<audio expr="promptpath+'/common/sweeper_10_sec.wav'" />
+					</prompt>
+
+				</if>
+			
+				<if cond="lang=='99'">
+				<assign name="new_lang" expr="1"/>
+				<goto next="Hungama_RedFMselectlang.vxml"/>
+				</if>
+				
+		<if cond="timerflag=='1'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+start_time()"/>
+								<log>	get_duration[0] is	<value expr="get_duration[0]"/>  </log>	
+									
+										<script>
+											total_used_bal = parseInt(get_duration[0]);
+											curbalance=balance-total_used_bal;
+										</script>
+										
+									<if cond="curbalance &lt; '0'">
+									<goto next="Hungama_RedFMTopUpFinish.vxml"/>
+									<else/>
+									<goto next="Hungama_RedFMexisting.vxml"/>
+									</if>
+			</if>
+			
+	        				
+	    		<elseif cond="usr_status == '-1'"/>
+					<assign name="drop_point" expr="'New_User'"/>
+					<log>	lang is	<value expr="lang"/>  </log>
+					<assign name="var_wel" expr="'1'" />			
+				
+						<if cond="circle=='tnu' || circle=='chn'">
+								<prompt bargein="true" timeout="0s">
+								    	<audio expr="promptpath+'/common/sweeper_10_sec_tnu.wav'" />
+								</prompt>
+		
+						<else/>
+								<prompt bargein="true" timeout="0s">
+								    	<audio expr="promptpath+'/common/sweeper_10_sec.wav'" />
+								</prompt>
+						</if>
+
+					<!--<prompt bargein="true" timeout="0s" cond="lang=='01' || lang=='06' || lang=='07' || lang=='09' || lang=='10'">
+				    				<audio expr="promptpath+'/'+lang+'/Redfm_contest.wav'" />
+					</prompt>  -->
+
+					<goto next="Hungama_RedFMselectlang.vxml"/>	        	
+
+
+			<elseif cond="usr_status == '0'"/>
+				<assign name="drop_point" expr="'Delay_charging'"/>
+				<prompt bargein="true">
+				    <audio expr="promptpath+'/'+lang+'/delay_charging.wav'" />
+				</prompt>
+				<throw event="connection.disconnect.hangup"/>				
+			<elseif cond="usr_status == '11'"/>
+				<assign name="drop_point" expr="'Delay_charging'"/>
+				<prompt bargein="true">
+				     <audio expr="promptpath+'/'+lang+'/delay_charging.wav'" />
+				</prompt>
+				<throw event="connection.disconnect.hangup"/>				
+			<else/>
+				<assign name="drop_point" expr="'Delay_charging'"/>
+		    		<prompt bargein="true">
+					<audio expr="promptpath+'/01/delay_charging.wav'" />
+				</prompt>
+				<throw event="connection.disconnect.hangup"/>
+			</if>	
+		</block>
+	</form>	
+ </vxml>

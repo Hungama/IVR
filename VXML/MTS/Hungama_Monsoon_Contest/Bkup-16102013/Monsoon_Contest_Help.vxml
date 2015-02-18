@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Monsoon_ContestRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Monsoon_Contest_Help.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<property name="documentmaxstale" value="0s"/>
+	<property name="documentmaxage" value="0s"/>
+	
+	<form id="Help_Menu">
+		<block>
+			<assign name="drop_point" expr="'Help_Menu'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+				<rule id="start1" scope="public">
+					<one-of>
+						<item> 1 </item>
+						<item> 2 </item>
+						<item> 3 </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s" cond="usr_status=='1'">
+				<audio expr="promptpath+'/'+lang+'/welcome_acmanager.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="usr_status=='-1'">
+				<audio expr="promptpath+'/'+lang+'/welcome_acmanager_toll.wav'"/>
+			</prompt>
+
+			<filled>
+				<if cond="usr_status=='-1'">				
+					<if cond="choice=='1'">
+						<goto next="#Language_change"/>
+					<elseif cond="choice=='2'"/>
+						<goto next="#terms"/>
+					<elseif cond="choice=='8'"/>
+						<goto next="Monsoon_Contest_MainMenu.vxml"/>
+					<else/>
+						<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+						<goto nextitem="choice"/>
+					</if>
+				<else/>
+					<if cond="choice=='1'">
+						<goto next="#Language_change"/>
+					<elseif cond="choice=='2'"/>
+						<goto next="#terms"/>
+					<elseif cond="choice=='3'"/>
+						<goto next="#Unsub"/>
+					<elseif cond="choice=='8'"/>
+						<goto next="Monsoon_Contest_MainMenu.vxml"/>
+					</if>
+				</if>
+			</filled>
+				<noinput>
+						<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+						<reprompt/>
+				</noinput>
+				<noinput count="3">
+						<goto next="Monsoon_Contest_MainMenu.vxml"/>
+				</noinput>
+				
+				<nomatch>
+						<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+					<reprompt/>
+				</nomatch>
+				<nomatch count="3">
+						<goto next="Monsoon_Contest_MainMenu.vxml"/>
+				</nomatch>
+		</field>
+	</form>	
+	
+<form id="Language_change">
+		<block>
+			<assign name="drop_point" expr="'Lang_Change'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item> 1 </item>
+						<item> 2 </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/lang_option.wav'"/>
+				<audio expr="promptpath+'/01/lang01.wav'"/>
+				<audio expr="promptpath+'/01/press_dtmf1.wav'"/>
+				<audio expr="promptpath+'/02/lang02.wav'"/>
+				<audio expr="promptpath+'/02/press_dtmf2.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="lang" expr="'01'"/>
+				<elseif cond="choice=='2'"/>
+					<assign name="lang" expr="'02'"/>
+				</if>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/lang_thanks.wav'"/>
+					</prompt>
+					<goto next="Monsoon_Contest_MainMenu.vxml"/>
+			</filled>
+			<noinput>
+					<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+				<reprompt/>
+			</noinput>
+			<noinput count="2">
+					<goto next="Monsoon_Contest_MainMenu.vxml"/>
+			</noinput>
+			
+			<nomatch>
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+					<goto next="Monsoon_Contest_MainMenu.vxml"/>
+			</nomatch>
+		</field>
+	</form>	
+
+<form id="terms">
+		<block>
+			<script>i=1</script>
+			<assign name="drop_point" expr="'TNC'"/>
+		</block>
+		<field name="gamerule" type="digits?length=1">
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  8 </item>
+							</one-of>
+						</rule>
+				</grammar>
+				
+				<prompt bargein="true"  timeout="0s">
+	     				<audio expr="promptpath+'/'+lang+'/rule_'+i+'.wav'"/>
+	     		</prompt>
+				
+			<filled>
+				<if cond="gamerule == '8'">
+					<goto next="Monsoon_Contest_MainMenu.vxml"/>
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+
+			<nomatch>
+				
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+				<reprompt></reprompt>
+			</nomatch>
+
+			<noinput>
+				<script>
+					if(i>11){
+						i=1;
+					   }
+					i=i+1;
+				</script>
+				<goto nextitem="gamerule"/>
+			</noinput>
+
+		</field>
+	</form>
+
+	<form id="Unsub">
+		<block>
+			<assign name="drop_point" expr="'UNSUB'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+			<audio expr="promptpath+'/'+lang+'/'+'thank_nosub.wav'"/>
+			<goto next="Monsoon_Contest_end.vxml"/>
+		</block>
+	</form>
+
+</vxml>

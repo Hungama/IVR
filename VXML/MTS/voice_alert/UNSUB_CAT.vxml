@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="voiceRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="SelectLang.vxml" content="" />
+
+	<meta name="Author" content="anita " />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="catnam" expr="''"/>
+	<var name="catname" expr="''"/>
+	<var name="catnum" expr="''"/>
+	<var name="OTHER_MODULE" expr="''"/>
+	OTHER_MODULE
+	 <var name="wellang" expr="''" />
+	 
+<var name="c_test" expr="''"/>
+<var name="c_test_day" expr="1"/>		
+	<script>
+		var ciropr1 = new Object();
+   		var maxlang=5;
+		var totarray=new Array();
+		var max_len=0;
+		var cnt=0;
+		var lngcntr=1;
+	</script>
+	
+<form id="Main">
+	<block>
+		<assign name="C_Start" expr="start_time()"/>
+ 		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+		</script>
+		<if cond="realDNIS=='sip:556677@192.168.4.191'">
+			<assign name="realDNIS" expr="'01155666'"/>	
+		</if>
+		<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ realDNIS  is$$$$$$$$$$$$$$$$$$$$$	<value expr="realDNIS"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>	  
+		<if cond="ANI=='sip:567@192.168.4.171:5060' || ANI=='sip:123@192.168.4.236:5060'||ANI=='sip:123@192.168.4.217:5060' || ANI=='sip:123@192.168.4.236:5070'|| ANI=='sip:2345@192.168.4.26:5060' || ANI=='sip:567@192.168.4.203:5060'|| ANI=='sip:2345@192.168.4.21:5060'">
+			<assign name="ANI" expr="9136221731"/>	
+		</if>
+		<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ ANI  is$$$$$$$$$$$$$$$$$$$$$	<value expr="ANI"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>	  
+		<script>
+			var length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		</script>
+		<if cond="ANI=='7838696917'||ANI=='07838696917'">
+			<assign name="ANI" expr="'8586967046'"/>
+			
+		</if>
+
+		<assign name="DNIS" expr="realDNIS"/>
+       	 	<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+        	<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>  
+ 		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+       	<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/> 
+        	<assign name="ciropr" expr="ciropr1.value"/>
+		<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>
+		<script>
+			var splitstr=ciropr.split("#");
+			operator=splitstr[1];
+			circle=splitstr[2];
+		</script>
+		<log>circle  is	<value expr="circle"/>    </log>
+		<log>operator is <value expr="operator"/>    </log>
+		<log>day ==== is <value expr="day"/>    </log>
+		<assign name="dbservlet" expr="'voice_dbinteraction'"/>
+		<assign name="operator" expr="'mtsm'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VOICE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+
+		
+		<script>
+		  <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+			    {  	  
+			       if(j==0)
+				       	usr_status = out_string[j];
+			       if(j==1)
+				       	lang = out_string[j];
+			       if(j==2)
+				       	balance = out_string[j];
+			    }
+			]]>
+		</script>
+					
+		<log>length of outstring  is	<value expr="out_string.length"/></log>
+		<log expr="'@@@@@@@New usr_status===>' +usr_status"/>
+		<if cond="DNIS=='5432105'">
+			<if cond="circle=='tnu'">
+				<assign name="lang" expr="'07'"/>
+		<elseif cond="circle=='apd'"/>
+			<assign name="lang" expr="'08'"/>
+		<elseif cond="circle=='kar'"/>
+			<assign name="lang" expr="'10'"/>
+		<elseif cond="circle=='ker'"/>
+			<assign name="lang" expr="'09'"/>			
+		</if>
+	</if>	
+        <if cond="usr_status=='1'">
+        	
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/voice_dbinteraction?PROCEDURE=VOICE_FETCHUNCAT&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+		<script>
+     			totarray.length=0;
+      		</script>			
+		<script>
+		 	<![CDATA[
+		 	  for(j=0; j< out_string.length;  j++)
+		 	  {  	  
+		 	      	totarray[j] = out_string[j];
+		 	  }
+			]]>
+		</script>
+		<script>
+			max_len=out_string.length;
+		</script>
+		<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ max_len is$$$$$$$$$$$$$$$$$$$$$	<value expr="max_len"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>	
+		
+		<if cond="max_len &lt; 6 ||  max_len==6">
+     			<assign name="end_index" expr="max_len"/>
+     			<assign name="OTHER_lang" expr="'FALSE'"/>
+     		<else/>
+     			<assign name="end_index" expr="6"/>
+     			<assign name="OTHER_lang" expr="'TRUE'"/>
+     		</if>
+		<assign name="start_index_pre" expr="0"/>
+     		<assign name="start_index" expr="0"/>
+     		<assign name="movie_idx" expr="0" />
+     		
+     		<assign name="i" expr="0" />
+     		<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ array1  is$$$$$$$$$$$$$$$$$$$$$	<value expr="totarray[movie_idx]"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>		
+			
+		<goto next="#playing"/>
+        <elseif cond="usr_status == '-1'"/>
+		<assign name="k" expr="getRandom(1,49)"/>
+		<assign name="LANG_DESCRIPTION" expr="lang"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/voice_dbinteraction?PROCEDURE=VOICE_FETCHUNCAT&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+		<script>
+     			totarray.length=0;
+      		</script>			
+		<script>
+		 	<![CDATA[
+		 	  for(j=0; j< out_string.length;  j++)
+		 	  {  	  
+		 	      	totarray[j] = out_string[j];
+		 	  }
+			]]>
+		</script>
+		<script>
+			max_len=out_string.length;
+		</script>
+		<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ max_len is$$$$$$$$$$$$$$$$$$$$$	<value expr="max_len"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>	
+		<if cond="max_len &lt; 6 ||  max_len==6">
+     			<assign name="end_index" expr="max_len"/>
+     			<assign name="OTHER_lang" expr="'FALSE'"/>
+     		<else/>
+     			<assign name="end_index" expr="6"/>
+     			<assign name="OTHER_lang" expr="'TRUE'"/>
+     		</if>
+		<assign name="start_index_pre" expr="0"/>
+     		<assign name="start_index" expr="0"/>
+     		<assign name="movie_idx" expr="0" />
+     		
+     		<assign name="i" expr="0" />
+     		<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ array1  is$$$$$$$$$$$$$$$$$$$$$	<value expr="totarray[movie_idx]"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>		
+		<goto next="#playing"/>
+
+        <else/>
+        	<assign name="wellang" expr="lang"/>
+        	<assign name="LANG_DESCRIPTION" expr="lang"/>
+	 	<prompt bargein="true" timeout="3s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+		</prompt>
+	</if>
+     </block>
+</form>   
+<form id="playing">
+	<block>
+		
+		<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ start_index  is$$$$$$$$$$$$$$$$$$$$$	<value expr="start_index"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>		
+		<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ end_index  is$$$$$$$$$$$$$$$$$$$$$	<value expr="end_index"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>		
+		<script>
+			language.length=0;
+		</script>
+		<assign name="i" expr="0" />		
+
+		<script>
+			 <![CDATA[
+				for(j=start_index; j<end_index ;  j++)
+				{  	  
+					language[i] = totarray[j];
+					i++;													   
+				}
+			]]>		
+		</script>
+		 <log>	start_index##################################################################  is ==	<value expr="language[0]"/>    </log>
+		 <log>	end_index##################################################################  is ==	<value expr="language[1]"/>    </log>
+
+	</block>
+
+	<field name="cat_option">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+				<one-of>						
+					<item> 1 </item>
+					<item> 2 </item>
+					<item> 3 </item>						
+					<item> 4 </item>						
+					<item> 5 </item>						
+					<item> 6 </item>
+					<item> 7 </item>
+					<item> 8 </item>
+					<item> 9 </item>
+					
+				</one-of>
+				</rule>
+			  </grammar>
+			  <prompt bargein="true" timeout="3s">
+		  		<foreach item="names" array="language">
+		  			<mark nameexpr="movie_idx++"/>
+			  		 <audio expr="promptpath+lang+'/select_0'+names+'.wav'"/>
+			  	        <audio expr="promptpath+lang+'/press_dtmf'+movie_idx+'.wav'"/>
+				</foreach>	
+			  </prompt>
+			  <prompt bargein="true" timeout="3s" cond="OTHER_lang=='FALSE'">	
+			       	<audio expr="promptpath+LANG_DESCRIPTION+'/return_option.wav'"/>
+		         </prompt>
+
+	
+			  <filled>
+				<if cond="cat_option=='8'">
+					<goto next="Subscriber.vxml"/>
+				</if>
+		      
+			  	<if cond="cat_option &lt; max_len+1">
+			  		<assign name="catnum" expr="language[cat_option-1]"/>
+			      		<goto next="#double_conf"/>
+			      	<else/>
+				      <throw event="nomatch"/>
+				     	
+			       </if>
+			      
+			      
+			       
+			</filled>
+		<nomatch>				    
+			<script>
+	       		count=0;
+	       		movie_idx=0;
+				langcntr=1;
+		       </script>          		     
+			<prompt timeout="1.5s">								 
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+					   		
+			<goto next="#playing"/>
+		</nomatch>
+		<noinput>
+			<script>
+				movie_idx=0;
+				start_index = 0;
+
+			</script>
+				
+			<assign name="len" expr="totarray.length" />
+			<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ len HONEY SINGLA  is$$$$$$$$$$$$$$$$$$$$$	<value expr="len"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+			<if cond="len &lt; 6 || len==6">
+				<assign name="end_index" expr="len"/>
+				<assign name="OTHER_MODULE" expr="'FALSE'"/>
+			<else/>
+				<assign name="end_index" expr="6"/>
+				<assign name="OTHER_MODULE" expr="'TRUE'"/>
+			</if>		
+			<prompt bargein="true" timeout="1.5s">								 
+					<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+   	             <goto next="#playing"/>
+		</noinput>
+
+			
+			
+		
+		</field>	
+</form>
+ <form id="double_conf">
+   		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+		               <rule id="start" scope="public">
+              		   <one-of>				 
+					  <item>1</item>
+					  <item>8</item>				  			  		      				  			  		      
+       		         </one-of>
+		              </rule>
+	            </grammar>
+		     <prompt bargein="true" timeout="1s">
+	     		<audio expr="promptpath+LANG_DESCRIPTION+'/acmanager_unsub_confirm.wav'"/>		
+		     </prompt> 				 
+	            <filled>
+ 				<if cond="choice=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VOICE_FETCHUNSUB&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+catnum+'&amp;INPARAM[2]=IVR'"/>
+						<prompt bargein="false">			
+             				           	<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_unsub.wav'"/>
+             			        	</prompt>	
+						<goto next="End.vxml"/>
+				<else/>
+					<goto next="Subscriber.vxml"/>
+		            	</if>
+       	     </filled>
+            	</field>
+            	<noinput count="1">
+            		<audio expr="promptpath+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>
+	            	<reprompt/>
+              </noinput>
+            	<noinput count="2">	
+            		<audio expr="promptpath+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>
+	            	<reprompt/>
+       	</noinput>
+            	<noinput count="3">
+            		<goto next="End.vxml"/>
+              </noinput>
+		<nomatch count="1">
+			 <audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			<reprompt/>
+		</nomatch>
+		<nomatch count="2">
+			 <audio expr="'promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			<reprompt/>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="End.vxml"/>
+		</nomatch>
+   </form>
+	
+
+<form id="contentplaying">
+	
+	<block>
+		
+		<audio expr="'http://192.168.4.236:8080/hungama/va/'+catnam+'.wav'"/>
+		<goto next="#Main"/>
+	</block>
+		
+</form>
+
+</vxml>

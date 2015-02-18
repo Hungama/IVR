@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="Hungama_54646_MainMenu.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="celeb_date" expr="0"/>
+	<var name="celeb_on_time" expr="0"/>
+<script>
+	var out_string = new Object();
+	var mycli=0;
+</script>	
+<form id="CHAT_STATUS">
+	<block>
+		 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_RaginiMMS.CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=1'"/>
+			<script>
+				 <![CDATA[
+					 for(j=0; j< out_string.length;  j++)
+						  {  	  
+						   if(j==0)
+							celeb_date = out_string[j];
+						  }
+
+				]]>
+			</script>
+				<log expr="'celeb_date issssss =' + celeb_date"/>
+		<if cond="ANI=='84595064421'">
+			<assign name="celeb_date" expr="1"/>
+		</if>
+			<if cond="celeb_date=='1'">
+				<goto next="#CelebTimeCheck"/>
+			<else/>
+				<goto next="#MAINMENU"/>
+			</if>
+
+
+	</block>
+</form>
+<form id="CelebTimeCheck">
+<block>
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_RaginiMMS.CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=2'"/>
+	<script>
+		<![CDATA[
+			 for(j=0; j< out_string.length;  j++)
+			 {  	  
+				if(j==0)
+					celeb_on_time = out_string[j];
+			 }
+		]]>
+	</script>
+		<log expr="'celeb_on_time issssss =' + celeb_on_time"/> 
+		<if cond="ANI=='84595064421'">
+			<assign name="celeb_on_time" expr="1"/>
+		</if>
+		<goto next="#MAINMENU"/>
+	 </block>
+
+</form>
+<form id="CALL_CONNECTED">
+<block>
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_RaginiMMS.CHATUSER_TRANSFAR&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS"/>
+	<assign name = "mycli" expr ="ANI"/>
+</block>
+	<transfer name="mytransfer" dest="isup:01166291354" bridge="true" connecttimeout="2000s" namelist="mycli" >
+		<filled>
+			<log> transfer done now</log>
+			<clear namelist="mytransfer"/>
+		</filled>
+		</transfer>
+
+	</form>
+
+	
+
+    <form id="MAINMENU">
+    			
+		<block>
+			
+
+			<assign name="var_wel" expr="getRandom(1,50)" />
+		</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								  <item>  0  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/01/menu_option_singham_chat.wav'"/>
+				</prompt>
+				<prompt bargein="true" timeout="3s" >
+					<audio expr="promptspath_54646+'/'+lang+'/select_rootcat_new.wav'"/>
+				</prompt>
+				<filled>					
+					<if cond="choice=='9'">
+					    	<goto next="Hungama_54646_AccountMnger.vxml"/>
+					<else/>
+						<script>choice++;</script> 
+						<assign name="cat" expr="choice"/>
+						<log expr="'selected cat is '+cat"></log>
+						<if cond="cat=='2'">
+							<goto next="Hungama_54646_LoveGuru.vxml"/>
+						<elseif cond="cat=='3'"/>
+							<goto next="Hungama_MUSICWORLD_PlayContent.vxml"/>
+						<elseif cond="cat=='4'"/>
+							<goto next="Hungama_54646_CelebrityWorld.vxml"/>
+						<elseif cond="cat=='5'"/>
+							<goto next="Audio_Cinema_MainMenu.vxml"/>
+						<elseif cond="cat=='1'"/>
+							<if cond="celeb_on_time=='1'">
+								<goto next="#CALL_CONNECTED"/>
+							<else/>
+								<prompt bargein="true" timeout="0s">
+									<audio expr="promptspath_54646+'/CHAT/chat_info.wav'"/>	
+								</prompt>
+								<goto next="#MAINMENU"/>
+							</if>
+						</if>
+					</if>					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+</vxml>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<vxml version="2.0" application="HoneyBee_Root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Mu_CrbtMM_MainMenu.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>	
+	
+	<form id="MM_MENU">
+		<block>
+			<assign name="Section_Name" expr="'MM_MENU'"/>
+			<assign name="subcat" expr="'MM'"></assign>
+			<assign name="cat" expr="'MM'+DNIS"/>
+		</block>			
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>
+							<item> 1 </item>
+						</one-of>
+					</rule>
+			</grammar>								
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Promptpath+'/'+lang+'/wel_old5.wav'"/>
+			</prompt>					
+			<filled>
+				<assign name="playconfig" expr="DNIS"></assign>
+				<goto next="#FETCHSONGS_MM"/>
+			</filled>
+		</field>
+		<noinput>
+			<assign name="playconfig" expr="DNIS"></assign>
+			<goto next="#FETCHSONGS_MM"/>
+		</noinput>
+		<nomatch>
+			<assign name="playconfig" expr="DNIS"></assign>
+			<goto next="#FETCHSONGS_MM"/>
+		</nomatch>
+	</form>
+	<form id="FETCHSONGS_MM">
+		<block>			
+			<log> fetching MM songs </log>
+			<log>Length  is	<value expr="lang"/>    </log>
+			<log>Length  is	<value expr="playconfig"/>    </log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ReadConfigSongHB?ConfigPath=MuConfig/'+operator+'/songconfig/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+				arrayPlayContent.length=0;
+				unike_play=0;
+			</script>
+			<log>unike_play  is<value expr="unike_play"/></log>
+
+			<assign name="len" expr="favSongs.length"/>
+			<assign name="movie_idx" expr="0"/>
+			<assign name="i" expr="0"/>
+			<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+				<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+				<goto next="HoneyBee_End.vxml"></goto>
+			</if>
+			<log> previous Array[1]  is <value expr="arrayPlayContent[0]"/></log>
+
+			<script>
+				<![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+						arrayPlayContent[j] = favSongs[j];
+					   }
+				]]>			
+			</script>
+
+			<log>	Length  is<value expr="len"/></log>
+			<log>	Array[1]  is<value expr="arrayPlayContent[0]"/></log>
+		</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start2" version="1.0">
+					<rule id="start2" scope="public">
+						<one-of>
+							 <item>  8  </item>
+							 <item>  9  </item>									
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Promptpath+'/'+lang+'/keypad_info_radio.wav'"/>
+					<audio expr="Promptpath+'/'+lang+'/keyinfo_crbt.wav'"/>
+				</prompt>			
+				<filled>
+					<if cond="choice=='8'">
+						<!--<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"/>-->
+						<goto next="#MM_MENU"/>
+					<elseif cond="choice=='9'"/>
+						<goto next="HoneyBee_Help.vxml"/>
+					<else/>
+						<goto next="Mu_MusicPlay_CrbtMM.vxml#next"/>
+					</if>
+				</filled>
+				<noinput>
+					<goto next="Mu_MusicPlay_CrbtMM.vxml#next"/>
+				</noinput>
+				<nomatch>
+					<goto next="Mu_MusicPlay_CrbtMM.vxml#next"/>
+				</nomatch>
+			</field>
+	</form>
+</vxml>

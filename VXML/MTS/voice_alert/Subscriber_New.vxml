@@ -1,0 +1,747 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="voiceRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="Subscriber_New.vxml" content="" />
+
+	<meta name="Author" content="anita " />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<!--********************************MTS DOUBLE CONSENT *************************************************-->	
+	<var name="DBTRANS_ID" expr="'0'"/>
+	<var name="DBCCG_ID" expr="'0'"/>
+	<var name="vas_id" expr="''"/>
+	<var name="Lang" expr="''"/>
+	<var name="trx_id" expr="''"/>
+	<var name="msisdn" expr="''"/>
+	<var name="lang_id" expr="''"/>
+	<var name="channel" expr="'IVR'"/>
+	<var name="channel_code" expr="''"/>
+	<var name="event_type" expr="''"/>
+	<var name="event_cost" expr="''"/>
+	<var name="Validity" expr="''"/>
+	<var name="validity" expr="''"/>
+	<var name="circle_id" expr="''"/>
+	<var name="product_name" expr="''"/>
+	<var name="content_id" expr="''"/>
+	<var name="cp_id" expr="''"/>
+	<var name="opt1" expr="''"/>
+	<var name="opt2" expr="''"/>
+	<var name="opt3" expr="''"/>
+	<var name="opt4" expr="''"/>
+	<var name="opt5" expr="''"/>
+	<var name ="CG_URL" expr="'http://10.132.249.170:8080/CGW_IVR/cg.vxml'"/>
+<!--****************************************************************************************--> 	
+	
+      	<var name="OTHER_MODULE" expr="''"/>
+	 <var name="catname" expr="''" />
+	 <var name="status" expr="'0'" />
+	 <var name="cat_value" expr="'1'" />
+	 <var name="langcntr" expr="'0'" />
+	 <var name="catnum" expr="'0'" />
+	 <var name="catnam" expr="'0'" />
+	 <var name="end_idx" expr="'0'"/>
+	<var name="names" expr="''"/>
+	<var name="sb_count" expr="'0'"/>	
+	<var name="OTHER_CAT" expr="'1'"/>
+	<var name="cat_cnt" expr="'0'"/>		
+	<script>
+		var cat1,cat2,cat3,cat4,cat5,cat6,count=0,count_cat=0,p_id,cat_count=0,cat_cnt=0,counter=1,count_cat=0;
+		var max_len=6;
+		var cat_array1=new Array();
+		
+	</script>
+	<script>
+		function gettransidtime() 
+		{
+			var currentDT = new Date();
+			var day = currentDT.getDate()+1;
+			var month = currentDT.getMonth() + 1;
+			var year = currentDT.getFullYear();
+			var hours = currentDT.getHours()+1;
+			var minutes = currentDT.getMinutes()+1;
+			var seconds = currentDT.getSeconds()+1;
+			if (month==1 || month==2 || month==3 || month==4 || month==5 || month==6 || month==7 || month==8 || month==9) {month = "0" + month; }
+			if (day==1 ||day==2 || day== 3 || day== 4 || day== 5 || day== 6 || day== 7 || day== 8 || day== 9 ) {day = "0" + day; }
+			if (hours==1 || hours==2 || hours==3 || hours==4 || hours==5 || hours==6 || hours==7 || hours==8 || hours==9) {hours = "0" + hours; }
+			if (minutes ==1 ||minutes ==2 || minutes == 3 || minutes == 4 || minutes == 5 || minutes == 6 || minutes == 7 || minutes == 8 || minutes == 9 ) {minutes = "0" + minutes ; }
+			if (seconds ==1 ||seconds ==2 || seconds == 3 || seconds == 4 || seconds == 5 || seconds == 6 || seconds == 7 || seconds == 8 || seconds == 9 ) {seconds = "0" + seconds ; }
+			
+			var strDateTime =  year+ month+day+hours+minutes+seconds ;	
+			return strDateTime;						
+		}
+	</script>
+	<form id="WELCOME">
+		<block>
+			<assign name="prompt_name" expr="'EXISTINGUSER'"/>
+			<assign name="end_idx" expr="0" />
+			<assign name="movie_idx" expr="0"/>
+			<assign name="k" expr="getRandom(1,6)" />		
+			<!--<prompt bargein="false" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_old_'+k+'.wav'"/>
+			</prompt>-->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VOICE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=4'"/>
+				<script>
+					 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					      	p_id = out_string[j];
+					       
+					  }
+					]]>
+			</script>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VOICE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>	
+			<script>
+				 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+				   {  	  
+				      	sb_count = out_string[j];
+				   }
+				  ]]>
+			</script>
+			<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ sb_count Honey  is$$$$$$$$$$$$$$$$$$$$$	<value expr="sb_count"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>	
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VOICE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>	
+			<script>
+				 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+				   {  	  
+				      	count = out_string[j];
+				   }
+				  ]]>
+			</script>
+			<if cond="count &gt; '0'">
+				 <assign name="cat_cnt" expr="count"/>
+				 <goto next="#CATCOUNT"/>
+			<elseif cond="sb_count &lt; '2' || sb_count == '2'"/>
+				<assign name="cat_cnt" expr="sb_count"/>
+				<goto next="#CATCOUNT"/>
+			<else/>
+				<goto next="#CATEGORY"/>
+			</if>	
+			
+		</block>
+	</form>
+	<form id="CATCOUNT">
+		<block>
+			<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ Plan ID Honey  is$$$$$$$$$$$$$$$$$$$$$	<value expr="p_id"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+		</block>
+		<field name="sub_option">
+				 <grammar mode="dtmf" root="start1" version="1.0">
+					<rule id="start1" scope="public">
+					<one-of>						
+						<item> 9 </item>
+					 </one-of>
+					</rule>
+		 		  </grammar>
+				  <prompt bargein="true" timeout="1s" cond="p_id=='25'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_10_1.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+cat_cnt+'.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_10_2.wav'"/>
+		    		  </prompt>
+				   <prompt bargein="true" timeout="1s" cond="p_id=='26'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_5_1.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+cat_cnt+'.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_5_2.wav'"/>
+		    		  </prompt> 	
+				   <filled>	
+				  	<if cond="sub_option == '9'">
+						<goto next="actmanager.vxml"/>
+					<else/>
+						<goto next="#CATEGORY"/>
+					</if>
+				   </filled>
+				<nomatch>
+				     	<goto next="#CATEGORY"/>
+	
+				</nomatch>
+				<noinput>
+					<goto next="#CATEGORY"/>
+				</noinput>	   
+		</field>
+
+	</form>	
+	<form id="CATEGORY">
+		<block>
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/'+circle+'/navlang.cfg&amp;TOKEN=FREE'"/>-->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=voice/'+operator+'/'+circle+'/cat'+cat_value+'.cfg&amp;TOKEN=FREE'"/>	
+			<script>
+				array1.length=0;
+				dishes.length=0;
+			</script>	
+			<assign name="len" expr="favSongs.length" />
+			<assign name="i" expr="0" />
+			<script>
+				 <![CDATA[
+				   for(j=0; j<len ;  j++)
+				   {  	  
+					array1[j] = favSongs[j];						   
+				   }
+				]]>		
+			</script> 	   
+			<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ array1  is$$$$$$$$$$$$$$$$$$$$$	<value expr="array1"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>	
+			
+			<if cond="len &lt; 6 || len==6">
+				<assign name="end_index" expr="len"/>
+				<assign name="OTHER_lang" expr="'FALSE'"/>
+			<else/>
+				<assign name="end_idx" expr="6"/>
+				<assign name="OTHER_lang" expr="'TRUE'"/>
+			</if>
+			<assign name="start_index_pre" expr="0"/>
+			<assign name="start_index" expr="0"/>
+			<assign name="movie_idx" expr="0" />
+			
+			<assign name="langcntr" expr="1" />
+			<assign name="i" expr="0" />
+			<goto next="#check_sub"/>
+		</block>
+	</form>
+	<form id="check_sub">
+		<block>
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VOICE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=4'"/>
+				<script>
+					 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					      	p_id = out_string[j];
+					       
+					  }
+					]]>
+			</script>
+
+			<if cond="p_id=='25'||p_id=='26'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VOICE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>	
+				<script>
+					 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+					   {  	  
+					      	count = out_string[j];
+	       				   }
+	  				  ]]>
+				</script>
+				<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ CAT count  is$$$$$$$$$$$$$$$$$$$$$	<value expr="count"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+			</if>
+			<if cond="count &lt; '2' &amp;&amp; p_id=='25'">
+				<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ CAT HONEY  is$$$$$$$$$$$$$$$$$$$$$	<value expr="count"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+				<assign name="status" expr="'1'"/>
+				<assign name="p_id" expr="'25'"/>
+				
+			<elseif cond="count &lt; '2' &amp;&amp; p_id=='26'"/>
+				<assign name="status" expr="'1'"/>
+				<assign name="p_id" expr="'26'"/>
+			<elseif cond="p_id=='25'"/>
+				<assign name="status" expr="'0'"/>
+				<assign name="p_id" expr="'27'"/>
+			<else/>
+				<assign name="status" expr="'0'"/>
+				<assign name="p_id" expr="'28'"/>
+
+			</if>
+			<goto next="#check_cat"/>
+		</block>
+	</form>
+	<form id="check_cat">
+		<block>	
+			<assign name="prompt_name" expr="'CATCHECK'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/voice_dbinteraction?PROCEDURE=VOICE_FETCHTOTCAT&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+LANG_DESCRIPTION"/>
+			<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ out_string.length  is$$$$$$$$$$$$$$$$$$$$$	<value expr="out_string.length"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+				
+			<script>
+				cat_array1.length=0;
+			</script>
+			<assign name="len" expr="out_string.length" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="cat_array1[0]"/>    </log>
+			
+			<script>
+			 <![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+			  {  	  
+			       cat_array1[j]=out_string[j];
+				       	
+				       	
+			  }
+			]]>
+			</script>
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="cat_array1[0]"/>    </log>
+			
+			
+			<if cond="len &lt; 6 || len==6">
+				<assign name="end_index" expr="len"/>
+				<assign name="OTHER_MODULE" expr="'FALSE'"/>
+			<else/>
+				<assign name="end_index" expr="6"/>
+				<assign name="OTHER_MODULE" expr="'TRUE'"/>
+			</if>				
+			<assign name="i" expr="0" />
+			<if cond="cat_array1[0]==''">
+				    <prompt bargein="true" timeout="0s">
+			                          <audio expr="promptpath+'/'+lang+'/fav_empty.wav'"/>
+				    </prompt>
+				<goto next="End.vxml"/>
+			</if>
+								
+			<if cond="p_id=='25'||p_id=='26'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VOICE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>	
+				<script>
+				 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+				   {  	  
+				      	count = out_string[j];
+				   }
+				  ]]>
+				</script>
+				<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ Inside check_cat CAT count  is$$$$$$$$$$$$$$$$$$$$$	<value expr="count"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+			</if>
+			<if cond="count &lt; '2' &amp;&amp; p_id=='25'">
+				<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ CAT HONEY  is$$$$$$$$$$$$$$$$$$$$$	<value expr="count"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+				<assign name="status" expr="'1'"/>
+				<assign name="p_id" expr="'25'"/>
+				
+			<elseif cond="count &lt; '2' &amp;&amp; p_id=='26'"/>
+				<assign name="status" expr="'1'"/>
+				<assign name="p_id" expr="'26'"/>
+			<elseif cond="p_id=='25'"/>
+				<assign name="status" expr="'0'"/>
+				<assign name="p_id" expr="'27'"/>
+			<else/>
+				<assign name="status" expr="'0'"/>
+				<assign name="p_id" expr="'28'"/>
+
+			</if>
+			<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ Plan ID  is$$$$$$$$$$$$$$$$$$$$$	<value expr="p_id"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+			<assign name="start_index_pre" expr="0"/>
+			<assign name="start_index" expr="0"/>
+			<assign name="movie_idx" expr="0" />
+			
+			<assign name="langcntr" expr="1" />
+			<assign name="i" expr="0" />	
+			
+			<goto next="#select_lang"/>
+		</block>	
+		
+	</form>	
+	<form id="select_lang">
+		<block>
+			<assign name="prompt_name" expr="'SELECTCAT'"/>
+			<script>
+				language.length=0;
+			</script>
+			<assign name="i" expr="0"/>
+			<script>
+				 <![CDATA[
+					for(j=start_index; j<end_index ;  j++)
+					{  	  
+						language[i] = cat_array1[j];
+						i++;													   
+					}
+				]]>		
+			</script>
+			 <log>	start_index##################################################################  is ==	<value expr="start_index"/>    </log>
+			 <log>	end_index##################################################################  is ==	<value expr="end_index"/>    </log>
+		</block>
+		
+		<field name="cat_option">
+			
+			  
+			  <grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+				<one-of>						
+					<item> 1 </item>
+					<item> 2 </item>
+					<item> 3 </item>						
+					<item> 4 </item>						
+					<item> 5 </item>						
+					<item> 6 </item>
+					<item> 7 </item>
+					<item> 8 </item>
+					<item> 9 </item>
+						
+				</one-of>
+				</rule>
+			  </grammar>
+			  <prompt bargein="true" timeout="3s">
+			  	<foreach item="names" array="language">
+			  		<mark nameexpr="movie_idx++"/>
+			  		<log>	song is is    	<value expr="movie_idx"/>  	</log>
+			  		<log>	names is is    	<value expr="names"/>  	</log>
+			  		<audio expr="promptpath+'/'+lang+'/select_0'+names+'.wav'"/>
+			  	        <audio expr="promptpath+'/'+lang+'/press_dtmf'+movie_idx+'.wav'"/>
+			  	</foreach>													
+			  </prompt>
+			  
+			  
+			  <prompt bargein="true" timeout="3s" cond="OTHER_MODULE=='TRUE'">
+			  		<audio expr="promptpath+'/'+lang+'/sub_other_cat.wav'"/>
+			  		<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf7.wav'"/>
+			  </prompt>	
+		
+			    <prompt bargein="true" timeout="3s" cond="OTHER_MODULE=='FALSE'">	
+			       	<audio expr="promptpath+LANG_DESCRIPTION+'/return_option.wav'"/>
+		          </prompt>
+
+		          <prompt bargein="true" timeout="3s">	
+			       	<audio expr="promptpath+LANG_DESCRIPTION+'/select_acmanager.wav'"/>
+		          </prompt>
+		        
+			 	
+			  <filled>
+			  
+			  	 	<if cond="cat_option=='7' &amp;&amp; OTHER_MODULE=='TRUE'">
+						 <script>
+							start_index_pre = start_index;
+							start_index = end_index;
+							end_index = end_index+4;
+							movie_idx=0;
+						 </script>	
+						 <log>	start_index##################################################################  is ==	<value expr="start_index"/>    </log>
+						 <log>	end_index##################################################################  is ==	<value expr="end_index"/>    </log>
+						 <log>	start_index_pre##################################################################  is ==	<value expr="start_index_pre"/>    </log>
+						
+						<if cond="len &lt; end_index || len==end_index">					
+							<script>
+								end_index = len;
+								len = len-6;
+							</script>
+							<assign name="OTHER_MODULE" expr="'FALSE'"/>
+						</if>
+						<log>	start_index##################################################################  is ==	<value expr="start_index"/>    </log>
+						<log>	end_index##################################################################  is ==	<value expr="end_index"/>    </log>
+						<log>	start_index_pre##################################################################  is ==	<value expr="start_index_pre"/>    </log>
+						<log expr="'len='+len"></log>
+						<goto next="#select_lang"/>
+					</if>
+			  
+			  		<if cond="cat_option=='8'">
+						<assign name="OTHER_MODULE" expr="'TRUE'"/>
+						<goto next="Subscriber.vxml"/>
+					</if>
+					<if cond="cat_option=='9'">
+						<assign name="OTHER_MODULE" expr="'TRUE'"/>
+						<goto next="actmanager.vxml"/>
+					</if>	
+					<if cond="cat_option=='0'">
+						<script>
+						start_index=0;
+						</script>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+						<goto next="#check_cat"/>
+					</if>	
+					
+					
+					<if cond="cat_option &lt; len+1">
+						
+			  			<log>******* cat_option ************** <value expr="language[cat_option-1]"/> ************ counter *******   </log>
+							
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VOICE_CATEGORY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+language[cat_option-1]"/>
+			       			<script>
+			  				 <![CDATA[
+			  				   for(j=0; j< out_string.length;  j++)
+			  				   {  	  
+			  				      	catnam = out_string[j];
+			  				   }
+			  				  ]]>
+			  		        </script>
+			       			 <assign name="catnum" expr="language[cat_option-1]"/>
+			       			 <assign name="catname" expr="catnam"/>
+							
+						     				
+						<if cond="language[cat_option-1]=='1'">
+							 <prompt bargein="false">								 
+			       					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_beauty.wav'"/>
+						         </prompt>
+						 <elseif cond="language[cat_option-1]=='2'"/>
+							 <prompt bargein="false">								 
+			       					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_bollywood.wav'"/>
+						       	 </prompt>
+						 <elseif cond="language[cat_option-1]=='3'"/>
+							 <prompt bargein="false">								 
+			       					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_comedy.wav'"/>
+						       	 </prompt>
+						 <elseif cond="language[cat_option-1]=='4'"/>
+							 <prompt bargein="false">								 
+	       							<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_devotional.wav'"/>
+						       	</prompt>
+						 <elseif cond="language[cat_option-1]=='5'"/>
+							 <prompt bargein="false">								 
+			       					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_femina.wav'"/>
+						       	</prompt>
+						 <elseif cond="language[cat_option-1]=='6'"/>
+							 <prompt bargein="false">								 
+			       				 	<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_fitness.wav'"/>
+						       	</prompt>
+						 <elseif cond="language[cat_option-1]=='7'"/>
+							 <prompt bargein="false">								 
+			       					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_news.wav'"/>
+						       	 </prompt>
+						 <elseif cond="language[cat_option-1]=='8'"/>
+							 <prompt bargein="false">								 
+			       					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_personality.wav'"/>
+						       	</prompt>
+						 <elseif cond="language[cat_option-1]=='9'"/>
+							 <prompt bargein="false">								 
+			       					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_regional_movies.wav'"/>
+						       </prompt>
+						 <elseif cond="language[cat_option-1]=='10'"/>
+							 <prompt bargein="false">								 
+			       					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_knowledge.wav'"/>
+						       </prompt>
+						 <elseif cond="language[cat_option-1]=='11'"/>
+							 <prompt bargein="false">								 
+			       					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_word.wav'"/>
+						       </prompt>
+						<elseif cond="language[cat_option-1]=='12'"/>
+							 <prompt bargein="false">								 
+			       					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_ibadat.wav'"/>
+						       </prompt>						
+ 					 	</if> 
+						<goto next="#DOUBLE_CONSENT"></goto>
+
+			      		<else/>
+			      	       	<throw event="nomatch"/>		
+			       	</if>			       
+			       <script>
+			       		count=0;
+			       		movie_idx=0;
+					langcntr=1;
+			       </script>
+			       <!--<goto next="Subscription.vxml"/> -->
+			       <prompt bargein="false">								 
+	       				<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_pack.wav'"/>
+			       </prompt>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VOICE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>	
+				<script>
+				 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+				   {  	  
+				      	count = out_string[j];
+				   }
+				  ]]>
+				</script>
+				<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ CAT HONEY SINGLA  is$$$$$$$$$$$$$$$$$$$$$	<value expr="count"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+				<if cond="count=='1'">
+					  <prompt>								 
+	       				<audio expr="promptpath+LANG_DESCRIPTION+'/select_more_cat.wav'"/>
+				       </prompt>
+				</if>
+				<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ OTHER_CAT HONEY SINGLA  is$$$$$$$$$$$$$$$$$$$$$	<value expr="OTHER_CAT"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+				
+				
+						
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=VOICE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>	
+				<script>
+					 <![CDATA[
+				   	for(j=0; j< out_string.length;  j++)
+				   	{  	  
+				      		count_cat= out_string[j];
+				   	}
+				  	]]>
+				</script>
+				<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ count_cat HONEY SINGLA  is$$$$$$$$$$$$$$$$$$$$$	<value expr="count_cat"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+				<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ Plan ID Honey  is$$$$$$$$$$$$$$$$$$$$$	<value expr="p_id"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+				<if cond="count_cat &gt; '0' ">
+					<prompt bargein="true" timeout="1s" cond="p_id=='25'||p_id=='27'">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_10_1.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/'+count_cat+'.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_10_2.wav'"/>
+			    		  </prompt>
+					   <prompt bargein="true" timeout="1s" cond="p_id=='26'||p_id=='28'">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_5_1.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/'+count_cat+'.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_5_2.wav'"/>
+			    		  </prompt> 	
+				<elseif cond="count=='2'"/>
+					<prompt bargein="true" timeout="1s" cond="p_id=='25'||p_id=='27'">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_10_1.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/'+count+'.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_10_2.wav'"/>
+			    		  </prompt>
+					   <prompt bargein="true" timeout="1s" cond="p_id=='26'||p_id=='28'">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_5_1.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/'+count+'.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/New_select_more_chargable_5_2.wav'"/>
+			    		  </prompt> 	
+	
+					<assign name="OTHER_CAT" expr="'2'"/>
+				
+				</if>	
+
+
+			    <goto next="#check_cat"/>
+			</filled>
+					
+			   			
+				
+		 <nomatch>				    
+			<script>
+	       		count=0;
+	       		movie_idx=0;
+				langcntr=1;
+		       </script>          		     
+			<prompt timeout="1.5s">								 
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+					   		
+			<goto next="#select_lang"/>	
+		</nomatch>
+		<noinput>
+			<script>
+				movie_idx=0;
+				langcntr=langcntr+1;
+				counter=counter+1;
+				start_index = 0;
+
+			</script>
+				
+			<assign name="len" expr="cat_array1.length" />
+			<log>helow $$$$$$$$$$$$$$$$$$$$$$$$ len HONEY SINGLA  is$$$$$$$$$$$$$$$$$$$$$	<value expr="len"/>      $$$$$$$$$$$$$$$$$$$$$$$$$$   </log>
+			<if cond="len &lt; 6 || len==6">
+				<assign name="end_index" expr="len"/>
+				<assign name="OTHER_MODULE" expr="'FALSE'"/>
+			<else/>
+				<assign name="end_index" expr="6"/>
+				<assign name="OTHER_MODULE" expr="'TRUE'"/>
+			</if>		
+			<prompt bargein="true" timeout="1.5s">								 
+					<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+   	              <goto next="#select_lang"/>	
+		</noinput>
+
+
+		</field>
+	</form>
+	<form id="DOUBLE_CONSENT">				
+		<block>
+			<assign name="vas_id" expr="'Hungama_VA'"/>
+			<assign name="trx_id" expr="gettransidtime()"/>
+			<assign name="msisdn" expr="ANI"/>
+			<assign name="lang_id" expr="'HIN'"/>
+			<assign name="channel_code" expr="'IVR'"/>
+			<assign name="event_type" expr="'2'"/>	
+			<assign name="event_cost" expr="'30.00'"/>
+			<assign name="Validity" expr="30"/>
+			<assign name="circle_id" expr="circle"/>
+			<assign name="product_name" expr="'Hungama-Voice Alerts'"/>
+			<assign name="content_id" expr="'Hungama'"/>
+			<assign name="cp_id" expr="'Hungama'"/>
+			<assign name="opt1" expr="'1'"/>
+			<assign name="opt2" expr="'2'"/>
+			<assign name="opt3" expr="'3'"/>
+			<assign name="opt4" expr="'4'"/>
+			<assign name="opt5" expr="'5'"/>
+
+			<if cond="amt=='30'">
+				<assign name="event_cost" expr="'30.00'"/>
+				<assign name="Validity" expr="'30'"/>
+			<elseif cond="amt=='7'"/>
+				<assign name="event_cost" expr="'7.00'"/>
+				<assign name="Validity" expr="'7'"/>
+			</if>
+			
+			<if cond="lang=='01'">
+				<assign name="Lang" expr="'HIN'"/>
+			<elseif cond="lang=='02'"/>
+				<assign name="Lang" expr="'ENG'"/>
+			<elseif cond="lang=='11'"/>
+				<assign name="Lang" expr="'MAR'"/>
+			<elseif cond="lang=='10'"/>
+				<assign name="Lang" expr="'KAN'"/>
+			<elseif cond="lang=='08'"/>
+				<assign name="Lang" expr="'TEL'"/>
+			<elseif cond="lang=='09'"/>
+				<assign name="Lang" expr="'MAL'"/>
+			<elseif cond="lang=='07'"/>
+				<assign name="Lang" expr="'TAM'"/>
+			<elseif cond="lang=='13'"/>
+				<assign name="Lang" expr="'ORI'"/>
+			<elseif cond="lang=='06'"/>
+				<assign name="Lang" expr="'BEN'"/>
+			<elseif cond="lang=='12'"/>
+				<assign name="Lang" expr="'GUJ'"/>
+			<elseif cond="lang=='17'"/>
+				<assign name="Lang" expr="'ASM'"/>
+			<elseif cond="lang=='18'"/>
+				<assign name="Lang" expr="'MAW'"/>
+			<elseif cond="lang=='03'"/>
+				<assign name="Lang" expr="'PUN'"/>
+			<elseif cond="lang=='05'"/>
+				<assign name="Lang" expr="'HAR'"/>
+			<elseif cond="lang=='04'"/>
+				<assign name="Lang" expr="'BOJ'"/>
+
+			<else/>
+				<assign name="Lang" expr="'HIN'"/>
+			</if>		
+		</block>
+			<subdialog name="confirmUserChoice" fetchtimeout="25s" srcexpr="CG_URL">
+				<param name="vas_id" expr="vas_id"/>
+				<param name="trx_id" expr="trx_id"/>
+				<param name="msisdn" expr="msisdn"/>
+				<param name="channel" expr="'IVR'"/>
+				<param name="event_type" expr="event_type"/>
+				<param name="event_cost" expr="event_cost"/>
+				<param name="lang_id" expr="Lang"/>
+				<param name="product_name" expr="product_name"/>
+				<param name="content_id" expr="content_id"/>
+				<param name="cp_id" expr="cp_id"/>
+				<param name="circle_id" expr="circle_id"/>
+				<param name="validity" expr="Validity"/>
+				<param name="opt1" expr="'a'"/>
+				<param name="opt2" expr="'b'"/>
+				<param name="opt3" expr="'c'"/>
+				<param name="opt4" expr="'d'"/>
+				<param name="opt5" expr="'e'"/>	
+	   	      <filled> 
+				<assign name="secondconsent" expr="'Y'"/>
+				<assign name="secondconsenttime" expr="start_time()"/>
+				<assign name="IVRtransid" expr="trx_id"/>
+				<assign name="cg_id" expr="confirmUserChoice.cg_id"/>
+				<assign name="error_desc" expr="confirmUserChoice.error_desc"/>
+				<assign name="cons_time" expr="confirmUserChoice.cons_time"/>
+				<assign name="cons_stat" expr="confirmUserChoice.cons_stat"/>
+				<assign name="DBTRANS_ID" expr="confirmUserChoice.t_id"/>
+				<assign name="DBCCG_ID" expr="confirmUserChoice.cg_id"/>
+
+			      	<log> URL_Hit parameter will contain the ip and port of Subdialog Consent VXML page </log>
+			   	<log expr="'Subdialog_Response.errCode resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.error_code"/>
+ 				<log expr="'Subdialog_Response.cg_id resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.cg_id"/>
+				<log expr="'Subdialog_Response.t_id resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.t_id"/>
+				<log expr="'Subdialog_Response.error_desc resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.error_desc"/>
+				<log expr="'Subdialog_Response.cons_time resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.cons_time"/>
+				<log expr="'Subdialog_Response.cons_stat resonse  @@@@@@@@@@@@@@@@@@@@ =' + confirmUserChoice.cons_stat"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/SwitchCall_log?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=VA&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+trx_id+'&amp;error_code='+confirmUserChoice.error_code+'&amp;cg_id='+confirmUserChoice.cg_id+'&amp;t_id='+confirmUserChoice.t_id+'&amp;error_desc='+confirmUserChoice.error_desc+'&amp;cons_time='+confirmUserChoice.cons_time+'&amp;cons_stat='+confirmUserChoice.cons_stat"/>
+			      <if cond="confirmUserChoice.error_code=='0'">  
+					  <goto next="#SubRequest"/>	
+			      <else/>
+				   <goto next="End.vxml"/>
+			      </if> 
+	     </filled>
+	     </subdialog>
+	</form>
+	<form id="SubRequest">
+		<block> 
+			<assign name="sub_flag" expr="'1'"/>
+			<!-- SUB REQUEST -->	
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/voice_dbinteraction?PROCEDURE=VOICE_CAT_NEW&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+catnum+'&amp;INPARAM[2]='+catname+'&amp;INPARAM[3]='+status+'&amp;INPARAM[4]='+p_id+'&amp;INPARAM[5]='+DBTRANS_ID+'&amp;INPARAM[6]='+DBCCG_ID"/>
+			<prompt bargein="false">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_pack.wav'"/>
+			</prompt>
+			<goto next="#check_cat"/>
+		</block>
+	</form>	
+</vxml>

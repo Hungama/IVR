@@ -1,0 +1,1649 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="devRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="devoplaycontent.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+     <var name="playconfigcattemp" expr="''"/>
+     <script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var len=0;
+		var contentlogging=0;
+		KeyPad_Cnt=parseInt(KeyPad_Cnt);		
+	</script>
+	<form id="loadcliptoplay">
+		  <block>  
+		  	<assign name="prompt_name" expr="'SONG_PLAY'"/>	
+			<!--<if cond="ANI=='8459078905'">
+				<goto next="devoplaycontent_deepak.vxml" />
+			</if>-->		  	 			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+			<assign name="total_time_used" expr="get_duration[0]"/>
+			<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+			<!--<if cond="total_time_used  &gt; 3000">
+				<goto next="End.vxml"/>
+			</if>-->
+		  	<log expr="'@@@@CATEGORY__Name is@@@@@'+playconfig"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/songconfig/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+						array.length=0;
+						unike_play=0;
+			</script>
+			<assign name="HEARD" expr="playconfig" />
+					<assign name="len" expr="favSongs.length" />
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#StartToPlaysongs"/>  					
+		   </block>
+	</form>
+
+	
+<form id="PlayFullSongs"> 
+	  <block>
+	   <script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+		<assign name="total_time_used" expr="get_duration[0]"/>
+		<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+		<!--<if cond="total_time_used  &gt; 3000">
+				<goto next="End.vxml"/>
+		</if>-->
+	  
+	  <script>
+		   		 <![CDATA[
+  		       			if(timerflag==1)
+					start_BalenceMinute=start_time();
+				]]>	 	
+		</script>
+		<script>
+							var tem=playconfig.split("_");
+							playconfigcattemp=tem[0]; 
+	
+		</script>
+	<log expr="'@@@@@@ start_BalenceMinute INSIDE PLAYFULLSONG '+start_BalenceMinute"/>
+	<log expr="'@@@@@@ MYTH_UNIKE_PLAY '+myth_unlike_play"/>
+		
+	 <if cond="playconfigcattemp=='myth' || playconfigcattemp=='temple' || playconfigcattemp=='templejain'">
+		   				<if cond="temple_heard!='0'">
+		   					<if cond="temple_heard==playconfig">
+		   						<assign name="unike_play" expr="myth_unlike_play"/>
+		   					</if>	
+		   				</if>
+		   			</if> 
+		<log expr="'@@@@@@ CATEGORY ______HONEY '+playconfig"/>
+		<log expr="'@@@@@@ HEARD ______HONEY '+HEARD"/>
+
+		<if cond="playconfigcattemp=='myth' || playconfigcattemp=='hindu'|| playconfigcattemp=='temple' || playconfigcattemp=='templejain'">
+        		   <prompt bargein="true"  timeout="1s">
+       		      		<audio expr="promptpath+LANG_DESCRIPTION+'/keypad.wav'"/>
+   			   </prompt> 
+		<else/>
+			   <prompt bargein="true"  timeout="1s">
+		             	<audio expr="promptpath+LANG_DESCRIPTION+'/keypad_alram.wav'"/>	
+			   </prompt> 
+		</if>	     	
+	  </block>
+	 <field name="keypadoption">               
+		    	 
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>
+					      <item>1</item>
+			                    <item>2</item>
+					      <item>3</item>
+			                    <item>6</item>
+			                    <item>7</item>
+					      <item>8</item>
+                          			<item>9</item>
+                          			<item>0</item>
+						<item>#</item>		
+	                    	</one-of>
+                	</rule>
+               	</grammar>			 
+        <filled>		          
+         <script>
+			end_BalenceMinute=start_time();
+	 </script>            	
+			<if cond="keypadoption=='6'">	
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+				<assign name="total_time_used" expr="get_duration[0]"/>
+				<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				<!--<if cond="total_time_used  &gt; 3000">
+					<goto next="End.vxml"/>
+				</if>-->
+				 <if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+				</if>
+			  	<script>
+					var tem=playconfig.split("_");
+					playconfigcattemp=tem[0]; 
+				</script>
+				<log>CATEGORY NAME=====	<value expr="playconfigcattemp"/>    </log>
+				<goto next="#playoption"/>
+
+			<elseif cond="keypadoption=='7'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<!--<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>-->
+					 <if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   	<log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+						</if>
+			  <goto next="dev_PlayList.vxml"/> 
+			<elseif cond="keypadoption=='8'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<!--<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>-->
+				 <if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+						</if>
+
+			<!-- <assign name="playconfigcat" expr="RELIGION+vinaycat"/>
+			  <assign name="start_index_1" expr="'0'"/>			  	
+			  <goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>-->
+			  <goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+		    <elseif cond="keypadoption=='0'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<!--<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>-->
+		    	 <if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+				</if>	
+					<if cond="playconfig=='hindu_001' || playconfig=='hindu_002' || playconfig=='hindu_003' ||playconfig=='hindu_004' ||playconfig=='hindu_005'||playconfig=='hindu_006' ||playconfig=='hindu_007'">
+						<assign name="cat_flag" expr="'FALSE'" />
+					<else/>
+						<assign name="cat_flag" expr="'TRUE'" />
+					</if>
+				
+			<!--		<if cond="start_index=='5'">
+						<assign name="start_index_1" expr="0"/>
+						<assign name="end_index_1" expr="0"/>
+						<assign name="start_index" expr="0"/>
+						<assign name="end_index" expr="0"/>
+					<elseif cond="start_index=='10'" />
+						<assign name="start_index_1" expr="5"/>
+					
+					</if> -->	
+					<script>
+							var tem=playconfig.split("_");
+							playconfigcattemp=tem[0]; 
+					</script>
+		    	<if cond="playconfigcattemp=='temple' ||playconfigcattemp=='majid'|| playconfigcattemp=='Church' || playconfigcattemp=='Monestries' || playconfigcattemp=='Gurudwara' ||playconfigcattemp=='templejain'">
+		    		<assign name="playconfigcat" expr="playconfigcattemp+'-'+vinaycat"/>	
+			  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+			  	<elseif cond="playconfigcattemp=='myth'"/>
+			  		<assign name="playconfigcat" expr="playconfigcattemp+'_stories-'+vinaycat"/>	
+			  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+			  	<else/>
+			  		<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+			  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+			  	</if>	
+		    <elseif cond="keypadoption=='9'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<!--<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>-->
+				<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+				</if>
+			  <goto next="dev_ManageAccount.vxml"/>	  
+
+			<elseif cond="keypadoption=='#'"/>
+					 <log expr="'@@@@@@ CATEGORY ______HONEY '+playconfig"/>
+					<log expr="'@@@@@@ HEARD ______HONEY '+HEARD"/>
+					<if cond="playconfig=='hindu_001' || playconfig=='hindu_002' || playconfig=='hindu_003' ||playconfig=='hindu_004' ||playconfig=='hindu_005'||playconfig=='hindu_006' ||playconfig=='hindu_007'">
+						<assign name="cat_flag" expr="'FALSE'" />
+					<else/>
+						<assign name="cat_flag" expr="'TRUE'" />
+					</if>	
+					<log expr="'@@@@@@ FLAG ______HONEY '+cat_flag"/>
+
+					 <if cond="playconfigcattemp=='myth' || playconfigcattemp=='hindu'|| playconfigcattemp=='temple' || playconfigcattemp=='templejain' || cat_flag=='FALSE' ">						
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+						</prompt>
+					<else/>
+						<assign name="OTHER_lang" expr="'TRUE'"/>
+						<log>alarm for playconfigcat	<value expr="playconfigcat"/>    </log>
+						<log>alarm for vinaycat	<value expr="vinaycat"/>    </log>
+						<assign name="AlarmCat" expr="playconfigcat+vinaycat"/>
+						<log>@@@@@@@@@RELIGION	<value expr="playconfigcat+vinaycat"/>    </log>
+						<log>alarm for cat	<value expr="AlarmCat"/>    </log>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction?PROCEDURE=USER_ALARM&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+AlarmCat+'&amp;INPARAM[2]=SET'"/>
+						<script>
+							 <![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+								  {  	  
+							       	if(j==0)
+							       		HEARD = out_string[j];
+						  		}
+							]]>
+				
+						</script>
+						<log>length of outstring  is	<value expr="out_string.length"/></log>
+						<log expr="'@@@@@@@New usr_status===>' +HEARD"/>
+						<if cond="HEARD=='1'">
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_alarm.wav'"/>
+							</prompt> 
+						<else/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_alarm.wav'"/>
+							</prompt> 
+								
+						</if>	
+					</if>
+					<goto next="#StartToPlaysongs"/>
+				<else/>	
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<!--<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>-->
+				<goto next="#StartToPlaysongs"/>
+			</if>	
+            </filled>
+			  
+		   <noinput>	
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<!--<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>-->
+		   
+			<script>
+				end_BalenceMinute=start_time();
+			</script>         
+		   		 <if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+					<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					</if>     
+				</if>	
+		   			
+	             	<goto next="#StartToPlaysongs"/>	     
+             </noinput>	
+              
+            <nomatch>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<!--<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>-->
+			
+				<script>
+					end_BalenceMinute=start_time();
+				</script>         
+				<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+					<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					</if>     
+				</if>
+				
+				
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+			<!--	<reprompt></reprompt> -->
+				<goto next="#StartToPlaysongs"/>
+			</nomatch>	
+          </field>		
+		
+	</form>
+	
+<form id="StartToPlaysongs">
+		<block>
+			<!--<if cond="ANI=='8459078905'">
+				<goto next="devoplaycontent_deepak.vxml#StartToPlaysongs" />
+			</if>	-->
+			<prompt bargein="true" timeout="2s" cond="KeyPad_Cnt==0">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/keypad.wav'"/>
+			</prompt>
+			<script> KeyPad_Cnt=KeyPad_Cnt+1</script>
+			<log>Key pad counter isssssss  <value expr="KeyPad_Cnt"/>    </log>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+			<assign name="total_time_used" expr="get_duration[0]"/>
+			<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+			<!--<if cond="total_time_used  &gt; 3000">
+				<goto next="End.vxml"/>
+			</if>-->
+		<script>
+		   		 <![CDATA[
+  		       			if(timerflag==1)
+					start_BalenceMinute=start_time();
+				]]>	 	
+ 		</script>
+	
+		<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+		<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+		</if>
+		<log expr="'@@@@@@ UNIKE_PLAY VALUE'+unike_play"/>
+	 <if cond="playconfigcattemp=='myth' || playconfigcattemp=='temple' || playconfigcattemp=='templejain'">						
+						<assign name="myth_unlike_play" expr="unike_play"/>	
+						<assign name="temple_heard" expr="playconfig"/>
+		</if>
+						<script>
+							var songcheck=array[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = array[unike_play];
+						</script>
+			
+					 <assign name="song_begin" expr="start_time()"/>
+					 <assign name="song_listen" expr="'START'" />
+					 <assign name="RatainUnlikePaly" expr="unike_play" />
+					 <assign name="ComingFrom" expr="'devo'" />
+					
+      </block>
+		   <field name="selectoption">
+				
+				    <grammar mode="dtmf" root="start" version="1.0">
+			   		<rule id="start" scope="public">
+			   		  <one-of>
+					      <item>1</item>
+					      <item>2</item>	
+					      <item>3</item>
+						  <item>4</item>
+					      <item>5</item>
+						  <item>6</item>
+						  <item>7</item>
+				       	  <item>8</item>
+					      <item>9</item>
+					      <item>0</item>
+						<item>#</item>
+	  
+					 </one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			   
+ 
+			  <audio expr="contentpath+contentdir+'/'+song+'.wav'"/> 	
+
+
+  	   	      </prompt> 			 
+		  
+		      <filled>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<!--<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>-->
+			  
+				 <script>
+							end_BalenceMinute=start_time();
+					</script>
+				<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+						</if> 
+		      <assign name="contentlogging" expr="selectoption"/>
+		      <goto next="#contentlogg"/>
+				
+			  </filled>				  
+		
+		     
+			 <noinput>	
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<!--<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>--> 
+					<script>
+							end_BalenceMinute=start_time();
+					</script>
+			    <if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if>   
+				<assign name="contentlogging" expr="'1'"/>
+		      <goto next="#contentlogg"/> 	
+			</noinput>
+
+		<nomatch>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+			<assign name="total_time_used" expr="get_duration[0]"/>
+			<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+			<!--<if cond="total_time_used  &gt; 3000">
+					<goto next="End.vxml"/>
+			</if>-->
+		
+			<script>
+						end_BalenceMinute=start_time();
+				</script>
+			<if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if> 
+			
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+	 </field>
+	  	
+	</form>	
+	
+<form id="contentlogg">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+		<assign name="total_time_used" expr="get_duration[0]"/>
+		<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+		<!--<if cond="total_time_used  &gt; 3000">
+			<goto next="End.vxml"/>
+		</if>-->	 
+			 
+			 <script>
+		   		 <![CDATA[
+  		       			if(timerflag==1)
+					start_BalenceMinute=start_time();
+				]]>	 	
+			</script>  
+			<script>
+				end_BalenceMinute=start_time();
+			</script>
+
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="time_duration(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+song+hash+cat+hash+cat+hash+compare_time+hash"></assign>					 				 						 								 
+				  <if cond="contentlogging=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<!--<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>-->
+				  
+				   	 <if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if>
+					 
+					 <script> unike_play=unike_play+1;
+				   	 </script>
+					 <goto next="#StartToPlaysongs"/>	
+				
+				
+				 <elseif cond="contentlogging=='2'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<!--<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>-->
+						<if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if>	
+
+						<script> unike_play=unike_play</script>
+					     <goto next="#StartToPlaysongs"/> 				 
+				 
+				 <elseif cond="contentlogging=='3'"/>	
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				     <if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if>
+					 	<script> unike_play=unike_play-1</script>
+						<goto next="#StartToPlaysongs"/> 
+				  <elseif cond="contentlogging=='4'"/>	
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+
+					<if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if>
+					<script>
+						var tem=playconfig.split("_");
+						playconfigcattemp=tem[0]; 
+					</script>
+					<if cond="playconfigcattemp=='temple' ||playconfigcattemp=='myth' ||playconfigcattemp=='majid'|| playconfigcattemp=='Church' || playconfigcattemp=='Monestries' || playconfigcattemp=='Gurudwara' || playconfigcattemp=='templejain'">
+						<goto next="#play-pause"/>
+					<else/>
+						<throw event="nomatch"/>
+					</if>					
+				 <elseif cond="contentlogging=='5'"/>	
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+						<if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if>
+						<assign name="moviename" expr="'NA'"/>
+						<goto next="dev_PlayList.vxml#Add"/>	
+				 <elseif cond="contentlogging=='6'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+
+				 	 <script>
+							var tem=playconfig.split("_");
+							playconfigcattemp=tem[0]; 
+					</script>
+					 <log>CATEGORY NAME=====	<value expr="playconfigcattemp"/>    </log>
+					 <goto next="#playoption"/>
+				 
+				  <elseif cond="contentlogging=='7'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+
+				     <if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if>
+					 <goto next="dev_PlayList.vxml"/>
+			 	 
+			 	  <elseif cond="contentlogging=='8'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+
+				 	 <if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if>
+					 <!--<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+						<assign name="start_index_1" expr="0"/>				 	 
+			  		 <goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>-->
+			  		 <goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+				  
+				  <elseif cond="contentlogging=='0'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+
+				    	<if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if>
+						<if cond="playconfig=='hindu_001' || playconfig=='hindu_002' || playconfig=='hindu_003' ||playconfig=='hindu_004' ||playconfig=='hindu_005'||playconfig=='hindu_006' ||playconfig=='hindu_006'">
+								<assign name="cat_flag" expr="'FALSE'" />
+						<else/>
+							<assign name="cat_flag" expr="'TRUE'" />
+						</if>
+							
+							<!--<assign name="start_index_1" expr="0"/>
+							<assign name="end_index_1" expr="0"/>
+					      <assign name="start_index" expr="0"/>
+							<assign name="end_index" expr="0"/> -->
+							
+					<!--	<if cond="start_index=='5'">
+							<assign name="start_index_1" expr="0"/>
+							<assign name="end_index_1" expr="0"/>
+							<assign name="start_index" expr="0"/>
+							<assign name="end_index" expr="0"/>
+						<elseif cond="start_index=='10'" />
+							<assign name="start_index_1" expr="5"/>
+					
+						</if> -->	
+							<script>
+									var tem=playconfig.split("_");
+									playconfigcattemp=tem[0]; 
+							</script>
+				    	<if cond="playconfigcattemp=='temple' ||playconfigcattemp=='majid'|| playconfigcattemp=='Church' || playconfigcattemp=='Monestries' || playconfigcattemp=='Gurudwara' ||playconfigcattemp=='templejain'">
+				    		<assign name="playconfigcat" expr="playconfigcattemp+'-'+vinaycat"/>	
+					  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					  	<elseif cond="playconfigcattemp=='myth'"/>
+					  		<assign name="playconfigcat" expr="playconfigcattemp+'_stories-'+vinaycat"/>	
+			  				<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					  	<else/>
+					  		<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+					  		<goto next="DIGI_DEVO.vxml#playcatname"/>
+					  	</if>
+				  <elseif cond="contentlogging=='9'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+
+				 	 <goto next="dev_ManageAccount.vxml"/> 
+				   <elseif cond="contentlogging=='#'"/>
+
+					 <log expr="'@@@@@@ CATEGORY ______HONEY '+playconfig"/>
+					<log expr="'@@@@@@ HEARD ______HONEY '+HEARD"/>
+					<if cond="playconfig=='hindu_001' || playconfig=='hindu_002' || playconfig=='hindu_003' ||playconfig=='hindu_004' ||playconfig=='hindu_005'||playconfig=='hindu_006' ||playconfig=='hindu_007'">
+						<assign name="cat_flag" expr="'FALSE'" />
+					<else/>
+						<assign name="cat_flag" expr="'TRUE'" />
+					</if>	
+					<log expr="'@@@@@@ FLAG ______HONEY '+cat_flag"/>
+	
+					
+					 <if cond="playconfigcattemp=='myth' || playconfigcattemp=='hindu'|| playconfigcattemp=='temple' || playconfigcattemp=='templejain' || cat_flag=='FALSE' ">						
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+						</prompt>
+					<else/>
+						<assign name="OTHER_lang" expr="'TRUE'"/>
+						<log>alarm for playconfigcat	<value expr="playconfigcat"/>    </log>
+						<log>alarm for vinaycat	<value expr="vinaycat"/>    </log>
+						<assign name="AlarmCat" expr="playconfigcat+vinaycat"/>
+						<log>@@@@@@@@@RELIGION	<value expr="playconfigcat+vinaycat"/>    </log>
+						<log>alarm for cat	<value expr="AlarmCat"/>    </log>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction?PROCEDURE=USER_ALARM&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+AlarmCat+'&amp;INPARAM[2]=SET'"/>
+						<script>
+							 <![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+								  {  	  
+							       	if(j==0)
+							       		HEARD = out_string[j];
+						  		}
+							]]>
+				
+						</script>
+						<log>length of outstring  is	<value expr="out_string.length"/></log>
+						<log expr="'@@@@@@@New usr_status===>' +HEARD"/>
+						<if cond="HEARD=='1'">
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_alarm.wav'"/>
+							</prompt> 
+						<else/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_alarm.wav'"/>
+							</prompt> 
+								
+						</if>	
+						
+					</if>
+					<goto next="#StartToPlaysongs"/>
+				  <else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+			 		<script> unike_play=unike_play+1</script>
+				        <goto next="#StartToPlaysongs"/> 		
+				 </if>
+	
+		<noinput>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+			<assign name="total_time_used" expr="get_duration[0]"/>
+			<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+
+			<script>
+				end_BalenceMinute=start_time();
+			</script>         
+			<if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if>
+			<goto next="#StartToPlaysongs"/> 	
+		</noinput>
+
+		<nomatch>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+			<assign name="total_time_used" expr="get_duration[0]"/>
+			<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+
+			<script>
+				end_BalenceMinute=start_time();
+			</script>         
+			<if cond="timerflag=='1'">
+						  <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+							     <if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+					          </if>     
+					 </if>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<goto next="#StartToPlaysongs"/>
+		</nomatch>
+
+
+	</block>
+</form>
+	
+	
+	
+<form id="playoption">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+		<assign name="total_time_used" expr="get_duration[0]"/>
+		<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+		<if cond="total_time_used  &gt; 3000">
+			<goto next="End.vxml"/>
+		</if>
+	</block>
+
+	 <script>
+		   		 <![CDATA[
+  		       			if(timerflag==1)
+					start_BalenceMinute=start_time();
+				]]>	 	
+ 	</script>      
+
+		   <field name="playclipOptionInfo">
+			<grammar mode="dtmf" root="start" version="1.0">
+               	<rule id="start" scope="public">
+                  <one-of>				 
+					  <item>1</item>
+					  <item>2</item>	
+					  <item>3</item>
+					  <item>4</item>
+					  <item>6</item>
+					  <item>7</item>
+					  <item>8</item>
+					  <item>9</item>
+					  <item>0</item>
+			  	 </one-of>
+              	</rule>
+            </grammar>
+			
+				<prompt bargein="true" timeout="0s" cond="playconfigcattemp=='myth'">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/keypad_story.wav'"/>
+	   	        </prompt>
+
+			<prompt bargein="true" timeout="0s" cond="playconfigcattemp=='temple' || playconfigcattemp=='templejain' ">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/keypad_aarti.wav'"/>
+	   	        </prompt>
+				
+				<prompt bargein="true" timeout="0s" cond="playconfigcattemp!='myth' &amp;&amp; playconfigcattemp!='temple'">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/keypad_options_other.wav'"/>
+	   	        </prompt>
+		   	
+		<filled>
+			 <script>
+				end_BalenceMinute=start_time();
+			</script>
+			    <if cond="playclipOptionInfo=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+			    	<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+						</if>
+				     <script> unike_play=unike_play-1</script> 
+				     
+				     <goto next="#StartToPlaysongs"/> 
+				     
+			   <elseif cond="playclipOptionInfo=='2'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>
+					<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+					</if>
+			   	
+				     <script> unike_play=unike_play</script>
+				     
+				      <goto next="#StartToPlaysongs"/> 
+				     
+			   <elseif cond="playclipOptionInfo=='3'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+
+					<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+					</if>	
+
+					<script> unike_play=unike_play+1</script>
+				     <goto next="#StartToPlaysongs"/> 
+				     
+			 <elseif cond="playclipOptionInfo=='4'"/>	
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+					</if>	
+					
+					<script>
+						var tem=playconfig.split("_");
+						playconfigcattemp=tem[0]; 
+					</script>
+					<if cond="playconfigcattemp=='temple' ||playconfigcattemp=='myth' ||playconfigcattemp=='majid'|| playconfigcattemp=='Church' || playconfigcattemp=='Monestries' || playconfigcattemp=='Gurudwara' ||playconfigcattemp=='templejain'">
+						<goto next="#play-pause"/>
+					<else/>
+						<throw event="nomatch"/>
+					</if>		  
+			 <elseif cond="playclipOptionInfo=='6'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+
+				    <if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+					</if> 
+					 
+					 <goto next="#playoption"/> 	     
+			
+			   <elseif cond="playclipOptionInfo=='7'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+			   		 <goto next="dev_PlayList.vxml"/>
+
+			   
+			   <elseif cond="playclipOptionInfo=='8'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+
+			    	<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+					</if>
+					
+					<!-- <assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+			  		 <goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>-->
+			  		 <goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+			   
+			   <elseif cond="playclipOptionInfo=='0'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				    <if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+					</if>	
+						
+						<assign name="start_index_1" expr="0"/>
+							<assign name="end_index_1" expr="0"/>
+					      <assign name="start_index" expr="0"/>
+							<assign name="end_index" expr="0"/> 
+							
+					<!--	<if cond="start_index=='5'">
+							<assign name="start_index_1" expr="0"/>
+							<assign name="end_index_1" expr="0"/>
+							<assign name="start_index" expr="0"/>
+							<assign name="end_index" expr="0"/>
+						<elseif cond="start_index=='10'" />
+							<assign name="start_index_1"	expr="5"/>	
+						</if>	-->
+							
+							<script>
+									var tem=playconfig.split("_");
+									playconfigcattemp=tem[0]; 
+							</script>
+				    	<if cond="playconfigcattemp=='temple' ||playconfigcattemp=='majid'|| playconfigcattemp=='Church' || playconfigcattemp=='Monestries' || playconfigcattemp=='Gurudwara'||playconfigcattemp=='templejain'">
+				    		<assign name="playconfigcat" expr="playconfigcattemp+'-'+vinaycat"/>	
+					  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					  	<elseif cond="playconfigcattemp=='myth'"/>
+					  		<assign name="playconfigcat" expr="playconfigcattemp+'_stories-'+vinaycat"/>	
+			  				<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					  	<else/>
+					  		<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+					  		<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					  	</if>
+			   <elseif cond="playclipOptionInfo=='9'"/>
+			         <goto next="dev_ManageAccount.vxml"/>
+			    </if>
+			    
+		</filled>		
+			
+		
+		<noinput>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+			<assign name="total_time_used" expr="get_duration[0]"/>
+			<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+			<script>
+				end_BalenceMinute=start_time();
+			</script>         
+			<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+					</if>
+			<goto next="#StartToPlaysongs"/> 	
+		</noinput>
+
+		<nomatch>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+			<assign name="total_time_used" expr="get_duration[0]"/>
+			<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+			<script>
+				end_BalenceMinute=start_time();
+			</script>         
+			<if cond="timerflag=='1'">
+							<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+						   <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+										
+									<assign name="len_duration" expr="get_duration.length" />
+									<script>
+										<![CDATA[
+										   for(k=0; k<len_duration ;  k++)
+										   {  	  
+													balancearray[k] = get_duration[k];						   
+										   }
+					
+										]]>		
+									</script> 
+										<assign name="total_used_bal" expr="get_duration[0]"/>
+									
+							<script> 
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="End.vxml"/>
+							  </if>     
+					</if>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<goto next="#StartToPlaysongs"/>
+		</nomatch>
+		
+	</field>	
+	  	 
+</form>
+
+<form id="play-pause">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+		<assign name="total_time_used" expr="get_duration[0]"/>
+		<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+	</block>
+	   <field name="pauseopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+               	<rule id="start" scope="public">
+                  <one-of>				 
+					  <item>4</item>
+			  	 </one-of>
+              	</rule>
+            </grammar>
+			
+				<prompt bargein="true">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/play_pause.wav'"/>
+	   	        </prompt>
+		   	
+		<filled>
+			<if cond="pauseopt=='4'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+				<assign name="total_time_used" expr="get_duration[0]"/>
+				<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+				<goto next="#StartToPlaysongs"/>
+			</if>
+			
+		</filled>
+
+		<noinput>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+			<assign name="total_time_used" expr="get_duration[0]"/>
+			<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+			<reprompt/>
+		</noinput>
+		
+		<nomatch>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+			<assign name="total_time_used" expr="get_duration[0]"/>
+			<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+			<reprompt/>
+		</nomatch>
+    </field>
+</form>
+
+
+</vxml>

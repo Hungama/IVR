@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="FMJRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="starclub_End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<var name="C_End" expr="''"/>
+	<script>
+			var out_string=new Object();
+	</script>
+
+	<form id="EndLogin">
+		<block>
+		     <assign name="C_End" expr="start_time()"/>
+		 	 <if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<!--<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE contentlog======'+contentlog"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE hash======'+hash"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE contentfile======'+contentfile"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE cat======'+cat"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE subcat======'+subcat"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE compare_time======'+compare_time"></log>-->
+				<assign name="contentlog" expr="contentlog+contentfile+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			</if> 
+			
+			
+			<if cond="timerflag=='1'">
+				<!--<log expr="'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  Balance=====>'+balance"/>--> 
+				<assign name="current_balance" expr="start_time()"/>
+					<script>
+				 		total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 				 		curbalance=balance-total_used_bal; 						  
+					</script>
+			  	<script> curbalance=Math.floor(curbalance/60); </script>
+			 	 <log expr="'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Updating Total Balance=====>'+total_used_bal"/>  
+			 	 <log expr="'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Updating Balance=====>'+curbalance"/>
+			</if>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME_NEW&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+curbalance+'&amp;INPARAM[2]='+DNIS"/>
+				<!--<log expr="'!!!!!!!!!!!!!!!!!!!!Updating Balance Minutes======'+balance"></log>-->
+				
+				
+			<!--<log expr="'!!!!!!!!!!!!!!!!!!!!ContentTime='+ContentTime"></log>
+			<log expr="'!!!!!!!!!!!!!!!!!!!!starttime='+C_Start"></log>
+			<log expr="'!!!!!!!!!!!!!!!!!!!!endtime='+C_End"></log>
+			<log expr="'!!!!!!!!!!!!!!!!!!!!ANI='+ANI"></log>
+			<log expr="'!!!!!!!!!!!!!!!!!!!!DNIS='+DNIS"></log>
+			<log expr="'!!!!!!!!!!!!!!!!!!!!realDNIS='+realDNIS"></log>
+			
+			<log expr="'!!!!!!!!!!!!!!!!!!!!usr_status='+usr_status"></log>
+			<log expr="'!!!!!!!!!!!!!!!!!!!!contentlog='+contentlog"></log>	-->
+			<if cond="sub_flag=='true'">
+			         <script srcexpr="'http://'+IP+'/hungama/MTS_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1106&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;IVRtransid='+IVRtransid+'&amp;cg_id='+cg_id+'&amp;error_desc='+error_desc+'&amp;cons_time='+cons_time+'&amp;cons_stat='+cons_stat"/>  
+			</if>
+			<if cond="ANI=='84590789051'">
+				<script srcexpr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+prompt_name+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=starclub1&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<else/>		
+				<script srcexpr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+prompt_name+hash+modesub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=starclub&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			</if>
+			<exit/>
+		</block>
+	    <catch event="error.*">
+		 								
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      
+		  
+		  <exit/>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 
+		  
+		  <exit/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  End4444</log>	
+		   
+		   <exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  End5555</log>	
+		
+		   <exit/>
+ 
+      </catch>
+	</form>
+
+
+
+</vxml>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<property name="documentmaxstale" value="0s"></property>	<property name="documentmaxage" value="0s"></property>
+	<meta name="Hungama_BIGFM_Play.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+		<form id="next">		<block>			<if cond="unike_play &gt; len-1">				<assign name="unike_play" expr="0" />			<elseif cond="unike_play &lt; 0" />				<assign name="unike_play" expr="len-1" />			</if>			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>			<log>	array == <value expr="array1[unike_play]"/>    </log>			<script>				var songcheck1=array1[unike_play].split("_");				Song_Path=songcheck1[0];				songID = array1[unike_play];			</script>		</block>		<field name="choice">			<grammar mode="dtmf" root="start" version="1.0">						<rule id="start" scope="public">							<one-of>								 <item>  0  </item>								 <item>  1  </item>								 <item>  2  </item>								 <item>  3  </item>								 								 <item>  7  </item>								 <item>  8  </item>								 <item>  9  </item>								 <item>  *  </item>							</one-of>						</rule>				</grammar>			<prompt bargein="true" timeout="1s">				<audio expr="'http://'+CONTENT_PATH+'/'+Song_Path+'/'+songID+'.wav'"/>			</prompt>			<filled>				<assign name="nextchoice" expr="'1'"/>				<goto next="#contentlogin" />							</filled>			<noinput>								<assign name="nextchoice" expr="'1'"/>				<goto next="#contentlogin" />			</noinput>			<nomatch>								<assign name="nextchoice" expr="'1'"/>				<goto next="#contentlogin" />			</nomatch>		</field>				</form>		<form id="contentlogin">		<block>				<script> unike_play=unike_play+1</script>				<goto next="#next" />		</block>	</form>
+</vxml>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ccxml version="1.0" xmlns="http://www.w3.org/2002/09/ccxml">
+  
+  <meta name="hungama_54646.ccxml" content="" />
+  <meta name="Author" content="" />
+  <meta name="Date" content="" />
+  <meta name="Description" content="" />
+  <meta name="Support" content="" />  
+ 
+  <!-- Declaration of the state variable. Let's start in the init state. -->
+  <var name="dialogid1" expr="''"/>
+  <var name="dialogid2" expr="''"/>
+  <var name="connid1" expr="''"/>
+  <var name="connid2" expr="''"/>
+  <var name="results" expr="'notset'"/>
+  <var name="my_connectionid" />
+  <var name="ANI" expr="'9999216077'"/>
+  <var name="DNIS" expr="'54646'"/>
+  <var name="stateVar" expr="'init'"/>
+  
+    <!-- DECLARE TIMER VARIABLES FOR CONFERENCE START -->
+  <var name="startTime"/>
+  <var name="startHour"/>
+  <var name="startMinutes"/>
+  <var name="startSeconds"/>
+  
+  
+  <!-- DECLARE TIMER VARIABLES FOR CONFERENCE END -->
+  <var name="endTime"/>
+  <var name="endHour"/>
+  <var name="endMinutes"/>
+  <var name="endSeconds"/>
+  <var name="total" expr="7775"/>
+    <var name="pass" expr="8885"/>
+    <var name="end" expr="9218680489"/>
+    <var name="end1" expr="999"/>
+    <var name="tot" expr="5"/>
+    <var name="tot1" expr="0"/>
+    <var name="ti_ch" expr="0"/>
+    <var name="Number" expr="9218680489"/>
+    
+  
+  
+  
+  <var name="caller1id"/> 
+  <var name="caller2id"/> 
+  <var name="confid"/> 
+  <var name="state0" expr="'not_inited'"/> 
+  <var name="incomingcall"/> 
+  <var name="callcount" expr="0"/>
+  <var name="sendid_as" expr="null"/> 
+  <var name="sessionid" expr="null"/>
+  <var name="evt_name" expr="null"/>
+  <var name="param3" expr="null"/>
+  <var name="BNI_out" expr=""/>
+  <var name="tmp"/>
+ 
+
+
+  
+  <!-- Event processor for stateVar -->
+
+  <eventprocessor statevariable="stateVar">
+  
+  <transition event="ccxml.loaded" name="evt" cond="application.connid!= tmp">
+   <!--assign name="ANI" expr="evt.connection.remote"/-->
+<assign expr="application.connection.remote" name="ANI"/>
+<log expr="'loaded state of Onmobile ccxml'" label="Onmobile"/>
+
+	<assign name="connid1" expr="evt.connectionid"/>
+  	<assign name="stateVar" expr="'accept'"/>
+  	<assign name="ANI" expr="evt.connection.remote"/>
+	<assign name="DNIS" expr="evt.connection.local"/>
+
+  	<log expr="'ANI=='"/>
+  	<log expr="ANI"/>
+	<log expr="'DNIS=='"/>
+  	<log expr="DNIS"/>
+
+ 
+
+<dialogstart connectionid="application.connid" dialogid="dlgid" src="'Monsoon_Contest_SelectLang.vxml'" namelist="ANI DNIS"/>
+
+ 
+  <!-- in the loaded state of news ccxml. Code should be writen for
+  the second application -->
+  <!--send target="session.id" data="'hp.connected'" targettype="'ccxml'"/!-->
+</transition>
+  
+  <transition state="init" event="connection.alerting" name="evt">
+  <assign name="application.connection" expr="evt.connection"/>
+  
+  <assign name="application.connid" expr="evt.connectionid"/>
+
+  	<assign name="connid1" expr="evt.connectionid"/>
+  	<assign name="stateVar" expr="'accept'"/>
+  	<assign name="ANI" expr="evt.connection.remote"/>
+	<assign name="DNIS" expr="evt.connection.local"/>
+
+  	<log expr="'ANI=='"/>
+  	<log expr="ANI"/>
+	<log expr="'DNIS=='"/>
+  	<log expr="DNIS"/>
+
+  	 <assign name="evt_name" expr="'hp.event'"/>
+  	<assign name="sessionid" expr="session.id"/>
+  	<accept/>
+  </transition>
+  
+  <transition state="accept" event="connection.connected" name="evt">
+  	<log expr="'Call Connected'" label="'Accept Call'"/>
+  		
+  
+ 
+	<dialogstart connectionid="application.connid" dialogid="dlgid" src="'Monsoon_Contest_SelectLang.vxml'" namelist="ANI DNIS"/>
+ 
+
+ 
+
+  	<assign name="stateVar" expr="'preparing'"/>
+  </transition>
+  
+  <transition state="preparing" event="dialog.prepared" name="evt">
+   	<log expr="'dialog prepared'" label="'dialog prepared'"/>
+  
+  	
+	<dialogstart connectionid="application.connid" dialogid="dlgid" src="'Monsoon_Contest_SelectLang.vxml'" namelist="ANI DNIS"/>
+ 
+ 
+
+	
+  </transition>   
+     
+   <transition  event="dialog.exit" name="evt">
+  	<log expr="'Dialog Terminated'" label="'Dialog Terminated'"/>
+  <exit/>
+  	
+  </transition>
+  
+  
+  <transition event="fetch.done" name="evt">
+      <!-- parameters to be passed to second ccxml -->
+   <goto fetchid="evt.fetchid"/>
+</transition>
+  
+ 
+  
+  <transition event="connection.disconnected" name="evt">
+     <log expr="'User hangup'"/>
+  <send data="'connection.disconnect.hangup'" target="dlgid" targettype="'dialog'"/>
+ 	<assign name="callcount" expr="callcount-1"/>
+  	<log expr="'Got error as T'"/>
+            
+        
+ 
+       
+  </transition>
+  
+  <transition event="error.*" name="evt">
+	<log expr="'Got error as : '+evt.reason"/>
+       <exit/>  	
+  </transition>
+
+    
+
+  </eventprocessor> 
+</ccxml>

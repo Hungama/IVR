@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Rasoi_root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="end.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	
+   	<property name="documentmaxstale" value="0s"></property>
+   	<property name="documentmaxage" value="0s"></property>   	
+	
+	<var name="current_balance" expr=""/>
+	<var name="curbalance" expr=""/>
+	<var name="total_used_bal" expr=""/>
+	<var name="C_End" expr=""/>	
+	<form id="EndLogin">
+		<block>
+			<log>program_name:<value expr="program_name"/></log>
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+hash+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			</if>
+			 <log>!!!!!!!!!!!!!!!!!!!!ContentTime=<value expr="ContentTime"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!starttime=  <value expr="C_Start"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!endtime=    <value expr="C_End"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!ANI=        <value expr="ANI"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!DNIS=       <value expr="DNIS"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!realDNIS=   <value expr="realDNIS"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!usr_status= <value expr="usr_status"/>    </log>
+			 <log>!!!!!!!!!!!!!!!!!!!!contentlog= <value expr="contentlog"/>    </log>			
+			 
+			<if cond="balance &lt; 0">
+				<script> balance=0;</script> 
+			</if>
+			<if cond="timerflag=='1'">
+				<script>balance=Math.floor(balance/60);</script> 
+				<if cond="balance &lt; 0">
+					<script> balance=0;</script> 
+				</if>			 
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/>
+			</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_rasoi.RASOI_SENDMESSAGE&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+			<if cond="consent_flag=='true'">
+			         <script srcexpr="'http://'+IP+'/hungama/MTS_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1102&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;IVRtransid='+IVRtransid+'&amp;cg_id='+cg_id+'&amp;error_desc='+error_desc+'&amp;cons_time='+cons_time+'&amp;cons_stat='+cons_stat"/>  
+			</if>
+				<script srcexpr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+program_name+hash+modesub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=54646&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<exit/>
+		</block>
+		<catch event="error.badfetch">		 								
+			<log>Inside Error BadCatch catch  End2222</log>  	      		  
+			<exit/>		 								
+		</catch>      
+
+		<catch event="telephone.disconnect.hangup">		 								
+		      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 		  
+		      <exit/>							
+		</catch>
+
+		<catch event="telephone.disconnect">	
+			<log>Inside Telephonet Disconnected catch  End4444</log>			   
+			<exit/>
+		</catch>	  
+		<catch event="connection.disconnect.hangup">	
+			<log>Inside connection.disconnect.hangup catch  End5555</log>		
+			<exit/>		  
+		</catch>
+	</form>
+</vxml>

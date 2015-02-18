@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Regional_PortalRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+ 	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="Regional_Subscription.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+	<script>
+		var out_string=new Object();
+		var var_wel=0;
+	</script>
+
+	<form id="WelcomeIntroRandom">
+			<block>
+				<!-- <assign name="var_wel" expr="getRandom(0,4)" />	
+			 	<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_new_'+var_wel+'.wav'"/>	
+				</prompt>  -->
+				<assign name="Section_Name" expr="'NEW_USER'"/>
+				<log>Section Name isssssss  <value expr="Section_Name"/>  </log>
+				<goto next="#SubOption"></goto>
+			</block>
+	</form>		
+	
+	<form id="SubOption">
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 
+							</one-of>
+						</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/subintro.wav'"/>
+					
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#SubRequest"></goto>				
+				</if>
+				<if cond="choice=='2'">
+					<goto next="#NotToSubs"></goto>				
+				</if>
+			</filled>
+			
+			
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/waiting_response.wav'"/>
+				</prompt>
+				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<goto next="#NotToSubs"/>
+			</noinput>
+			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				
+				<reprompt></reprompt>
+			</nomatch>
+			
+			
+		</field>
+	</form>
+	
+	<form id="NotToSubs">
+		<block>
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_unsub.wav'"/>
+			</prompt>
+			<exit/>	
+		</block>
+	</form>
+	
+	<form id="SubRequest">
+		<block>
+			
+			<assign name="sub_flag" expr="'1'"/>
+			
+			<!-- SUB REQUEST -->			
+	
+		<assign name="amt" expr="'30'"/>
+		<assign name="plan_id" expr="'1'"/>
+		<assign name="service_id" expr="'1102'"/>
+		
+       	 <!-- <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>   -->
+		 <script srcexpr="'http://10.130.14.106:8088/hungama/Regional_dbinteraction?PROCEDURE=REGIONAL_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=9XMIVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=30&amp;INPARAM[5]=1102&amp;INPARAM[6]=1'"/>         
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/charging_wait.wav'"/>
+			</prompt>
+			<goto next="#BillStatusChk"/>	
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REGIONAL_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+				</prompt>
+				
+			<elseif cond="usr_status=='1'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/thank_sub.wav'"/>
+				</prompt>
+				
+				<exit/>	
+			<else/>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+				</prompt>
+				<exit/>
+			</if>
+		</block>
+	</form>
+
+
+</vxml>

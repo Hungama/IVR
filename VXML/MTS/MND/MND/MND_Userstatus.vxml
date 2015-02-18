@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="MND_Userstatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+  <script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var ciropr1=new Object();
+		var len=0;
+ </script>
+ 
+ <form id="Starting">
+ 	<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LISTEN_STORY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script> var malav=out_string[0];	</script>
+			<log expr="'malav isss'+malav"/>
+
+			<if cond="circle=='kar'">
+				<assign name="lang" expr="'10'" />
+			<elseif cond="circle=='apd'"/>
+				<assign name="lang" expr="'08'" />
+			<else/>
+				<assign name="lang" expr="'01'" />
+			</if>
+
+			<!--<if cond="ANI=='8459078905'">
+				<goto next="BPLMainMenu.vxml"/>
+			</if> -->
+			
+			<!-- MND TNB SUBTYPE STATUS CHECK START-->
+
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_TNB_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+				 sub_type_mnd = out_string[0];						       
+			</script>
+
+			<if cond="sub_type_mnd=='MUCROSSMPD'">
+				<assign name="MND_TNB" expr="'TRUE'"/>
+			</if>
+			
+			<log expr="'sub_type_mnd isss'+sub_type_mnd"/> -->
+
+			<!-- MND TNB SUBTYPE STATUS CHECK END-->
+		
+ 		<goto next="#Menu"/>
+ 	</block>
+ </form>
+ 
+ <form id="Menu">
+    <block>
+     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>
+           <script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	
+
+					      if(j==0)
+						  usr_status = out_string[j];
+					      if(j==1)
+						  lang = out_string[j];
+					      if(j==2)
+						  balance = out_string[j]; 
+					  }
+
+				]]>
+			</script>
+			<log expr="'Balance isss'+balance"/>
+			<log>Balance isss  <value expr="balance"/>    </log>
+
+				
+
+			<if cond="usr_status=='1'">
+				<script>
+					balance=balance*60;
+					timerflag=1;
+				</script>
+				<script>
+				<![CDATA[
+				  if(timerflag==1)
+				      start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+				<goto next="#Checkuser"/>
+			<elseif cond="usr_status=='-1'"/>
+				<if cond="circle=='kol' || circle=='wbl'">
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang_option.wav'"/>
+					</prompt>
+					<goto next="#Select_lang"/>
+				</if>
+				<goto next="MND_Subscription.vxml"/> 	     	
+			<else/>   
+				<goto next="MND_Subscription.vxml"/>
+			</if>
+   </block>
+</form>
+
+
+<form id="Select_lang">
+	 <field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+					 <item>  2  </item>		
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/HIN/lang01.wav'"/>
+						<audio expr="promptpath+'/HIN/press_dtmf1.wav'"/>
+						<audio expr="promptpath+'/BEN/lang06.wav'"/>
+						<audio expr="promptpath+'/BEN/press_dtmf2.wav'"/>
+				</prompt>
+				
+		  <filled>
+			     		<if cond="choice=='1'">
+						<assign name="lang" expr="'01'" />
+						<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+						<prompt bargein="true" timeout="1s">
+								<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang_thanks.wav'"/>
+						</prompt>
+						<goto next="MND_Subscription.vxml"/> 
+					<elseif cond="choice=='2'"/>
+						<assign name="lang" expr="'06'" />
+						<assign name="LANG_DESCRIPTION" expr="'BEN'" />
+
+						<prompt bargein="true" timeout="1s">
+								<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang_thanks.wav'"/>
+						</prompt>
+						<goto next="MND_Subscription.vxml"/> 
+					</if>
+	     </filled>				    
+			
+			 <noinput>
+				<assign name="index" expr="'0'" />
+				<audio expr="promptpath+'/HIN/nodtmf.wav'"/>
+				<reprompt/> 
+			 </noinput>  
+			 
+			 <noinput count="3">
+				<assign name="lang" expr="'01'" />		
+				<goto next="MND_Subscription.vxml"/> 
+ 			 </noinput> 
+			    
+          
+			<nomatch>
+				<assign name="index" expr="'0'" />
+				<audio expr="promptpath+'/HIN/invalidoption.wav'"/>
+				<reprompt/>
+		        </nomatch> 
+			<nomatch count="3">
+				<assign name="lang" expr="'01'" />		
+				<goto next="MND_Subscription.vxml"/> 
+		        </nomatch> 
+		      
+
+	    </field>
+</form>
+
+<form id="Checkuser">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LASTCAT_ALLCHARACTER&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]=2'"/>
+		<script>
+			<![CDATA[
+				for(j=0; j< out_string.length;  j++)
+					{  	
+						playconfig = out_string[j];
+					}
+			]]>
+		</script>
+		
+		<if cond="playconfig=='-1'">
+			<assign name="playconfig" expr="'ch1'" />
+
+			<prompt bargein="true" timeout="1s" cond="MND_TNB=='TRUE'">
+				<audio expr="promptpath+'/01/common/subintro_tnb.wav'"/>
+			</prompt>
+
+			<prompt bargein="true" timeout="1s" cond="lang!=06">
+				<audio expr="promptpath+'/'+lang+'/ch1/welcome_old.wav'"/>
+				<audio expr="promptpath+'/'+lang+'/common/mainmenu.wav'"/>
+			</prompt>
+
+			<prompt bargein="true" timeout="0s" cond="lang==06">
+				<audio expr="promptpath+'/BEN/welcome_old_0.wav'"/>
+			</prompt>
+			<goto next="MND_mainmenu.vxml"/>
+		<else/>
+			<if cond="lang==06">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/BEN/welcome_old_0.wav'"/>
+				</prompt>
+				<goto next="MND_mainmenu.vxml"/>
+			<else/>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/'+playconfig+'/last_cat.wav'"/>
+				</prompt>
+				<goto next="MND_mainmenu.vxml#loadcliptoplay"/>
+			</if>
+		</if>
+	
+	</block>
+</form>
+
+</vxml>

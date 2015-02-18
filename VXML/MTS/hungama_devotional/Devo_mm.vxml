@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="devRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="Devo_mm.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<var name="movie_idx" expr="0"/>
+	<var name="specialdate" expr="0"/>
+	
+	<script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var dishes=new Array();	
+		var lang1=new Array();
+		var lang2=new Array();
+	</script>	
+	<form id="Welcome">
+		<block>
+			<assign name="prompt_name" expr="'TOPMM_MENU'"/>
+			<assign name="mm_flag" expr="'TRUE'"/>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_new.wav'"/>
+			</prompt>
+			<goto next="#FETCHCATGORY"/>
+		</block>
+	</form>		
+	<form id="FETCHCATGORY">	
+		<block>
+			<if cond="lang =='10'">
+				<assign name="playconfigcat" expr="'myth_stories-KAN'"/>
+			<else/>
+				<assign name="playconfigcat" expr="'myth_stories-HIN'"/>
+			</if>
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/songconfig/'+playconfigcat+'.cfg'"/>
+			<script>
+				array1.length=0;
+				lang1.length=0;
+				lang2.length=0;
+				unike_play=0;
+			</script>			
+			<assign name="len" expr="favSongs.length" />
+			<assign name="new_len" expr="len" />
+			
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					for(j=0; j<len ;  j++)
+					{  	  
+						array1[j] = favSongs[j];						   
+					}	
+				]]>
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			
+			<log>Array[0]  is	<value expr="array1[0]"/>    </log>
+			<log>Array[1]  is	<value expr="array1[1]"/>    </log>
+			<log>Array[2]  is	<value expr="array1[2]"/>    </log>
+			<log>Array[3]  is	<value expr="array1[3]"/>    </log>
+			<log>Array[4]  is	<value expr="array1[4]"/>    </log>
+			<log>Array[5]  is	<value expr="array1[5]"/>    </log>
+			
+			<assign name="start_index_pre" expr="0"/>
+			<assign name="start_index" expr="0"/>
+
+			<if cond="len &lt; 5 || len==5">
+				<assign name="end_index" expr="len"/>
+				<assign name="OTHER_RECIPES" expr="'FALSE'"/>
+			<else/>
+				<assign name="end_index" expr="5"/>
+				<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+			</if>
+			<if cond="start_index_1=='0' || end_index_1=='0' || len &lt; 5 || len==5">
+				<assign name="start_index_pre" expr="0"/>
+				<assign name="start_index" expr="0"/>
+			<else/>
+				<assign name="start_index" expr="start_index_1"/>
+				<assign name="end_index" expr="end_index_1"/>
+				<assign name="start_index_pre" expr="start_index-5"/>
+			</if>
+			<assign name="keypad_option" expr="'TRUE'"/>
+			<log>STATRING INDEX======	<value expr="start_index"/>    </log>
+			<log>PRE INDEX=====	<value expr="start_index_pre"/>    </log>
+			<log>END INDEX=====	<value expr="end_index"/>    </log>						
+			<goto next="#TOPMENU"/>
+            </block>
+	</form>	
+	
+	<form id="TOPMENU">
+		<block>
+			<log> circle is <value expr="circle"/></log>		
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<script>
+				 <![CDATA[
+					for(j=start_index; j<end_index ;  j++)
+					{  	  
+					dishes[i] = array1[j];
+					var temp = dishes[i].split("-");
+						lang1[i] = temp[0];
+						lang2[i] = temp[1];			
+						i++;													   
+					}	
+				]]>	
+			</script>									
+			<if cond="end_index ==len">
+				<assign name="OTHER_RECIPES" expr="'FALSE'"/>
+			</if>
+		</block>
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  9  </item>								
+						</one-of>
+					</rule>
+				</grammar>			
+					<prompt bargein="true" timeout="2s">
+						<foreach item="names" array="lang1">
+							<mark nameexpr="movie_idx++"/>
+							<audio expr="promptpath+LANG_DESCRIPTION+'/select_'+names+'.wav'"/>
+							<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf'+movie_idx+'.wav'"/>
+						</foreach>		
+					</prompt>		
+					<prompt bargein="true" timeout="2s" cond="keypad_option=='TRUE'">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/select_acmanager.wav'"/>
+						<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf9.wav'"/>
+					</prompt>					
+				<filled>		
+					<if cond="choice=='9'">
+						<assign name="OTHER_lang" expr="'TRUE'"/>
+						<goto next="dev_ManageAccountMm.vxml"/>
+					</if>				
+					<if cond="choice &lt; i+1">					
+						<script>choice=choice-1</script>
+						<if cond="end_index &lt; 6">
+							<script>unike_play=choice</script>
+						<else/>
+							<script>unike_play=start_index+choice</script> 
+						</if>
+						<if cond="lang2[choice]=='1'">							
+							 <assign name="playconfigcat" expr="lang1[choice]+'-'+vinaycat"/>							
+							 <log expr="'CAT NAME ===='+lang1[choice]"></log>	
+							 <log expr="'CONFIG ===='+playconfigcat"></log>
+							 <log expr="'CONFIG TO PLAY WITH PARTS ===='+playconfig"></log>
+							 <assign name="cat_flag" expr="'TRUE'"/>
+							 <goto next="#FETCHCATGORY"/>							 
+						 <else/>	
+							 <assign name="start_index_1" expr="start_index"/>
+							 <assign name="end_index_1" expr="end_index"/>
+							 <assign name="OTHER_lang" expr="'TRUE'"/>
+							 <assign name="cat" expr="lang1[choice]"/>
+							 <assign name="playconfig" expr="cat"/>
+							 <assign name="HEARD" expr="playconfig"/>
+							 <log expr="'CAT NAME IF NO PARTS ===='+cat"></log>
+							 <log expr="'CONFIG TO PLAY WITH NO PARTS ===='+playconfig"></log>
+							 <goto next="devoplaycontentmm.vxml"/>
+						</if>				
+					<else/>
+						<throw event="nomatch"/>
+					</if>
+				</filled>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>	
+			<assign name="movie_idx" expr="0" />			
+			<reprompt></reprompt>
+		</noinput>
+		
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>			
+			<assign name="movie_idx" expr="0" />		
+			<reprompt></reprompt>
+		</noinput>
+		
+		<noinput count="3">
+			<assign name="OTHER_lang" expr="'TRUE'"/> 
+			<assign name="cat" expr="lang1[0]"/>
+			<assign name="playconfig" expr="cat"/>
+			<assign name="HEARD" expr="playconfig" />
+			<goto next="devoplaycontentmm.vxml"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<assign name="movie_idx" expr="0" />
+			<reprompt></reprompt>
+		</nomatch>		
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<assign name="movie_idx" expr="0" />
+			<reprompt></reprompt>
+		</nomatch>		
+		<nomatch count="3">
+			<assign name="OTHER_lang" expr="'TRUE'"/> 
+			<assign name="cat" expr="lang1[0]"/>
+			<assign name="playconfig" expr="cat"/>
+			<assign name="HEARD" expr="playconfig" />
+			<goto next="devoplaycontentmm.vxml"/>
+		</nomatch>		
+		</field>
+	</form>	
+</vxml>

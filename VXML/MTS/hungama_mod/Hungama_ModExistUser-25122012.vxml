@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_ModExistUser.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+<var name="catlang" expr="0"/>
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<script>
+		var out_string=new Object();
+	</script>
+	
+	<form id="LASTHEARD_PROFILE">
+		<block>
+		<if cond="directaccess=='ComedyPortal'">
+			<if cond="circle=='apd'">
+					<assign name="lang" expr="'08'"/>
+									
+					</if>
+				<prompt bargein="true" timeout="1s">
+				
+				<audio expr="Comedy_PromptPath+'/'+lang+'/welcome.wav'"/>
+					<audio expr="Comedy_PromptPath+'/'+lang+'/welcome_old.wav'"/>
+				</prompt>
+					<goto next="comedy_main_menu.vxml"/>
+			</if>
+<if cond="directaccess=='SMM' || directaccess=='CMM' ||directaccess=='JMM' || directaccess=='MM' || directaccess=='MMM'">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			</if>
+
+			<if cond="circle=='raj'">
+				<assign name="var_wel" expr="getRandom(1,50)"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/welcome_old_'+var_wel+'.wav'"/>
+					</prompt>
+								
+			</if>
+
+
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=GET'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	HEARD = out_string[j];
+						  }
+
+					]]>
+			
+			</script>			
+			<!-- <assign name="var_wel" expr="getRandom(1,50)" />			-->
+			<log expr="'HEARD @@@@@@@@@ '+HEARD"></log>
+			
+			<if cond="circle=='raj'">
+				<script>
+					LocalCounter=LocalCounter+1;
+				</script>
+
+				<if cond="HEARD=='0' || HEARD=='00' || HEARD=='OTH'">
+					<goto next="Hungama_ModMainMenu.vxml"></goto>
+				<else/>
+					<script>
+						length = HEARD.length;
+						cat = HEARD.substring(0,2);
+						subcat = HEARD.substring(2,4);
+					</script>
+					<assign name="playconfig" expr="HEARD"></assign>
+					<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>
+				</if>
+			</if>
+
+		</block>
+		<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+ 			<prompt bargein="true" timeout="0s" cond="mod_of_sub!='TNB'">
+				<audio expr="Prompt_Path+'/'+lang+'/welcome_old_'+var_wel+'.wav'"/>
+			</prompt>	
+			<filled>
+			<if cond="directaccess=='SMM' || directaccess=='CMM' ||directaccess=='JMM' || directaccess=='MM'">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			</if>
+			
+		<if cond="directaccess=='TOP20' || directaccess=='NEWAR' ||directaccess=='POPUL' || directaccess=='EVERG'">
+					<goto next="Hungama_ModMainMenu.vxml"></goto>
+			</if>
+				<if cond="HEARD=='0' || HEARD=='00'">
+					<goto next="#playclip"></goto>
+				<else/>
+					<script>
+						length = HEARD.length;
+						cat = HEARD.substring(0,2);
+						subcat = HEARD.substring(2,4);
+					</script>
+					<assign name="playconfig" expr="HEARD"></assign>					
+					<goto next="#playclip"></goto>												
+				</if>									
+			</filled>
+		</field>
+		<noinput>
+			<if cond="directaccess=='SMM' || directaccess=='CMM' ||directaccess=='JMM' || directaccess=='MM'">
+						<goto next="Hungama_ModMainMenu.vxml"></goto>
+			</if>
+			<if cond="directaccess=='TOP20' || directaccess=='NEWAR' ||directaccess=='POPUL' || directaccess=='EVERG'">
+								<goto next="Hungama_ModMainMenu.vxml"></goto>
+			</if>
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="#playclip"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD.substring(0,2);
+					subcat = HEARD.substring(2,4);
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#playclip"></goto>												
+			</if>	
+		</noinput>
+		<nomatch>
+		<if cond="directaccess=='TOP20' || directaccess=='NEWAR' ||directaccess=='POPUL' || directaccess=='EVERG'">
+							<goto next="Hungama_ModMainMenu.vxml"></goto>
+			</if>
+				<if cond="directaccess=='SMM' || directaccess=='CMM' ||directaccess=='JMM' || directaccess=='MM'">
+						<goto next="Hungama_ModMainMenu.vxml"></goto>
+				</if>
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="#playclip"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD.substring(0,2);
+					subcat = HEARD.substring(2,4);
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#playclip"></goto>												
+			</if>
+		</nomatch>
+	</form>
+	
+	<form id="playclip">
+		<block>
+					<if cond="HEARD=='0' || HEARD=='00' || HEARD=='OTH'">
+							<goto next="Hungama_ModMainMenu.vxml"></goto>
+						<else/>
+							<goto next="#LASTHEARD"></goto>
+						</if>
+			<if cond="lang=='09'">
+					<if cond="HEARD=='0' || HEARD=='00' || HEARD=='OTH'">
+							<goto next="Hungama_ModMainMenu.vxml"></goto>
+						<else/>
+							<goto next="#LASTHEARD"></goto>
+						</if>
+			</if>
+										<if cond="circle=='apd'">
+											<assign name="catlang" expr="'08'"/>
+										<elseif cond="circle=='bih'"/>
+											<assign name="catlang" expr="'04'"/>
+										<elseif cond="circle=='asm'"/>
+											<assign name="catlang" expr="'17'"/>
+										<elseif cond="circle=='chn'"/>
+											<assign name="catlang" expr="'07'"/>
+										<elseif cond="circle=='hpd'"/>
+											<assign name="catlang" expr="'01'"/>
+										<elseif cond="circle=='del'"/>
+											<assign name="catlang" expr="'01'"/>
+										<elseif cond="circle=='guj'"/>
+											<assign name="catlang" expr="'12'"/>
+										<elseif cond="circle=='hry'"/>
+											<assign name="catlang" expr="'01'"/>
+										<elseif cond="circle=='kar'"/>
+											<assign name="catlang" expr="'10'"/>
+										<elseif cond="circle=='ker'"/>
+											<assign name="catlang" expr="'09'"/>
+										<elseif cond="circle=='kol'"/>
+											<assign name="catlang" expr="'06'"/>
+										<elseif cond="circle=='mpd'"/>
+											<assign name="catlang" expr="'01'"/>
+										<elseif cond="circle=='mah'"/>
+											<assign name="catlang" expr="'11'"/>
+										<elseif cond="circle=='mum'"/>
+											<assign name="catlang" expr="'01'"/>
+										<elseif cond="circle=='ori'"/>
+											<assign name="catlang" expr="'01'"/>
+										<elseif cond="circle=='pub'"/>
+											<assign name="catlang" expr="'01'"/>
+										<elseif cond="circle=='raj'"/>
+											<assign name="catlang" expr="'18'"/>
+										<elseif cond="circle=='tnu'"/>
+											<assign name="catlang" expr="'07'"/>
+										<elseif cond="circle=='upw'"/>
+											<assign name="catlang" expr="'01'"/>
+										<elseif cond="circle=='upe'"/>
+											<assign name="catlang" expr="'01'"/>
+										<elseif cond="circle=='wbl'"/>
+											<assign name="catlang" expr="'06'"/>
+										<elseif cond="circle=='nes'"/>
+											<assign name="catlang" expr="'06'"/>
+										
+										<else/>
+											<assign name="catlang" expr="'01'"/>
+										</if>
+	
+		<assign name="var_wel" expr="getRandom(1,5)" />
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/Top20/'+catlang+'20.cfg'"/>
+						<script>
+								    	array1.length=0;
+						</script>
+						<assign name="len" expr="favSongs.length" />
+						<log>previous Array[1]  is	<value expr="favSongs[var_wel]"/>    </log>
+							       					       
+						
+							<script>
+								var songcheck1=favSongs[var_wel].split("_");
+								Song_Path=songcheck1[0];
+								songID = favSongs[var_wel];
+							</script>
+							
+				
+						<prompt bargein="true" timeout="1s">
+							<audio expr="contentpath+Song_Path+'/'+songID+'.wav'"/>	
+						</prompt>
+						<if cond="HEARD=='OTH'">
+							<goto next="Hungama_ModMainMenu.vxml"></goto>
+
+						</if>
+					<!--<prompt bargein="true" timeout="1s">
+	
+					<audio expr="Prompt_Path+'/Top20/'+lang+'/'+favSongs[var_wel]+'.wav'"/>
+						
+					</prompt>-->	
+						<if cond="HEARD=='0' || HEARD=='00' || HEARD=='OTH'">
+							<goto next="Hungama_ModMainMenu.vxml"></goto>
+						<else/>
+							<goto next="#LASTHEARD"></goto>
+						</if>
+		</block>
+</form>
+	<form id="LASTHEARD">		
+		<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Prompt_Path+'/'+lang+'/listining_cat.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/cat'+HEARD+'.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/return_option.wav'"/>
+			</prompt>
+
+			<filled>
+			<if cond="directaccess=='SMM' ">
+					<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS_MM"></goto>	
+			</if>
+				<if cond="choice=='8'">
+					<goto next="Hungama_ModMainMenu.vxml"></goto>
+				<else/>					
+					<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>												
+				</if>									
+			</filled>
+		</field>
+		<noinput>
+					<if cond="directaccess=='SMM' ">
+							<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS_MM"></goto>	
+					</if>
+
+			<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>	
+		</noinput>
+		<nomatch>
+					<if cond="directaccess=='SMM' ">
+							<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS_MM"></goto>	
+					</if>
+
+			<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>
+		</nomatch>
+	</form>
+
+</vxml>

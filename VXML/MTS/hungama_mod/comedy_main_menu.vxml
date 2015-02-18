@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml" 	
+xmlns="http://www.w3.org/2001/vxml" 	
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 	
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">  
+
+<meta name="comedy_main_menu.vxml" content="" /> 	
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+<var name="previousmenuflag" expr="''"/>
+<var name="play" expr="''"/>
+
+<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var dishes=new Array();				
+</script>
+
+
+
+<form id="nav">
+                	
+       
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>								 							
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								  <item>  9  </item>
+								
+						    </one-of>
+						</rule>
+				</grammar>
+				
+			<prompt bargein="true" timeout="3s">
+				 <audio expr="Comedy_PromptPath+'/'+lang+'/mainmenu.wav'"/>	
+
+			</prompt>
+			
+		<filled>
+				<if cond="choice=='1'">
+					<goto next="#janapandalumenu"/>
+				</if>
+				<if cond="choice=='2'">
+					<goto next="#comedy"/>
+				</if>
+				<if cond="choice=='3'">
+					<goto next="#parodysongs"/>
+				</if>
+				<if cond="choice=='9'">
+					<goto next="ManageAccount.vxml"/>
+				</if>
+		</filled>
+		
+		
+		<noinput count="1">
+			
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="3">
+			 <goto next="#janapandalumenu"/>	
+		</noinput>
+
+
+		<nomatch count="1">
+			
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="3">
+			<goto next="#janapandalumenu"/>	
+		</nomatch>
+		
+
+		</field>
+	</form>
+	
+	<form id="janapandalumenu">
+	            <block>
+	 		
+	 		<assign name ="previousmenuflag" expr="'janapandalumenu'"/>
+	 		
+						
+			 </block>        	
+	       
+			<field name="choice">			
+				<grammar mode="dtmf" root="start" version="1.0">
+							<rule id="start" scope="public">
+								<one-of>								 							
+									 <item>  1  </item>
+									 <item>  2  </item>
+									 <item>  3  </item>
+									 <item>  7  </item>
+									  <item>  8  </item>
+									   <item>  9  </item>
+									
+							    </one-of>
+							</rule>
+					</grammar>
+				 <prompt bargein="true" timeout="3s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/janapadalu_menu.wav'"/>
+				</prompt>
+			<filled>
+					<if cond="choice=='1'">
+						<assign name ="playconfig" expr="'FolkSongs'"/>
+						<goto next="#FETCHSONGS"/>
+					</if>
+					<if cond="choice=='2'">
+						<assign name ="playconfig" expr="'ChinnariJanapadalu'"/>
+						<goto next="#FETCHSONGS"/>
+					</if>
+					<if cond="choice=='3'">
+						<assign name ="playconfig" expr="'BhaktiJanapadalu'"/>
+						<goto next="#FETCHSONGS"/>
+					</if>
+					<if cond="choice=='7'">
+
+						<goto next="#nav"/>
+					</if>
+					<if cond="choice=='8'">
+
+						<goto next="ComedyMainMenu.vxml"/>
+					</if>
+					<if cond="choice=='9'">
+							<goto next="ManageAccount.vxml"/>
+					</if>
+			</filled>
+			
+			
+			<noinput count="1">
+				
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</noinput>
+	
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</noinput>
+	
+			<noinput count="3">
+				 	<assign name ="playconfig" expr="'FolkSongs'"/>
+					<goto next="#FETCHSONGS"/>	
+			</noinput>
+	
+	
+			<nomatch count="1">
+				
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</nomatch>
+	
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</nomatch>
+	
+			<nomatch count="3">
+					 <assign name ="playconfig" expr="'FolkSongs'"/>
+					<goto next="#FETCHSONGS"/>	
+			</nomatch>
+			
+	
+			</field>
+	</form>
+	<form id="comedy">
+		            <block>
+		 		
+		 		<assign name ="previousmenuflag" expr="'comedy'"/>
+							
+				 </block>        	
+		       
+				<field name="choice">			
+					<grammar mode="dtmf" root="start" version="1.0">
+								<rule id="start" scope="public">
+									<one-of>								 							
+										 <item>  1  </item>
+										 <item>  2  </item>
+										 <item>  3  </item>
+										  <item>  7  </item>
+										   <item>  8  </item>
+										   <item>  9  </item>
+										
+								    </one-of>
+								</rule>
+						</grammar>
+					 <prompt bargein="true" timeout="3s">
+						<audio expr="Comedy_PromptPath+'/'+lang+'/comedy_menu.wav'"/>
+					</prompt>
+				<filled>
+						<if cond="choice=='1'">
+							<assign name ="playconfig" expr="'Mimicry'"/>
+							<goto next="#FETCHSONGS"/>
+						</if>
+						<if cond="choice=='2'">
+							<assign name ="playconfig" expr="'FolkDrama'"/>
+							<goto next="#FETCHSONGS"/>
+						</if>
+						<if cond="choice=='3'">
+							<assign name ="playconfig" expr="'Toorpucomedy'"/>
+							<goto next="#FETCHSONGS"/>
+						</if>
+						<if cond="choice=='7'">
+
+							<goto next="#nav"/>
+						</if>
+						<if cond="choice=='8'">
+
+							<goto next="ComedyMainMenu.vxml"/>
+						</if>
+						<if cond="choice=='9'">
+							<goto next="ManageAccount.vxml"/>
+						</if>
+				</filled>
+				
+				
+				<noinput count="1">
+					
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<reprompt></reprompt>
+				</noinput>
+		
+				<noinput count="2">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>			
+					<reprompt></reprompt>
+				</noinput>
+		
+				<noinput count="3">
+							<assign name ="playconfig" expr="'Mimicry'"/>
+							<goto next="#FETCHSONGS"/>	
+				</noinput>
+		
+		
+				<nomatch count="1">
+					
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<reprompt></reprompt>
+				</nomatch>
+		
+				<nomatch count="2">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>			
+					<reprompt></reprompt>
+				</nomatch>
+		
+				<nomatch count="3">
+							<assign name ="playconfig" expr="'Mimicry'"/>
+							<goto next="#FETCHSONGS"/>		
+				</nomatch>
+				
+		
+				</field>
+	</form>
+	
+	<form id="parodysongs">
+			            <block>
+			 		
+			 		<assign name ="previousmenuflag" expr="'parodysongs'"/>
+								
+					 </block>        	
+			       
+					<field name="choice">			
+						<grammar mode="dtmf" root="start" version="1.0">
+									<rule id="start" scope="public">
+										<one-of>								 							
+											 <item>  1  </item>
+											 <item>  2  </item>
+											 <item>  3  </item>
+											  <item>  7  </item>
+											   <item>  8  </item>
+											   <item>  9 </item>
+											
+									    </one-of>
+									</rule>
+							</grammar>
+						 <prompt bargein="true" timeout="3s">
+							<audio expr="Comedy_PromptPath+'/'+lang+'/parodysongs_menu.wav'"/>
+						</prompt>
+					<filled>
+							<if cond="choice=='1'">
+							
+								<assign name ="playconfig" expr="'EnkiPaatalu'"/>
+								<goto next="#FETCHSONGS"/>
+							</if>
+							<if cond="choice=='2'">
+								<assign name ="playconfig" expr="'MaradalaPilla'"/>
+								<goto next="#FETCHSONGS"/>
+							</if>
+							<if cond="choice=='3'">
+								<assign name ="playconfig" expr="'PalleBharatam'"/>
+								<goto next="#FETCHSONGS"/>
+							</if>
+							<if cond="choice=='7'">
+								
+								<goto next="#nav"/>
+							</if>
+							<if cond="choice=='8'">
+									
+								<goto next="ComedyMainMenu.vxml"/>
+							</if>
+							<if cond="choice=='9'">
+								<goto next="ManageAccount.vxml"/>
+							</if>
+					</filled>
+					
+					
+					<noinput count="1">
+						
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>			
+						<reprompt></reprompt>
+					</noinput>
+			
+					<noinput count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Comedy_PromptPath+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>			
+						<reprompt></reprompt>
+					</noinput>
+			
+					<noinput count="3">
+						 	<assign name ="playconfig" expr="'EnkiPaatalu'"/>
+							<goto next="#FETCHSONGS"/>	
+					</noinput>
+			
+			
+					<nomatch count="1">
+						
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>			
+						<reprompt></reprompt>
+					</nomatch>
+			
+					<nomatch count="2">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="Comedy_PromptPath+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>			
+						<reprompt></reprompt>
+					</nomatch>
+			
+					<nomatch count="3">
+							 <assign name ="playconfig" expr="'EnkiPaatalu'"/>
+							<goto next="#FETCHSONGS"/>		
+					</nomatch>
+					
+			
+					</field>
+	</form>
+	<form id="FETCHSONGS">
+					<block>												
+						<log> fetching songs </log>
+						<if cond="playconfig=='00'">
+							
+								<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/spconf/'+lang+playconfig+'_'+sp_zone+'.cfg'"/>
+						<else/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/songconfig/'+playconfig+'.cfg'"/>
+						</if>
+						<script>
+									array1.length=0;
+									unike_play=0;
+						</script>
+						<assign name="HEARD" expr="playconfig" />
+						<assign name="len" expr="favSongs.length" />
+						<assign name="movie_idx" expr="0" />
+						<assign name="i" expr="0" />
+						<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+							<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+							<goto next="Hungama_ModEnd.vxml"></goto>
+						</if>
+						<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+						<script>
+							 <![CDATA[
+								   for(j=0; j<len ;  j++)
+								   {  	  
+											array1[j] = favSongs[j];						   
+								   }
+	
+							]]>		
+						</script> 	       					       
+						<log>Length  is	<value expr="len"/>    </log>
+						<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+<assign name ="cat" expr="playconfig"/>
+<assign name ="subcat" expr="playconfig"/>
+					
+					</block>
+					<field name="choice">
+						<grammar mode="dtmf" root="start" version="1.0">
+							<rule id="start" scope="public">
+								<one-of>
+									 <item>  8  </item>
+									 <item>  9  </item>									
+								</one-of>
+							</rule>
+						</grammar>
+						<prompt bargein="true" timeout="1s">
+							
+							
+							<audio expr="Comedy_PromptPath+'/'+lang+'/options.wav'"/>						
+						</prompt>
+						<filled>
+							<if cond="choice=='8'">
+								<goto next="#MAINMENU"/>
+							<elseif cond="choice=='9'"/>
+								<goto next="Hungama_ModMngAccnt.vxml"/>	
+							<else/>
+								<goto next="Hungama_ModPlay.vxml#next"/>
+							</if>						
+						</filled>
+						<noinput>
+							<goto next="Hungama_ModPlay.vxml#next"/>
+						</noinput>
+						<nomatch>
+							<goto next="Hungama_ModPlay.vxml#next"/>
+						</nomatch>
+					</field>
+	</form>
+
+</vxml>

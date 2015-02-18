@@ -28,3 +28,7 @@ http://10.130.14.106:8088/hungama/REDFM/Hungama_Red.ccxml
 
 FMJ:-
 http://10.130.14.106:8088/hungama/celebrity_chat/HUNGAMA_STARCLUB_ROOT.ccxml
+
+MTS_SU -
+Toll free -http://10.130.14.106:8088/hungama/MTS_SU/MTS_SU.ccxml
+

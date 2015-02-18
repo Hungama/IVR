@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ModRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="Hungama_Valintine_MngAccnt.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	<var name="LangFirstValue" expr="'01'"/>
+	<form id="AcntOption">
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  8  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/welcome_acmanager.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+			    		<goto next="#AcntLanguage"></goto>
+				<elseif cond="choice=='2'"/>
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='8'"/>
+					<goto next="Hungama_ValintinePlayContent.vxml" />
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ValintinePlayContent.vxml" />
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ValintinePlayContent.vxml" />
+		</nomatch>
+	</form>
+
+	<form id="AcntLanguage">
+		<block>	
+		<assign name="Section_Name" expr="'LANGUAGE_CHANGE'"/>
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/VALENTINE/langorder.cfg&amp;TOKEN=FREE'"/>
+			<script>
+					    	array1.length=0;
+			</script>
+			<var name="movie_idx" expr="0"/>
+			<assign name="movie_idx" expr="0" />
+			<assign name="len" expr="favSongs.length" />
+			<assign name="i" expr="0" />
+			
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  	
+						array1[j] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 
+			<assign name="LangFirstValue" expr="array1[0]"/>
+			<prompt bargein="true" timeout="0s">					
+				<audio expr="Prompt_Path+'/'+lang+'/lang_option_del.wav'"/>
+			</prompt>
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array1">
+						<mark nameexpr="movie_idx++"/>					
+						<log>	song is is    	<value expr="movie_idx"/>  	</log>
+						<log>	names is is    	<value expr="names"/>  	</log>
+						<audio expr="Prompt_Path+'/'+names+'/lang'+names+'.wav'"/>
+						<audio expr="Prompt_Path+'/'+names+'/press_dtmf'+movie_idx+'.wav'"/>			
+					</foreach>						
+				</prompt>
+			<filled>
+				<if cond="choice &lt; len+1">
+						<assign name="lang" expr="array1[--choice]"/>
+						<log expr="'selected language is '+lang"></log>
+						<log expr="'user status is '+try_status"></log>
+						<if cond="usr_status=='-1'">						    
+						    <prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+							</prompt>
+							<goto next="Hungama_ModNewUser.vxml"/>
+						<else/>						   
+						    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+							</prompt>							
+							<goto next="Hungama_ValintinePlayContent.vxml"/>
+						</if>				
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+LangFirstValue+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+LangFirstValue+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="Hungama_ModNewUser.vxml"/>
+			<else/>
+				<goto next="Hungama_ValintinePlayContent.vxml"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+LangFirstValue+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+LangFirstValue+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="Hungama_ModNewUser.vxml"/>
+			<else/>
+				<goto next="Hungama_ValintinePlayContent.vxml"/>
+			</if>
+		</nomatch>
+	</form>	
+	
+	<form id="AcntUnsubscription">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT MANAGER_UNSUB'"/>
+		</block>
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  *  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/acmanager_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<!-- UNSUB REQUEST -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=USERSTATUS&amp;OPERATOR='+operator"/>
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>			
+					<!--	<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>					-->
+					<if cond="cRBTSTATUS=='EAUC'">		
+						<goto next="#UCT_Unsubscription"></goto>
+					<else/>
+						<goto next="Hungama_ModEnd.vxml"></goto>
+					</if>
+				<else/>
+					<goto next="Hungama_ValintinePlayContent.vxml"></goto>
+				</if>
+			</filled>
+		</field>	
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">			
+			<goto next="Hungama_ValintinePlayContent.vxml"></goto>			
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">			
+			<goto next="Hungama_ValintinePlayContent.vxml"></goto>			
+		</nomatch>		
+	</form>
+
+	<form id="UCT_Unsubscription">
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  *  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/crbt_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=DEACTIVATE&amp;OPERATOR='+operator"/>					
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>			
+					<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				<else/>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				</if>
+			</filled>
+		</field>	
+	</form>		
+</vxml>

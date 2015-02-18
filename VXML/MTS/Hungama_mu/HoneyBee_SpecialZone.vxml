@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="HoneyBee_Root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="HoneyBee_SpecialZone.vxml" content="" />
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+
+<form id ="CallADD">
+	<block>
+		<log>Track ['+ANI+']CallADD called</log>
+ 		<goto next="HoneyBee_NAD.vxml#NAD_EVT_check"/>
+	</block>
+</form>
+
+<form id="SpecialZone">
+<block>
+	<assign name="Section_Name" expr="'SPECIAL_ZONE'"/>
+	<log expr="'Track ['+ANI+']:Keypad options in Special Zone'"/>         
+	<log>Keypad options in Special Zone</log>
+	<audio expr="Promptpath+'/'+lang+'/wel_mus_cat_'+cat+'.wav'"/>
+	<log expr="'Track ['+ANI+']:http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_FETCHSPECIALZONE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+operator"/>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_FETCHSPECIALZONE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+operator"/>
+
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					    if(j==0)
+						    EventName = out_string[j];
+					  }
+
+				]]>
+
+		</script>  		
+
+		<log>Track ['+ANI+'] Event name:<value expr="EventName"/></log>
+		<if cond="EventName=='0'">
+			<assign name="cat" expr="'espl01'"/>
+			<assign name="playconfig" expr="cat"></assign>
+			<assign name="subcat" expr="cat"></assign>
+			<goto next="#FETCHSONGS"/>
+		</if>	
+		<assign name="cat" expr="EventName"/>
+		<assign name="playconfig" expr="EventName"></assign>
+		<assign name="subcat" expr="EventName"></assign>
+
+		<if cond="EventName!=''">
+			<goto next="#FETCHSONGS"/>
+		<else/>
+			<log expr="'Track ['+ANI+']:Fetch Song'"/> 
+		</if>
+</block>
+	</form>
+
+	<form id="FETCHSONGS">
+		<block>
+			<assign name="Section_Name" expr="'FETCHSONGS_SPZONE'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ReadConfigSongHB?ConfigPath=MuConfig/'+operator+'/songconfig/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+
+			<script>
+				arrayPlayContent.length=0;
+				unike_play=0;
+			</script>
+			<log>
+				unike_play  is
+				<value expr="unike_play"/>
+			</log>
+			<assign name="len" expr="favSongs.length"/>
+			<assign name="movie_idx" expr="0"/>
+			<assign name="i" expr="0"/>
+			<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+				<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+				<goto next="HoneyBee_End.vxml"></goto>
+			</if>
+			<log>
+				previous Array[1]  is
+				<value expr="arrayPlayContent[0]"/>
+			</log>
+			<script>
+			<![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+						arrayPlayContent[j] = favSongs[j];
+					   }
+				]]>			
+			</script>
+			<log>
+				Length  is
+				<value expr="len"/>
+			</log>
+			<log>
+				Array[1]  is
+				<value expr="arrayPlayContent[0]"/>
+			</log>
+			<assign name="Section_Name" expr="'KEYINFO_SHORT'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>
+							8
+						</item>
+						<item>
+							9
+						</item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Promptpath+'/'+lang+'/keyinfo_short.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='8'">
+					<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="HoneyBee_Help.vxml"/>
+				<else/>
+					<goto next="HoneyBee_MusicPlay.vxml#next"/>
+				</if>
+			</filled>
+			<noinput>
+				<goto next="HoneyBee_MusicPlay.vxml#next"/>
+			</noinput>
+			<nomatch>
+				<goto next="HoneyBee_MusicPlay.vxml#next"/>
+			</nomatch>
+		</field>
+	</form>	
+
+	
+</vxml>

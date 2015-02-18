@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Regional_PortalRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+<meta name="Regional_ExistingUser.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />		
+<var name="length" expr="0"/>	
+
+<script>
+	var out_string=new Object();
+</script>	
+	<form id="LASTHEARD_PROFILE">
+		<block>
+			<assign name="Section_Name" expr="'ExistingUser'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REGIONAL_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=GET'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	HEARD = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			<!--<assign name="var_wel" expr="getRandom(1,50)" />			-->
+			<!-- <log expr="'HEARD @@@@@@@@@ '+HEARD"></log> -->	
+			<goto next="#WelcomeIntroRandom"/>					
+		</block>
+	</form>
+	<form id="WelcomeIntroRandom">
+		<block>
+			<!--<assign name="var_wel" expr="getRandom(0,4)" />-->				
+			<prompt bargein="true" timeout="0s">
+				<!--<audio expr="promptpath+lang+'/welcome_old_'+var_wel+'.wav'"/>-->				
+				<audio expr="promptpath+lang+'/welcome_old.wav'"/>				
+			</prompt>
+		</block>
+		<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  0  </item>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+						 <item>  4  </item>
+						 <item>  5  </item>
+						 <item>  6  </item>
+						 <item>  7  </item>
+						 <item>  8  </item>
+						 <item>  9  </item>
+
+					</one-of>
+				</rule>
+			</grammar>			
+			<filled>			
+			  <if cond="choice &lt; 10">
+				<if cond="HEARD=='0' || HEARD=='00'">
+					<goto next="Regional_MainMenu.vxml"></goto>
+				<else/>
+					<script>
+						length = HEARD.length;
+						cat = HEARD;
+					</script>
+					<assign name="playconfig" expr="HEARD"></assign>					
+					<goto next="#LASTHEARD"></goto>												
+				</if>
+			</if>										
+			</filled>
+		</field>
+		<noinput>
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="Regional_MainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD;
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>	
+		</noinput>
+		<nomatch>
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="Regional_MainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD;
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>
+		</nomatch>
+	</form>	
+	<form id="LASTHEARD">		
+		<block>
+			<assign name="Section_Name" expr="'LASTHEARD'"/>
+		</block>
+		<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+lang+'/listening_cat.wav'"/>
+				<audio expr="promptpath+lang+'/'+HEARD+'.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice &lt; 10 ||choice=='*' || choice=='#'">
+					<if cond="choice=='7'">					       
+    			 			<goto next="Regional_MainMenu.vxml"/>
+					<else/>               
+						<assign name="playconfig" expr="HEARD"></assign>							 				 					 		         
+                 				<goto next="Regional_MainMenu.vxml#FETCHSONGS"></goto>
+				   	</if>
+				 </if>				  
+			</filled>
+		</field>
+		<noinput>
+			<goto next="Regional_MainMenu.vxml#FETCHSONGS"></goto>
+		</noinput>
+		<nomatch>
+			<goto next="Regional_MainMenu.vxml#FETCHSONGS"></goto>
+		</nomatch>
+	</form>
+
+</vxml>

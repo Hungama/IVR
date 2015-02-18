@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="HoneyBee_Root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="HoneyBee_Navigation.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	
+	<form id="Navigation">
+		<block>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Promptpath+'/'+lang+'/keypad_info_long2.wav'"/>
+			</prompt>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>						 
+						 <item>  8  </item>
+						 <item>  9  </item>
+						 <item>  0  </item> 
+ 						 <item>  *  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			
+			<filled>
+				<if cond="choice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<goto next="HoneyBee_MusicPlay.vxml#next"/>
+					
+				<elseif cond="choice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="HoneyBee_MusicPlay.vxml#next"/>
+					
+				<elseif cond="choice=='3'"/>
+					<script> unike_play=unike_play-1</script>
+					<goto next="HoneyBee_MusicPlay.vxml#next"/>
+					
+				<elseif cond="choice=='7'"/>
+					<goto next="HoneyBee_Navigation.vxml"/>
+					
+				<elseif cond="choice=='8'"/>
+					<goto next="HoneyBee_RootMENU.vxml"/>
+					
+				<elseif cond="choice=='9'"/>
+					<goto next="HoneyBee_Help.vxml"/>
+					
+				<elseif cond="choice=='*'"/>				
+					<goto next="HoneyBee_Crbt.vxml"/>
+					
+				<elseif cond="choice=='0'"/>
+					<goto next="HoneyBee_RingtoneMenu.vxml"/>
+				</if>
+			</filled>
+		</field>
+		<noinput>
+			<script> unike_play=unike_play</script>
+			<goto next="HoneyBee_MusicPlay.vxml#next" />
+		</noinput>
+		<nomatch>
+			<script> unike_play=unike_play</script>
+			<goto next="HoneyBee_MusicPlay.vxml#next" />
+		</nomatch>
+	</form>
+</vxml>

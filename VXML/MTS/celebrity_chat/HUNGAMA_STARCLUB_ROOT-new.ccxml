@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ccxml version="1.0" xmlns="http://www.w3.org/2002/09/ccxml">  
+  <meta name="HUNGAMA_ROOT.ccxml" content="" />
+  <meta name="Author" content="" />
+  <meta name="Date" content="" />
+  <meta name="Description" content="" />
+  <meta name="Support" content="" />  
+   <!-- Declaration of the state variable. Let's start in the init state. -->
+  <var name="dialogid1" expr="''"/>
+  <var name="dialogid2" expr="''"/>
+  <var name="mystate" expr="'init'" />
+  <var name="stateVar" expr="'init'"/>
+  <var name="dialogid1" expr="''"/>
+  <var name="connid1" expr="''"/>
+  <var name="CallCount" expr="0"/>
+  <var name="dialogid" /> 
+  <var name="mystate" expr="'init'" />
+  <var name="confani" expr="''"/>
+  <var name="confdnis" expr="''"/>
+  <var name="thestate" expr="''"/>
+  <var name="maxtime" expr="" />
+  <var name="connid2" expr="'undefined'"/>
+  
+  
+  
+  
+  
+  
+   <!-- DECLARE TIMER VARIABLES FOR CONFERENCE START -->
+    <var name="startTime"/>
+    <var name="startHour"/>
+    <var name="startMinutes"/>
+    <var name="startSeconds"/>
+    <var name="conf_status" expr="'U'" />
+    <var name="conf_done" expr="'S'" />
+   <var name="unjoin_flag" expr="'Y'" /> 
+    <var name="reason" expr="'Y'" /> 
+    <var name="misflag" expr="'VALID'" /> 
+    <var name="dialogState" expr="" /> 
+    <var name="isjoined" expr="false" /> 
+    
+    <!-- DECLARE TIMER VARIABLES FOR CONFERENCE END -->
+    <var name="endTime"/>
+    <var name="endHour"/>
+    <var name="endMinutes"/>
+    <var name="endSeconds"/>
+    <var name="total" expr="7775"/>
+      <var name="pass" expr="8885"/>
+      <var name="end" expr="9218680489"/>
+      <var name="end1" expr="999"/>
+      <var name="tot" expr="5"/>
+      <var name="tot1" expr="0"/>
+      <var name="ti_ch" expr="0"/>
+      <var name="Number" expr="9218680489"/>
+      <var name="maxtime" expr="" />
+      <var name="caller1id"/> 
+      <var name="caller2id"/> 
+      <var name="confid"/> 
+      <var name="state0" expr="'not_inited'"/> 
+      <var name="incomingcall"/> 
+      <var name="callcount" expr="0"/>
+      <var name="sendid_as" expr="null"/> 
+      <var name="sessionid" expr="null"/>
+      <var name="evt_name" expr="null"/>
+      <var name="param3" expr="null"/>
+      <var name="BNI_out" expr=""/>
+      <var name="tmp"/>
+      <var name="ANI" expr="'9911718483'"/>
+      <var name="DNIS" expr="'54646'"/>
+      <var name="ContentTime" expr="'10'"/>
+ 
+      <var name="startTime"/>
+      <var name="startHour"/>
+      <var name="startMinutes"/>
+      <var name="startSeconds"/>
+  
+  
+      <!-- DECLARE TIMER VARIABLES FOR CONFERENCE END -->
+      <var name="endTime"/>
+      <var name="endHour"/>
+      <var name="endMinutes"/>
+      <var name="endSeconds"/>
+      <var name="total" expr="7775"/>
+      <var name="pass" expr="8885"/>
+      <var name="end" expr="9997"/>
+      <var name="end1" expr="999"/>
+ 
+ 
+      <var name="ServerIp" expr="'10.130.14.106:8088'"/>   
+      <var name="bal_c" expr="null"/>
+      <var name="temp_bal" expr="0"/>
+      <var name="status_c" expr="null"/>
+      <var name="lang_c" expr="null"/>
+      <var name="Flag_Check_Sub" expr="1"/>
+      <var name="Tarrif_c" expr="1"/>
+      
+  
+  
+  <script> 
+    <![CDATA[
+               tempTime = new Date();		
+               Minutes = tempTime.getMinutes();               
+               Hour = tempTime.getHours();		
+               Seconds = tempTime.getSeconds();
+
+               //** ensure that any singular return values are padded with a preceding zero
+
+         function padZeroH ()
+		 {
+                tempTime = new Date();		
+                t = tempTime.getHours();		
+ 	
+              	if(t < 10) {
+                	t = "0" + t;
+        		}
+
+		    return t;						
+		 }
+			 
+         function padZeroM ()
+		 {
+               tempTime = new Date();		
+               t = tempTime.getMinutes();		 	
+               if(t < 10) {
+                 t = "0" + t;
+       		   } 
+     		return t;						
+		 }
+			 
+         function padZeroS ()
+		 {
+              tempTime = new Date();		
+              t = tempTime.getSeconds();		 	
+              if(t < 10) {
+             	t = "0" + t;
+		      }
+
+  		    return t;						
+		 }
+
+
+
+         function calculateLength(sh, sm, ss, eh, em, es)
+		 {
+
+               //** account for clock rollover (hour/minute/seconds)
+
+               if (eh < sh) {
+                   eh = (eh + 12);
+               }
+               if (em < sm) {
+                   em = (em + 60);
+               }
+               if (es < ss)  {
+                  es = (es + 60);
+	           }
+
+              //** compute callend time minus callstart time
+
+
+             timerH = padZero((eh - sh));
+             timerM = padZero((em - sm));
+             timerS = padZero((es - ss));
+
+             //** concatenate results to a single value
+ 
+             call_length = timerH + ':' + timerM + ':' + timerS;
+    
+
+            //** return call length to invoking application
+
+            return call_length;
+		 } 
+    ]]>
+  </script>
+  
+  
+  
+  <script>
+	   st=new Object();
+       et=new Object();
+       ani=new Object();
+
+  </script>
+  
+ 
+ 
+   <!-- Event processor for stateVar -->
+  <eventprocessor statevariable="stateVar"> 
+    
+     <transition event="ccxml.loaded" state="load" name="evt" >
+ 
+      	 <assign name="ANI" expr="evt.connection.remote"/>
+	 <assign name="DNIS" expr="evt.connection.local"/>
+	 <log expr="'***** CALLER NUMBER = ' + ANI"/> 
+	 <log expr="'***** DIALED NUMBER = ' + DNIS"/> 
+        <assign expr="'init'" name="stateVar"/>
+    </transition>
+  
+    <transition event="connection.alerting" state="init" name="evt">	
+		   <assign name="DNIS" expr="evt.connection.local"/>
+   	           <assign name="ANI" expr="evt.connection.remote"/>
+
+                   <if cond="ANI==''">
+      	                 <assign name="ANI" expr="'9999216077'"/>		  	
+    		   </if>	
+		  <log> @@@@connection id is <value expr="connection.id"/> </log>			 
+		  <log expr="'***** CONNECTION ALERTING *****'" /> 		  
+	   	  <log expr="'***** SESSION ID = ' + session.id" /> 
+		  <!-- accept connectionid="event$.connectionid"/ -->		  	     
+		  <assign name="connid1" expr="evt.connectionid"/>
+              <log expr="'***** connid1 = ' + connid1" /> 
+
+		  <!-- accept connectionid="session.dialogs[event$.dialogid].connectionid"/ -->		  
+              <accept/>
+    </transition>
+  
+    <transition event="connection.connected" state="init" name="evt">
+     
+     <log expr="'***** CALL WAS ANSWERED *****'" /> 
+	 
+	 <assign name="CallCount" expr="CallCount+1"/> 
+     <log expr="'@@@@@@@@@@@@@@ TOTAL CALL IS : @@@@@@@@@@@@@@@@@@' + CallCount"/> 
+						
+	 <log expr="'***** evt.CONNECTION.CONNECTIONID = ' + evt.connection.connectionid" /> 
+	 <!-- log expr="'***** evt.CONNECTION.PROTOCOL.NAME = ' + evt.connection.protocol.name" / --> 
+	 <!-- log expr="'***** evt.CONNECTION.PROTOCOL.VERSION = ' + evt.connection.protocol.version"/ --> 
+	 <log expr="'***** evt.CONNECTION.STATE = ' + evt.connection.state" /> 
+	 <log expr="'***** evt.CONNECTION.LOCAL = ' + evt.connection.local" /> 
+	 <log expr="'***** evt.CONNECTION.REMOTE = ' + evt.connection.remote" /> 
+	 <log expr="'***** evt.CONNECTION.ORIGINATOR = ' + evt.connection.originator" /> 
+	 <log expr="'Call was answered. We are going to start a dialog.'"/>
+	 <assign name="ANI" expr="evt.connection.remote"/>
+	 <assign name="DNIS" expr="evt.connection.local"/>
+
+  	 <log expr="'Call Connected'" label="'Call Connected'"/>
+  	 <assign name="callcount" expr="callcount+1"/> 
+  	 <log expr="'*** START TIMER ***'"/>   	
+	     <assign name="startTime" expr="padZeroH()+''+padZeroM()+''+ padZeroS()" />	     
+	     <assign name="startHour" expr="padZeroH()" />
+	     <assign name="startMinutes" expr="padZeroM()" />
+	     <assign name="startSeconds" expr="padZeroS()" />
+     <log expr="'****** startTime = ' + startTime "/>
+	 <!-- if cond="Flag_Check_Sub=='1'">
+	  	<log expr="'Call Connected'" label="'Accept Call'"/>	  	
+	  	<fetch next="'http://'+ServerIp+'/airtel/AIRTEL_SUB_CHECK?ANI='+ANI+'&amp;sessionid=http://localhost/ccxmlsession_0_197_554_9'"/>
+	  	<assign name="stateVar" expr="'sending'"/>
+	 <else/>
+		 <dialogprepare connectionid="evt.connectionid" dialogid="dialogid1" src="'SelectLang.vxml'"/>
+		 <assign name="stateVar" expr="'preparing'"/>
+	 </if> -->
+	 <dialogprepare connectionid="evt.connectionid" dialogid="dialogid1" src="'starclub-SelectLang.vxml'"/>
+	 <assign name="stateVar" expr="'placingCall'"/>
+
+   </transition>   
+    
+   <transition state="placingCall" event="dialog.prepared" name="evt">
+    <log expr="'@@@@@@@@@@@@@@@ TEST DIALOG PREPARED @@@@@@@@@@@@@@@@@'" /> 		  
+	<log expr="'dialog prepared'" label="'dialog prepared'"/>	
+  	<dialogstart connectionid="connid1" prepareddialogid="dialogid1"/>
+  	<assign name="stateVar" expr="'dlgstart'"/>		
+   </transition>     
+    
+   <transition state="dlgstart" event="dialog.exit" name="evt">
+    
+    <log expr="'@@@@@@@@@@@@@@@ DIALOG TERMINTED @@@@@@@@@@@@@@@@@'" /> 	 
+  	<log expr="'Dialog Terminated'" label="'Dialog Terminated'"/>
+	<assign name="stateVar" expr="'dlgtrmit'"/>		
+  	<dialogterminate dialogid="dialogid1" immediate="true"/>  	
+	
+   </transition>
+   
+   <transition state="dlgstart" event="dialog.disconnect" name="evt">
+   
+    <log expr="'@@@@@@@@@@@@@@@ DIALOG DISCONNECTED @@@@@@@@@@@@@@@@@'" /> 		  
+  	<log expr="'Dialog Disconnected'" label="'Dialog Disconnected'"/>
+	<assign name="stateVar" expr="'dlgtrmit'"/>	
+  	<dialogterminate dialogid="dialogid1" immediate="true"/>  	
+			
+   </transition>
+   
+    <transition state="dlgtrmit" event="error.dialog" name="evt">  
+    
+        <log expr="'@@@@@@@@@@@@@@@ CALL HANGUP WHEN EVENT error.dialog @@@@@@@@@@@@@@@@@'" /> 		        	
+  	    <log expr="'exit'"/>
+  	    <assign name="stateVar" expr="'dlgtrmit'"/>
+  	    <!-- log expr="'calllog'" label="'CALL LOG STATUS'"/ -->            
+        <assign name="endTime" expr="padZeroH()+''+padZeroM()+''+padZeroS()"/>
+        <assign name="endHour" expr="padZeroH()"/>
+        <assign name="endMinutes" expr="padZeroM()"/>
+        <assign name="endSeconds" expr="padZeroS()"/>
+        <log expr="'*****  CALL DISCONNECTED, CAPTURING THE END TIME *****'"/>
+        <log expr="'THE START TIME OF THIS CALL IS (GMT - hh:mm:ss): ' + startTime"/>
+        <log expr="'THE END TIME OF THIS CALL IS (GMT - hh:mm:ss): ' + endTime"/>
+		
+  	  	<fetch next="'http://'+ServerIp+'/call_logs/call_logs?startTime='+startTime+'&amp;endTime='+endTime+'&amp;ANI='+ANI
+		+'&amp;DNIS='+DNIS+'&amp;ContentTime='+ContentTime"/>
+		
+	     <!-- control continues here -->
+		 
+         <assign name="stateVar" expr="'fetch_wait'"/>	
+		 
+   </transition>
+   
+   
+  
+   <transition state="dlgtrmit" event="connection.disconnected" name="evt">  
+    
+        <log expr="'@@@@@@@@@@@@@@@ CALL HANGUP WHEN EVENT dlgtrmit @@@@@@@@@@@@@@@@@'" /> 		
+		<!-- log expr="'*****evt.values.balance = ' + evt.values.balance" / --> 	        	        	
+  	    <log expr="'exit'"/>
+  	    <assign name="stateVar" expr="'dlgtrmit'"/>
+  	    <!-- log expr="'calllog'" label="'CALL LOG STATUS'"/ -->            
+        <assign name="endTime" expr="padZeroH()+''+padZeroM()+''+padZeroS()"/>
+        <assign name="endHour" expr="padZeroH()"/>
+        <assign name="endMinutes" expr="padZeroM()"/>
+        <assign name="endSeconds" expr="padZeroS()"/>
+        <log expr="'*****  CALL DISCONNECTED, CAPTURING THE END TIME *****'"/>
+        <log expr="'THE START TIME OF THIS CALL IS (GMT - hh:mm:ss): ' + startTime"/>
+        <log expr="'THE END TIME OF THIS CALL IS (GMT - hh:mm:ss): ' + endTime"/>
+		
+  	   
+		<fetch next="'http://'+ServerIp+'/call_logs/call_logs?startTime='+startTime+'&amp;endTime='+endTime+'&amp;ANI='+ANI
+		+'&amp;DNIS='+DNIS+'&amp;ContentTime='+ContentTime"/>
+		
+	     <!-- control continues here -->
+		 
+         <assign name="stateVar" expr="'fetch_wait'"/>	
+		 
+   </transition>  
+  
+  
+   <transition event="connection.disconnected" name="evt">
+        <log expr="'@@@@@@@@@@@@@@@ CALL HANGUP @@@@@@@@@@@@@@@@@'" /> 	
+		<!-- log expr="'***** EVENT$.CONNECTION.LOCAL = ' + evt.values.balance" / --> 	        	
+        <log expr="'calllog'" label="'CALL LOG STATUS'"/>   
+		
+		<log expr="'calllog'" label="'CALL LOG STATUS'"/>	
+		 
+  	    <assign name="stateVar" expr="'dlgtrmit'"/>  	   
+        <assign name="endTime" expr="padZeroH()+''+padZeroM()+''+padZeroS()"/>
+        <assign name="endHour" expr="padZeroH()"/>
+        <assign name="endMinutes" expr="padZeroM()"/>
+        <assign name="endSeconds" expr="padZeroS()"/>
+          
+        <!-- send name="end" data="'connection.disconnect.hangup'" target="dialogid1" targettype="'dialog'"/ -->      
+        <!-- assign name="callcount" expr="callcount-1"/ -->
+		  
+		<!-- send name="'HTTPSEND.successful'" sendid="sendid_as"
+		 target="'http://'+ServerIp+'/call_logs/call_logs?startTime='+startTime+'&amp;endTime='+endTime+'&amp;ANI='+ANI
+		+'&amp;DNIS='+DNIS+'&amp;ContentTime='+ContentTime" namelist="startTime endTime ANI DNIS ContentTime" targettype="'basichttp'"/ -->	
+		
+		<fetch next="'http://'+ServerIp+'/call_logs/call_logs?startTime='+startTime+'&amp;endTime='+endTime+'&amp;ANI='+ANI
+		+'&amp;DNIS='+DNIS+'&amp;ContentTime='+ContentTime"/>
+		
+         <!-- control continues here -->
+		 
+         <assign name="stateVar" expr="'fetch_wait'"/>		    
+   </transition>
+   
+   <transition state="fetch_wait" event="fetch.done">
+        <log expr="'@@@@@@@@@@@@@@@ Fetch successfully @@@@@@@@@@@@@@@@@'" /> 			
+        <script fetchid="event$.fetchid"/>
+		<exit/>
+   </transition>
+   
+    <transition state="fetch_wait" event="error.fetch">
+        <log expr="'@@@@@@@@@@@@@@@ ERROR IN FETCHING CDR URL @@@@@@@@@@@@@@@@@'" /> 			
+		<exit/>
+   </transition>
+  
+   <transition event="error.*" name="evt">
+    	
+    	
+		<log expr="'calllog'" label="'CALL LOG STATUS'"/>              
+        <assign name="endTime" expr="padZeroH()+''+padZeroM()+''+padZeroS()"/>
+        <assign name="endHour" expr="padZeroH()"/>
+        <assign name="endMinutes" expr="padZeroM()"/>
+        <assign name="endSeconds" expr="padZeroS()"/>
+        <log expr="'*****  CALL DISCONNECTED, CAPTURING THE END TIME *****'"/>
+        <log expr="'THE START TIME OF THIS CALL IS (GMT - hh:mm:ss): ' + startTime"/>
+        <log expr="'THE END TIME OF THIS CALL IS (GMT - hh:mm:ss): ' + endTime"/>
+		
+		<fetch next="'http://'+ServerIp+'/call_logs/call_logs?startTime='+startTime+'&amp;endTime='+endTime+'&amp;ANI='+ANI
+		+'&amp;DNIS='+DNIS+'&amp;ContentTime='+ContentTime"/>
+		
+	     <!-- control continues here -->		 
+         <assign name="stateVar" expr="'fetch_wait'"/>	  	    
+   </transition>
+
+
+  <transition event="dialog.started" name="evt">
+  	  <assign name="dialogid" expr="evt.dialogid" /> 
+	  <log expr="'Handler case :'+dialogid" /> 
+  	  <assign name="mystate" expr="'dialogActive'" /> 
+  </transition>
+
+
+
+      <transition  event="dialog.transfer" name="evt">
+	               <log expr="'transfer requested from voicexml dest: ' + evt.URI + ', type: ' + evt.type"/>
+	               <assign name="confani" expr="9136221731"/>
+	               <assign name="confdnis" expr="9871284495"/>
+		        <assign name="thestate" expr="'placingCall'"/>
+	  	        <assign name="mystate" expr="'calling'" /> 
+  			<assign name="maxtime" expr="evt.maxtime" />
+			 <createcall dest="evt.URI" callerid="evt.values.mycli"  connectionid="connid2" timeout="'25s'"/>
+			
+   			<log expr="'outbound call progress, do nothing'+thestate"/>
+   	</transition>
+   	
+   	<!-- In the alerting phase we join both the call parties, so that A party listen to B party CRBT -->
+
+   	<!-- In the alerting phase we join both the call parties, so that A party listen to B party CRBT -->
+   	
+
+	<transition state="placingCall" event="connection.progressing" name="evt">
+	    <log expr="'Placing a call to B Party'"/>
+	    <join id1="evt.connectionid" id2="connid2" duplex="'full'"/>
+	</transition>
+	
+	<transition state="placingCall" event="connection.failed" name="evt">
+  		<assign name="thestate" expr="'unjoined'" /> 
+  		<assign name="conf_status" expr="'F'" /> 
+  		<if cond="conf_done == 'R'">
+  			<assign name="conf_done" expr="'S'" /> 
+  		<else /> 
+  			<assign name="conf_done" expr="'F'" /> 
+  		</if>
+  			<assign name="reason" expr="evt.info.vxmlresult" /> 
+  			<log expr="'connection failed Release cause indicator: '+evt.info.status" /> 
+  			<log expr="'connection failed reason: '+evt.info.vxmlmessage" /> 
+  			<!-- <send targettype="'basichttp'" target="'http://10.130.14.106:8080//hungama//servlet/faillogs'" namelist="confani confdnis conf_start_time dnis reason conf_duration_c" /> -->
+  			<assign name="conf_status" expr="'U'" /> 
+  			<unjoin id1="evt.connectionid" id2="connid2" /> 
+  	</transition>
+
+	<transition state="placingCall" event="connection.connected" name="evt">
+  		<assign name="thestate" expr="'con_unjoined'" /> 
+  		<log expr="'Joing two parties'" /> 
+  		<script>conf_start_time = new Date()</script> 
+  		<log expr="thestate" /> 
+  		<assign name="conf_status" expr="'J'" />
+		<log expr="'maximum time'+maxtime"/> 
+  		<if cond="maxtime!=0">
+  			<send data="'maxtime_disconnect'" target="session.id" targettype="'ccxml'" delay="maxtime" /> 
+  		</if>
+  			<unjoin id1="evt.connectionid" id2="connid2" /> 
+  	</transition>
+
+	<transition state="joined" event="maxtime_disconnect" name="evt">
+			
+				<dialogterminate dialogid="dialogid2"/>
+			
+	</transition>
+	
+	<!-- Once we unjoin A and B party, we will start a vxml dialog on B party's call leg to detect dtmf -->
+	
+
+	
+	<!-- Upon successful dialog start, we will again join A and B party so that they can now talk to each other -->
+	
+	
+	
+	<transition state="con_unjoined" event="conference.unjoined" name="evt">
+  		<dialogstart dialogid="dialogid2" src="'http://10.130.14.106:8080/hungama/FMJ/second.vxml'" connectionid="connid2" /> 
+  		<assign name="thestate" expr="'joining'" /> 
+  	</transition>
+
+	<transition state="joining" event="dialog.started" name="evt">
+		<assign name="dialogState" expr="'active'"/>
+	        <join id1="evt.connectionid" id2="connid2" duplex="'full'"/>
+	        <assign name="thestate" expr="'joined'"/>
+	</transition>
+	
+	<!-- Upon successfull join for the second time, we send the dialog.vxml.transfer.active event to the active vxml dialog -->
+	
+	<transition state="joined" event="conference.joined" name="evt">
+		<send targettype="'dialog'" target="dialogid1" data="'dialog.vxml.transfer.active'"/>
+		<log expr="'Calls have been joined..waiting for DTMF detection'"/>
+		
+	</transition>
+	
+
+
+
+
+
+
+
+
+
+</eventprocessor>     
+  
+</ccxml>

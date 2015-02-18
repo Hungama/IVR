@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_BolBabyBolRoot.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="Root file for the Hungama MobisurRoot project" />
+
+	<meta name="Support" content="" />
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<var name="lang" expr="'01'"/>
+	<var name="lang1" expr="'01'"/>
+	
+	<var name="servlet_path" expr="'hungama'"/>
+	<var name="C_Start" expr=""/>
+	<var name="C_End" expr=""/>
+	
+	
+	
+        <var name="ANI" expr="'9911718483'"/>       
+	<var name="DNIS" expr="'54646'"/>
+	<var name="realDNIS" expr="'54646'"/>
+	<var name="RECORD" expr="''"/>
+	<var name="mod" expr="'IVR'"/>
+	<var name="type" expr="'E'"/>
+	<var name="sub_type" expr="'NA'"/>
+	<var name="mood_cnt" expr="0"/>
+	<var name="usr_status" expr="-1"/>
+	<var name="songid" expr="''"/>
+	<var name="song" expr="''"/>	
+	<var name="circle" expr="''"/>
+	<var name="ciropr" expr="''"/>
+	<var name="operator" expr="''"/>
+	<var name="dbservlet" expr="''"/>
+	<var name="pref_counter" expr="1"/>
+	
+	
+	<var name="IP" expr="'10.130.14.106:8088'"/>
+	<var name="RECORD_IP" expr="'10.130.14.106:8088'"/>
+
+	<var name="drop_point" expr="'NA'"/>
+	<var name="modofsub" expr="'NA'"/>
+
+	<var name="circle_Mob" expr="''"/>
+	<var name="operator_Mob" expr="''"/>
+	<var name="lang_change_st" expr="'true'"/>
+	<var name="timerflag" expr="'0'"/>
+	<var name="start_BalenceMinute" expr="'0'"/>
+	<var name="total_used_bal" expr="'0'"/>
+	<var name="forcastyyyyddmm" expr="''"/>
+	<var name="forcastdd" expr="''"/>
+	<var name="contentdir" expr=""/>
+	<var name="Song_Path" expr=""/>
+	<var name="contentdir1" expr=""/>
+	<var name="CATEGORY" expr="''"/>
+	<var name="CATEGORYINTRO" expr="''"/>
+	<var name="song_begin" expr="'END'"/>
+        <var name="song_listen" expr="''" />
+        <var name="compare_time" expr="0"/>
+	<var name="ContentTime" expr="'0'"/>					 
+	<var name="contentlog" expr="0"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="starting_time" expr="0"/>
+	<var name="DATE" expr="''" />
+	<var name="TIME" expr="''" />
+	<var name="TOKEN" expr="''" />
+	<var name="RECORD_FILE" expr="''" />
+	<var name="cat" expr="'0'" />
+	<var name="subcat" expr="'0'" />
+	<var name="Record_Time" expr="'0'" />
+	<var name="Record_Start" expr="" />
+	<var name="total_used_time" expr="''" />
+	<var name="lang_option" expr="''"/>
+	<var name="LangFirstValue" expr="'01'"/>
+	<var name="movie_idx" expr="0"/>
+	
+	<var name="rec1" expr="''" />
+	<var name="rec2" expr="''" />
+	<var name="songid" expr="0" />
+	<var name="ldatetime" expr="''" />
+	
+	
+	<var name="promptpath" expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/BOLBABYBOL_Prompts'"/>
+	
+
+	
+	<var name="contentpath" expr="'file:/var/opt/OC/contentrepository/hungama/content/'"/>
+	
+	<var name="listioncat" expr="0"/>
+	<var name="playconfig" expr="''"/>
+	
+	<script srcexpr="'../ECMAScripts/common_files.es'"/>
+   	<script>	
+	        	
+ 		    	var len=0;    
+			var i=0; 
+		    	var j=0;
+			var k=0;
+			var unike_play=0;	                  
+			var Rday=0;
+			var Rmonth=0;
+			var day=0;
+			var month=0;			
+			var array=new Array();
+			var array1=new Array();
+			var array2=new Array();
+		        var array3=new Array();
+			var songarray=new Array();
+			
+			var score=new Array();
+			var favSongs=new Object();
+			var songcheck=new Array();
+			var songcheck1=new Array();
+			var favLangs=new Object();
+			var UserStatus1=new Object();
+			var ciropr1=new Object();
+			
+		        var pricepoint=3;
+			var lang_status=new Object();
+			var usrlang=new Object();
+			var usrbalance=new Object();
+			var out_string=new Object();
+     </script>
+
+	<form id="main">
+		     <block>
+				<goto next="Hungama_BolBabyBol.vxml"/>
+		     </block>
+	</form>
+     
+
+      <catch event="error.badfetch">
+		 								
+    	  <log>Inside Error BadCatch catch  2222</log>  	      		  
+		   <goto next="Hungama_BolBabyBol_End.vxml"></goto>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  3333</log> 		     
+		   <goto next="Hungama_BolBabyBol_End.vxml"></goto>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  4444</log>			   				
+		   <goto next="Hungama_BolBabyBol_End.vxml"></goto>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  5555</log>			   		
+		   <goto next="Hungama_BolBabyBol_End.vxml"></goto>
+		  
+      </catch>
+
+
+
+
+</vxml>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Regional_PortalRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Regional_MngAccntNew.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<var name="movie_idx" expr="0"/>	
+	<var name="cRBTSTATUS" expr="''"/>	
+	<var name="MM_Value" expr="0"/>
+	<script>
+		var UserStatus1=new Object();		
+	</script>
+	<form id="AcntOption">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT_MANAGER'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s" cond="lang!='01'">
+				<audio expr="promptpath+'/'+lang+'/welcome_acmanager.wav'"/>
+			</prompt>				
+			<prompt bargein="true" timeout="3s" cond="lang=='01'">
+				<audio expr="promptpath+'/'+lang+'/wel_acmanager_langChange.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='2'"/>	
+					<goto next="#Langchange"></goto>
+				<elseif cond="choice=='8'"/>
+					<goto next="Regional_MainMenu.vxml"/>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Regional_MainMenu.vxml"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Regional_MainMenu.vxml"/>
+		</nomatch>
+	</form>
+	
+	<form id="AcntUnsubscription">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT MANAGER_UNSUB'"/>
+		</block>
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/confirm_unsub.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='2'">
+					<!-- UNSUB REQUEST -->
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REGIONAL_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+				<else/>
+					<goto next="Regional_MainMenu.vxml"/>
+				</if>
+			</filled>
+		</field>	
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<goto next="Regional_MainMenu.vxml"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<goto next="Regional_MainMenu.vxml"/>
+		</nomatch>		
+	</form>
+
+	<form id="Langchange">
+		<block>		
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Regional_Portal/'+operator+'/'+circle+'/langorder.cfg&amp;TOKEN=FREE'"/>
+			<script>
+				array1.length=0;
+			</script>
+			
+			<assign name="movie_idx" expr="0" />
+			<assign name="len" expr="2" />
+			<assign name="i" expr="0" />
+			
+			<log>previous Array[1]  is <value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j< len ;  j++)
+					   {  	  	
+						array1[j] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+		</block>
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="2s">
+				<foreach item="names" array="array1">
+					<mark nameexpr="movie_idx++"/>
+					<log>	song is is    	<value expr="movie_idx"/>  	</log>
+					<log>	names is is    	<value expr="names"/>  	</log> 
+					<audio expr="promptpath+'/'+lang+'/lang'+names+'.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/press_dtmf'+movie_idx+'.wav'"/>			
+				</foreach>
+			</prompt>			
+			<filled>		
+				<assign name="lang" expr="array1[--choice]"/>
+				<log expr="'selected language is '+lang"></log>
+				<if cond="choice=='0'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REGIONAL_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>				
+					<assign name="circle" expr="'del'"/>
+					<goto next="Regional_MainMenu.vxml"/>
+				<elseif cond="choice=='1'"/>	
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REGIONAL_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+					<goto next="Regional_MainMenu.vxml"/>
+				</if>
+			</filled>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<goto next="Regional_MainMenu.vxml"/>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<goto next="Regional_MainMenu.vxml"/>
+			</nomatch>					
+		</field>	
+	</form>
+
+</vxml>

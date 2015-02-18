@@ -1,0 +1,678 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="HoneyBee_Root.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<meta name="HoneyBee_CallEntry.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+
+<var name="flag_user_state" expr="'abc'"/>
+<script>		
+	Song_counter=parseInt(Song_counter);
+</script>
+
+<form id="CALL_Entry">
+	<block>
+		<assign name="C_Start" expr="start_time()"/>
+		<assign name="Section_Name" expr="'Call_Entry'"/>
+		<assign name="CATEGORY" expr="'0'"/>
+		<assign name="dbservlet" expr="'radio_dbinteraction'"/>
+		<assign name="operator" expr="'mtsm'"/>
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;						   
+		</script>
+		<script>
+			length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		</script>  
+		<log expr="'Caller number is '+ANI"/>
+		<log expr="'Track ['+ANI+']:Caller checking where his realDNIS '+realDNIS"/>	
+		<assign name="DNIS" expr="realDNIS"/>
+		<log expr="'Track ['+ANI+']:Caller checking where his DNIS '+DNIS"/>
+		
+<!--***************************************circle checking ******************************************************************-->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+		<assign name="ciropr1" expr="ciropr1.value"/>
+		<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr1"/>							
+		<script>
+			var songcheck=ciropr1.split("#");
+			operator=songcheck[1];
+			circle=songcheck[2];
+		</script>				
+		<assign name="operator" expr="'mtsm'"/>
+		<log expr="'Track ['+ANI+']:Caller checking where his number belong to  '+circle"/>
+		<if cond="ANI=='8459506442'">
+			<log expr="'Track ['+ANI+']:Caller is in test url page  '+circle"/>	
+			<goto next="Hungama_TESTURL.vxml"/>
+		</if>
+<!--*********************************************Servlet defination **********************************************************-->
+		<assign name="dbservlet" expr="'radio_dbinteraction'"/>
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+		
+<!--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DAC CODE PORTAL@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-->		
+	<script>
+		crbtdnis=DNIS.substring(0,6);
+	</script>
+	<if cond="crbtdnis=='522226'">
+		<assign name="DirectSCAVAIL" expr="'true'"/>
+	</if>
+	<if cond="DirectSCAVAIL=='true'">
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.MU_DAC_CRBT&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+DNIS+'&amp;INPARAM[1]=AVAIL'"/>
+			<script>
+			<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						daccrbtflag = out_string[j];
+					  }
+				]]>
+			</script>
+			<if cond="daccrbtflag=='present'">
+				<assign name="DirectSC" expr="'true'"/>
+			<else/>
+				<assign name="DirectSC" expr="'false'"/>
+			</if>			
+			<log>crbtdnis	<value expr="crbtdnis"/>    </log>
+			<log>DirectSCAVAIL	<value expr="DirectSCAVAIL"/>    </log>
+			<log>daccrbtflag	<value expr="daccrbtflag"/>    </log>
+			<log>DirectSC	<value expr="DirectSC"/>    </log>			
+	</if>
+<!--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@DAC CODE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-->			
+<!--**********************************************************************DynamicMUltimodal******************************************************-->
+		<assign name="dnislen" expr="DNIS.length"/>
+		<log expr="'dnislen @@@@@@@@@@@@@@@@@@@  =' + dnislen"/>
+		<if cond="dnislen &gt; '5'">			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_MULTIMODAL&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+DNIS"/>
+			<script>
+			<![CDATA[
+				for(j=0; j< out_string.length;  j++)
+					{  	  
+			       		if(j==0)
+						mm_flag = out_string[j];
+					}
+				]]>
+			</script>
+			<log expr="'mm_flag @@@@@@@@@@@@@@@@@@@  =' + mm_flag"/>
+		</if>
+<!--*****************************************************************************************************************************************-->			
+		<goto next="#LANG_CHECK"/>
+	</block>		
+</form>
+
+<!--*************************************************language check status ***************************************************-->
+<form id="LANG_CHECK">
+		<block>
+			<assign name="Section_Name" expr="'LANG_CHECK'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	lang = out_string[j];						      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'Track ['+ANI+']:Caller checking language'+lang"/>		
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+			<log expr="'Track ['+ANI+']:Caller checking contentlog'+contentlog"/>		
+			<if cond="lang=='-1'">
+				<if cond="DNIS=='522225'">
+					<goto next="HoneyBee_Sub522225.vxml"></goto>
+				</if>			
+				<if cond="DirectSC=='true'">
+					<assign name="lang" expr="'1'"></assign>
+					<goto next="HoneyBee_Mu_NEWDAC.vxml#CrbtMM"></goto>							
+				</if>
+				<assign name="flag_user_state" expr="'NEW'"/>
+				<goto next="#FreeSamplingGet"/>
+				<goto next="#LANG_EXIST"></goto>
+				<!--<elseif cond="lang=='1'"/>-->
+			<else/>			
+				<goto next="#USERSTATUS"></goto>
+			</if>
+		</block>
+	</form>
+<!--*******************************************************USERSTATUS**********************************************************-->
+<form id="USERSTATUS">
+		<block>
+			<assign name="Section_Name" expr="'USERSTATUS'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>
+			<script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+							usr_status = out_string[j];	
+						if(j==1)
+							lang = out_string[j];
+						if(j==2)
+							balance = out_string[j];
+						if(j==3)
+							mode_of_sub = out_string[j];	
+					  }
+				]]>
+			</script>
+			<log expr="'Track ['+ANI+']:Caller checking usr_status'+usr_status"/>		
+			<log expr="'Track ['+ANI+']:Caller checking lang'+lang"/>		
+			<log expr="'Track ['+ANI+']:Caller checking balance'+balance"/>		
+			<log expr="'Track ['+ANI+']:Caller checking mode_of_sub'+mode_of_sub"/>		
+			
+			<if cond="usr_status=='-1'">
+				<if cond="DirectSC=='true'">
+					<assign name="lang" expr="'1'"></assign>
+					<goto next="HoneyBee_Mu_NEWDAC.vxml#CrbtMM"></goto>							
+				</if>				
+				<if cond="lang=='-1'">			
+					<goto next="#LANG_EXIST"></goto>
+				</if>	
+				<goto next="HoneyBee_SubEngine.vxml"></goto>
+				
+			<elseif cond="usr_status=='1' || usr_status=='2'"/>
+				<if cond="DirectSC=='true'">
+					<goto next="HoneyBee_Mu_NEWDAC.vxml#CrbtMM"></goto>
+				</if>	
+				<if cond="DNIS=='522225'">
+					<goto next="Mu_522225_MM.vxml"></goto>
+				</if>	
+				<if cond="mm_flag=='MM'"> 
+					<goto next="Mu_Mm_Menu.vxml"></goto>					
+				</if>		
+				<if cond="DNIS=='522222'">
+					<goto next="Mu_CrbtMM_MainMenu.vxml"></goto>
+				</if>	
+				<assign name="flag_user_state" expr="'OLD'"/>
+				<goto next="#FreeSamplingGet"/>
+				<goto next="#AD_Engine_check"></goto>
+				
+			<elseif cond="usr_status=='11'"/>
+				<assign name="Section_Name" expr="'GRACE_USER'"/>
+				<!--<prompt bargein="true" timeout="1s">
+					<audio expr="Promptpath+'/'+lang+'/sys_wait_grace.wav'" />
+				</prompt>-->
+				<assign name="flag_user_state" expr="'Grace'"/>
+				<goto next="#FreeSamplingGet"/>
+				<goto next="HoneyBee_End.vxml"></goto>
+				
+			<elseif cond="usr_status=='0'"/>
+				<assign name="Section_Name" expr="'CHARGING_INQUE'"/>
+				<assign name="flag_user_state" expr="'Pending'"/>
+				<goto next="#FreeSamplingGet"/>
+				<goto next="HoneyBee_End.vxml"></goto>
+				
+			<else/>
+				<assign name="Section_Name" expr="'UNKNOWN_USER'"/>
+				<assign name="flag_user_state" expr="'Unknown'"/>
+				<goto next="#FreeSamplingGet"/>
+				<goto next="HoneyBee_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+<!--************************************************************LANG_EXIST**************************************************-->
+<form id="LANG_EXIST">
+	<block>
+		<assign name="Section_Name" expr="'LANG_EXIST'"/>
+		<if cond="DirectSC=='true'">
+			<assign name="lang" expr="'1'"></assign>
+			<goto next="HoneyBee_Mu_NEWDAC.vxml#CrbtMM"></goto>							
+		</if>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2'"/>
+		<script>
+			<![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+						lang_selection = out_string[j];						      
+				  }
+			]]>
+
+		</script>
+		<log expr="'Track ['+ANI+']:Caller checking language flow '+lang_selection"/>		
+		<if cond="lang_selection=='1'">
+			<goto next="#LANG_flow"></goto>
+		<else/>
+			<goto next="#LANG_flow"></goto>
+			<assign name="lang" expr="'1'"/>
+			<goto next="HoneyBee_SubEngine.vxml"></goto>
+		</if>
+	</block>
+</form>
+<!--*********************************************************LANG_FLOW*********************************************************-->
+<form id="LANG_flow">
+	<block>
+		<assign name="Section_Name" expr="'LANG_DEFAULT'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]=3'"/>
+		<script>
+			<![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+				  {  	  
+					if(j==0)
+						def_lang_selection = out_string[j];	
+					if(j==1)
+						prefe_lang=out_string[j];
+				  }	
+			]]>
+			
+		</script>
+		<log expr="'Track ['+ANI+']:Caller checking default lang check '+def_lang_selection"/>
+		<if cond="def_lang_selection=='0'">
+			<assign name="lang" expr="prefe_lang"/>
+			<log expr="'Track ['+ANI+']:Caller checking default lang '+lang"/>
+			 <prompt bargein="false" timeout="0s">
+				<audio expr="Promptpath+'/lang/wel_new5.wav'"/>
+			</prompt>
+			<goto next="HoneyBee_SubEngine.vxml"></goto>
+		<elseif cond="def_lang_selection=='1'"/>
+			<if cond="circle=='ker'">
+				<prompt bargein="false" timeout="0s">
+					<audio expr="Promptpath+'/9/wel_new5.wav'"/>
+				</prompt>
+				 <prompt bargein="true" timeout="0s">
+					<audio expr="Promptpath+'/9/lang_select.wav'"/>
+				</prompt>
+			<elseif cond="circle=='tnu' || circle=='chn'"/>
+				<prompt bargein="false" timeout="0s">
+					<audio expr="Promptpath+'/7/wel_new5.wav'"/>
+				</prompt>
+				 <prompt bargein="true" timeout="0s">
+					<audio expr="Promptpath+'/7/lang_select.wav'"/>
+				</prompt>
+			<elseif cond="circle=='kar'"/>
+				<prompt bargein="false" timeout="0s">
+					<audio expr="Promptpath+'/10/wel_new5.wav'"/>
+				</prompt>			
+				 <prompt bargein="true" timeout="0s">
+					<audio expr="Promptpath+'/10/lang_select.wav'"/>
+				</prompt>
+			<else/>
+				<prompt bargein="false" timeout="0s">
+					<audio expr="Promptpath+'/1/wel_new5.wav'"/>
+				</prompt>
+				 <prompt bargein="true" timeout="0s">
+					<audio expr="Promptpath+'/1/lang_select.wav'"/>
+				</prompt>
+			</if>
+			<goto next="#LANG_SELECTION"></goto>
+		</if>
+	</block>
+</form>
+<!--******************************************************LANG SELECTION*************************************************-->
+<form id="LANG_SELECTION">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]=4'"/>
+			<script>
+					    	array1.length=0;
+			</script>
+			<var name="movie_idx" expr="0"/>
+			<assign name="len" expr="out_string.length" />
+			<assign name="i" expr="0" />
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  	
+						array1[j] = out_string[j];						   
+					   }
+
+				]]>		
+			</script> 	
+		
+       
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start11" version="1.0">
+						<rule id="start11" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="1s">
+				<foreach item="names" array="array1">
+					<log>	song is is    	<value expr="movie_idx"/>  	</log>
+					<log>	names is is    	<value expr="names"/>  	</log>
+					<audio expr="Promptpath+'/'+names+'/language_'+names+'.wav'"/>
+					<audio expr="Promptpath+'/'+names+'/sel_dtmf'+ ++movie_idx+'.wav'"/>	
+					
+				</foreach>						
+			</prompt>
+			<filled>
+				<if cond="choice &lt; len+1">
+						<assign name="lang" expr="array1[--choice]"/>
+						
+						<if cond="usr_status=='-1'">						    
+						    <prompt bargein="true" timeout="0s">
+								<audio expr="Promptpath+'/'+lang+'/save_language.wav'"/>
+							</prompt>
+							<goto next="HoneyBee_SubEngine.vxml"></goto>
+						
+						</if>	
+				<else/>
+					<throw event="nomatch"/>
+			
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<script>movie_idx=movie_idx+1;</script>
+			<assign name="lang" expr="array1[0]"/>
+
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Promptpath+'/'+lang+'/sys_nokeypress.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<!--<noinput count="2">
+			<script>movie_idx=movie_idx+1;</script>
+			<assign name="lang" expr="array1[0]"/>
+
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Promptpath+'/'+lang+'/sys_nokeypress.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>-->
+		<noinput count="2">			
+			<if cond="usr_status=='-1'">
+			    <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="HoneyBee_SubEngine.vxml"></goto>
+			<else/>
+				<goto next="HoneyBee_RootMENU.vxml"></goto>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<script>movie_idx=0;</script>
+			  <assign name="lang" expr="array1[0]"/>
+			
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Promptpath+'/'+lang+'/sys_wrongkeypress.wav'"/>
+			</prompt>
+			
+			<goto nextitem="choice"></goto>
+		</nomatch>
+		<!--<nomatch count="2">
+			<script>movie_idx=0;</script>
+			  <assign name="lang" expr="array1[0]"/>
+
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Promptpath+'/'+lang+'/sys_wrongkeypress.wav'"/>
+			</prompt>
+			
+			<goto nextitem="choice"></goto>
+		</nomatch>-->
+		<nomatch count="2">			
+			<if cond="usr_status=='-1'">
+			       <assign name="lang" expr="array1[0]"/>
+				<log expr="'selected language is '+lang"></log>			    
+				<goto next="HoneyBee_SubEngine.vxml"></goto>
+			<else/>
+				<goto next="HoneyBee_RootMENU.vxml"></goto>
+			</if>
+		</nomatch>
+	</form>
+	
+	<!--****************************************************ADVETISEMENT***********************************************************-->
+<form id="AD_Engine_check">
+	<block>
+	<assign name="Section_Name" expr="'Add_Engine'"/>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.AD_Engine&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]='+lang"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							Add_status = out_string[j];
+							if(j==1)
+							Add_id = out_string[j];
+							if(j==2)
+							Add_name = out_string[j];
+							if(j==3)
+							Add_placment = out_string[j];
+							if(j==4)
+							Add_lang = out_string[j];
+							if(j==5)
+							Add_type = out_string[j];
+							if(j==5)
+							Add_loop_play = out_string[j];
+						  }
+			]]>
+	
+	</script>
+			<log expr="'Track ['+ANI+']:Caller checking Add_status is '+Add_status"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_id is '+Add_id"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_name is '+Add_name"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_placment  is '+Add_placment"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_type is '+Add_type"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_loop_play is '+Add_loop_play"/>
+			
+		<if cond="Add_status=='1' &amp;&amp; Add_placment=='P'">
+			<log expr="'Track ['+ANI+']:Caller follow where Add status and Add pacement  '"/>
+			<goto next="#Premium_Ad"/>
+		<else/>
+			<goto next="HoneyBee_RootMENU.vxml"></goto>
+			
+		</if>
+		
+	</block>
+	</form>
+	<!--************************************advetisement premium add block **********************************************-->
+	<form id="Premium_Ad">
+			<block>
+				<assign name="Section_Name" expr="'Premium_Ad'"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+				<log expr="'Track ['+ANI+']:Caller checking lang is '+lang"/>
+				<!--<if cond="Add_lang!='lang'"> 
+					<goto next="#LANG_CHECK"/>	
+				</if>-->
+				<goto next="#ADDUSERSTAUS"/>
+			</block>
+	</form>
+	<form id="ADDUSERSTAUS">
+			<field name="choice">
+				<grammar mode="dtmf" root="start36" version="1.0">
+					<rule id="start36" scope="public" >
+						<one-of>
+							 <item>  1  </item>
+	
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" timeout="2s" cond="Add_type=='R'">	
+					<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+					<audio expr="Promptpath+'/'+lang+'/ad_option.wav'" />
+				</prompt> 
+				<prompt bargein="false" timeout="0s" cond="Add_type=='I'">	
+					<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+				</prompt> 
+				<filled>
+					<if cond="choice=='1'">
+					<prompt bargein="true" timeout="1s">
+						<audio expr="Promptpath+'/'+lang+'/ad_thanks.wav'" />
+					</prompt>
+						<!--<goto next="#callpatch"></goto>-->
+						<goto next="HoneyBee_RootMENU.vxml"></goto>
+					<else/>
+						<goto next="HoneyBee_RootMENU.vxml"></goto>
+					</if>
+					
+				</filled>
+				<noinput>
+					<goto next="HoneyBee_RootMENU.vxml"></goto>
+				</noinput>
+				<nomatch>
+					<goto next="HoneyBee_RootMENU.vxml"></goto>
+				</nomatch>
+			</field>
+	</form>
+<!--************************************Free Sampling block **********************************************-->		
+	<form id="FreeSamplingGet">
+		<block>
+			<assign name="Section_Name" expr="'FreeSamplingCofigload'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ReadConfigSongHB?ConfigPath=MuConfig/'+operator+'/songconfig/sample_clips.cfg&amp;TOKEN=FREE'"/>
+
+			<script>
+				arrayPlayContent.length=0;
+				unike_play=0;
+			</script>
+			<assign name="len" expr="favSongs.length"/>
+			<log> previous Array[1]  is <value expr="arrayPlayContent[0]"/></log>
+			
+			<script>
+				<![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+						arrayPlayContent[j] = favSongs[j];
+					   }
+				]]>			
+			</script>
+			<log>	Length  is<value expr="len"/></log>			
+			<goto next="#FreeSamplingPlay"></goto>
+		</block>	
+	</form>	
+<!--************************************Free Sampling block **********************************************-->	
+	<form id="FreeSamplingPlay">
+		<block>
+			<if cond="flag_user_state=='NEW'">			
+				<assign name="Section_Name" expr="'FreeSamplingNew'"/>
+				<if cond="circle=='ker'">
+					<assign name="lang" expr="'9'"/>
+				<elseif cond="circle=='tnu' || circle=='chn'"/>
+					<assign name="lang" expr="'7'"/>
+				<elseif cond="circle=='guj'"/>
+					<assign name="lang" expr="'12'"/>
+				<elseif cond="circle=='raj'"/>
+					<assign name="lang" expr="'18'"/>		
+				<else/>
+					<assign name="lang" expr="'1'"/>
+				</if>									
+			<elseif cond="flag_user_state=='OLD'" />	
+				<assign name="Section_Name" expr="'FreeSamplingOld'"/>
+				
+			<elseif cond="flag_user_state=='Grace'" />
+				<assign name="Section_Name" expr="'FreeSamplingGrace'"/>
+				
+			<else/>	
+				<assign name="Section_Name" expr="'FreeSamplingPending'"/>
+			</if>
+			
+			<if cond="Song_counter==4">
+				<if cond="flag_user_state=='NEW'">
+					<goto next="#LANG_EXIST"></goto>
+
+				<elseif cond="flag_user_state=='OLD'" />	
+					<goto next="HoneyBee_RootMENU.vxml"></goto>
+
+				<elseif cond="flag_user_state=='Grace'" />
+					<prompt bargein="false" timeout="1s">
+						<audio expr="Promptpath+'/'+lang+'/sys_wait_grace.wav'" />
+						<audio expr="Promptpath+'/'+lang+'/sys_wait_grace.wav'" />
+						<audio expr="Promptpath+'/'+lang+'/sys_wait_grace.wav'" />
+					</prompt>						
+					<goto next="HoneyBee_End.vxml"></goto>
+				<else/>
+					<goto next="HoneyBee_End.vxml"></goto>
+				</if>
+			</if>
+			
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="1" />
+			</if>			
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="arrayPlayContent[unike_play]"/>    </log>			
+			<script>
+				songID = arrayPlayContent[unike_play];
+			</script>						
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start36" version="1.0">
+				<rule id="start36" scope="public" >
+					<one-of>
+						 <item>  1  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">	
+				<audio expr="Promptpath+'/'+lang+'/'+songID+'.wav'" />
+			</prompt> 			
+
+			<filled>
+				<if cond="choice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<script> Song_counter=Song_counter+1</script>
+				 	<goto next="#FreeSamplingPlay"/>			
+				<else/>
+					<if cond="flag_user_state=='NEW'">
+						<goto next="#LANG_EXIST"></goto>
+						
+					<elseif cond="flag_user_state=='OLD'" />	
+						<goto next="HoneyBee_RootMENU.vxml"></goto>
+						
+					<elseif cond="flag_user_state=='Grace'" />
+						<prompt bargein="false" timeout="1s">
+							<audio expr="Promptpath+'/'+lang+'/sys_wait_grace.wav'" />
+						</prompt>						
+						<goto next="HoneyBee_End.vxml"></goto>
+					<else/>
+						<goto next="HoneyBee_End.vxml"></goto>
+					</if>
+				</if>
+			</filled>
+			<noinput>
+				<if cond="choice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<script> Song_counter=Song_counter+1</script>
+				 	<goto next="#FreeSamplingPlay"/>			
+				<else/>
+					<if cond="flag_user_state=='NEW'">
+						<goto next="#LANG_EXIST"></goto>
+						
+					<elseif cond="flag_user_state=='OLD'" />	
+						<goto next="HoneyBee_RootMENU.vxml"></goto>
+						
+					<elseif cond="flag_user_state=='Grace'" />
+						<prompt bargein="false" timeout="1s">
+							<audio expr="Promptpath+'/'+lang+'/sys_wait_grace.wav'" />
+						</prompt>						
+						<goto next="HoneyBee_End.vxml"></goto>
+					<else/>
+						<goto next="HoneyBee_End.vxml"></goto>
+					</if>
+				</if>
+			</noinput>
+			<nomatch>
+				<script> unike_play=unike_play+1</script>
+				<script> Song_counter=Song_counter+1</script>
+				<goto next="#FreeSamplingPlay"/>			
+			</nomatch>
+		</field>
+	</form>		
+</vxml>

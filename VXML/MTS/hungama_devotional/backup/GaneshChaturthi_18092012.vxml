@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="devRoot.vxml"
+
+
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+
+<meta name="GaneshChaturthi.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+
+<form id="Welcome">
+	<block>
+		<if cond="lang=='01'">
+			<assign name="LANG_DESCRIPTION" expr="'01'" />
+		<elseif cond="lang=='11'"/>
+			<assign name="LANG_DESCRIPTION" expr="'11'" />
+		<else/>
+			<assign name="lang" expr="'01'" />
+			<assign name="LANG_DESCRIPTION" expr="'01'" />
+		</if>
+		<prompt bargein="true"  timeout="2s">
+			<audio expr="promptspath+'/'+lang+'/welcome_ganesh.wav'"/>
+		</prompt>
+		<goto next="#Mainmenu"/>
+	</block>
+
+</form>
+
+<form id="Mainmenu">
+	
+	<field name="choice">               
+			<grammar mode="dtmf" root="start1" version="1.0">
+				 <rule id="start1" scope="public">
+				     <one-of>     
+						 <item>1</item>
+						 <item>2</item>
+						 <item>3</item>
+						 <item>4</item>
+						 <item>9</item>
+				     </one-of>
+				 </rule>
+				</grammar>
+	
+			    <prompt bargein="true"  timeout="2s">
+					<!--<audio expr="promptspath+'/'+lang+'/select_cat_gn_0.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>-->
+					<audio expr="promptspath+'/'+lang+'/select_cat_gn_1.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+					<audio expr="promptspath+'/'+lang+'/select_cat_gn_2.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf2.wav'"/>
+					<audio expr="promptspath+'/'+lang+'/select_cat_gn_3.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf3.wav'"/>
+					<audio expr="promptspath+'/'+lang+'/select_cat_gn_4.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf4.wav'"/>
+			    </prompt> 
+	<!--	<filled>
+			<if cond="choice=='1'"> 
+				<assign name="playconfig" expr="'lalbaugh'" />
+				<goto next="#loadcliptoplay"/>
+			<elseif cond="choice=='2'"/>
+				<assign name="playconfig" expr="'bhajan'" />
+				<goto next="#loadcliptoplay"/>
+			<elseif cond="choice=='3'"/>
+				<assign name="playconfig" expr="'chalisha'" />
+				<goto next="#loadcliptoplay"/>
+			<elseif cond="choice=='4'"/>
+				<assign name="playconfig" expr="'shloka'" />
+				<goto next="#loadcliptoplay"/>
+			<elseif cond="choice=='5'"/>
+				<assign name="playconfig" expr="'ganesh'" />
+				<goto next="#loadcliptoplay"/>
+			</if>
+		</filled> -->
+
+		<filled>
+			<if cond="choice=='1'">
+				<assign name="playconfig" expr="'bhajan'" />
+				<goto next="#loadcliptoplay"/>
+			<elseif cond="choice=='2'"/>
+				<assign name="playconfig" expr="'chalisha'" />
+				<goto next="#loadcliptoplay"/>
+			<elseif cond="choice=='3'"/>
+				<assign name="playconfig" expr="'shloka'" />
+				<goto next="#loadcliptoplay"/>
+			<elseif cond="choice=='4'"/>
+				<assign name="playconfig" expr="'ganesh'" />
+				<goto next="#loadcliptoplay"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="dev_ManageAccount.vxml"/>
+			</if>
+		</filled>
+			
+		<noinput>
+			<prompt bargein="true" timeout="1s">  
+			    	<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		
+		<nomatch>
+			<prompt bargein="true" timeout="1s"> 
+			   	<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+				
+	</field>
+
+</form>
+
+<form id="loadcliptoplay">
+		<block> 
+		   <script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=ganeshchaturthi/'+playconfig+'.cfg'"/>
+			 <!-- <script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/mtsm/songconfig/cat0941.cfg'"/>-->
+
+			<script>
+				array.length=0;
+				unike_play=0;
+			</script>
+					<assign name="len" expr="favSongs.length" />
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />   
+			<script>
+				<![CDATA[
+				   for(k=0; k<len ;  k++)
+					  {  	  
+						array[k] = favSongs[k];						   
+					  }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#PlayFullSongs"/>  					
+		   </block>
+	</form>
+
+
+<form id="PlayFullSongs"> 
+  
+	 <field name="keypadoption">               
+		    	 
+		<grammar mode="dtmf" root="start2" version="1.0">
+                   	<rule id="start2" scope="public">
+                     	<one-of>     
+					    <item>1</item>
+			                    <item>2</item>
+					    <item>3</item>
+			                    <item>6</item>
+			                    <item>8</item>
+					   <item>9</item>
+					 <item>0</item>
+                        </one-of>
+                	</rule>
+               	</grammar>
+               	
+         <prompt bargein="true"  timeout="1s">
+		<audio expr="promptpath+LANG_DESCRIPTION+'/keypad.wav'"/>
+	</prompt>   
+				 
+        <filled>              
+            
+		<if cond="keypadoption=='6'">	
+			 <goto next="#playoption"/>
+    		<elseif cond="keypadoption=='8'"/>
+    			 <goto next="#Mainmenu"/>
+		<elseif cond="keypadoption=='0'"/>
+    			 <goto next="#Mainmenu"/>
+		<elseif cond="keypadoption=='9'"/>
+			 <goto next="dev_ManageAccount.vxml"/>
+		<else/>          
+			<goto next="#StartToPlaysongs"/>
+		</if>	
+         </filled>
+			  
+	<noinput>		  
+	      <goto next="#StartToPlaysongs"/>	     
+        </noinput>
+        <nomatch>
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+		</prompt>
+		<reprompt></reprompt>
+	</nomatch>		
+   </field>		
+		
+</form>
+
+
+<form id="StartToPlaysongs">
+
+		<block>
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+		        <elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+			</if>
+				
+			<log expr="'@@@@@@ unike_play is '+unike_play"/>
+			<log expr="'@@@@@@ first value iss '+array[0]"/>
+				<script>
+					var songcheck=array[unike_play].split("_");
+					contentdir=songcheck[0]; 
+					song = array[unike_play];
+					
+				</script>
+			
+			 <assign name="song_begin" expr="start_time()"/>
+			 <assign name="song_listen" expr="'START'" />
+					
+ 		</block>
+		<field name="selectoption">
+				<grammar mode="dtmf" root="start3" version="1.0">
+			   		<rule id="start3" scope="public">
+			   		  <one-of>
+					      <item>1</item>
+					      <item>2</item>	
+					      <item>3</item>
+					      <item>6</item>
+					      <item>8</item>
+						<item>9</item>
+						<item>0</item>
+					  </one-of>
+			   		</rule>
+		       		 </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			   <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		      </prompt> 			 
+		  
+		      <filled>
+		         <assign name="total_used_bal" expr="selectoption$.promptduration"/> 
+			 	 <if cond="selectoption=='1'">
+				       	 <script> 
+					        unike_play=unike_play+1;
+				   	 </script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+
+						 
+					 <goto next="#StartToPlaysongs"/>	
+								
+				 <elseif cond="selectoption=='2'"/>
+				         <script> 
+					      unike_play=unike_play;
+					 </script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+					<goto next="#StartToPlaysongs"/> 				 
+				 
+				 <elseif cond="selectoption=='3'"/>	   			
+					 <script> 
+						unike_play=unike_play-1;
+					 </script>
+						 <assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+					<goto next="#StartToPlaysongs"/> 
+					
+				 <elseif cond="selectoption=='6'"/>
+				 	 <goto next="#playoption"/>
+				<elseif cond="selectoption=='8'"/>
+					<goto next="#Mainmenu"/>
+				<elseif cond="selectoption=='0'"/>
+					<goto next="#Mainmenu"/>
+				<elseif cond="selectoption=='9'"/>
+					<goto next="dev_ManageAccount.vxml"/>
+				<else/>	
+				 	<script> unike_play=unike_play+1</script>		
+					<goto next="#StartToPlaysongs"/> 		
+				 </if>				 
+			  </filled>				  
+		
+		     
+			   <noinput>	
+			        <script> 
+			      		unike_play=unike_play+1;
+			      	</script> 		
+			  	 
+			  	<goto next="#StartToPlaysongs"/> 	
+			</noinput>
+			<nomatch>
+				
+
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>	
+			 
+			
+	  </field>
+	  	
+	</form>	
+
+<form id="playoption">
+      <field name="playclipOptionInfo">
+	    <grammar mode="dtmf" root="start4" version="1.0">
+               		<rule id="start4" scope="public">
+			 <one-of>				 
+					  <item>1</item>
+					  <item>2</item>	
+					  <item>3</item>
+					  <item>6</item>
+					  <item>8</item>
+					  <item>9</item>
+					  <item>0</item>
+			</one-of>
+              	</rule>
+            </grammar>
+			<prompt bargein="true">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/keypad_options.wav'"/>    
+	   	        </prompt>
+					   	
+		<filled>
+			
+			  <if cond="playclipOptionInfo=='1'">
+			    	<script> 
+					unike_play=unike_play+1;
+				</script> 
+				     <goto next="#StartToPlaysongs"/> 
+			  <elseif cond="playclipOptionInfo=='2'"/>
+			    	<script> 
+					unike_play=unike_play;
+				</script>
+				      <goto next="#StartToPlaysongs"/> 
+			   <elseif cond="playclipOptionInfo=='3'"/>
+			   	<script>
+					unike_play=unike_play-1;
+				</script>
+				    <goto next="#StartToPlaysongs"/> 
+			   <elseif cond="playclipOptionInfo=='6'"/>
+			 	<goto next="#playoption"/> 	     
+			   <elseif cond="playclipOptionInfo=='8'"/>
+			   	<goto next="#Mainmenu"/>
+			  <elseif cond="playclipOptionInfo=='0'"/>
+			   	<goto next="#Mainmenu"/>
+			  <elseif cond="playclipOptionInfo=='9'"/>
+				<goto next="dev_ManageAccount.vxml"/>
+			   </if>
+			    
+		</filled>		
+			
+		<noinput>
+			<goto next="#StartToPlaysongs"/> 	
+		</noinput>
+
+		  <nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+
+	</field>	
+	  	 
+  </form>
+
+</vxml>

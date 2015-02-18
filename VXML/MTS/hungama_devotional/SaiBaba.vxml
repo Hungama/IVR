@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="devRoot.vxml"
+
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">	
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+
+<meta name="SaiBaba.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+
+<form id="Welcome">
+	<block>
+		<assign name="lang" expr="'10'" />
+		<assign name="LANG_DESCRIPTION" expr="'10'" />
+	
+		<prompt bargein="false" timeout="0s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_hindu_thu.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/cat0833.wav'"/>
+		</prompt>
+				
+		<assign name="playconfig" expr="'cat0833'"/>
+		<assign name="HEARD" expr="'mainmenu'"/>
+		<goto next="devoplaycontent.vxml"/>
+	</block>  	 
+  </form>
+</vxml>

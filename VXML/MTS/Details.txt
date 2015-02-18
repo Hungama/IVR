@@ -1,0 +1,64 @@
+App Path on 106 server
+
+Contesting Portal:
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_Monsoon_Contest
+
+MU with Honeybee -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_mu
+
+MU without Honeybee (Old) -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_mod
+
+Bhaktisagar -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_devotional
+
+
+MND -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/MND
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/MND-TOLL
+
+
+Goodlife -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_goodlife
+
+
+Regional Portal -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_Regional_Portal
+
+MTS Sport Unlimited-
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/MTS_SU
+
+VAS one portal -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_root_portal
+
+
+RedFM -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/REDFM
+
+
+Starclub - 
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/celebrity_chat
+
+
+VA -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/voice_alert
+
+54646 main portal -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_54646v2_service
+
+54646 multimodel -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/hungama_54646v2_service_MM
+
+Jokes -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_5464622_JOKE
+
+
+Tintumon jokes -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_546464_TINTUMON
+
+Bosskey petti -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Hungama_BossKey
+
+
+Bol baby bol -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/Bol_Baby_Bol

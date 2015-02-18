@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_Mod_ACMainMenu.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+<var name="movie_idx" expr="0"/>
+<var name="catlang" expr="0"/>
+<var name="specialzonedate" expr="0"/>
+<var name="vlu" expr="0"/>
+
+<script>
+	var favSongs=new Object();
+	var out_string=new Object();
+	var spzone=new Object();
+</script>	
+
+	<form id="NEWMAINMENU">
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+						 <item>  9  </item>
+					</one-of>
+				</rule>
+			</grammar>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="Prompt_Path+'/CINEMA/'+lang+'/menu_portal.wav'"/>
+				</prompt>
+		
+				<prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/'+lang+'/select_cat0702.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/press_dtmf3.wav'"/>
+						<audio expr="Prompt_Path+'/CINEMA/'+lang+'/acmanager.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/press_dtmf9.wav'"/>
+				</prompt>
+
+
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="Hungama_ModMainMenu.vxml"></goto>
+				<elseif cond="choice=='2'"/>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="Prompt_Path+'/CINEMA/'+lang+'/cin_welback.wav'"/>
+					</prompt>
+					<goto next="Hungama_ACinemaMainMenu.vxml"></goto>
+				<elseif cond="choice=='3'"/>
+					<goto next="BossKey_mainmenu.vxml"></goto>
+				<elseif cond="choice=='9'"/>
+					<goto next="Hungama_ModMngAccnt.vxml"></goto>
+				</if>
+			</filled>
+		</field>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			</nomatch>
+	</form>
+</vxml>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_RedFMRouting.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property> 	
+<var name="length" expr=""/>
+
+	<form id="Main">
+	
+		<block>						
+			<script>				
+				DNIS=session.connection.local.uri;                   
+				ANI=session.connection.remote.uri;				
+			</script>			
+			<assign name="C_Start" expr="start_time()"/>
+			<script>
+				length = ANI.length;
+				if(length == 15)
+					ANI = ANI.substring(5,15);
+				if(length == 14)
+					ANI = ANI.substring(4,14);
+				if(length == 13)
+					ANI = ANI.substring(3,13);
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+			</script>			
+			<log> User ANI  is	<value expr="ANI"/>	</log>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>				
+			<assign name="ciropr" expr="ciropr1.value"/>
+			<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+			<script>
+				var songcheck=ciropr.split("#");
+				operator=songcheck[1];
+				circle=songcheck[2];
+			</script>	       
+			
+			<log>circle  is	<value expr="circle"/>    </log>
+			<log>operator is <value expr="operator"/>    </log>	
+			
+			
+							<script> 					 
+							        <![CDATA[
+				        		       if(timerflag==1)
+				                         start_BalenceMinute=start_time();
+						            ]]>	 	
+			       		    </script>			
+			
+				
+				<assign name="operator" expr="'mtsm'"/>
+					
+			<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>			            		        									       					       
+			<log>circle  is	<value expr="circle"/>    </log>
+			<log>operator is <value expr="operator"/>    </log>
+		
+			<assign name="dbservlet" expr="'redfm_dbinteraction'"/>
+		 	<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+			
+			<!--<if cond="ANI=='9667890489'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://10.130.14.106:8088/hungama/promptFiles/livefm/welcome_new.wav'" />
+				</prompt>
+
+			</if> -->
+
+				
+		<if cond="circle=='chn' || circle=='tnu'">
+			<prompt>
+				<audio expr="promptpath+'/07/start_tollfree.wav'" />
+			</prompt>
+		<elseif cond="circle=='kar'"/>
+			<prompt>
+				<audio expr="promptpath+'/10/start_tollfree.wav'" />
+			</prompt>
+		<elseif cond="circle=='ker'"/>
+			<prompt>
+				<audio expr="promptpath+'/09/start_tollfree.wav'" />
+			</prompt>
+		<elseif cond="circle=='kol' || circle=='wbl'"/>
+			<prompt>
+				<audio expr="promptpath+'/06/start_tollfree.wav'" />
+			</prompt>
+		<else/>
+			<prompt>
+				<audio expr="promptpath+'/01/start_tollfree.wav'" />
+			</prompt>
+		</if>
+
+	
+			<goto next="Hungama_RedFMmain.vxml"/>
+		</block>
+	</form>	
+</vxml>

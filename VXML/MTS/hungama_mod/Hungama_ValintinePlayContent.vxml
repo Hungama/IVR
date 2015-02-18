@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_ModRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="Hungama_ValintinePlayContent.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="specialzonedate" expr="0"/>
+     
+     	<script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var len=0;
+		var spzone=new Object();
+	</script>
+	<script>
+		function GetDate()
+		{
+			var currentDT = new Date();
+			var day = currentDT.getDate();
+			var month = currentDT.getMonth() + 1;
+			var year = currentDT.getFullYear();
+			var hours = currentDT.getHours();
+			var minutes = currentDT.getMinutes();
+			var seconds = currentDT.getSeconds();
+
+			if (month.length == 1) {month = "0" + month; }
+			if (day.length == 1) {day = "0" + day; }
+
+			var strDateTime =  year + "-" + month + "-" + day;
+			return strDateTime;
+		}
+	</script>
+	<form id="MAINMENU">
+		<block>
+			<assign name="Section_Name" expr="'Valentine_Menu'"/>
+			<assign name="cat" expr="'Valentine'"/>
+			<assign name="subcat" expr="'Valentine'"/>
+			<if cond="lang=='02'">
+				<assign name="lang" expr="'02'"/>
+			<else/>
+				<assign name="lang" expr="'01'"/>
+			</if>
+			<goto next="#MAINMENU1"/>				
+		</block>
+	</form>
+	<form id="MAINMENU1">		
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">	
+						<one-of>								
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>								
+							 <item>  8  </item>
+							 <item>  9  </item>
+						</one-of>
+					</rule>
+				</grammar>		
+				<prompt bargein="true" timeout="3s">					
+					<audio expr="Prompt_Path+'/Velentine_Prompts/'+lang+'/select_catname_lovesong.wav'"/>
+					<audio expr="Prompt_Path+'/'+lang+'/press_dtmf1.wav'"/>
+					<audio expr="Prompt_Path+'/Velentine_Prompts/'+lang+'/select_catname_lovetips.wav'"/>										   		
+					<audio expr="Prompt_Path+'/'+lang+'/press_dtmf2.wav'"/> 
+					<audio expr="Prompt_Path+'/Velentine_Prompts/'+lang+'/select_catname_lovedialogues.wav'"/>
+					<audio expr="Prompt_Path+'/'+lang+'/press_dtmf3.wav'"/>
+					<audio expr="Prompt_Path+'/Velentine_Prompts/'+lang+'/select_catname_loveshayari.wav'"/>										   		
+					<audio expr="Prompt_Path+'/'+lang+'/press_dtmf4.wav'"/> 
+				</prompt>				
+		<filled>
+				<if cond="choice=='1'">
+					<assign name="playconfig" expr="'0115'"></assign>
+					<assign name="cat" expr="playconfig"></assign>
+					<assign name="subcat" expr="'LSONGS'"></assign>
+					<goto next="#loadcliptoplay"/>
+				<elseif cond="choice=='2'"/>
+					<assign name="playconfig" expr="'0140'"></assign>
+					<assign name="cat" expr="playconfig"></assign>
+					<assign name="subcat" expr="'LTIPS'"></assign>
+					<goto next="#loadcliptoplay"/>
+				<elseif cond="choice=='3'"/>
+					<assign name="playconfig" expr="'0141'"></assign>
+					<assign name="cat" expr="playconfig"></assign>
+					<assign name="subcat" expr="'LDIALOGUE'"></assign>
+					<goto next="#loadcliptoplay"/>
+				<elseif cond="choice=='4'"/>
+					<assign name="playconfig" expr="'0142'"></assign>
+					<assign name="cat" expr="playconfig"></assign>
+					<assign name="subcat" expr="'LSHAYARI'"></assign>
+					<goto next="#loadcliptoplay"/>
+				<elseif cond="choice=='8'"/>
+					<goto next="#MAINMENU"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="#loadcliptoplay"/>					
+				</if>  
+		</filled>	    
+			
+		<noinput count="1">
+			<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			<reprompt/> 
+		</noinput>        
+
+		<nomatch>
+			<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			<reprompt/>
+		</nomatch> 
+		<noinput count="2">
+			<assign name="playconfig" expr="'0115'"></assign>
+			<assign name="cat" expr="playconfig"></assign>
+			<assign name="subcat" expr="'LSONGS'"></assign>
+			<goto next="#loadcliptoplay"/>	
+		</noinput>        
+
+		<nomatch count="2">
+			<assign name="playconfig" expr="'0115'"></assign>
+			<assign name="cat" expr="playconfig"></assign>
+			<assign name="subcat" expr="'LSONGS'"></assign>
+			<goto next="#loadcliptoplay"/>
+		</nomatch> 
+		</field>
+	</form>
+	
+	 <form id="loadcliptoplay">
+		  <block> 
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/VALENTINE/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+					array.length=0;
+					unike_play=0;
+			</script>
+			<assign name="HEARD" expr="playconfig" />
+			<assign name="len" expr="favSongs.length" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+						array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#PlayFullSongs"/>  					
+		   </block>
+	</form>
+
+	
+<form id="PlayFullSongs"> 
+	<block>
+		<assign name="Section_Name" expr="'VALENTINE_KEYPADOPTION'"/>
+	</block>
+  
+	 <field name="keypadoption">		    	 
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+				<item>1</item>
+				<item>2</item>
+				<item>3</item>
+				
+				<item>8</item>
+				<item>9</item>
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+		<prompt bargein="true" timeout="1s" cond="playconfig=='0115'">				
+			<audio expr="Prompt_Path+'/'+lang+'/keypad_options.wav'"/>				
+		</prompt> 
+		<prompt bargein="true" timeout="1s" cond="playconfig!='0115'">
+			<audio expr="Prompt_Path+'/Velentine_Prompts/'+lang+'/keypad_options.wav'"/>
+		</prompt>
+		
+		<filled>              
+    			<if cond="keypadoption=='8'">
+    				 <goto next="#MAINMENU"/>
+			<elseif cond="keypadoption=='9'"/>
+				 <goto next="Hungama_Valintine_MngAccnt.vxml"/>	 
+			<else/>									 				 					 		         
+				<goto next="#StartToPlaysongs"/>
+			</if>
+         </filled>
+			  
+		<noinput>		  
+	             	<goto next="#StartToPlaysongs"/>	     
+              </noinput>
+              
+              <nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>		
+          </field>		
+		
+	</form>
+	
+	<form id="StartToPlaysongs">
+		<block>
+			<assign name="Section_Name" expr="'CONTENT'"/>
+				<if cond="unike_play &gt; len-1">
+					<assign name="unike_play" expr="0" />
+				<elseif cond="unike_play &lt; 0" />
+					<assign name="unike_play" expr="len-1" />
+				</if>
+
+				<script>
+					var songcheck=array[unike_play].split("_");
+					Song_Path=songcheck[0]; 
+					songID = array[unike_play];
+
+				</script>			
+				<assign name="song_begin" expr="start_time()"/>
+				<assign name="song_listen" expr="'START'" />
+      			</block>
+		   <field name="selectoption">
+				    <grammar mode="dtmf" root="start" version="1.0">
+			   		<rule id="start" scope="public">
+			   		  <one-of>
+						<item>1</item>
+						<item>2</item>	
+						<item>3</item>
+						<item>7</item>
+						<item>8</item>
+						<item>9</item>
+						<item>*</item>
+					</one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			   <audio expr="contentpath+Song_Path+'/'+songID+'.wav'"/>	
+		      </prompt> 			 
+		  
+		      <filled>
+				 <if cond="selectoption=='1'">				 
+						<script> unike_play=unike_play+1;</script>
+						 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="time_duration(song_begin)"/>
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 	 				 						 
+						 <assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+						<goto next="#StartToPlaysongs"/>				
+				 <elseif cond="selectoption=='2'"/>				 
+				         	<script> unike_play=unike_play</script>						
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+						<goto next="#StartToPlaysongs"/>				 
+				 <elseif cond="selectoption=='3'"/>	
+						<script> unike_play=unike_play-1;</script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+						<goto next="#StartToPlaysongs"/>					
+				 <elseif cond="selectoption=='8'"/>
+						<script> unike_play=unike_play+1;</script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				 		<goto next="#MAINMENU"/>
+				 <elseif cond="selectoption=='7'"/>
+						<script> unike_play=unike_play;</script>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				 		<if cond="playconfig=='0115'">
+							 <goto next="#MAINMENU"/>
+						<else/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+							</prompt>
+						 	<goto next="#StartToPlaysongs"/> 												
+						</if>
+				 <elseif cond="selectoption=='9'"/>				 		
+				 	<goto next="Hungama_Valintine_MngAccnt.vxml"/>				 	
+				 <elseif cond="selectoption=='*'"/>	
+				 	<goto next="Hungama_ModCRBT.vxml"/>
+				 <else/>				 	
+				 	<script> unike_play=unike_play+1</script>		
+				    	<goto next="#StartToPlaysongs"/> 		
+				 </if>				 
+			  </filled>				  
+		
+		     
+			<noinput>	
+			        <script> 
+			      		unike_play=unike_play+1;
+			      	</script> 		
+				<goto next="#StartToPlaysongs"/>
+			</noinput>
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>			
+	  </field>	  	
+	</form>	
+</vxml>

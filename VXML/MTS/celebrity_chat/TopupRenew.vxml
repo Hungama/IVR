@@ -1,0 +1,178 @@
+
+<vxml version="2.0" application="FMJRoot.vxml">      
+    
+   <property name="documentmaxstale" value="0s"></property>
+   <property name="documentmaxage" value="0s"></property>
+    
+   <var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="true"/>		
+   <var name="names"/> 
+   <var name="tottopup" expr="''"/>	
+   <var name="topup11" expr="''"/>	
+   <var name="topup12" expr="''"/>	
+   <var name="topup13" expr="''"/>	
+   <var name="topupmnu" expr="''"/>	
+   <var name="balupdatestatus" expr="'1'"/>	
+   <var name="i" expr="0"/>
+   <script>
+	   var out_string=new Object();
+   </script>
+	
+   <form id="hungamatopupchk">
+   
+       <block>
+   		       <assign name="prompt_name" expr="'TOPUP'"/>
+	        <!-- <log expr="'@@@@ inside topup ckeck"/>	-->
+          <if cond="balupdatestatus=='1'">			     
+                  <assign name="current_balance" expr="start_time()"/>
+	                <script>
+			 		total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 			 		curbalance=balance-total_used_bal; 						  
+	            			balance=Math.floor(balance/60);	
+			 </script>
+  	            	
+  	               <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/>
+			 <script>balupdatestatus=0; </script>
+	  </if>	
+         <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		<script>
+			 <![CDATA[
+			 for(j=0; j< out_string.length;  j++)
+			 {  	  
+			      if(j==2)
+				    	balance = out_string[j];
+			 }
+			]]>
+			balance=balance*60;
+		</script>
+		<if cond="balance &gt; '0'">
+			<prompt bargein="false">			  	
+             			<audio expr="Prompt_Path+LANG_DESCRIPTION+'/topup_request.wav'"/>		
+            		</prompt>
+			<!-- <log expr="'@@@@@@ user top up balance is '+balance"/>	-->
+				 	     
+	 	        <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>					
+		<else/>				      
+	      		<if cond="topFlag==0">
+		     	 	<audio expr="Prompt_Path+LANG_DESCRIPTION+'/balance_less_0.wav'"/>		
+		      		<goto next="#hungamatopupmnu"/>						 	    			   	
+	      		<else/>
+		      		<audio expr="Prompt_Path+LANG_DESCRIPTION+'/topup_sorry.wav'"/>
+		      		<if cond="balance &gt; '0'">
+					<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+		 		<else/>
+					<goto next="starclub_End.vxml"/>
+					<!--<throw event="connection.disconnect.hangup"/>-->
+		  		</if>
+			</if>
+   	       </if>	
+	   </block>		
+   </form> 
+	
+   <form id="hungamatopupmnu">
+   
+      <block>
+   		       <assign name="prompt_name" expr="'TOPUP'"/>
+      	<!--	<script>
+		       <![CDATA[  		       
+                    start_BalenceMinute=start_time();
+		       ]]>	 	
+ 		     </script> -->
+ 		     
+	</block>
+         
+		<!--<log expr="'welcome to the hungama topups main menu '"/>   -->   
+       		
+		 
+	    <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				   <item>1</item>		
+				   <item>2</item>						  			  		      
+                </one-of>
+              </rule>
+            </grammar>			
+			
+		   
+	     <prompt bargein="false">			  	
+               <audio expr="Prompt_Path+LANG_DESCRIPTION+'/topup1.wav'"/>		
+            </prompt>
+			
+			<prompt bargein="true">	
+               <audio expr="Prompt_Path+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>		
+            </prompt>
+            
+            <prompt bargein="true">			  	
+               <audio expr="Prompt_Path+LANG_DESCRIPTION+'/topup2.wav'"/>		
+            </prompt>
+			
+			<prompt bargein="true">	
+               <audio expr="Prompt_Path+LANG_DESCRIPTION+'/press_dtmf2.wav'"/>		
+            </prompt>
+            
+           <filled>
+		<if cond="mnuopt=='1'">
+		     <clear namelist="mnuopt"/> 
+		     <assign name="topFlag" expr="1"/>
+		     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+		     <goto next="#hungamatopupchk"/>		           	  					
+		<elseif cond="mnuopt=='2'"/>
+		     <!--<if cond="operator=='tatm'">-->
+	    	     <clear namelist="mnuopt"/> 
+		     <assign name="topFlag" expr="1"/>
+		     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5&amp;INPARAM[2]='+DNIS"/>			 
+		     <goto next="#hungamatopupchk"/>	
+						 	 
+		</if>
+	     </filled>		
+			
+	     <noinput>
+		   <if cond="i=='1'">
+		     <log expr="'welcome to the hungama topups main menu '+i"/>
+		     <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>                                 
+                   <goto next="actmanager.vxml#accountmanager"/>		
+
+		   </if>
+             	   <assign name="i" expr="i=i+1"/>
+                  <log expr="'welcome to the hungama topups main menu '+i"/>
+		   <goto next="#hungamatopupmnu"/>		
+   
+            </noinput>
+	
+	     <nomatch>			   
+                <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+ 	  	  <goto next="#hungamatopupmnu"/>		
+            </nomatch>  		 
+			            
+ 					
+	  </field>	 
+  		
+    </form>
+
+
+    <form id="hungamamMM">
+    	<block>
+		<log expr="Honey This side" />
+    		<if cond="balance &gt; '0'">			         			 
+	 	     <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>					
+		<else/>	
+		     <audio expr="promptpath+LANG_DESCRIPTION+'/charge_req_recd.wav'"/>
+		      	<assign name="timerflag" expr="0"/>
+		      	<exit/>						 	    			   	
+     	       </if>
+    	</block>
+    </form>
+
+ 
+    
+   
+</vxml>
+
+
+
+   

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_ModEnd.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<script>
+			var out_string=new Object();
+	</script>
+
+	<form id="EndLogin">
+		<block>
+			<assign name="C_End" expr="start_time()"/>
+			<log expr="'song_listen=='+song_listen"></log>
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			</if>
+			<log>	END  HEARD == <value expr="HEARD"/>    </log>
+			<log>	directaccess  HEARD == <value expr="directaccess"/>    </log>
+				<!--<if cond="playconfig=='NEWYEAR'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_NEW_USERPROFILE&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]='+unike_play+'&amp;INPARAM[3]=SET'"/>
+				</if>-->
+				<if cond="HEARD!='0' &amp;&amp; directaccess==''">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+				</if>
+				<if cond="directaccess=='TOP20' || directaccess=='NEWAR' ||directaccess=='POPUL' || directaccess=='EVERG'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+				</if>
+
+
+			<if cond="backendsub=='true'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=DEFAULT&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=2&amp;INPARAM[5]=1001&amp;INPARAM[6]=1'"/>		
+			</if>
+			
+			<if cond="RINGTONE_SMS=='TRUE'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_RINGTONE_BDSSMS&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]=52222'"/>
+			</if>
+			<if cond="Flag_Newuser=='TRUE_FB'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_FACEBOOK&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]=52222'"/>
+			</if>
+
+			<assign name="total_time" expr="time_duration(C_Start)"/>
+			<script> total_time=(Math.floor(total_time/60))+1; </script>
+			
+			<!-- <script>
+				total_time=C_End-C_Start;  						  
+			</script>
+			<script> total_time=Math.floor(total_time/60); </script> -->	
+		<if cond="circle=='guj'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UPDATETIME_GUJ&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+total_time+'&amp;INPARAM[2]=52222'"/>
+		<elseif cond="circle=='raj'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UPDATETIME_RAJ&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+total_time+'&amp;INPARAM[2]=52222'"/>
+
+		<else/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+total_time+'&amp;INPARAM[2]=52222'"/>
+		</if>
+			<if cond="directaccess=='ComedyPortal'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=COMEDYPORTAL&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=MOD&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			</if>
+			<exit/>
+		</block>
+	</form>
+	 <catch event="error.badfetch">		 								
+    	 	 <exit/>
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 	<exit/>
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+		  	<exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+			<exit/>
+      </catch>
+      
+     
+</vxml>

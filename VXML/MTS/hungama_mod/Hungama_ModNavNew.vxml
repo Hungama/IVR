@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_ModNavNew.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<form id="NAV">
+		<block>
+<if cond="directaccess=='ComedyPortal'">
+
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Comedy_PromptPath+'/'+lang+'/Options.wav'"/>
+			</prompt>
+<else/>
+
+			<if cond="playconfig=='556' || playconfig=='557' || playconfig=='558'">
+				<prompt bargein="true" timeout="1s">
+					<audio expr="Prompt_Path+'/'+lang+'/keypad_opt1.wav'"/>							
+				</prompt>
+			<elseif cond="playconfig=='555'"/>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="Prompt_Path+'/'+lang+'/keypad_opt.wav'"/>							
+				</prompt>
+			<else/>
+			
+			<prompt bargein="true" timeout="1s">
+					<audio expr="Prompt_Path+'/'+lang+'/keypad_options_2.wav'"/>							
+			</prompt>
+			</if>
+</if>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>						 
+						 <item>  8  </item>
+						 <item>  9  </item>
+						 <item>  *  </item> 
+					</one-of>
+				</rule>
+			</grammar>
+			
+			<filled>
+				<if cond="choice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<goto next="Hungama_ModPlayNew.vxml#next" />
+				<elseif cond="choice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="Hungama_ModPlayNew.vxml#next" />
+				<elseif cond="choice=='3'"/>
+					<script> unike_play=unike_play-1</script>
+					<goto next="Hungama_ModPlayNewNew.vxml#next" />				
+				<elseif cond="choice=='7'"/>
+					<goto next="Hungama_ModNavNew.vxml"/>
+				<elseif cond="choice=='8'"/>
+					<goto next="Hungama_ModMainMenuNew.vxml"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="Hungama_ModMngAccntNew.vxml"/>
+				<elseif cond="choice=='*'"/>
+	<if cond="directaccess=='ComedyPortal'">
+		<script> unike_play=unike_play</script>
+		<goto next="Hungama_ModPlayNewNew.vxml#next" />
+	</if>
+					<if cond="playconfig=='556' || playconfig=='557' || playconfig=='558' || playconfig=='555'">
+							<script> unike_play=unike_play</script>
+							<goto next="Hungama_ModPlayNewNew.vxml#next" />
+					<else/>
+				
+					<goto next="Hungama_ModCRBTNew.vxml"/>
+					</if>
+				<elseif cond="choice=='0'"/>
+				<if cond="directaccess=='ComedyPortal'">
+						<script> unike_play=unike_play</script>
+						<goto next="Hungama_ModPlayNew.vxml#next" />
+				</if>
+
+					<if cond="playconfig=='556' || playconfig=='557' || playconfig=='558' || playconfig=='555'">
+							<script> unike_play=unike_play</script>
+							<goto next="Hungama_ModPlayNew.vxml#next" />
+					<else/>
+							<goto next="Hungama_ModRngNew.vxml"/>
+					</if>
+				</if>
+			</filled>
+		</field>
+			<noinput>
+				<script> unike_play=unike_play</script>
+				<goto next="Hungama_ModPlayNew.vxml#next" />
+			</noinput>
+			<nomatch>
+				<script> unike_play=unike_play</script>
+				<goto next="Hungama_ModPlayNew.vxml#next" />
+			</nomatch>
+	</form>
+</vxml>

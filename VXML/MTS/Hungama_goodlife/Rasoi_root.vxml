@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="rasio_root.vxml" content="" />
+	<meta name="Author" content="Saurabh" />
+	<meta name="Date" content="23-11-2011"/>
+	<meta name="Description" content="Root file for the rasoi project" />
+	<meta name="Support" content="" />	
+	
+   	<property name="documentmaxstale" value="0s"></property>
+   	<property name="documentmaxage" value="0s"></property>   	
+	
+	<var name="confirmstatus" expr="''"/>
+	<var name="lang" expr="''"/>
+	<var name="CallTime" expr=""/>
+	<var name="directaccess" expr="''" />
+	<var name="program_name" expr="''"/>
+	<var name = "sessionId" expr = "session.id"/>
+	<var name = "Lang" expr = "'eng'"/>
+	<var name = "MSISDN" expr = "''"/>
+	<var name="flag_recipe_nu" expr="'0'"/>	
+	<var name="s_flag" expr="'0'"/>	
+	<!--*********************************Consent log *********************************************-->
+	<var name="pressdtmf" expr="'0'"/>
+	<var name="firstconsent" expr="'N'"/>
+	<var name="firstconsenttime" expr="'NA'"/>
+	<var name="secondconsent" expr="'N'"/>
+	<var name="secondconsenttime" expr="'NA'"/>
+	<var name="ccgresult" expr="'NA'"/>
+	<var name="sub_flag" expr="'false'"/>
+	<var name="consent_flag" expr="'false'"/>
+	<var name="IVRtransid" expr="0"/>
+	<var name="cg_id" expr="0"/>
+	<var name="error_desc" expr="0"/>
+	<var name="cons_time" expr="0"/>
+	<var name="cons_stat" expr="0"/>
+	<!--*********************************Consent log *********************************************-->
+ 	
+	<var name="amt" expr="0"/>	
+	<var name="service_id" expr="0"/>
+	<var name="plan_id" expr="0"/>
+	<var name="direct_status" expr="'0'"/>
+	<var name="modesub" expr="'ND'"/>	
+	<var name="pricepoint" expr="'0'"/>
+	<var name="start_BalenceMinute" expr="'0'"/>
+
+	<var name="dishname" expr="''"/>
+	<var name="balance" expr="'0'"/>
+	<var name="curbalance" expr="'0'"/>
+	<var name="langopt" expr=""/>
+	<var name="C_Start" expr=""/>	
+	<var name="C_End" expr=""/>	
+    	<var name="ANI" expr="''"/>       
+	<var name="DNIS" expr="''"/>
+	<var name="realDNIS" expr="''"/>
+	<var name="Flag" expr="''"/>
+	<var name="timerflag" expr="'0'"/>
+	<var name="cirid" expr="''"/>
+	<!--<var name="sessionid" expr="'5006'"/>-->
+	<var name="total_used_bal" expr=""/>
+	<var name="sub_type" expr="'NA'"/>
+	<var name="usr_status" expr="0"/>
+	
+	<var name="songID" expr="''"/>	
+	<var name="movieID" expr="''"/>
+	<var name="UNIQUE_CODE" expr="''"/>
+	<var name="INGRADIENT_PART" expr="''"/>
+	<var name="RECIPE_PART" expr="''"/>	
+
+	<var name="dtmf_check" expr="0"/>
+	<var name="dtmf_log" expr="''"/>
+	<var name="input_check" expr="''"/>
+	<var name="dtmfsub" expr="''"/>		
+
+	<var name="IP" expr="'10.130.14.106:8088'"/>
+	<var name="CDSIP" expr="'localhost'" />	
+	<var name="servlet_path" expr="'hungama'"/>
+	<var name="dbservlet" expr="'mts_dbinteraction'"/>
+	<var name="CDSPATH" expr="':8080/hungama/'" />
+	<var name="contentpath" expr="'file:/var/opt/OC/contentrepository/hungama/content/'"/>
+	<var name="promptpath" expr="'file:/var/opt/OC/contentrepository/hungama/promptFiles/sanjeev_rasoi/'"/>
+	
+	<var name="LANG_DESCRIPTION" expr="'HIN'"/>
+	<var name="LANG_DESCRIPTION_HIN" expr="'HIN'"/>
+	<var name="ciropr" expr="''"/>	
+	<!--<var name="mxopt" expr="''"/>
+	<var name="bopt" expr="''"/>
+	<var name="lang_status1" expr="''"/>-->
+	<var name="mainmenu" expr="'veg'"/>
+	<var name="song_begin" expr="'0'"/>
+	<var name="circle" expr="'DEL'"/>
+	<var name="operator" expr="'unim'"/>
+	<var name="initial_balance" expr="'0'"/>
+	<var name="contentdir" expr=""/>
+	<var name="Song_Path" expr=""/>
+	<var name="unike_play" expr="0"/>
+	<var name="playconfig" expr="''"/>
+	<var name="unike_play2" expr="0"/>
+	<var name="song_listen" expr="'End'"/>
+	<var name="compare_time" expr="0"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="starting_time" expr="0"/>
+	<var name="ContentTime" expr="0"/>
+	<var name="contentlog" expr="''"/>
+	<var name="cat" expr="'recipe'"/>
+	<var name="subcat" expr="'recipe'"/>
+	<var name="moviectr" expr="0"/>
+	<var name="moviesetflag" expr="'false'"/>
+	<var name="clipflag" expr="1"/>
+	<var name="movieflag" expr="1"/>
+	<var name="firstmovie" expr="1"/>	
+	<var name="firstclip" expr="1"/>
+	<var name="moviename" expr="'@'"/>
+	<var name="balance" expr="0"/>
+	<var name="count" expr="0"/>
+	<var name="ctr" expr="0"/>	
+	<var name="key" expr=""/>
+	<var name="tiplisten" expr="0"/>
+	<var name="recipecounter" expr="-1"/>
+	<var name="ing_repeat" expr="'TRUE'"/>
+	<var name="isResume" expr="'FALSE'"/>
+	<var name="couponcnt" expr="0"/>
+	<var name="multi_recipe" expr="0"/>
+
+
+	<var name="self_zod" expr="'0'"/>
+	<var name="partner_zod" expr="'0'"/>
+	<var name="partnerdob" expr="'0'"/>
+	<var name="firstdob" expr="'0'"/>
+	<var name="file_status" expr="'0'"/>
+	<var name="var_wel" expr="'0'"/>
+	<var name="playfile" expr="'0'"/>
+	<!-- script srcexpr="'http://'+IP+'/hungama/ECMAScripts/common_files.es'"/ -->	
+		
+	<script src="../ECMAScripts/common_files.es"/>	
+   	<script>		        
+		var len=0;  
+		var movie_idx=0;  
+		var len1=0;
+		var i=0; 
+		var j=0;
+		var k=0;	                  
+		var r=0;
+		var index=0;
+		var flag=1;
+		var startindex=0;			
+		var array=new Array();
+		var array1=new Array();
+		var array2=new Array();
+		var multi=new Array();
+		<!--var songarray=new Array();-->
+		var	ciropr1 = new Object();
+		var lang_status=new Object();
+		var usrlang=new Object();
+		var sub_status=new Object();
+		var usrbalance=new Object();
+		var usrmoviectr=new Object();
+		var usrmoviename=new Object();
+		var totaltopup=new Object();
+		var topup1=new Object();
+		var topup2=new Object();
+		var topup3=new Object();
+		var out_string=new Object();			
+		var dur=new Object();			
+		var favSongs=new Object();
+     </script>    
+     
+	<form id="main">
+		<block>
+			<goto next="SelectLang.vxml"/>
+		</block>
+	</form>          
+	<catch event="error.badfetch">
+		<log>Inside catch  22222</log>   
+		<goto next="end.vxml"/>		  		 								
+	</catch>
+	<catch event="error.badfetch">		 								
+		<log>Inside Error BadCatch catch  2222</log>     	  
+		<goto next="end.vxml"/>
+	</catch>    
+	<catch event="telephone.disconnect.hangup">		 								
+		<log>Inside Telephone Disconnect Hangup catch  3333</log> 		   
+		<goto next="end.vxml"/>		 								
+	</catch>                 
+	<catch event="telephone.disconnect">	
+		<log>Inside Telephonet Disconnected catch  4444</log>			    
+		<goto next="end.vxml"/>	  				
+	</catch>	  
+	<catch event="connection.disconnect.hangup">	
+		<log>Inside connection.disconnect.hangup catch  5555</log>			
+		<goto next="end.vxml"/>	  
+	</catch>
+	<catch event=" error.* "> 
+		<goto next="end.vxml"/>	  
+	</catch>
+</vxml>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="JOKEMMRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	
+	<meta name="SelectLang.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+        <var name="wellang" expr="''" />
+	 <var name="length" expr="0"/>
+	<script>
+		var ciropr1 = new Object();
+		var out_string=new Object();		
+	</script>
+	
+<form id="Main">
+	<block>
+	<assign name="C_Start" expr="start_time()"/>
+					<script>  
+						realDNIS=session.connection.local.uri;                   
+						ANI=session.connection.remote.uri;						   
+	                </script>
+	                <script>
+						length = ANI.length;
+						if(length == 15)
+							ANI = ANI.substring(5,15);
+						if(length == 14)
+							ANI = ANI.substring(4,14);
+						if(length == 13)
+							ANI = ANI.substring(3,13);
+						if(length == 12)
+							ANI = ANI.substring(2,12);
+						if(length == 11)
+							ANI = ANI.substring(1,11);
+					</script>                             			    		        		                                      		   
+	            	<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+	            	<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+				<if cond="ANI=='84590789051'">
+					 <assign name="circle" expr="'tnu'"/>
+				</if>
+	
+
+				 <assign name="DNIS" expr="realDNIS"/>
+				
+	        		<log expr="'DNIS =====>>>>> @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+					<log> operator-circle identification </log>
+					
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+					
+					<assign name="ciropr" expr="ciropr1.value"/>
+					<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+					<script>
+						var songcheck=ciropr.split("#");
+						operator=songcheck[1];
+						circle=songcheck[2];
+					</script>								      					       
+					<log>circle  is	<value expr="circle"/>    </log>
+					<log>operator is <value expr="operator"/>    </log>
+	                		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>	
+				
+					
+					<assign name="dbservlet" expr="'JOKE_dbinteraction'"/>
+					 <assign name="operator" expr="'mtsm'"/>
+					
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JOKEPORTAL_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+	  			<script>
+	  			 <![CDATA[
+	  					   for(j=0; j< out_string.length;  j++)
+	  						  {  	  
+	  						       if(j==0)
+	  						       	usr_status = out_string[j];
+	  						       if(j==1)
+	  						       	lang = out_string[j];
+	  						       if(j==2)
+	  						       	balance = out_string[j];
+	  						       if(j==3)
+	  							  moviectr = out_string[j];
+	  							if(j==4)
+	  							  modesub = out_string[j];
+	  						  }
+	  
+	  					]]>
+	  			
+	  			</script>
+	  			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+	  			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+	  			<log expr="'contentlog=='+contentlog"></log>
+	  			<if cond="usr_status=='-1'">
+					<if cond="circle=='chn' || circle=='tnu'">
+						<assign name="LANG_DESCRIPTION" expr="'TAM'" />
+						<assign name="lang" expr="'07'"/>
+					<elseif cond="circle=='kar'" />
+						<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+						<assign name="lang" expr="'10'"/>
+					<elseif cond="circle=='kol' || circle=='wbl'" />
+						<assign name="LANG_DESCRIPTION" expr="'BAN'"/>
+						<assign name="lang" expr="'06'"/>
+					<else/>
+						<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+						<assign name="lang" expr="'01'"/>
+					</if>
+	  				<goto next="Subscription.vxml"/> 
+	  			<elseif cond="usr_status=='1'"/>
+	  				<script> 					 
+	  					balance=balance*60;
+	  				        timerflag=1;      
+	  			        </script>							
+	  		                <script>
+	  					<![CDATA[
+	  		     				if(timerflag==1)
+	  						start_BalenceMinute=start_time();
+	  					]]>	 	
+	  				</script>
+					<assign name="start_BalenceMinute" expr="start_time()" />
+
+	  				<log expr="'lang @@@@@@@@@ '+lang"></log>
+	  				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+					<log expr="'start_BalenceMinute @@@@@@@@@ '+start_BalenceMinute"></log>				
+
+	  				<if cond="lang=='99'">
+	  					<goto next="End.vxml"></goto>
+	  				<else/>
+	  					<if cond="lang=='01'">
+	  						<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+	  					<elseif cond="lang=='02'" />
+	                          			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+	  					<elseif cond="lang=='06'" />
+	                          			<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+	  					<elseif cond="lang=='07'" />
+	                          			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+	  					<elseif cond="lang=='08'" />
+	                          			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+	  					<elseif cond="lang=='10'" />
+	                          			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+	                          		<elseif cond="lang=='17'" />
+	                          			<assign name="LANG_DESCRIPTION" expr="'ASM'"/>
+	                          		<else/>
+	  					        <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+	                          			<assign name="lang" expr="'01'"/>
+	  					</if>
+	  					<if cond="DNIS=='54646223'">
+							<goto next="ManageAccount.vxml#UnSubOption"/>
+						</if>
+						 <if cond="DNIS=='54646221' &amp;&amp; circle=='tnu' &amp;&amp; lang=='07'">
+							<goto next="playcontent.vxml"/>
+						</if>
+
+	  					<goto next="NineXMMainMenu.vxml"/>
+	  					
+	  
+	  				</if>
+	  			
+	  			<else/>
+	  				<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+lang+'/charging_wait.wav'"/>
+					</prompt>
+		
+	  				<goto next="End.vxml"></goto>
+			</if>
+	</block>
+  </form>
+
+
+</vxml>

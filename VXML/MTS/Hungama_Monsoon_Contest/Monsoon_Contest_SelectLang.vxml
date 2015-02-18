@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Monsoon_ContestRoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="Monsoon_Contest_SelectLang.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<property name="documentmaxstale" value="0s"/>
+	<property name="documentmaxage" value="0s"/>
+	
+	<var name="langorder" expr="'other'"/>
+
+	<form id="Main">
+		<block>			
+			<assign name="C_Start" expr="start_time()"/>
+			<assign name="game_Start" expr="starttime()"/>
+			<script>
+				realDNIS=session.connection.local.uri;
+				ANI=session.connection.remote.uri;
+			</script>			
+			<script>
+				var	length = ANI.length;
+				ANI = ANI.substring(length-10,length);
+			</script>
+			
+			<assign name="DNIS" expr="realDNIS"/>
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/>
+			<assign name="operator" expr="'mtsm'"/>
+			<assign name="dbservlet" expr="'MonsoonContest_dbinteraction'"/>
+
+			<!-- for direct UNSUB  -->
+			<if cond="realDNIS=='55333223'">
+				<submit expr="'http://10.130.14.106:8088/hungama/Monsoon_Contest_Unsub/Monsoon_Contest_Unsub.vxml'"/>
+			</if>
+
+			
+			<!-- For status check API  -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+					 usr_status=out_string[0];
+					 lang=out_string[1];
+					 circle=out_string[2];
+					 modofsub=out_string[3];
+			</script>
+			<log>circle  is<value expr="circle"/></log>
+			<log>operator is<value expr="operator"/></log>
+			<log>usr_status is<value expr="usr_status"/></log>
+			<log>lang is<value expr="lang"/></log>
+			<log>modofsub is<value expr="modofsub"/></log>
+
+					
+			<!--	<if cond="circle=='kar'">
+					<assign name="lang" expr="'10'"/>
+				<elseif cond="circle=='tnu'"/>
+					<assign name="lang" expr="'07'"/>
+				</if> -->
+			
+			
+			<if cond="usr_status=='1'">
+				<assign name="C_Start" expr="start_time()"/>
+				<assign name="game_Start" expr="starttime()"/>
+				<assign name="drop_point" expr="'ExistingUser'"/>
+				<script>pricepoint=1; </script>
+
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/welcome_contest.wav'"/>
+				</prompt>
+				
+				<if cond="ANI=='8459506442'">
+					<goto next="Monsoon_Contest_MainMenu.vxml"/>
+				</if> 
+	
+					<!--  Session charging start  -->
+
+					<assign name="rateplanid" expr="'81'" />
+					<log expr="'rateplanid  @@@@@@@@@@@@@@@@@@@@ =' + rateplanid"/>
+			                <send event="invokechargingsession" namelist="rateplanid ANI"/>
+			        
+					<!--  Session charging End  -->
+				
+				<goto next="Monsoon_Contest_MainMenu.vxml"/>
+			<elseif cond="usr_status=='-1'"/>
+				<assign name="drop_point" expr="'NewUser'"/>
+				
+				<if cond="circle=='kar'">
+					<assign name="lang" expr="'10'"/>
+				<elseif cond="circle=='tnu'"/>
+					<assign name="lang" expr="'07'"/>
+				<elseif cond="circle=='ker'"/>
+					<assign name="lang" expr="'09'"/>
+
+					<prompt bargein="false" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/welcome_contest.wav'"/>
+					</prompt>
+
+					<goto next="Monsoon_Contest_Sub.vxml"/>	
+				</if>
+
+
+				<prompt bargein="false" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/welcome_contest.wav'"/>
+				</prompt>
+
+			  <!--	<if cond="circle=='kar'">
+					<assign name="lang" expr="'10'"/>
+					<goto next="Monsoon_Contest_Sub.vxml"/>
+				<elseif cond="circle=='tnu'"/>
+					<assign name="lang" expr="'07'"/>
+					<goto next="Monsoon_Contest_Sub.vxml"/>	
+				</if> -->
+
+				
+				<goto next="#Lang_Selection"/>
+			<else/>
+				<goto next="#DelayCharging"/>
+			</if>
+		</block>
+	</form>
+	
+	<form id="DelayCharging">
+		<block>
+			<assign name="drop_point" expr="'DelayCharging'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+				<rule id="start1" scope="public">
+					<one-of>
+						<item> 1 </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/delay_charging.wav'"/>
+			</prompt>
+			<filled>
+				<goto next="Monsoon_Contest_end.vxml"/>
+			</filled>
+			<noinput>
+					<goto next="Monsoon_Contest_end.vxml"/>
+			</noinput>
+			<nomatch>
+					<goto next="Monsoon_Contest_end.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+	
+	<form id="Lang_Selection">
+		<block>
+			<assign name="drop_point" expr="'Lang_Selection'"/>
+
+			<if cond="circle=='kar'">
+				<assign name="langorder" expr="'kar'"/>
+			<elseif cond="circle=='tnu'"/>
+				<assign name="langorder" expr="'tnu'"/>
+			<elseif cond="circle=='rker'"/>
+				<assign name="langorder" expr="'ker'"/>
+			<else/>
+				<assign name="langorder" expr="'other'"/>
+			</if>
+			<script>
+				array2.length=0;
+			</script>
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_LANG_ORDER&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+langorder"/>
+         		<script>
+				 <![CDATA[
+			 		  for(j=0; j< out_string.length;  j++)
+						  {  	
+						      array2[j] = out_string[j];
+						  }
+					]]>
+			</script>
+			<script>
+				len=array2.length;
+			</script>
+			<log expr="'len iss ' +len"></log>
+
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item> 1 </item>
+						<item> 2 </item>
+						<item> 3 </item>
+					</one-of>
+				</rule>
+			</grammar>
+			
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/lang_option.wav'"/>
+			</prompt>
+
+			 <prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array2">
+					     <mark nameexpr="index++"/>
+						<log>	index isss    	<value expr="index"/>  	</log>
+						<log>	names is is    	<value expr="names"/>  	</log>
+						<audio expr="promptpath+'/'+names+'/lang'+names+'.wav'"/>
+						<audio expr="promptpath+'/'+names+'/press_dtmf'+index+'.wav'"/>
+					</foreach>													
+			</prompt>
+
+			<filled>
+				<if cond="choice &lt; len+1">
+					<assign name="lang" expr="array2[choice-1]"/>	
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/lang_thanks.wav'"/>
+					</prompt>
+					<goto next="Monsoon_Contest_Sub.vxml"/>
+				<else/>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<script>index=0;</script>
+					<goto nextitem="choice"/>
+				</if>
+
+					
+			</filled>
+			<noinput>
+					<script>index=0;</script>
+					<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+				<reprompt/>
+			</noinput>
+			<noinput count="2">
+					<assign name="lang" expr="array2[0]"/>
+					<goto next="Monsoon_Contest_Sub.vxml"/>
+			</noinput>
+			
+			<nomatch>
+					<script>index=0;</script>
+					<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+					<assign name="lang" expr="array2[0]"/>
+					<goto next="Monsoon_Contest_Sub.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+</vxml>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<meta name="Hungama_ModMMM_crbt.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+<var name="movie_idx" expr="0"/>
+
+<var name="vlu" expr="0"/>	
+	<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var spzone=new Object();
+	</script>
+
+	<form id="SMM_MENU">
+		<block>
+			<assign name="nomtch" expr="0"></assign>
+			<assign name="var_wel" expr="getRandom(1,50)" />
+ 			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/welcome_old_'+var_wel+'.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="1s">					
+				<audio expr="Prompt_Path+'/'+lang+'/keypad_options_2.wav'"/>						
+			</prompt>
+			<assign name="playconfig" expr="DNIS"></assign>
+			<goto next="#FETCHSONGS_MM"/>
+		</block>
+	</form>
+	
+	<form id="FETCHSONGS_MM">
+		<block>           				
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/songconfig/'+playconfig+'.cfg'"/>
+			<script>
+				array1.length=0;
+				unike_play=0;
+			</script>
+			<assign name="HEARD" expr="playconfig" />
+			<assign name="len" expr="favSongs.length" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+								array1[j] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+		</block>
+		
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  8  </item>						
+					</one-of>
+				</rule>
+			</grammar>
+			
+			<filled>
+				<if cond="choice=='8'">
+					<goto next="#SMM_MENU"/>
+				<else/>
+					<goto next="Hungama_ModPlay_CrbtMM.vxml#next"/>
+				</if>						
+			</filled>
+			<noinput>
+				<goto next="Hungama_ModPlay_CrbtMM.vxml#next"/>
+			</noinput>
+			<nomatch>
+				<goto next="Hungama_ModPlay_CrbtMM.vxml#next"/>
+			</nomatch>
+		</field>
+	</form>	
+</vxml>

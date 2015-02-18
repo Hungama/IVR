@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<vxml version="2.0" application="HoneyBee_Root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	<meta name="HoneyBee_Help.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	<script>
+		previous_menu= aNavHistory.pop();
+		aNavHistory.push("HoneyBee_Help.vxml");
+	</script>
+	
+	<!--*************************************************Help Menu  ******************************-->
+	<form id="Help_option">
+		<block>
+			<assign name="Section_Name" expr="'HELP_SECTION'"/>		
+			<prompt bargein="true" >
+				<audio expr="Promptpath+'/'+lang+'/wel_help.wav'"/>
+			</prompt>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start31" version="1.0">
+				<rule id="start31" scope="public" >
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  7  </item>
+						 <item>  8  </item>
+						 <item>  9  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Promptpath+'/'+lang+'/inside_help.wav'"/>
+			 	<audio expr="Promptpath+'/'+lang+'/keyinfo_pervmenu.wav'"/>
+			 	<audio expr="Promptpath+'/'+lang+'/keyinfo_mainmenu.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					 <prompt bargein="true" timeout="0s">
+						<audio expr="Promptpath+'/'+lang+'/lang_select.wav'"/>
+					</prompt>
+					<goto next="#LANG_SELECTION"></goto>
+				<elseif cond="choice=='2'"/>
+					<goto next="HoneyBee_NAD.vxml#NAD_Help_check"></goto>
+				<elseif cond="choice=='7'"/>
+					<goto expr="previous_menu"/>
+				<elseif cond="choice=='8'"/>
+					<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+				<elseif cond="choice=='9'"/>
+					<goto next="#Help_option"></goto>
+				</if>
+				
+			</filled>
+			<noinput count="1">
+				<prompt bargein="true" timeout="2s">
+					<audio expr="Promptpath+'/'+lang+'/sys_nokeypress.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="2s">
+					<audio expr="Promptpath+'/'+lang+'/sys_nokeypress.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="3">
+				<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>			
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="2s">
+					<audio expr="Promptpath+'/'+lang+'/sys_wrongkeypress.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="2s">
+					<audio expr="Promptpath+'/'+lang+'/sys_wrongkeypress.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>			
+			</nomatch>
+		</field>
+</form>
+
+<!--******************************************************LANG SELECTION*************************************************-->
+<form id="LANG_SELECTION">
+		<block>
+		<assign name="Section_Name" expr="'LANG_CHANGE_HELP'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]=3'"/>
+				<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+							if(j==0)
+								def_lang_selection = out_string[j];	
+							if(j==1)
+								prefe_lang=out_string[j];
+						  }	
+					]]>
+					
+				</script>
+				<log expr="'Track ['+ANI+']:Caller checking default lang check '+def_lang_selection"/>
+				<if cond="def_lang_selection=='0'">
+					<assign name="lang" expr="prefe_lang"/>
+					<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+				</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]=4'"/>
+			<script>
+					    	array3.length=0;
+			</script>
+			<assign name="movie_idx" expr="0"/>
+			
+			<assign name="len" expr="out_string.length" />
+			<assign name="i" expr="0" />
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  	
+						array3[j] = out_string[j];						   
+					   }
+
+				]]>		
+			</script> 	       
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start11" version="1.0">
+						<rule id="start11" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="1s">
+				<foreach item="names" array="array3">
+					<log>	song is is    	<value expr="movie_idx"/>  	</log>
+					<log>	names is is    	<value expr="names"/>  	</log>
+					<audio expr="Promptpath+'/'+names+'/language_'+names+'.wav'"/>
+					<audio expr="Promptpath+'/'+names+'/sel_dtmf'+ ++movie_idx+'.wav'"/>				
+				</foreach>						
+			</prompt>
+			<prompt bargein="true" timeout="2s">
+			 	<audio expr="Promptpath+'/'+lang+'/keyinfo_pervmenu.wav'"/>
+			 	<audio expr="Promptpath+'/'+lang+'/keyinfo_mainmenu.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice &lt; len+1">
+						<assign name="lang" expr="array3[--choice]"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_OPERATIONAL&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=CHANGE'"/>
+						 <prompt bargein="true" timeout="0s">
+							<audio expr="Promptpath+'/'+lang+'/lang_changed.wav'"/>
+						</prompt>
+							<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+				<else/>
+					<if cond="choice =='8'">
+						<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+					<elseif cond="choice =='9'"/>
+						<goto next="#Help_option"></goto>
+					<elseif cond="choice =='7'"/>
+						<!--<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>-->
+						<goto expr="previous_menu"/>
+					<elseif cond="choice=='9'"/>
+						<goto next="#Help_option"></goto>
+					<else/>
+						<throw event="nomatch"/>
+					</if>
+				</if>
+				
+			</filled>
+		</field>
+		<noinput count="1">
+			<script>movie_idx=movie_idx+1;</script>
+		
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Promptpath+'/'+lang+'/sys_nokeypress.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<script>movie_idx=movie_idx+1;</script>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Promptpath+'/'+lang+'/sys_nokeypress.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			
+			<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+		</noinput>
+		<nomatch count="1">
+			<script>movie_idx=0;</script>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Promptpath+'/'+lang+'/sys_wrongkeypress.wav'"/>
+			</prompt>
+			<goto nextitem="choice"></goto>
+		</nomatch>
+		<nomatch count="2">
+			<script>movie_idx=0;</script>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Promptpath+'/'+lang+'/sys_wrongkeypress.wav'"/>
+			</prompt>
+			
+			<goto nextitem="choice"></goto>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+		</nomatch>
+	</form>
+<!--*************************************************Subscription second consent ******************************-->
+	<form id="Unsub_option">
+			<block>
+				<assign name="Section_Name" expr="'UNSUB_SECTION'"/>
+			</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start32" version="1.0">
+					<rule id="start32" scope="public" >
+						<one-of>
+							 <item>  #  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							  <item> 9  </item>
+	
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+			 		<audio expr="Promptpath+'/'+lang+'/conf_unsub.wav'"/>
+				 	<audio expr="Promptpath+'/'+lang+'/keyinfo_pervmenu.wav'"/>
+				 	<audio expr="Promptpath+'/'+lang+'/keyinfo_mainmenu.wav'"/>
+				</prompt>
+				<filled>
+					<if cond="choice=='#'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+						<prompt bargein="true" timeout="2s">
+							<audio expr="Promptpath+'/'+lang+'/unsub_done.wav'"/>
+						</prompt>
+						<goto next="HoneyBee_End.vxml"/>
+					<elseif cond="choice=='7'"/>
+						<goto expr="previous_menu"/>
+					<elseif cond="choice=='8'"/>
+						<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+					<elseif cond="choice=='9'"/>
+						<goto next="#Help_option"></goto>
+					</if>
+					
+				</filled>
+				<noinput count="1">
+					<prompt bargein="true" timeout="2s">
+						<audio expr="Promptpath+'/'+lang+'/sys_nokeypress.wav'"/>
+					</prompt>
+					<reprompt/>
+				</noinput>
+				<noinput count="2">
+					<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+				</noinput>
+				<nomatch count="1">
+					<prompt bargein="true" timeout="2s">
+						<audio expr="Promptpath+'/'+lang+'/sys_wrongkeypress.wav'"/>
+					</prompt>
+					<reprompt/>
+				</nomatch>
+				<nomatch count="2">
+					<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+				</nomatch>
+			</field>
+	</form>	
+<!--****************************************************************************************************************************-->
+</vxml>

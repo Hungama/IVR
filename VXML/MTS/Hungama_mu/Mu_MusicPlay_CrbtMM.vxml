@@ -1,0 +1,274 @@
+<vxml version="2.1" application="HoneyBee_Root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="Mu_MusicPlay_CrbtMM.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<script>
+		previous_menu= aNavHistory.pop();
+		aNavHistory.push("Mu_MusicPlay_CrbtMM.vxml#next");
+	</script>
+	<script>		
+		Song_counter=parseInt(Song_counter);
+	</script>
+	<form id="next">
+		<block>	
+		
+			<if cond="Add_status=='1' &amp;&amp; Add_placment=='N'">
+				<log expr="'Track ['+ANI+']:Caller in musicplay flow where Add status and Add pacement  '"/>
+				<if cond="Add_loop_play==Song_counter">
+					<script>		
+						Song_counter=0;
+					</script>
+					<goto next="#Normal_calll_content"/>
+				</if>
+			</if>
+			
+			<assign name="Section_Name" expr="'SONGPLAY_'+playconfig"/>
+			<log>Section Name isssssss  <value expr="Section_Name"/>  </log>
+
+			<if cond="timerflag=='1'">
+				<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					bal=bal-total_used_bal;  						  
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+bal"/>
+				<if cond="bal &lt;= '0'">          
+					<goto next="HoneyBee_End.vxml"/>
+				</if>     
+			</if>
+									
+			<assign name="total_time" expr="time_duration(C_Start)"/>
+			<!--<if cond="bal &lt; total_time">
+				<goto next="HoneyBee_End.vxml"></goto>
+			</if>-->
+
+			<log>valuEEEEEEEEEEEEEEEEEEEE unike_play  is	<value expr="unike_play"/>    </log>
+					
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+			</if>
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="arrayPlayContent[unike_play]"/>    </log>
+			<script>
+				<![CDATA[
+				     if(arrayPlayContent[unike_play].indexOf("_")>0)
+					    TotalFM=1;
+				     else
+					    TotalFM=0;
+				]]>
+			</script>
+			<if cond="TotalFM=='0'">
+				<log expr="'@in config data havent split name isssssssssssssssssss '+array[unike_play]"/>
+				<goto next="HoneyBee_End.vxml"></goto>
+			</if>
+			<script>
+				var songcheck1=arrayPlayContent[unike_play].split("_");
+				Song_Path=songcheck1[0];
+				songID = arrayPlayContent[unike_play];
+			</script>
+			<log>AFTER    valuEEEEEEEEEEEEEEEEEEEE unike_play  is	<value expr="unike_play"/>    </log>			
+
+		
+	<!--**********************************CRBTCHECK**********************************************************************-->
+			<if cond="playconfig!='00'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.HB_RINGTONE_CHECK&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+songID+'&amp;INPARAM[1]=CRBT'"/>
+				<log expr="'CLIPID=='+out_string[0]"></log>
+				<assign name="len_rng" expr="out_string.length" />
+				<log>previous Array[1]  is	<value expr="CLIPID"/>    </log>
+				<script>
+					 CLIPID = out_string[0];		
+				</script>
+				
+				<log>after Array[1]  is	<value expr="CLIPID"/>    </log>
+				<if cond="CLIPID==''">				
+					<script srcexpr="'http://'+IP+'/hungama/CRBT_unavailable_log?SONG='+songID+hash+playconfig"/>
+					<script>unike_play=unike_play+1;</script>		 	
+					<goto next="#next"/>
+				</if>
+			</if>
+	<!--*******************************************************************************************************************-->
+			 <assign name="song_begin" expr="start_time()"/>
+			 <assign name="song_listen" expr="'START'"/>
+			 
+			<prompt bargein="true" timeout="1s">
+				<audio expr="contentpath+Song_Path+'/'+songID+'.wav'"/>	
+			</prompt>				
+		</block>
+		
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+						</one-of>
+					</rule>
+				</grammar>
+			<filled>
+				<assign name="nextchoice" expr="choice"></assign>
+				<goto next="#contentlogin" />				
+			</filled>
+
+			<noinput>
+				<assign name="nextchoice" expr="'1'"/>
+				<goto next="#contentlogin" />
+			</noinput>
+			<nomatch>
+				<goto next="#nomatch" />
+			</nomatch>
+		</field>			
+	</form>
+	
+	<form id="nomatch">
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>								 							 
+							 <item>  6  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Promptpath+'/'+lang+'/sys_wrongkeypress.wav'"/>
+			</prompt>
+		
+			<filled>
+				<assign name="nextchoice" expr="choice"></assign>
+				<goto next="#contentlogin" />				
+			</filled>
+			<noinput>
+				<goto next="#contentlogin" />
+			</noinput>
+			<nomatch>
+				<goto next="#contentlogin" />
+			</nomatch>
+		</field>	
+	</form>	
+	<form id="contentlogin">
+		<block>
+				 <assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="time_duration(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log expr="'compare_time=='+compare_time"></log>
+				 <log expr="'ContentTime=='+ContentTime"></log>
+				 <log expr="'hash=='+hash"></log>
+				 <log expr="'songID=='+songID"></log>
+				 <log expr="'cat=='+cat"></log>
+				 <log expr="'subcat=='+subcat"></log>
+				 <log expr="'contentlog=='+contentlog"></log>
+				 <assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				 
+				 <if cond="nextchoice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<script> Song_counter=Song_counter+1</script>					
+				 	<goto next="#next"/>
+				 	
+				<elseif cond="nextchoice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<script> Song_counter=Song_counter+1</script>
+				 	<goto next="#next"/>
+				 	
+				<elseif cond="nextchoice=='3'"/>
+					<script> unike_play=unike_play-1</script>
+					<script> Song_counter=Song_counter+1</script>
+				 	<goto next="#next"/>		 	
+
+				<elseif cond="nextchoice=='6'"/>
+					<goto next="HoneyBee_Navigation.vxml"/>
+
+				<elseif cond="nextchoice=='7'"/>
+					<goto expr="previous_menu"/>
+					
+				<elseif cond="nextchoice=='8'"/>
+					<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"/>
+					
+				<elseif cond="nextchoice=='9'"/>
+					<goto next="HoneyBee_Help.vxml"/>
+
+				<elseif cond="nextchoice=='*'"/>
+					<goto next="Mu_CrbtMM.vxml"/>
+					
+				<else/>
+					<script> unike_play=unike_play+1</script>
+					<script> Song_counter=Song_counter+1</script>
+					<goto next="#next"/>
+				</if>
+		</block>
+	</form>
+	<!--************************************advetisement premium add block **********************************************-->
+	<form id="Normal_calll_content">
+		<block>
+			<assign name="Section_Name" expr="'Normal_AddS'"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+			<log expr="'Track ['+ANI+']:Caller checking lang is '+lang"/>
+
+			<goto next="#ADDUSERSTAUS_content"/>
+		</block>
+	</form>
+	<form id="ADDUSERSTAUS_content">
+		<field name="choice">
+			<grammar mode="dtmf" root="start41" version="1.0">
+				<rule id="start41" scope="public" >
+					<one-of>
+						 <item>  1  </item>
+
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s" cond="Add_type=='R'">	
+				<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+				<audio expr="Promptpath+'/'+lang+'/ad_option.wav'" />
+			</prompt> 
+			<prompt bargein="false" timeout="0s" cond="Add_type=='I'">	
+				<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+			</prompt> 
+			<filled>
+				<if cond="choice=='1'">
+				<prompt bargein="true" timeout="1s">
+					<audio expr="Promptpath+'/'+lang+'/ad_thanks.wav'" />
+				</prompt>
+
+					<goto next="#next"></goto>
+				<else/>
+					<goto next="#next"></goto>
+				</if>
+
+			</filled>
+			<noinput>
+				<goto next="#next"></goto>
+			</noinput>
+			<nomatch>
+				<goto next="#next"></goto>
+			</nomatch>
+		</field>
+	</form>
+	<!--********************************************content***************************************************************-->
+ 	<error>
+		<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+songID+'/Mu/'+playconfig"/>
+		<if cond="nextchoice=='3'">
+			<script>unike_play=unike_play-1;</script> 				 				 	
+			<goto next="#next"/> 
+		<else/>
+			<script>unike_play=unike_play+1;</script> 				 				 	
+			<goto next="#next"/> 
+		</if>
+	</error> 
+</vxml>

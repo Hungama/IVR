@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="devRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="Devia.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+     	<var name="playconfigcattemp" expr="''"/>
+	<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var len=0;
+		var contentlogging=0;
+	</script>
+	
+<form id="DeviaOption">
+		<!--<block>
+			<assign name="section_name" expr="'DEVIA_MODULE'"/>
+		</block>-->
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  9  </item>
+					</one-of>
+				</rule>
+			</grammar>	
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/select_cat01_devia.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/select_cat02_devia.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf2.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/select_acmanager.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf9.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="playconfig" expr="'0755'"/>
+					<assign name="HEARD" expr="'mainmenu'"/>
+					<prompt bargein="true"  timeout="1s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_cat01_devia.wav'"/>
+		       			</prompt>  
+		       			<goto next="devoplaycontent.vxml"/>
+				<elseif cond="choice=='2'"/>
+					<assign name="playconfig" expr="'0756'"/>
+					<assign name="HEARD" expr="'mainmenu'"/>
+					<prompt bargein="true"  timeout="1s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_cat02_devia.wav'"/>
+		       			</prompt>
+		       			<goto next="devoplaycontent.vxml"/>
+		       		<elseif cond="choice=='9'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+C_Start+'&amp;endtime='+start_time()"/>
+					<assign name="total_time_used" expr="get_duration[0]"/>
+					<log expr="'=====> used DURATION OF CALL is ===== '+total_time_used"/>
+					<if cond="total_time_used  &gt; 3000">
+						<goto next="End.vxml"/>
+					</if>
+					<goto next="dev_ManageAccount.vxml"/>		       			
+				</if>				
+			</filled>
+			</field>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<goto next="End.vxml"></goto>
+			</noinput>
+
+
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>
+
+			<nomatch count="2">
+				<goto next="End.vxml"></goto>
+			</nomatch>
+	</form>
+</vxml>

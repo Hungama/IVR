@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="HoneyBee_Root.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="HoneyBee_NAD.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<!--************************************NOrmal ADD for Help menu  **********************************************-->
+<form id="NAD_Help_check">
+	<block>
+	<assign name="Section_Name" expr="'Add_Engine_help'"/>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.NormalAD_Engine&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]='+lang"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							Add_status = out_string[j];
+							if(j==1)
+							Add_id = out_string[j];
+							if(j==2)
+							Add_name = out_string[j];
+							if(j==3)
+							Add_placment = out_string[j];
+							if(j==4)
+							Add_lang = out_string[j];
+							if(j==5)
+							Add_type = out_string[j];
+							if(j==6)
+							Add_loop_play = out_string[j];
+						  }
+			]]>
+	
+	</script>
+			<log expr="'Track ['+ANI+']:Caller checking Add_status is '+Add_status"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_id is '+Add_id"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_name is '+Add_name"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_placment  is '+Add_placment"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_type is '+Add_type"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_loop_play is '+Add_loop_play"/>
+			
+		<if cond="Add_status=='1' &amp;&amp; Add_placment=='N'">
+			<log expr="'Track ['+ANI+']:Caller follow where Add status and Add pacement  '"/>
+			<goto next="#Normal_Ad_help"/>
+		<else/>
+			<goto next="HoneyBee_Help.vxml#Unsub_option"></goto>
+			
+		</if>
+		
+	</block>
+	</form>
+	<!--************************************advetisement premium add block **********************************************-->
+	<form id="Normal_Ad_help">
+		<block>
+			<assign name="Section_Name" expr="'Normal_AddS'"/>
+			<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+			<log expr="'Track ['+ANI+']:Caller checking lang is '+lang"/>
+
+			<goto next="#ADDUSERSTAUS"/>
+		</block>
+	</form>
+	
+	<form id="ADDUSERSTAUS">
+			<field name="choice">
+				<grammar mode="dtmf" root="start36" version="1.0">
+					<rule id="start36" scope="public" >
+						<one-of>
+							 <item>  1  </item>
+	
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" timeout="2s" cond="Add_type=='R'">	
+					<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+					<audio expr="Promptpath+'/'+lang+'/ad_option.wav'" />
+				</prompt> 
+				<prompt bargein="false" timeout="0s" cond="Add_type=='I'">	
+					<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+				</prompt> 
+				<filled>
+					<if cond="choice=='1'">
+					<prompt bargein="true" timeout="1s">
+						<audio expr="Promptpath+'/'+lang+'/ad_thanks.wav'" />
+					</prompt>
+						
+						<goto next="HoneyBee_Help.vxml#Unsub_option"></goto>
+					<else/>
+						<goto next="HoneyBee_Help.vxml#Unsub_option"></goto>
+					</if>
+					
+				</filled>
+				<noinput>
+					<goto next="HoneyBee_Help.vxml#Unsub_option"></goto>
+				</noinput>
+				<nomatch>
+					<goto next="HoneyBee_Help.vxml#Unsub_option"></goto>
+				</nomatch>
+			</field>
+	</form>
+	<!--*********************************************NOrmal ADD for Root menu *********************************************************-->
+	<form id="NAD_Root_check">
+		<block>
+		<assign name="Section_Name" expr="'Add_Engine_Root'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.NormalAD_Engine&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]='+lang"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+								Add_status = out_string[j];
+								if(j==1)
+								Add_id = out_string[j];
+								if(j==2)
+								Add_name = out_string[j];
+								if(j==3)
+								Add_placment = out_string[j];
+								if(j==4)
+								Add_lang = out_string[j];
+								if(j==5)
+								Add_type = out_string[j];
+								if(j==6)
+								Add_loop_play = out_string[j];
+							  }
+				]]>
+		
+		</script>
+				<log expr="'Track ['+ANI+']:Caller checking Add_status is '+Add_status"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_id is '+Add_id"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_name is '+Add_name"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_placment  is '+Add_placment"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_type is '+Add_type"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_loop_play is '+Add_loop_play"/>
+				
+			<if cond="Add_status=='1' &amp;&amp; Add_placment=='N'">
+				<log expr="'Track ['+ANI+']:Caller follow where Add status and Add pacement  '"/>
+				<goto next="#Normal_Ad_Root"/>
+			<else/>
+				<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+				
+			</if>
+			
+		</block>
+		</form>
+		<!--************************************advetisement premium add block **********************************************-->
+		<form id="Normal_Ad_Root">
+				<block>
+					<assign name="Section_Name" expr="'Normal_AddS'"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+					<log expr="'Track ['+ANI+']:Caller checking lang is '+lang"/>
+					
+					<goto next="#ADDUSERSTAUS_Root"/>
+				</block>
+		</form>
+		<form id="ADDUSERSTAUS_Root">
+				<field name="choice">
+					<grammar mode="dtmf" root="start38" version="1.0">
+						<rule id="start38" scope="public" >
+							<one-of>
+								 <item>  1  </item>
+		
+							</one-of>
+						</rule>
+					</grammar>
+					<prompt bargein="true" timeout="2s" cond="Add_type=='R'">	
+						<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+						<audio expr="Promptpath+'/'+lang+'/ad_option.wav'" />
+					</prompt> 
+					<prompt bargein="false" timeout="0s" cond="Add_type=='I'">	
+						<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+					</prompt> 
+					<filled>
+						<if cond="choice=='1'">
+						<prompt bargein="true" timeout="1s">
+							<audio expr="Promptpath+'/'+lang+'/ad_thanks.wav'" />
+						</prompt>
+							
+							<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+						<else/>
+							<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+						</if>
+						
+					</filled>
+					<noinput>
+						<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+					</noinput>
+					<nomatch>
+						<goto next="HoneyBee_RootMENU.vxml#ROOTMENU"></goto>
+					</nomatch>
+				</field>
+	</form>
+	<!--************************************NOrmal ADD for event menu  **********************************************-->
+	<form id="NAD_EVT_check">
+		<block>
+		<assign name="Section_Name" expr="'Add_Engine_evt'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.NormalAD_Engine&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]='+lang"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+								Add_status = out_string[j];
+								if(j==1)
+								Add_id = out_string[j];
+								if(j==2)
+								Add_name = out_string[j];
+								if(j==3)
+								Add_placment = out_string[j];
+								if(j==4)
+								Add_lang = out_string[j];
+								if(j==5)
+								Add_type = out_string[j];
+								if(j==6)
+								Add_loop_play = out_string[j];
+							  }
+				]]>
+		
+		</script>
+				<log expr="'Track ['+ANI+']:Caller checking Add_status is '+Add_status"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_id is '+Add_id"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_name is '+Add_name"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_placment  is '+Add_placment"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_type is '+Add_type"/>
+				<log expr="'Track ['+ANI+']:Caller checking Add_loop_play is '+Add_loop_play"/>
+				
+			<if cond="Add_status=='1' &amp;&amp; Add_placment=='N'">
+				<log expr="'Track ['+ANI+']:Caller follow where Add status and Add pacement  '"/>
+				<goto next="#Normal_Ad_evt"/>
+			<else/>
+				<goto next="HoneyBee_SpecialZone.vxml#SpecialZone"></goto>
+				
+			</if>
+			
+		</block>
+		</form>
+		<!--************************************advetisement premium add block **********************************************-->
+		<form id="Normal_Ad_evt">
+				<block>
+					<assign name="Section_Name" expr="'Normal_AddS'"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+					<log expr="'Track ['+ANI+']:Caller checking lang is '+lang"/>
+					
+					<goto next="#ADDUSERSTAUS_EVT"/>
+				</block>
+		</form>
+		<form id="ADDUSERSTAUS_EVT">
+				<field name="choice">
+					<grammar mode="dtmf" root="start37" version="1.0">
+						<rule id="start37" scope="public" >
+							<one-of>
+								 <item>  1  </item>
+		
+							</one-of>
+						</rule>
+					</grammar>
+					<prompt bargein="true" timeout="2s" cond="Add_type=='R'">	
+						<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+						<audio expr="Promptpath+'/'+lang+'/ad_option.wav'" />
+					</prompt> 
+					<prompt bargein="false" timeout="0s" cond="Add_type=='I'">	
+						<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+					</prompt> 
+					<filled>
+						<if cond="choice=='1'">
+						<prompt bargein="true" timeout="1s">
+							<audio expr="Promptpath+'/'+lang+'/ad_thanks.wav'" />
+						</prompt>
+							
+							<goto next="HoneyBee_SpecialZone.vxml#SpecialZone"></goto>
+						<else/>
+							<goto next="HoneyBee_SpecialZone.vxml#SpecialZone"></goto>
+						</if>
+						
+					</filled>
+					<noinput>
+						<goto next="HoneyBee_SpecialZone.vxml#SpecialZone"></goto>
+					</noinput>
+					<nomatch>
+						<goto next="HoneyBee_SpecialZone.vxml#SpecialZone"></goto>
+					</nomatch>
+				</field>
+	</form>
+	
+	<!--************************************NOrmal ADD for top 20  **********************************************-->
+		<form id="NAD_CallADD_check">
+			<block>
+			<assign name="Section_Name" expr="'Add_Engine_evt'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.NormalAD_Engine&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]='+lang"/>
+					<script>
+					 <![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+									Add_status = out_string[j];
+									if(j==1)
+									Add_id = out_string[j];
+									if(j==2)
+									Add_name = out_string[j];
+									if(j==3)
+									Add_placment = out_string[j];
+									if(j==4)
+									Add_lang = out_string[j];
+									if(j==5)
+									Add_type = out_string[j];
+									if(j==6)
+									Add_loop_play = out_string[j];
+								  }
+					]]>
+			
+			</script>
+					<log expr="'Track ['+ANI+']:Caller checking Add_status is '+Add_status"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_id is '+Add_id"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_name is '+Add_name"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_placment  is '+Add_placment"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_type is '+Add_type"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_loop_play is '+Add_loop_play"/>
+					
+				<if cond="Add_status=='1' &amp;&amp; Add_placment=='N'">
+					<log expr="'Track ['+ANI+']:Caller follow where Add status and Add pacement  '"/>
+					<goto next="#Normal_calll_evt"/>
+				<else/>
+					<goto next="HoneyBee_Top20.vxml#Top20"></goto>					
+				</if>				
+			</block>
+			</form>
+			<!--************************************advetisement premium add block **********************************************-->
+			<form id="Normal_calll_evt">
+					<block>
+						<assign name="Section_Name" expr="'Normal_AddS'"/>
+						<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+						<log expr="'Track ['+ANI+']:Caller checking lang is '+lang"/>
+						
+						<goto next="#ADDUSERSTAUS_CallADD"/>
+					</block>
+			</form>
+			<form id="ADDUSERSTAUS_CallADD">
+					<field name="choice">
+						<grammar mode="dtmf" root="start40" version="1.0">
+							<rule id="start40" scope="public" >
+								<one-of>
+									 <item>  1  </item>
+			
+								</one-of>
+							</rule>
+						</grammar>
+						<prompt bargein="true" timeout="2s" cond="Add_type=='R'">	
+							<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+							<audio expr="Promptpath+'/'+lang+'/ad_option.wav'" />
+						</prompt> 
+						<prompt bargein="false" timeout="0s" cond="Add_type=='I'">	
+							<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+						</prompt> 
+						<filled>
+							<if cond="choice=='1'">
+							<prompt bargein="true" timeout="1s">
+								<audio expr="Promptpath+'/'+lang+'/ad_thanks.wav'" />
+							</prompt>
+								
+								<goto next="HoneyBee_Top20.vxml#Top20"></goto>
+							<else/>
+								<goto next="HoneyBee_Top20.vxml#Top20"></goto>
+							</if>
+							
+						</filled>
+						<noinput>
+							<goto next="HoneyBee_Top20.vxml#Top20"></goto>
+						</noinput>
+						<nomatch>
+							<goto next="HoneyBee_Top20.vxml#Top20"></goto>
+						</nomatch>
+					</field>
+	</form>
+	
+	
+	<!--************************************NOrmal ADD for content playing   **********************************************-->
+			<form id="NAD_content_check">
+				<block>
+				<assign name="Section_Name" expr="'Add_Engine_content'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.NormalAD_Engine&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]='+lang"/>
+						<script>
+						 <![CDATA[
+								   for(j=0; j< out_string.length;  j++)
+									  {  	  
+									       if(j==0)
+										Add_status = out_string[j];
+										if(j==1)
+										Add_id = out_string[j];
+										if(j==2)
+										Add_name = out_string[j];
+										if(j==3)
+										Add_placment = out_string[j];
+										if(j==4)
+										Add_lang = out_string[j];
+										if(j==5)
+										Add_type = out_string[j];
+										if(j==6)
+										Add_loop_play = out_string[j];
+									  }
+						]]>
+				
+				</script>
+						<log expr="'Track ['+ANI+']:Caller checking Add_status is '+Add_status"/>
+						<log expr="'Track ['+ANI+']:Caller checking Add_id is '+Add_id"/>
+						<log expr="'Track ['+ANI+']:Caller checking Add_name is '+Add_name"/>
+						<log expr="'Track ['+ANI+']:Caller checking Add_placment  is '+Add_placment"/>
+						<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+						<log expr="'Track ['+ANI+']:Caller checking Add_type is '+Add_type"/>
+						<log expr="'Track ['+ANI+']:Caller checking Add_loop_play is '+Add_loop_play"/>
+						
+					<if cond="Add_status=='1' &amp;&amp; Add_placment=='N'">
+						<log expr="'Track ['+ANI+']:Caller follow where Add status and Add pacement  '"/>
+						<goto next="#Normal_calll_content"/>
+					<else/>
+						<goto next="HoneyBee_MusicPlay.vxml#next"></goto>
+						
+					</if>
+					
+				</block>
+				</form>
+				<!--************************************advetisement premium add block **********************************************-->
+				<form id="Normal_calll_content">
+						<block>
+							<assign name="Section_Name" expr="'Normal_AddS'"/>
+							<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+							<log expr="'Track ['+ANI+']:Caller checking lang is '+lang"/>
+							
+							<goto next="#ADDUSERSTAUS_content"/>
+						</block>
+				</form>
+				<form id="ADDUSERSTAUS_content">
+						<field name="choice">
+							<grammar mode="dtmf" root="start41" version="1.0">
+								<rule id="start41" scope="public" >
+									<one-of>
+										 <item>  1  </item>
+				
+									</one-of>
+								</rule>
+							</grammar>
+							<prompt bargein="true" timeout="2s" cond="Add_type=='R'">	
+								<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+								<audio expr="Promptpath+'/'+lang+'/ad_option.wav'" />
+							</prompt> 
+							<prompt bargein="false" timeout="0s" cond="Add_type=='I'">	
+								<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+							</prompt> 
+							<filled>
+								<if cond="choice=='1'">
+								<prompt bargein="true" timeout="1s">
+									<audio expr="Promptpath+'/'+lang+'/ad_thanks.wav'" />
+								</prompt>
+									
+									<goto next="HoneyBee_MusicPlay.vxml#next"></goto>
+								<else/>
+									<goto next="HoneyBee_MusicPlay.vxml#next"></goto>
+								</if>
+								
+							</filled>
+							<noinput>
+								<goto next="HoneyBee_MusicPlay.vxml#next"></goto>
+							</noinput>
+							<nomatch>
+								<goto next="HoneyBee_MusicPlay.vxml#next"></goto>
+							</nomatch>
+						</field>
+	</form>
+	
+	<!--************************************NOrmal ADD for CRBT shuffle **********************************************-->
+		<form id="NAD_CRBTSHUFFLE_check">
+			<block>
+			<assign name="Section_Name" expr="'Add_Engine_CRBT'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=mts_mu.NormalAD_Engine&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]='+lang"/>
+					<script>
+					 <![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+									Add_status = out_string[j];
+									if(j==1)
+									Add_id = out_string[j];
+									if(j==2)
+									Add_name = out_string[j];
+									if(j==3)
+									Add_placment = out_string[j];
+									if(j==4)
+									Add_lang = out_string[j];
+									if(j==5)
+									Add_type = out_string[j];
+									if(j==6)
+									Add_loop_play = out_string[j];
+								  }
+					]]>
+			
+			</script>
+					<log expr="'Track ['+ANI+']:Caller checking Add_status is '+Add_status"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_id is '+Add_id"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_name is '+Add_name"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_placment  is '+Add_placment"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_type is '+Add_type"/>
+					<log expr="'Track ['+ANI+']:Caller checking Add_loop_play is '+Add_loop_play"/>
+					
+				<if cond="Add_status=='1' &amp;&amp; Add_placment=='N'">
+					<log expr="'Track ['+ANI+']:Caller follow where Add status and Add pacement  '"/>
+					<goto next="#Normal_Ad_crbt"/>
+				<else/>
+					<goto next="HoneyBee_CrbtShuffle.vxml#CheckCRBTSTATUS"></goto>
+					
+				</if>
+				
+			</block>
+			</form>
+			<!--************************************advetisement premium add block **********************************************-->
+			<form id="Normal_Ad_crbt">
+					<block>
+						<assign name="Section_Name" expr="'Normal_AddS'"/>
+						<log expr="'Track ['+ANI+']:Caller checking Add_lang is '+Add_lang"/>
+						<log expr="'Track ['+ANI+']:Caller checking lang is '+lang"/>
+						
+						<goto next="#ADDUSERSTAUS_CRBT"/>
+					</block>
+			</form>
+			<form id="ADDUSERSTAUS_CRBT">
+					<field name="choice">
+						<grammar mode="dtmf" root="start12" version="1.0">
+							<rule id="start12" scope="public" >
+								<one-of>
+									 <item>  1  </item>
+			
+								</one-of>
+							</rule>
+						</grammar>
+						<prompt bargein="true" timeout="2s" cond="Add_type=='R'">	
+							<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+							<audio expr="Promptpath+'/'+lang+'/ad_option.wav'" />
+						</prompt> 
+						<prompt bargein="false" timeout="0s" cond="Add_type=='I'">	
+							<audio expr="ADPrompt_Path+Add_name+'.wav'"/>
+						</prompt> 
+						<filled>
+							<if cond="choice=='1'">
+							<prompt bargein="true" timeout="1s">
+								<audio expr="Promptpath+'/'+lang+'/ad_thanks.wav'" />
+							</prompt>
+								
+								<goto next="HoneyBee_CrbtShuffle.vxml#CheckCRBTSTATUS"></goto>
+							<else/>
+								<goto next="HoneyBee_CrbtShuffle.vxml#CheckCRBTSTATUS"></goto>
+							</if>
+							
+						</filled>
+						<noinput>
+							<goto next="HoneyBee_CrbtShuffle.vxml#CheckCRBTSTATUS"></goto>
+						</noinput>
+						<nomatch>
+							<goto next="HoneyBee_CrbtShuffle.vxml#CheckCRBTSTATUS"></goto>
+						</nomatch>
+					</field>
+	</form>
+</vxml>

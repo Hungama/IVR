@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<meta name="MND_Acntmngr.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+<form id="Welcome">
+	<field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+					 <item>  2  </item>
+					 <item>  3  </item>
+					 <item>  8  </item>
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="true" timeout="1s" cond="circle!='kol' &amp;&amp; circle!='wbl'">
+					<audio expr="promptpath+'/'+lang+'/common/welcome_acmanager.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="0s" cond="circle=='kol' || circle=='wbl'">
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/welcome_acmanager.wav'"/>
+				</prompt>
+		  <filled>
+			  	<if cond="choice=='1'">
+					<goto next="Topup.vxml"/>
+				<elseif cond="choice=='8'"/>
+					<goto next="MND_mainmenu.vxml"/>
+			        <elseif cond="choice=='2'"/>
+					<goto next="#WelcomeAcntmngr"/>
+				<elseif cond="choice=='3'"/>
+					<goto next="#LangChange"/>
+				</if>
+	         </filled>				    
+			 <noinput>
+				
+				<prompt bargein="true" timeout="1s" cond="lang!='06'">
+			   		<audio expr="promptpath+'/'+lang+'/'+playconfig+'/nodtmf.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="1s" cond="lang=='06'">
+			   		<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt/> 
+			</noinput>  
+		          
+			<nomatch>
+				
+				<prompt bargein="true" timeout="1s" cond="lang!='06'">
+			   		<audio expr="promptpath+'/'+lang+'/'+playconfig+'/invalidoption.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="1s" cond="lang=='06'">
+			   		<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt/>
+		        </nomatch> 
+         </field>
+</form>
+
+<form id="LangChange">
+	 <field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+					 <item>  2  </item>
+					 <item>  8  </item>
+					 <item>  9  </item>
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/HIN/lang01.wav'"/>
+						<audio expr="promptpath+'/HIN/press_dtmf1.wav'"/>
+						<audio expr="promptpath+'/BEN/lang06.wav'"/>
+						<audio expr="promptpath+'/BEN/press_dtmf2.wav'"/>
+				</prompt>
+				
+		  <filled>
+			     		<if cond="choice=='1'">
+						<assign name="lang" expr="'01'" />
+						<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+						<prompt bargein="true" timeout="1s">
+								<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang_thanks.wav'"/>
+						</prompt>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/> 
+						<goto next="MND_mainmenu.vxml"/> 
+					<elseif cond="choice=='2'"/>
+						<assign name="lang" expr="'06'" />
+						<assign name="LANG_DESCRIPTION" expr="'BEN'" />
+						<prompt bargein="true" timeout="1s">
+								<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang_thanks.wav'"/>
+						</prompt>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/> 
+						<goto next="MND_mainmenu.vxml"/> 
+					<elseif cond="choice=='8'"/>
+						<goto next="MND_mainmenu.vxml"/>
+					<elseif cond="choice=='9'"/>
+						<goto next="MND_Acntmngr.vxml"/>
+					</if>
+	     </filled>				    
+			
+			 <noinput>
+				<assign name="index" expr="'0'" />
+				<audio expr="promptpath+'/HIN/nodtmf.wav'"/>
+				<reprompt/> 
+			 </noinput>  
+			 
+			 <noinput count="3">
+				<goto next="MND_mainmenu.vxml"/> 
+ 			 </noinput> 
+			    
+          
+			<nomatch>
+				<assign name="index" expr="'0'" />
+				<audio expr="promptpath+'/HIN/invalidoption.wav'"/>
+				<reprompt/>
+		        </nomatch> 
+			<nomatch count="3">
+				<goto next="MND_mainmenu.vxml"/>
+		        </nomatch> 
+		      
+
+	    </field>
+</form>
+
+<form id="WelcomeAcntmngr">
+	<field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+					 <item>  8  </item>
+					 <item>  9  </item>
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="true" timeout="1s" cond="lang!='06'">
+					<audio expr="promptpath+'/'+lang+'/common/unsub.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="1s" cond="lang=='06'">
+			   		<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/acmanager_unsub_confirm.wav'"/>
+				</prompt>
+		  <filled>
+			  	<if cond="choice=='1'">
+					<if cond="lang=='06'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQS'"/>
+     	    	   				<goto next="MND_UnSub.vxml#unsubreq"/>
+					<else/>
+						<goto next="MND_UnSub.vxml"/>
+					</if>
+					
+				<elseif cond="choice=='8'"/>
+					<goto next="MND_mainmenu.vxml"/>
+			        <elseif cond="choice=='9'"/>
+					<goto next="MND_Acntmngr.vxml"/>
+				</if>
+	         </filled>				    
+			 <noinput>
+				
+				<prompt bargein="true" timeout="1s" cond="lang!='06'">
+			   		<audio expr="promptpath+'/'+lang+'/'+playconfig+'/nodtmf.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="1s" cond="lang=='06'">
+			   		<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt/> 
+			</noinput>  
+		          
+			<nomatch>
+				
+				<prompt bargein="true" timeout="1s" cond="lang!='06'">
+			   		<audio expr="promptpath+'/'+lang+'/'+playconfig+'/invalidoption.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="1s" cond="lang=='06'">
+			   		<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt/>
+		        </nomatch> 
+         </field>
+</form>
+
+</vxml>

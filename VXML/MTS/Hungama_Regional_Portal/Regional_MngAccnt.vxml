@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Regional_PortalRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Regional_MngAccnt.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<var name="cRBTSTATUS" expr="''"/>	
+	<var name="MM_Value" expr="0"/>
+	<script> 	
+		var UserStatus1=new Object();		
+	</script>
+	<form id="AcntOption">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT_MANAGER'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+			<assign name="ciropr" expr="ciropr1.value"/>
+			<!-- <log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/> -->
+			<script>
+				var splitstr=ciropr.split("#");
+				operator=splitstr[1];
+				circle=splitstr[2];
+			</script>			
+
+			<!--<if cond="ANI=='9667890489' || ANI=='9143844338' || ANI=='8693945793' || ANI=='8925332082' || ANI=='9142112398' || ANI=='8459078905'">
+				<goto next="Regional_MngAccntNew.vxml"/>
+			</if>-->
+			<if cond="circle=='ker' || circle=='kar' || circle=='tnu' || circle=='chn' || circle=='raj' || circle=='guj' || circle=='wbl' || circle=='kol'">
+				<goto next="Regional_MngAccntNew.vxml"/>
+			</if>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/welcome_acmanager.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='8'"/>
+					<goto next="Regional_MainMenu.vxml"/>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Regional_MainMenu.vxml"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Regional_MainMenu.vxml"/>
+		</nomatch>
+	</form>
+	
+	<form id="AcntBalance">
+		<block>
+			<assign name="Section_Name" expr="'BALANCE_MINUTES'"/>
+			<!-- GET BALANCE -->
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/Acmanager_balanceis.wav'"/>
+				<audio expr="promptpath+'/'+lang+'/g_29.wav'"/>
+				<audio expr="promptpath+'/'+lang+'/minutes.wav'"/>
+				<audio expr="promptpath+'/'+lang+'/g_30.wav'"/>
+				<audio expr="promptpath+'/'+lang+'/seconds.wav'"/>
+			</prompt>
+			<goto next="Hungama_ModMainMenu.vxml"></goto>
+		</block>
+	</form>
+
+	<form id="AcntLanguage">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT_MANAGER_LANGUAGE_CHANGE'"/>
+			<if cond="mod_of_sub=='TNB'">
+				<goto next="Hungama_ModNewUser_TNB.vxml#EXISITNGLANGSEL1"/>
+			<else/>
+				<if cond="directaccess=='false'">
+					<goto next="Hungama_ModNewUserMM.vxml#EXISITNGLANGSEL1"/>
+				<else/>
+					<goto next="Hungama_ModNewUser.vxml#EXISITNGLANGSEL1"/>
+				</if>
+			</if>
+			
+		</block>
+	</form>
+	
+	<form id="AcntUnsubscription">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT MANAGER_UNSUB'"/>
+		</block>
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/confirm_unsub.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='2'">
+					<!-- UNSUB REQUEST -->
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REGIONAL_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+				<else/>
+					<goto next="Regional_MainMenu.vxml"/>
+				</if>
+			</filled>
+		</field>	
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<goto next="Regional_MainMenu.vxml"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<goto next="Regional_MainMenu.vxml"/>
+		</nomatch>		
+	</form>
+
+	<form id="UCT_Unsubscription">
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  *  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/crbt_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=DEACTIVATE&amp;OPERATOR='+operator"/>					
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>			
+					<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				<else/>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				</if>
+			</filled>
+		</field>	
+	</form>
+
+</vxml>

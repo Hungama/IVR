@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="BossKeyRoot.vxml"
+
+xmlns="http://www.w3.org/2001/vxml"
+
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+
+<meta name="BossKey_end.vxml" content="" />
+
+<meta name="Author" content="" />
+
+<meta name="Date" content="" />
+
+<meta name="Description" content="" />
+
+<meta name="Support" content="" />	
+
+<form id="EndLogin">
+	<block>
+	   <assign name="C_End" expr="start_time()"/>
+		
+	   <if cond="song_listen=='START'">
+		<assign name="song_listen" expr="'END'" />
+		<assign name="compare_time" expr="rim(song_begin)"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+		<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+	  </if>	
+		
+		
+		<if cond="timerflag=='1'">
+		    <script>
+			total_used_bal=rim(start_BalenceMinute);
+			balance=balance-total_used_bal; 						  
+		    </script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+balance"/>	
+			<script>balance=Math.floor(balance/60);</script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+balance"/>
+			<if cond="balance &lt; 0">
+				<script> balance=0;</script> 
+			</if>
+		</if>
+			
+		<if cond="dtmf_check=='1'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/dtmf_logs?service=MND&amp;SONG='+dtmf_log"/>
+		</if>
+		
+		<if cond="sub_flag=='true'">
+			<script srcexpr="'http://'+IP+'/hungama/MTS_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1113&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;IVRtransid='+IVRtransid+'&amp;cg_id='+cg_id+'&amp;error_desc='+error_desc+'&amp;cons_time='+cons_time+'&amp;cons_stat='+cons_stat"/>  
+		</if>	
+		
+		<log expr="'Balance isss'+balance"/>
+		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=BOSSKEY_LASTCAT&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SET&amp;INPARAM[2]='+cat+subcat+'&amp;INPARAM[3]='+unike_play"/>
+		<script> var malav=out_string[0];	</script>
+		<log expr="'malav isss'+malav"/>
+		
+		<if cond="TOPUP=='FALSE'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=BOSSKEY_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/>
+		</if>		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+drop_point+hash+modofsub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=MND&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+
+		<exit/>
+	</block>
+</form>
+ <catch event="error.badfetch">		 								
+	 <exit/>
+</catch>      
+
+<catch event="telephone.disconnect.hangup">
+		<exit/>
+</catch>
+
+<catch event="telephone.disconnect">
+		<exit/>
+</catch>   
+
+  <catch event="connection.disconnect.hangup">
+		<exit/></catch>
+
+<catch event=" error.* "> 
+		<exit/>
+   </catch>
+
+
+
+</vxml>
