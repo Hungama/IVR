@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="DIGIRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Topup.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<script>
+		var out_string=new Object();
+	</script>	
+   
+   <var name="PlayOnce" expr="true"/>		
+   <var name="names"/> 
+   <var name="tottopup" expr="''"/>	
+   <var name="topup11" expr="''"/>	
+   <var name="topup12" expr="''"/>	
+   <var name="topup13" expr="''"/>	
+   <var name="topupmnu" expr="''"/>	
+   <var name="balupdatestatus" expr="'1'"/>	
+
+
+
+<form id="RBT_RESUB">
+	<block>
+	
+		<assign name="program_name" expr="'Topup_RBT_RESUB'"/>
+		<assign name="sub_flag" expr="'1'"/>
+		<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction_nep?PROCEDURE=DIGI_RESUB&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>-->	
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction_nep?PROCEDURE=DIGI_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/>
+				
+		<goto next="#BillingWait"/>
+	</block>
+</form>
+
+<form id="BillingWait">
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+						<item>1</item>
+			                    
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	<prompt bargein="false" timeout="1s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/charging_wait.wav'"/>
+			
+		</prompt>
+		<filled>
+			<goto next="#BillStatusChk"/>
+
+		</filled>
+
+		<noinput>
+			<goto next="#BillStatusChk"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#BillStatusChk"/>
+		</nomatch>
+
+	
+</field>
+</form>
+
+<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction_nep?PROCEDURE=DIGI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+							if(j==4)
+								 mod_of_sub = out_string[j];
+								subcat = out_string[j];
+
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'!!!!!!!!!!!! balance is '+bal"/>
+			<log expr="'!!!!!!!!!!!! balance_RESUB is '+balance_resub"/>
+			<assign name="balance" expr="bal"/>
+			<log expr="'!!!!!!!!!!!! balance is '+balance"/>
+			<!--<if cond="(balance &gt; balance_resub) || (balance == balance_resub)">-->
+			<if cond="balance &gt; 0">
+				<!-- <script>
+					balance=balance*60;
+				</script> -->
+				<assign name="sub_flag" expr="'0'"/>
+				
+				<if cond="HEARD!='0'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction_nep?PROCEDURE=DIGI_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+				</if>
+
+				<goto next="ExistingUser.vxml"/>	
+			<else/>				
+				<goto next="#RBT_RESUB_New"/>
+			</if>
+			
+		</block>
+	</form>
+
+<form id="RBT_RESUB_New">
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+						<item>1</item>
+			                    
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	<prompt bargein="false" timeout="1s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/charging_wait.wav'"/>
+			
+		</prompt>
+		<filled>
+			<goto next="#digiresub"/>
+
+		</filled>
+
+		<noinput>
+			<goto next="#digiresub"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#digiresub"/>
+		</nomatch>
+
+	
+</field>
+
+</form>
+
+
+	<form id="digiresub">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction_nep?PROCEDURE=DIGI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'!!!!!!!!!!!! Again balance is '+bal"/>
+			<log expr="'!!!!!!!!!!!! AGain balance_RESUB is '+balance_resub"/>
+			<assign name="balance" expr="bal"/>
+			<log expr="'!!!!!!!!!!!! Again balance is '+balance"/>
+			<!--<if cond="(balance &gt; balance_resub) || (balance == balance_resub)">-->
+			<if cond="balance &gt; 0">
+				<!-- <script>
+					balance=balance*60;
+				</script> -->
+				<assign name="sub_flag" expr="'0'"/>
+				<if cond="HEARD!='0'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction_nep?PROCEDURE=DIGI_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+				</if>
+
+				<goto next="ExistingUser.vxml"/>	
+			<else/>				
+				<goto next="End.vxml"/>
+			</if>
+		</block>
+	</form>
+
+   
+
+</vxml>
+
+
+
+   

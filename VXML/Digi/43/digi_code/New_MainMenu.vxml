@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="DIGIRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="New_MainMenu.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+<var name="movie_idx" expr="0"/>
+	
+	<script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var dishes=new Array();
+		
+	</script>
+	
+	<form id="MAINMENU">
+		<block>
+				<script>
+					timerflag=1;
+				</script>
+			<assign name="program_name" expr="'New_MainMenu_MAINMENU'"/>
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">	
+							<one-of>
+								 <item>  0  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				
+					<prompt bargein="true" timeout="3s" cond="(lang=='01' || lang=='07')">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/select_free_mm.wav'"/>
+					</prompt>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/menu_portal_news.wav'"/>
+					</prompt>
+				<filled>
+					<if cond="choice=='1'">
+						<goto next="DIGI_MOD.vxml"></goto>	
+					<elseif cond="choice=='2'"/>
+						<goto next="#LASTRELIGION_PROFILE"></goto>
+					<elseif cond="choice=='3'"/>
+						<goto next="Audio_Cinema_MainMenu.vxml"></goto>
+					<elseif cond="choice=='4'"/>
+						<goto next="DIGI_NEWS.vxml"></goto>
+					<elseif cond="choice=='9'"/>
+						<goto next="ManageAccount.vxml"/>
+					<elseif cond="choice=='0'"/>
+						<if cond="lang=='01' || lang=='07'">
+							<assign name="flag_freecat" expr="'True'"/>
+							<assign name="timerflag" expr="0"/>						
+							<assign name="cat" expr="'free_mm'+lang"/>
+							<assign name="playconfig" expr="cat"/>
+							<log expr="'Cat Config========' +playconfig"/>
+							<assign name="HEARD" expr="playconfig" />
+							<goto next="playcontent.vxml"/>					
+						<else/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+							</prompt>				
+							<goto next="#MAINMENU"/>
+						</if>
+					</if>
+				</filled>
+		     
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="3">
+			<goto next="DIGI_MOD.vxml"/>
+		</noinput>
+
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="3">
+			<goto next="DIGI_MOD.vxml"/>
+		</nomatch>
+				
+			
+		</field>
+	</form>
+	
+	
+	<form id="LASTRELIGION_PROFILE">
+		<block>
+			<assign name="program_name" expr="'New_MainMenu_LASTRELIGION_PROFILE'"/>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction?PROCEDURE=DIGI_USERRELIGION&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+RELIGION+'&amp;INPARAM[2]=GET'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	RELIGION = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			
+			        <if cond="RELIGION=='01'">
+						<goto next="#PlayLangAsPerReligion"></goto>	
+					<elseif cond="RELIGION=='02'"/>
+						<goto next="#PlayLangAsPerReligion"></goto>
+					<elseif cond="RELIGION=='03'"/>
+						<assign name="playconfigcat" expr="'0303'"/>
+						<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					<elseif cond="RELIGION=='04'"/>
+						<goto next="#PlayLangAsPerReligion"></goto>
+					</if>
+			
+			
+			<log expr="'RELIGION @@@@@@@@@ '+RELIGION"></log>	
+			<goto next="#selectReligion"/>					
+		</block>
+	</form>
+	
+	
+	
+	
+	<form id="selectReligion">
+	<block>
+		<assign name="program_name" expr="'New_MainMenu_selectReligion'"/>
+
+	</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">	
+							<one-of>
+								 <item>  0  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s" cond="lang=='07'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/thai_spl0.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf0.wav'"/>
+				</prompt>
+				
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/religion_change_option.wav'"/>
+				</prompt>
+				
+				<filled>
+	
+					<if cond="choice=='1'">
+						<assign name="RELIGION" expr="'01'" />
+						<goto next="#updatereligion"></goto>	
+					<elseif cond="choice=='2'"/>
+						<assign name="RELIGION" expr="'02'" />
+						<goto next="#updatereligion"></goto>
+					<elseif cond="choice=='3'"/>
+						<assign name="RELIGION" expr="'03'" />
+						<goto next="#updatereligion"></goto>
+					<elseif cond="choice=='4'"/>
+						<assign name="RELIGION" expr="'04'" />
+						<goto next="#updatereligion"></goto>
+					<elseif cond="choice=='7'"/>
+						<goto next="New_MainMenu.vxml"></goto>
+					<elseif cond="choice=='8'"/>
+						<goto next="New_MainMenu.vxml"></goto>
+					<elseif cond="choice=='9'"/>
+						<goto next="dev_ManageAccount.vxml"/>
+					<elseif cond="choice=='0'"/>
+						<if cond="lang=='07'">
+							<prompt bargein="true" timeout="1s">
+								<audio expr="promptpath+LANG_DESCRIPTION+'/Wel_thai.wav'"/>
+							</prompt>
+							<assign name="RELIGION" expr="'07'" />
+							<assign name="playconfigcat" expr="'0700'"/>
+							<assign name="cat" expr="'0700'"/>
+							<assign name="subcat" expr="'0700'"/>
+
+							<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+						<else/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/>
+							</prompt>
+							<goto next="#selectReligion"/>
+						</if>
+					</if>
+				</filled>
+		     
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="3">
+			<assign name="RELIGION" expr="'01'" />
+			<goto next="#updatereligion"></goto>
+		</noinput>
+
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="3">
+			<assign name="RELIGION" expr="'01'" />
+			<goto next="#updatereligion"></goto>
+		</nomatch>
+				
+			
+		</field>
+	</form>
+	
+	
+	<form id="updatereligion">
+		<block>
+			<assign name="program_name" expr="'New_MainMenu_updatereligion'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction?PROCEDURE=DIGI_USERRELIGION&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+RELIGION+'&amp;INPARAM[2]=SET'"/>
+			
+					<if cond="RELIGION=='03'">
+						<assign name="playconfigcat" expr="'0303'"/>
+						<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					</if>
+					
+			<goto next="#PlayLangAsPerReligion"/>					
+		</block>
+	</form>
+	
+	<form id="PlayLangAsPerReligion">
+
+	
+		<block>		
+					<assign name="program_name" expr="'New_MainMenu_PlayLangAsPerReligion'"/>			
+					<log> fetching songs </log>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=digiconfig/'+operator+'/devosongconfig/devolanguageorder'+RELIGION+'.cfg'"/>
+					 <script>
+								array1.length=0;
+								dishes.length=0;
+								
+					</script>	
+					<assign name="len" expr="favSongs.length" />
+					<assign name="i" expr="0" />
+					<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+					<script>
+						 <![CDATA[
+							   for(j=0; j<len ;  j++)
+							   {  	  
+										array1[j] = favSongs[j];						   
+							   }
+
+						]]>		
+					</script> 	       					       
+					<log>Length  is	<value expr="len"/>    </log>
+					<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+					<assign name="start_index_pre" expr="0"/>
+				<assign name="start_index" expr="0"/>
+				<assign name="end_index" expr="5"/>
+					
+					
+				<goto next="#playcatname" />				
+				</block>
+			</form>
+			
+			<form id="playcatname">	
+			
+				<block>
+					<assign name="program_name" expr="'New_MainMenu_playcatname'"/>
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+					<script>
+							 <![CDATA[
+								for(j=start_index; j<array1.length ;  j++)
+								{  	  
+									
+								dishes[i] = array1[j];
+								i++;													   
+								}
+			
+							]]>		
+						</script>
+
+				  <log>dishes[0]  is	<value expr="dishes[0]"/>    </log>
+				  <log>dishes[0]  is	<value expr="dishes[1]"/>    </log>
+				  <log>dishes[0]  is	<value expr="dishes[2]"/>    </log>
+				  <log>dishes[0]  is	<value expr="dishes[3]"/>    </log>
+				  <log>dishes[0]  is	<value expr="dishes[4]"/>    </log>
+				  <log>dishes[0]  is	<value expr="dishes[5]"/>    </log>
+				  <log>dishes[0]  is	<value expr="dishes[6]"/>    </log>
+				  <log>dishes[0]  is	<value expr="dishes[7]"/>    </log>									
+			
+			      </block>
+
+
+				<field name="choice">
+					<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  0  </item>
+								 <item>  *  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+					
+				
+				
+			       <prompt bargein="true" timeout="3s">
+				    <foreach item="names" array="dishes">
+					
+					<log>	song is is    	<value expr="movie_idx"/>  	</log>
+					<log>	names is is    	<value expr="names"/>  	</log>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_selectcat'+dishes[movie_idx]+'.wav'"/>
+                                   <assign name="movie_idx" expr="movie_idx+1" />
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_press_dtmf'+movie_idx+'.wav'"/>
+					<log>	DIGITESTING  	<value expr="names"/>  	</log>
+				    </foreach>													
+			       </prompt>
+				
+
+				<filled>	
+						<if cond="choice=='7'">
+							<script>counter_cat=1</script>
+							 <goto next="New_MainMenu.vxml"/>
+						<elseif cond="choice=='8'"/>
+							<script>counter_cat=1</script>
+							 <goto next="New_MainMenu.vxml"/>
+						<elseif cond="choice=='9'"/>
+							<script>counter_cat=1</script>
+							 <goto next="dev_ManageAccount.vxml"/>
+						</if>
+						<if cond="choice=='0'">
+							<if cond="counter_cat &lt; 3">
+								<script>counter_cat=counter_cat+1</script>
+								<prompt bargein="true" timeout="0s">
+									<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/> 
+								</prompt>
+								<goto next="#PlayLangAsPerReligion"/>
+							<else/>
+								<assign name="cat" expr="array1[0]"/>
+					 			<assign name="vinaycat" expr="RELIGION+cat"/>
+					 			<assign name="playconfigcat" expr="RELIGION+cat"/>
+								<log expr="'Cat Config========' +playconfigcat"/>
+								<log expr="'vinay jain  =======' +vinaycat"/>
+								<script>counter_cat=1</script>
+								<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+							</if>
+				                </if>	
+						
+						<if cond="choice &lt; len+1">
+					     						
+					 	<assign name="cat" expr="array1[--choice]"/>
+					 	<assign name="vinaycat" expr="RELIGION+cat"/>
+					 	<assign name="playconfigcat" expr="RELIGION+cat"/>
+						<log expr="'Cat Config========' +playconfigcat"/>
+						<log expr="'vinay jain  =======' +vinaycat"/>
+						<script>counter_cat=1</script>
+						<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+
+						<!--  <elseif cond="choice=='2' || choice=='3' || choice=='4' || choice=='5' || choice=='6'"/>
+				 			 <prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/>
+							 </prompt>
+				 			 		
+				    		 <goto next="#playcatname"/> -->
+
+						 <else/>
+					
+							<if cond="counter_cat &lt; 3">
+								<script>counter_cat=counter_cat+1</script>
+								<prompt bargein="true" timeout="0s">
+									<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/> 
+								</prompt>
+								<goto next="#PlayLangAsPerReligion"/>
+							<else/>
+								<assign name="cat" expr="array1[0]"/>
+					 			<assign name="vinaycat" expr="RELIGION+cat"/>
+					 			<assign name="playconfigcat" expr="RELIGION+cat"/>
+								<log expr="'Cat Config========' +playconfigcat"/>
+								<log expr="'vinay jain  =======' +vinaycat"/>
+								<script>counter_cat=1</script>
+								<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+							</if>
+
+						
+				       </if>
+				
+			</filled>
+					
+					
+			
+			<noinput count="1">
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_waiting_response.wav'"/> 
+				</prompt>
+				<reprompt></reprompt>
+		  </noinput>
+
+		<noinput count="2">
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_waiting_response.wav'"/> 
+				</prompt>
+				<reprompt></reprompt>
+		  </noinput>
+
+
+		<noinput count="3">
+			 			<assign name="cat" expr="array1[0]"/>
+					 	<assign name="vinaycat" expr="RELIGION+cat"/>
+					 	<assign name="playconfigcat" expr="RELIGION+cat"/>
+						<log expr="'Cat Config========' +playconfigcat"/>
+						<log expr="'vinay jain  =======' +vinaycat"/>
+						<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+							
+		</noinput>
+
+		
+		
+		<nomatch count="1">
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/> 
+				</prompt>
+				<reprompt></reprompt>
+						
+		</nomatch>	
+		<nomatch count="2">
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/> 
+				</prompt>
+				<reprompt></reprompt>
+						
+		</nomatch>	
+
+		<nomatch count="3">
+				 <assign name="cat" expr="array1[0]"/>
+					 	<assign name="vinaycat" expr="RELIGION+cat"/>
+					 	<assign name="playconfigcat" expr="RELIGION+cat"/>
+						<log expr="'Cat Config========' +playconfigcat"/>
+						<log expr="'vinay jain  =======' +vinaycat"/>
+						<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+		</nomatch>	
+			
+		</field>
+
+				
+				
+	</form>
+	
+	
+	
+</vxml>

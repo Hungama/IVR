@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="DIGIRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="CRBT.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+	<var name="cRBTMODE" expr="''"></var>
+	<var name="CLIPID" expr="''"></var>
+	
+	<script>
+		var UserStatus1=new Object();
+		out_string = new Object();
+	</script>
+
+	<form id="CRBT">
+		<block>		    
+			<assign name="program_name" expr="'CRBT_CRBT'"/>
+		    <script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_radio_rngmenu?SONGID='+song+'&amp;IN_TYPE=CRBT&amp;CIRCLE=dig&amp;OPERATOR=DIGM'"/>
+
+		    <log expr="'CLIPID=='+out_string[0]"></log>
+		    <assign name="len_rng" expr="out_string.length" />
+		    <log>previous Array[1]  is	<value expr="CLIPID"/>    </log>
+			
+			<script>
+			 <![CDATA[
+					   for(j=0; j<  out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	CLIPID = out_string[j];						       
+						  }
+
+			]]>
+			
+			</script>
+
+		    <log>after Array[1]  is	<value expr="CLIPID"/>    </log>
+		    <if cond="CLIPID==''">
+				<goto next="#NO_CRBT"/>
+		    <else/>
+				<goto next="#DOWNLOAD"/>
+		    </if>         	
+		</block>
+	</form>
+
+
+<form id="NO_CRBT">
+		
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+						<item>1</item>                    
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	<prompt bargein="true" timeout="0s" cond="ComingFrom=='mod'">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/nocrbt.wav'"/>
+		</prompt>
+		<prompt bargein="true" timeout="0s" cond="ComingFrom=='devo'">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/dev_nocrbt.wav'"/>
+		</prompt>
+		<prompt bargein="true" timeout="0s" cond="ComingFrom=='rehman'">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/nocrbt.wav'"/>
+		</prompt>
+		<filled>
+		        <if cond="ComingFrom=='mod'">
+				<goto next="playcontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='devo'">
+				<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='rehman'">
+				<goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+			</if>
+		</filled>
+
+		<noinput>
+			<if cond="ComingFrom=='mod'">
+				<goto next="playcontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='devo'">
+				<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='rehman'">
+			    <goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+			</if>
+		</noinput>
+
+		<nomatch>
+			<if cond="ComingFrom=='mod'">
+				<goto next="playcontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='devo'">
+				<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='rehman'">
+				 <goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+			</if>
+		</nomatch>
+	</field>
+</form>
+
+	<form id="FREE_CRBT">
+	
+		<block>
+		 <script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction?PROCEDURE=FREE_CRBT_CHECK&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]='+CLIPID"/>
+			
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	OUT_CRBT_STR = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+
+			<if cond="OUT_CRBT_STR=='1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/hey_rbt_is_free.wav'"/>
+				</prompt>
+				<goto next="#DOWNLOAD"/>
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/hey_rbt_is_NOT_free.wav'"/>
+				</prompt>
+				<goto next="#DOWNLOAD"/>
+			</if>
+		</block>
+	</form>
+	
+<form id="DOWNLOAD">
+		<block>
+			<assign name="program_name" expr="'CRBT_DOWNLOAD'"/>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s" cond="ComingFrom=='mod'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/crbt_option.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="ComingFrom=='devo'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_calltertune_option.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="ComingFrom=='rehman'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/crbt_option.wav'"/>
+			</prompt>
+
+			<filled>
+				<if cond="choice=='1'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtDOWNLOAD&amp;INPARAM[4]=dig&amp;INPARAM[5]='+DNIS"/>
+				    
+				      
+				    
+		 <!-- <script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtDOWNLOAD&amp;INPARAM[4]=dig'"/> -->
+				    <goto next="#THANKS"/>
+				<else/>
+				   <!-- <goto next="#NOTHANKS"/> -->
+					<if cond="ComingFrom=='mod'">
+						<goto next="playcontent.vxml#BackFromCBRT"/>
+					</if>
+					<if cond="ComingFrom=='devo'">
+						<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+					</if>
+					<if cond="ComingFrom=='rehman'">
+						 <goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+					</if>
+
+				</if>
+			</filled>	
+		</field>
+
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s" cond="ComingFrom=='mod'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="ComingFrom=='rehman'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="ComingFrom=='devo'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			        <if cond="ComingFrom=='mod'">
+					<goto next="playcontent.vxml#BackFromCBRT"/>
+				</if>
+				<if cond="ComingFrom=='devo'">
+					<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+				</if>
+				<if cond="ComingFrom=='rehman'">
+					 <goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+				</if>
+		</noinput>
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s" cond="ComingFrom=='mod'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="ComingFrom=='rehman'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="ComingFrom=='devo'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+				<if cond="ComingFrom=='mod'">
+					<goto next="playcontent.vxml#BackFromCBRT"/>
+				</if>
+				<if cond="ComingFrom=='devo'">
+					<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+				</if>
+				<if cond="ComingFrom=='rehman'">
+					 <goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+				</if>
+		</nomatch>
+
+	</form>
+
+
+<form id="THANKS">
+		<block>
+			<assign name="program_name" expr="'CRBT_THANKS'"/>
+		</block>
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+						<item>1</item>                    
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	<prompt bargein="true" timeout="0s" cond="ComingFrom=='mod'">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_crbt.wav'"/>
+		</prompt>
+		<prompt bargein="true" timeout="0s" cond="ComingFrom=='rehman'">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_crbt.wav'"/>
+		</prompt>
+		<prompt bargein="true" timeout="0s" cond="ComingFrom=='devo'">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/dev_thanks_crbt.wav'"/>
+		</prompt>
+		<filled>
+		        <if cond="ComingFrom=='mod'">
+				<goto next="playcontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='devo'">
+				<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='rehman'">
+				 <goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+			</if>
+		</filled>
+
+		<noinput>
+			<if cond="ComingFrom=='mod'">
+				<goto next="playcontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='devo'">
+				<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='rehman'">
+				 <goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+			</if>
+		</noinput>
+
+		<nomatch>
+			<if cond="ComingFrom=='mod'">
+				<goto next="playcontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='devo'">
+				<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='rehman'">
+				 <goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+			</if>
+		</nomatch>
+	</field>
+</form>
+	
+<form id="NOTHANKS">
+		
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start" version="1.0">
+                   	<rule id="start" scope="public">
+                     	<one-of>     
+						<item>1</item>                    
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	<prompt bargein="true" timeout="0s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/nothanks_crbt.wav'"/>
+		</prompt>
+		<filled>
+		        <if cond="ComingFrom=='mod'">
+				<goto next="playcontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='devo'">
+				<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='rehman'">
+				 <goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+			</if>
+		</filled>
+
+		<noinput>
+			<if cond="ComingFrom=='mod'">
+				<goto next="playcontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='devo'">
+				<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='rehman'">
+				<goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+			</if>
+		</noinput>
+
+		<nomatch>
+			<if cond="ComingFrom=='mod'">
+				<goto next="playcontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='devo'">
+				<goto next="devoplaycontent.vxml#BackFromCBRT"/>
+			</if>
+			<if cond="ComingFrom=='rehman'">
+				<goto next="ARRehman_playcontent.vxml#BackFromCBRT"/>
+			</if>
+		</nomatch>
+	</field>
+</form>
+
+</vxml>

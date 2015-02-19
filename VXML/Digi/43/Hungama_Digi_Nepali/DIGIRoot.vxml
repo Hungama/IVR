@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="DIGIRoot.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="Root file for the DIGI project" />
+	<meta name="Support" content="" />
+	<!--********************************************************-->
+		<var name="movie_idx" expr="0"/>
+		<var name="TodayFullDate" expr=""/>
+		<var name="TodayDate" expr=""/>
+		<var name="news_lang_opt" expr="''"/>
+		<var name="dummyinput" expr="'0'"/>
+		<var name="UpdateArray" expr="'0'"/>
+		<var name="horodate" expr="'0'"/>
+		<var name="prehorodate" expr="'0'"/>
+		<var name="avalhoro" expr="'0'"/>
+		<var name="choosehoro" expr="'0'"/>
+		<var name="HOROHEARD" expr="'0'"/>
+		<var name="horochange_flag" expr="'0'"/>
+		<var name="nonplay" expr="0"/>
+		<var name="skipflag" expr="0"/>
+		<var name="horocontent" expr="'http://localhost:8080/hungama/HOROSCOPE/'"/>
+		<var name="sub_type" expr="''" />
+	<!--*********************************************************-->
+	<var name="firstconsent" expr="'N'"/>
+	<var name="firstconsenttime" expr="'NA'"/>
+	<var name="secondconsent" expr="'N'"/>
+	<var name="secondconsenttime" expr="'NA'"/>
+	<var name="ccgresult" expr="'NA'"/>
+	<var name="consentsub_flag" expr="'false'"/>
+		<var name="exitflag" expr="'0'"/>
+<!--****************DLR promotional parameter***************************-->
+<var name="DLR_status" expr="0"/>
+<var name="DLR_counter" expr="0"/>
+<var name="DLR_substatus" expr="0"/>
+<!--**************************************************************-->	
+	 <var name="var_wel" expr="''" />
+	<var name="CallTime" expr=""/>
+	<var name="callcharge" expr="0" />
+	<var name="CurrentHour" expr="0"/>
+	<var name="program_name" expr="''"/>
+	<var name="ANI" expr="''"/>
+	<var name="DNIS" expr="''"/>
+	<var name="realDNIS" expr="''"/>
+	<var name="LANG_DESCRIPTION" expr="'HIN'"/>
+	<var name="NEWS_LANG" expr="'HIN'"/>
+
+	<var name="timerflag" expr="'1'"/>
+	<var name="lang1" expr="'h'"/>
+	<var name="lang" expr="'01'"/>
+	
+	<!-- it is used for check balnce only one -->
+	<var name="bal_flag" expr="'0'"/>
+	
+	<var name="C_Start" expr=""/>
+	<var name="C_End" expr="''"/>
+	<var name="sub_flag" expr="'0'"/>
+	<var name="contentdir" expr=""/>
+
+	<var name="playconfig" expr="''"/>
+	<var name="playconfigcat" expr="''"/>
+
+	<var name="Flag" expr="''"/>
+	<var name="mod_of_sub" expr="'ND'"/>
+	<var name="tot" expr="10"/>
+	<var name="date" expr="54"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="cat" expr="'0'"></var>
+	<var name="subcat" expr="'0'"></var>
+	
+	 <var name="contentfilepath" expr="''"/>
+	<var name="cfgFile" expr="''"/>
+	<var name="contentfile" expr="''"/> 
+
+
+	<var name="moviectr" expr="0"/>
+	<var name="moviesetflag" expr="'false'"/>
+	<var name="clipflag" expr="1"/>
+	<var name="movieflag" expr="1"/>
+	<var name="firstmovie" expr="1"/>	
+	<var name="firstclip" expr="1"/>
+	<var name="moviename" expr="'@'"/>
+	<var name="balance" expr="0"/>
+	<var name="counter_cat" expr="0"/>
+
+	<var name="balance_resub" expr="0"/>
+
+	<var name="datedifference" expr="0"/>
+
+	<var name="count" expr="0"/>
+	<var name="ctr" expr="0"/>
+	<var name="FLOW_FLAG" expr="'CATEGORY'"/>
+	<var name="CALCULATE_TIME" expr="'RESET'"/>
+	
+	<var name="strarray" expr="''"/>
+	<var name="q" expr="0"/>
+	<var name="type" expr="'E'"/>
+	<var name="promptpath" expr="'http://localhost:8080/hungama/promptFiles/digiprompts/'"/>
+       <var name="contentpath" expr="'http://172.28.106.6:8080/content_hungama/'"/> 
+	     <!-- <var name="contentpath" expr="'http://119.82.69.219:8080/hungama/'"/> -->
+
+	<var name="STATUS_PLAY" expr="'false'"/>
+	<var name="usr_status" expr="-1"/>
+	<var name="tarrif" expr="0"/>
+	<var name="songID" expr=""/>
+	<var name="song" expr=""/>	
+	
+	<var name="Song_lis" expr="'F'"/>
+	<var name="song_listen" expr="'End'"/>
+	<var name="song_begin" expr="''"/>
+	<var name="HEARD" expr="'0'"/>
+	<var name="OUT_CRBT_STR" expr="'0'"/>
+	<var name="RELIGION" expr="''"/>
+	
+	<var name="unike_play" expr="0"/>
+	<var name="RatainUnlikePaly" expr="0"/>	
+	<var name="ComingFrom" expr="''"/>
+	
+	
+	<var name="compare_time" expr="0"/>
+	<var name="ContentTime" expr="0"/>
+	<var name="starting_time" expr="0"/>
+	<var name="contentlog" expr="''"></var>
+	<var name="start_song_time" expr="0"/>
+	<var name="song_duration" expr="0"/>
+	
+	<var name="sessionid" expr="''"/>
+	
+	<var name="start_BalenceMinute" expr="'0'"/>
+	<var name="end_BalenceMinute" expr="'0'"/>
+	<var name="total_used_bal" expr="'0'"/>
+	<var name="balanceminutes" expr="0"/>
+	<var name="curbalance" expr="''"/>
+	
+	<var name="len" expr="'0'" />
+	
+	<!-- HUB VARIABLE -->
+			
+			<var name="IP" expr="'localhost:8080'"/>		
+			<var name="servlet_path" expr="'hungama'"/>
+			<var name="CDSIP" expr="'172.28.106.6:8080'"/>		
+			<var name="cds_path" expr="'hungama'"/>			
+			
+			<var name="PROMPTS_CONTENT" expr="'localhost:8080'"/>
+			<var name="Prompts_Path" expr="'hungama/promptFiles/digi'"/>
+	<!-- HUB VARIABLE -->
+	
+    	
+ 	 
+	<property name="fetchminimumbuffersize" value="54272"/>
+	<property name="fetchhint" value="prefetch"/>
+	<property name="timeout" value="1s" />
+	
+	<script src="../ECMAScripts/vinay_common_files.es"/>
+	
+	<script>
+				var contentdur=0;
+		           var aNavHistory=new Array();
+					var array=new Array();
+					var array1=new Array();
+					var array2=new Array();
+					var dishes=new Array();
+				    var array3=new Array();
+					var AllSongs=new Object();
+					var myindex=new Object();
+					var MyFiles=new Object();
+					var logarray=new Array();
+					var LogArray=new Array(2);
+					var time_c=new Object();
+				    var copyarray=new Array();
+					var score=new Array();
+					var favSongs=new Object();
+					var songcheck=new Array();
+					var favLangs=new Object();
+				    var NS_starttime=new Object();	
+			    	var NS_endtime=new Object();	
+			    	var NS_program=new Object();	
+			    	var NS_openclose=new Object();
+			    	var NNS_starttime=new Object();	
+			    	var NNS_endtime=new Object();	
+			    	var NNS_program=new Object();	
+			    	var NNS_openclose=new Object();
+				
+       </script>
+            
+
+	<script>
+
+	function GetCurrentHour()
+	{
+	var currentDT = new Date();
+	var hours = currentDT.getHours();
+	return hours;
+	}
+	</script>
+
+       <catch event="error.badfetch">	
+		<assign name="song_listen" expr="'END'" />
+	 								
+    	 	 <goto next="End.vxml"/>		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 	<goto next="End.vxml"/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+		  	<goto next="End.vxml"/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+			<goto next="End.vxml"/>
+      </catch>
+      
+    
+ 	<catch event="error"> 
+			<log>Endpagecalling</log>
+  			<goto next="End.vxml"/>
+	   </catch>
+
+ 
+        <catch event="error.*"> 
+			<log>Endpagecalling1</log>
+  			<goto next="End.vxml"/>
+	   </catch>
+
+</vxml>

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="DIGIRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="dev_ManageAccount.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<script>
+		var UserStatus1=new Object();
+		var out_string=new Object();		
+	</script>
+	<!--<var name="len" expr="''"/>-->	
+   <!--<var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>-->
+   <var name="PlayOnce" expr="'true'"/>		
+   <var name="names"/> 
+   
+   <form id="accountmanager">
+   
+       <block> 
+		<log expr="'welcome to the hungama act manager menu '"/>
+        
+       	 <log expr="' Server ip is :' + IP"/>
+	  	  <log expr="'Ani IS : ' + ANI"/> 	
+		<log expr="'DNIS IS : ' + DNIS"/> 
+		<assign name="program_name" expr="'dev_ManageAccount_accountmanager'"/>	
+							
+	</block>	 
+	    <field name="actmgrmnuopt" cond="PlayOnce">
+		
+			 <grammar mode="dtmf" root="start">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>			
+				  <item>2</item>				
+				  <item>3</item>
+				  <item>4</item>
+				  <item>7</item>				
+				  <item>8</item>					 	  			  		      
+                </one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_welcome_acmanager.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_acmanager_option.wav'"/>
+				
+			</prompt>
+		    			
+			
+			<filled>
+
+				<if cond="actmgrmnuopt=='1'">
+					 <goto next="#ChangeLang"/>
+                                <elseif cond="actmgrmnuopt=='7'"/>
+					<goto next="New_MainMenu.vxml#LASTRELIGION_PROFILE"/>
+				<elseif cond="actmgrmnuopt=='8'"/>
+					<goto next="New_MainMenu.vxml"/>
+                                </if> 
+				
+				<if cond="actmgrmnuopt=='2'">
+				   <goto next="#balanceminute"/>
+				    
+				<elseif cond="actmgrmnuopt=='3'"/>		
+				  	<goto next="#unsubscription"/>
+				
+				<elseif cond="actmgrmnuopt=='4'"/>		
+					<goto next="New_MainMenu.vxml#selectReligion"/>
+					
+				</if>
+		</filled>
+			
+			 <noinput timeout="3s">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/dev_nodtmf.wav'"/>
+			                     
+                           <reprompt/> 
+                      </noinput>
+	        
+             <noinput count="3">	
+		  <goto next="New_MainMenu.vxml#LASTRELIGION_PROFILE"/>		
+              </noinput>
+	        
+             <nomatch>
+		<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/>
+               	
+                <reprompt/>
+             </nomatch> 
+	
+	         <nomatch count="3">
+		     <goto next="New_MainMenu.vxml#LASTRELIGION_PROFILE"/>					
+	         </nomatch>                
+    				
+	  </field>	 
+ </form> 
+   
+    <form id="unsubscription">
+	<block>
+		<assign name="program_name" expr="'dev_ManageAccount_unsubscription'"/>
+		<log expr="'welcome to the hungama unsub category main menu '"/>
+        
+        	<log expr="' Server ip is :' + IP"/>
+	    <log expr="'Ani IS : ' + ANI"/> 	
+		<log expr="'DNIS IS : ' + DNIS"/> 			
+	</block>
+	    <field name="mnuopt">	
+		   
+		   <grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+			</grammar>
+
+			<prompt bargein="false">	
+			       <audio expr="promptpath+LANG_DESCRIPTION+'/dev_acmanger_unsub_confirm.wav'"/>		
+			    </prompt>
+		    			
+			
+			<filled>	
+				     	  <if cond="mnuopt=='1'">
+					     		<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction_ben?PROCEDURE=DIGI_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+							<prompt bargein="true" timeout="3s">	
+								  <audio expr="promptpath+LANG_DESCRIPTION+'/dev_thanks_nosub_bangla.wav'"/>		
+							</prompt>				    
+							<!--<throw event="connection.disconnect.hangup"/>-->
+							<goto next="End.vxml"/>	    			
+					   <elseif cond="mnuopt=='2'"/>
+						  	<goto next="ExistingUser.vxml"/>
+ 				           <elseif cond="mnuopt=='7'"/>
+						  	<goto next="New_MainMenu.vxml#LASTRELIGION_PROFILE"/>
+					   <elseif cond="mnuopt=='8'"/>
+						  	<goto next="New_MainMenu.vxml"/>    		     				  				    
+				           </if>
+			       
+			</filled>
+			
+			<noinput>
+					<prompt>						
+   						<audio expr="promptpath+LANG_DESCRIPTION+'/dev_waiting_response.wav'"/>		 
+   			   		</prompt>
+   					<reprompt></reprompt>
+   			 </noinput>
+
+			 <nomatch>
+   					<prompt>						
+   						<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/>		 
+   			   		</prompt>
+   			   		<reprompt></reprompt>
+   		   	    </nomatch>	
+              				
+	  </field>	 	
+    </form> 
+    
+     <form id="balanceminute">
+	 <block>
+			<assign name="program_name" expr="'dev_ManageAccount_balanceminute'"/>
+	 	  	 <assign name="localbal" expr="balance"/>
+			 <log expr="' Server ip is :' +localbal"/>
+
+			<script> 
+				  localbal=Math.floor(localbal/60); 
+			</script>
+			<log expr="' Server ip is :' +localbal"/>
+
+			<if cond="localbal &lt;= '0'">          
+				<prompt bargein="false" >
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_acmanager_balanceis.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_0.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_minutes.wav'"/>
+				</prompt>
+				
+			<elseif cond="localbal == '100'"/>
+				<prompt bargein="false" >
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_acmanager_balanceis.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_1.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_100.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_minutes.wav'"/>
+				</prompt>
+				
+			<elseif cond="localbal &gt; '100'"/>
+				<script>localbal=localbal-100;</script>
+				<prompt bargein="false" >
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_acmanager_balanceis.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_1.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_100.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_'+localbal+'.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_minutes.wav'"/>
+				</prompt>
+				
+			<else/>
+				<prompt bargein="false" >
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_acmanager_balanceis.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_'+localbal+'.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_minutes.wav'"/>
+				</prompt>
+			</if> 
+			
+			<if cond="FLOW_FLAG=='CONTENT'">
+				<if cond="HEARD!='0'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction_ben?PROCEDURE=DIGI_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+				</if>
+
+				<goto next="ExistingUser.vxml"/>
+			<else/>
+				<goto next="New_MainMenu.vxml#LASTRELIGION_PROFILE"/>
+			</if>
+	</block>
+  </form>
+	
+	   
+   <form id="ChangeLang">
+   <field name="langopt">
+   			  <grammar mode="dtmf" root="start">
+   				<rule id="start" scope="public">
+   					<one-of>						
+   						<item> 1 </item>
+   						<item> 2 </item>
+						<item> 7 </item>
+						<item> 8 </item>
+      					</one-of>
+   				</rule>
+   			  </grammar>
+   									
+   				<prompt bargein="true" timeout="3s">
+   					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_lang_option.wav'"/>
+					<audio expr="promptpath+'BEN/dev_lang06.wav'"/>
+					<audio expr="promptpath+'BEN/dev_press_dtmf1.wav'"/>
+					<audio expr="promptpath+'HIN/dev_lang01.wav'"/>										   		
+					<audio expr="promptpath+'HIN/dev_press_dtmf2.wav'"/> 
+				</prompt>
+   				
+   				<filled>
+   				      <if cond="langopt=='2'">
+   					     <assign name="lang" expr="'01'"/> 		
+   					     <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+   				      <elseif cond="langopt=='1'"/>
+   				          <assign name="lang" expr="'06'"/> 		
+   				          <assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+   				       <elseif cond="langopt=='7'"/>
+   				          <goto next="New_MainMenu.vxml#LASTRELIGION_PROFILE"/>
+   				      <elseif cond="langopt=='8'"/>
+   				         <goto next="New_MainMenu.vxml"/>   				    		     				  				    
+   				      </if>
+   				      <log expr="'language selected option:'+langopt+' is :'+lang"/>
+   				      <goto next="#LanguageThanks"/> 	
+   				</filled>
+   					
+   			    <nomatch>
+   					<prompt>						
+   						<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/>		 
+   			   		</prompt>
+   			   		<reprompt></reprompt>
+   		   	    </nomatch>		
+   		   		
+   				
+   				<noinput>
+   					<prompt>						
+   						<audio expr="promptpath+LANG_DESCRIPTION+'/dev_waiting_response.wav'"/>		 
+   			   		</prompt>
+   					<reprompt></reprompt>
+   				</noinput>
+   				
+   					
+   		</field>
+</form>
+
+<form id="LanguageThanks">
+			
+		<block>
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction_ben?PROCEDURE=DIGI_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>
+					 <prompt bargein="false"  timeout="1s">
+					         <audio expr="promptpath+LANG_DESCRIPTION+'/dev_lang_thanks.wav'"/>
+		  			 </prompt> 
+		  	 <if cond="FLOW_FLAG=='CONTENT'">
+				<if cond="HEARD!='0'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction_ben?PROCEDURE=DIGI_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+				</if>
+
+				<goto next="ExistingUser.vxml"/>
+			<else/>
+				<goto next="New_MainMenu.vxml#LASTRELIGION_PROFILE"/>
+			</if>
+ 	 
+	  	</block>		  
+	</form>
+
+
+</vxml>

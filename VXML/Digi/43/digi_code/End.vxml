@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="DIGIRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+	<script>
+		var out_string=new Object();
+		var get_duration=new Object();
+		var len_duration=0;
+		var exitflag=0;
+	</script>
+
+	<form id="EndLogin">
+		<block>
+
+			<log>program_name:<value expr="program_name"/></log>
+
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			
+<if cond="playconfig != '0702' &amp;&amp; DNIS!='1312246'">
+			<if cond="CALCULATE_TIME=='SET'">
+				<script> 
+			      		end_BalenceMinute=start_time();
+			      	</script>
+
+				<log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+		      	       <log expr="'@@@@@@ end_BalenceMinute balance is '+end_BalenceMinute"/>
+		           <script srcexpr="'http://'+IP+'/'+servlet_path+'/time_Digi?starttime='+start_BalenceMinute+'&amp;endtime='+end_BalenceMinute"/>
+								
+				<assign name="len_duration" expr="get_duration.length" />
+					<script>
+						<![CDATA[
+						   for(k=0; k<len_duration ;  k++)
+						   {  	  
+								array[k] = get_duration[k];						   
+						   }
+		
+						]]>		
+						</script> 
+					<assign name="total_used_bal" expr="get_duration[0]"/>
+					<script>
+						       balance=balance-total_used_bal;  						  
+		         	       </script> 
+			</if>
+</if>
+
+
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+balance"/>
+
+				<!-- <script> 
+				  balance=Math.floor(balance/60); 
+				  balance=balance-1;
+				</script> -->
+				<if cond="balance &lt; 0">
+					<script>balance=0;</script>
+				</if>
+	
+			
+			<if cond="sub_flag=='0'">
+				<log expr="'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Updating Balance=====>'+balance"/>  
+				
+				 <script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction?PROCEDURE=DIGI_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS" fetchtimeout="10s"/>  			
+				 <!-- <script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction?PROCEDURE=DIGI_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/>	-->			
+			</if>
+			
+			<if cond="HEARD!='0'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction?PROCEDURE=DIGI_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+			</if>
+			</if>
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+program_name+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=DIGI&amp;subflag='+usr_status+'&amp;contentlog='+contentlog" fetchtimeout="10s"/>-->
+			<if cond="callcharge!='3' &amp;&amp; consentsub_flag=='true'">
+				<script srcexpr="'http://'+IP+'/hungama/DIGI_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1701&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime"/>  
+			</if>
+			<log expr="'@@@@@@ exitflag is '+exitflag"/>
+
+			<if cond="exitflag=='0'">
+				<script>
+					exitflag=1;
+				</script>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+program_name+hash+mod_of_sub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=DIGI&amp;subflag='+usr_status+'&amp;contentlog='+contentlog" fetchtimeout="10s"/>
+			</if>
+
+			<exit/>
+		</block>
+
+		 <catch event="error.badfetch">
+				<log expr="'@@@@@@ exitflag is catch event '+exitflag"/>
+			<if cond="exitflag=='0'">
+				<script>
+					exitflag=1;
+				</script>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+program_name+hash+mod_of_sub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=DIGI&amp;subflag='+usr_status+'&amp;contentlog='+contentlog" fetchtimeout="10s"/>
+			</if>
+
+		 								
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      
+		  
+		  <exit/>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 
+		  
+		  <exit/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  End4444</log>	
+		   
+		   <exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  End5555</log>	
+		
+		   <exit/>
+		  
+      </catch>
+
+	</form>
+</vxml>

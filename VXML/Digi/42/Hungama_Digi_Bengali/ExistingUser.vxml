@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="DIGIRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="ExistingUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<script>
+		var out_string=new Object();
+	</script>
+	
+	<form id="LASTHEARD_PROFILE">
+		<block>
+			<assign name="program_name" expr="'ExistingUser_LASTHEARD_PROFILE'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/digi_dbinteraction_ben?PROCEDURE=DIGI_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=GET'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	HEARD = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'HEARD @@@@@@@@@ '+HEARD"></log>	
+			<goto next="#WelcomeIntroRandom"/>					
+		</block>
+	</form>
+	<form id="WelcomeIntroRandom">
+		<block>
+			<assign name="var_wel" expr="getRandom(1,49)" />	
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_old_'+var_wel+'.wav'"/>
+				
+			</prompt>
+		</block>	
+		<field name="choice">
+		    <grammar mode="dtmf" root="start">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							
+						</one-of>
+					</rule>
+			</grammar>
+			
+			<filled>
+			
+			  <if cond="choice &lt; 10">
+				<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined'">
+					<goto next="New_MainMenu.vxml"></goto>
+				<else/>
+					<script>
+						length = HEARD.length;
+						cat = HEARD;
+						<!-- subcat = HEARD.substring(2,4); -->
+					</script>
+					<assign name="playconfig" expr="HEARD"></assign>	
+					<if cond="HEARD=='0636' || HEARD=='0650' || HEARD=='0651'">
+						<goto next="New_MainMenu.vxml"></goto>
+					</if>
+					<goto next="#LASTHEARD"></goto>												
+				</if>
+			</if>										
+			</filled>
+		</field>
+		<noinput>
+			<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined'">
+				<goto next="New_MainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD;
+				       <!-- subcat = HEARD.substring(2,4); -->
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>	
+					<if cond="HEARD=='0636' || HEARD=='0650' || HEARD=='0651'">
+						<goto next="New_MainMenu.vxml"></goto>
+					</if>
+				
+				<goto next="#LASTHEARD"></goto>												
+			</if>	
+		</noinput>
+		<nomatch>
+			<if cond="HEARD=='0' || HEARD=='00' || HEARD=='undefined'">
+				<goto next="New_MainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD;
+					<!-- subcat = HEARD.substring(2,4); -->
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>		
+				<if cond="HEARD=='0636' || HEARD=='0650' || HEARD=='0651'">
+						<goto next="New_MainMenu.vxml"></goto>
+					</if>
+			
+				<goto next="#LASTHEARD"></goto>												
+			</if>
+		</nomatch>
+	</form>
+	
+	<form id="LASTHEARD">		
+		<field name="choice">
+		    <grammar mode="dtmf" root="start">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			
+			<prompt bargein="true" timeout="1s" cond="cat=='0101' || cat=='0102' || cat=='0103' || cat=='0104' || cat=='0301' || cat=='0302' || cat=='0303' || cat=='0304' || cat=='0601'|| cat=='0602' || cat=='0603' || cat=='0604' || cat=='0701' || cat=='0702' || cat=='0703' || cat=='0801' || cat=='0802' || cat=='0803' || cat=='0901' || cat=='0902' || cat=='0903' || cat=='1001' || cat=='1002' || cat=='1003' || cat=='1901' || cat=='1902' || cat=='2001' || cat=='2002'">
+
+				<audio expr="promptpath+LANG_DESCRIPTION+'/listining_cat.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/cat'+HEARD+'.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/return_mainmenu.wav'"/>
+
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="cat=='0131' || cat=='0132' || cat=='0133' || cat=='0134' || cat=='0135' || cat=='0136' || cat=='0137' || cat=='0138' || cat=='0139'|| cat=='0140' || cat=='0141' || cat=='0231' || cat=='0232' || cat=='0233' || cat=='0234' || cat=='0331' || cat=='0332' || cat=='0333' || cat=='0334' || cat=='0335' || cat=='0336' || cat=='0631' || cat=='0632' || cat=='0633' || cat=='0634' || cat=='0731' || cat=='0732' || cat=='0733' || cat=='0734' || cat=='0831' || cat=='0832' || cat=='0833' || cat=='0834' || cat=='0835' || cat=='0836' || cat=='0837' || cat=='0931' || cat=='0932' || cat=='0933' || cat=='0934' || cat=='0935' || cat=='0936' || cat=='0937' || cat=='0938' || cat=='0939' || cat=='1031' || cat=='1032' || cat=='1033' || cat=='1034' || cat=='1931' || cat=='1932' || cat=='1933' || cat=='1934' || cat=='1935'">
+
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_listining_cat.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/cat'+HEARD+'.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_return_mainmenu.wav'"/>
+
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="cat=='0121' || cat=='0122' || cat=='0123' || cat=='0124' || cat=='0621' || cat=='0721' || cat=='0821' || cat=='1021'">
+
+				<audio expr="promptpath+LANG_DESCRIPTION+'/listining_cat.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/cat'+HEARD+'.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/return_mainmenu.wav'"/>
+
+			</prompt>
+
+			<prompt bargein="true" timeout="1s" cond="cat=='0650' || cat=='0651'">
+
+				<audio expr="promptpath+LANG_DESCRIPTION+'/listining_cat.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+HEARD+'.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/return_mainmenu.wav'"/>
+
+			</prompt>
+
+
+			<filled>
+			
+				<if cond="choice=='8'">
+					 <goto next="New_MainMenu.vxml"/>
+				</if>
+
+				<if cond="choice=='9'">
+					<if cond="cat=='0101' || cat=='0102' || cat=='0103' || cat=='0104' || cat=='0301' || cat=='0302' || cat=='0303' || cat=='0304' || cat=='0601'|| cat=='0602' || cat=='0603' || cat=='0604' || cat=='0701' || cat=='0702' || cat=='0703' || cat=='0801' || cat=='0802' || cat=='0803' || cat=='0901' || cat=='0902' || cat=='0903' || cat=='1001' || cat=='1002' || cat=='1003' || cat=='1901' || cat=='1902' || cat=='2001' || cat=='2002'">					       
+						<goto next="ManageAccount.vxml"/>
+					<elseif cond="cat=='0131' || cat=='0132' || cat=='0133' || cat=='0134' || cat=='0135' || cat=='0136' || cat=='0137' || cat=='0138' || cat=='0139'|| cat=='0140' || cat=='0141' || cat=='0231' || cat=='0232' || cat=='0233' || cat=='0234' || cat=='0331' || cat=='0332' || cat=='0333' || cat=='0334' || cat=='0335' || cat=='0336' || cat=='0631' || cat=='0632' || cat=='0633' || cat=='0634' || cat=='0731' || cat=='0732' || cat=='0733' || cat=='0734' || cat=='0831' || cat=='0832' || cat=='0833' || cat=='0834' || cat=='0835' || cat=='0836' || cat=='0837' || cat=='0931' || cat=='0932' || cat=='0933' || cat=='0934' || cat=='0935' || cat=='0936' || cat=='0937' || cat=='0938' || cat=='0939' || cat=='1031' || cat=='1032' || cat=='1033' || cat=='1034' || cat=='1931' || cat=='1932' || cat=='1933' || cat=='1934' || cat=='1935'"/>
+						<goto next="dev_ManageAccount.vxml"/>
+					<elseif cond="cat=='0121' || cat=='0122' || cat=='0123' || cat=='0124' || cat=='0621' || cat=='0721' || cat=='0821' || cat=='1021'"/>
+						<goto next="ManageAccount.vxml"/>
+					<elseif cond="cat=='0650'"/>
+						<goto next="Celeb_interview.vxml"></goto>
+					<elseif cond="cat=='0651'"/>
+						<goto next="Celeb_gossips.vxml"></goto>
+					<elseif cond="cat=='0636'"/>
+						<assign name="playconfigcat" expr="'0636'"/>
+						<assign name="playconfig" expr="'0636'"/>
+							<goto next="devoplaycontent.vxml"/>
+
+						<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+					<else/>                							 				 					 		         
+						<goto next="New_MainMenu.vxml"/>
+					</if>
+				</if>
+                
+				<if cond="choice &lt; 10 ||choice=='*' || choice=='#'">
+					<if cond="cat=='0101' || cat=='0102' || cat=='0103' || cat=='0104' || cat=='0301' || cat=='0302' || cat=='0303' || cat=='0304' || cat=='0601'|| cat=='0602' || cat=='0603' || cat=='0604' || cat=='0701' || cat=='0702' || cat=='0703' || cat=='0801' || cat=='0802' || cat=='0803' || cat=='0901' || cat=='0902' || cat=='0903' || cat=='1001' || cat=='1002' || cat=='1003' || cat=='1901' || cat=='1902' || cat=='2001' || cat=='2002'">					       
+    			 		<goto next="playcontent.vxml"/>
+					<elseif cond="cat=='0131' || cat=='0132' || cat=='0133' || cat=='0134' || cat=='0135' || cat=='0136' || cat=='0137' || cat=='0138' || cat=='0139'|| cat=='0140' || cat=='0141' || cat=='0231' || cat=='0232' || cat=='0233' || cat=='0234' || cat=='0331' || cat=='0332' || cat=='0333' || cat=='0334' || cat=='0335' || cat=='0336' || cat=='0631' || cat=='0632' || cat=='0633' || cat=='0634' || cat=='0731' || cat=='0732' || cat=='0733' || cat=='0734' || cat=='0831' || cat=='0832' || cat=='0833' || cat=='0834' || cat=='0835' || cat=='0836' || cat=='0837' || cat=='0931' || cat=='0932' || cat=='0933' || cat=='0934' || cat=='0935' || cat=='0936' || cat=='0937' || cat=='0938' || cat=='0939' || cat=='1031' || cat=='1032' || cat=='1033' || cat=='1034' || cat=='1931' || cat=='1932' || cat=='1933' || cat=='1934' || cat=='1935'"/>
+				 		<goto next="devoplaycontent.vxml"/>
+		   		        <elseif cond="cat=='0121' || cat=='0122' || cat=='0123' || cat=='0124' || cat=='0621' || cat=='0721' || cat=='0821' || cat=='1021'"/>
+				 		<goto next="Audio_Cinema_MainMenu.vxml#loadcliptoplay"/>
+					<elseif cond="cat=='0650'"/>
+						<goto next="Celeb_interview.vxml"></goto>
+					<elseif cond="cat=='0651'"/>
+						<goto next="Celeb_gossips.vxml"></goto>
+					<elseif cond="cat=='0636'"/>
+						<assign name="playconfigcat" expr="'0636'"/>
+						<assign name="playconfig" expr="'0636'"/>
+							<goto next="devoplaycontent.vxml"/>
+
+						<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+				    	<else/>                							 				 					 		         
+                 		               <goto next="New_MainMenu.vxml"/>
+				        </if>
+				 </if>  		
+				
+				  
+			</filled>
+		</field>
+		<noinput>
+			<if cond="cat=='0101' || cat=='0102' || cat=='0103' || cat=='0104' || cat=='0301' || cat=='0302' || cat=='0303' || cat=='0304' || cat=='0601'|| cat=='0602' || cat=='0603' || cat=='0604' || cat=='0701' || cat=='0702' || cat=='0703' || cat=='0801' || cat=='0802' || cat=='0803' || cat=='0901' || cat=='0902' || cat=='0903' || cat=='1001' || cat=='1002' || cat=='1003' || cat=='1901' || cat=='1902' || cat=='2001' || cat=='2002'">					       
+    			 		<goto next="playcontent.vxml"/>
+					<elseif cond="cat=='0131' || cat=='0132' || cat=='0133' || cat=='0134' || cat=='0135' || cat=='0136' || cat=='0137' || cat=='0138' || cat=='0139'|| cat=='0140' || cat=='0141' || cat=='0231' || cat=='0232' || cat=='0233' || cat=='0234' || cat=='0331' || cat=='0332' || cat=='0333' || cat=='0334' || cat=='0335' || cat=='0336' || cat=='0631' || cat=='0632' || cat=='0633' || cat=='0634' || cat=='0731' || cat=='0732' || cat=='0733' || cat=='0734' || cat=='0831' || cat=='0832' || cat=='0833' || cat=='0834' || cat=='0835' || cat=='0836' || cat=='0837' || cat=='0931' || cat=='0932' || cat=='0933' || cat=='0934' || cat=='0935' || cat=='0936' || cat=='0937' || cat=='0938' || cat=='0939' || cat=='1031' || cat=='1032' || cat=='1033' || cat=='1034' || cat=='1931' || cat=='1932' || cat=='1933' || cat=='1934' || cat=='1935'"/>
+				 		<goto next="devoplaycontent.vxml"/>
+		   		        <elseif cond="cat=='0121' || cat=='0122' || cat=='0123' || cat=='0124' || cat=='0621' || cat=='0721' || cat=='0821' || cat=='1021'"/>
+				 		<goto next="Audio_Cinema_MainMenu.vxml#loadcliptoplay"/>
+					<elseif cond="cat=='0650'"/>
+						<goto next="Celeb_interview.vxml"></goto>
+					<elseif cond="cat=='0651'"/>
+						<goto next="Celeb_gossips.vxml"></goto>
+					<elseif cond="cat=='0636'"/>
+						<assign name="playconfigcat" expr="'0636'"/>
+						<assign name="playconfig" expr="'0636'"/>
+							<goto next="devoplaycontent.vxml"/>
+						<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+				    	<else/>                							 				 					 		         
+                 		               <goto next="New_MainMenu.vxml"/>
+				        </if>
+		</noinput>
+		<nomatch>
+			<if cond="cat=='0101' || cat=='0102' || cat=='0103' || cat=='0104' || cat=='0301' || cat=='0302' || cat=='0303' || cat=='0304' || cat=='0601'|| cat=='0602' || cat=='0603' || cat=='0604' || cat=='0701' || cat=='0702' || cat=='0703' || cat=='0801' || cat=='0802' || cat=='0803' || cat=='0901' || cat=='0902' || cat=='0903' || cat=='1001' || cat=='1002' || cat=='1003' || cat=='1901' || cat=='1902' || cat=='2001' || cat=='2002'">					       
+    			 		<goto next="playcontent.vxml"/>
+					<elseif cond="cat=='0131' || cat=='0132' || cat=='0133' || cat=='0134' || cat=='0135' || cat=='0136' || cat=='0137' || cat=='0138' || cat=='0139'|| cat=='0140' || cat=='0141' || cat=='0231' || cat=='0232' || cat=='0233' || cat=='0234' || cat=='0331' || cat=='0332' || cat=='0333' || cat=='0334' || cat=='0335' || cat=='0336' || cat=='0631' || cat=='0632' || cat=='0633' || cat=='0634' || cat=='0731' || cat=='0732' || cat=='0733' || cat=='0734' || cat=='0831' || cat=='0832' || cat=='0833' || cat=='0834' || cat=='0835' || cat=='0836' || cat=='0837' || cat=='0931' || cat=='0932' || cat=='0933' || cat=='0934' || cat=='0935' || cat=='0936' || cat=='0937' || cat=='0938' || cat=='0939' || cat=='1031' || cat=='1032' || cat=='1033' || cat=='1034' || cat=='1931' || cat=='1932' || cat=='1933' || cat=='1934' || cat=='1935'"/>
+				 		<goto next="devoplaycontent.vxml"/>
+		   		        <elseif cond="cat=='0121' || cat=='0122' || cat=='0123' || cat=='0124' || cat=='0621' || cat=='0721' || cat=='0821' || cat=='1021'"/>
+				 		<goto next="Audio_Cinema_MainMenu.vxml#loadcliptoplay"/>
+					<elseif cond="cat=='0650'"/>
+						<goto next="Celeb_interview.vxml"></goto>
+					<elseif cond="cat=='0651'"/>
+						<goto next="Celeb_gossips.vxml"></goto>
+					<elseif cond="cat=='0636'"/>
+						<assign name="playconfigcat" expr="'0636'"/>
+						<assign name="playconfig" expr="'0636'"/>
+							<goto next="devoplaycontent.vxml"/>
+						<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+				    	<else/>                							 				 					 		         
+                 		               <goto next="New_MainMenu.vxml"/>
+				        </if>
+		</nomatch>
+	</form>
+
+</vxml>

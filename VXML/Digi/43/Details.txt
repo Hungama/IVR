@@ -1,0 +1,10 @@
+VXML code path on Digi 43 serrver -
+
+Hindi Portal -
+/home/hungama/digi_code
+
+Bengali -
+/home/hungama/Hungama_Digi_Bengali
+
+Nepali -
+/home/hungama/Hungama_Digi_Nepali

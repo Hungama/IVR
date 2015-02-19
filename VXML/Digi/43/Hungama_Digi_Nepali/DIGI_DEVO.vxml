@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="DIGIRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="DIGIMOD.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+	<var name="movie_idx" expr="0"/>
+	
+	<script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var dishes=new Array();	
+	</script>
+	
+		
+  <form id="FETCHCATGORY">
+            <block>
+				
+					<assign name="program_name" expr="'DIGI_DEVO_FETCHCATGORY'"/>					
+					<log> fetching songs </log>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=digiconfignep/'+operator+'/devosongconfig/'+playconfigcat+'.cfg'"/>
+					 <script>
+						array1.length=0;
+						unike_play=0;
+				</script>					
+				<assign name="len" expr="favSongs.length" />					
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+					 <![CDATA[
+						for(j=0; j<len ;  j++)
+						{  	  
+							array1[j] = favSongs[j];						   
+						}
+	
+					]]>		
+				</script> 	       					       
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+				<assign name="start_index_pre" expr="0"/>
+				<assign name="start_index" expr="0"/>
+				<if cond="len &lt; 5 || len==5">
+					<assign name="end_index" expr="len"/>
+					<assign name="OTHER_RECIPES" expr="'FALSE'"/>
+				<else/>
+					<assign name="end_index" expr="5"/>
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+				</if>				
+				<assign name="i" expr="0" />
+				<goto next="#playcatname" />
+            </block>        	
+        </form>
+        
+    <form id="playcatname">
+		<block>
+			<assign name="program_name" expr="'DIGI_DEVO_playcatname'"/>
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<script>
+					 <![CDATA[
+						for(j=start_index; j<end_index ;  j++)
+						{  	  
+							
+						dishes[i] = array1[j];
+						i++;													   
+						}
+	
+					]]>		
+				</script>									
+			
+		</block>
+		<field name="choice">			
+			<grammar mode="dtmf" root="start">
+						<rule id="start" scope="public">
+							<one-of>								 							
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  0  </item>
+								 <item>  *  </item>
+								 <item>  #  </item>
+								
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="1s">
+				<foreach item="names" array="dishes">
+					<assign name="movie_idx" expr="movie_idx+1" />
+					<log>	song is is    	<value expr="movie_idx"/>  	</log>
+					<log>	names is is    	<value expr="names"/>  	</log>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/select_cat'+names+'.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_press_dtmf'+movie_idx+'.wav'"/>
+				</foreach>													
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="OTHER_RECIPES=='TRUE'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/dev_other_option_islam_sikh.wav'"/>
+			</prompt>			
+			
+		<filled>
+				<if cond="choice=='6'">
+					<script>
+						start_index_pre = start_index;
+						start_index = end_index;
+						end_index = end_index+5;
+					</script>
+
+					<if cond="OTHER_RECIPES=='FALSE'">
+						<if cond="counter_cat &lt; 3">
+							<script>counter_cat=counter_cat+1</script>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/> 
+							</prompt>
+							<goto next="#FETCHCATGORY"/>
+						<else/>
+							<assign name="playconfig" expr="array1[0]"/>
+							<assign name="HEARD" expr="playconfig" />
+							<script>counter_cat=1</script>
+							<goto next="devoplaycontent.vxml"/>
+						</if>
+
+						<!-- <audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/>
+						<goto next="#FETCHCATGORY"/> -->
+					</if>
+
+					<if cond="len &lt; end_index || len==end_index">					
+						<script>
+							end_index = len;
+							dishes.length=0;
+							len = len-5;
+						</script>
+						<assign name="OTHER_RECIPES" expr="'FALSE'"/>
+						
+					</if>
+					<log expr="'start_index_pre='+start_index_pre"></log>
+					<log expr="'start_index='+start_index"></log>
+					<log expr="'end_index='+end_index"></log>
+					<log expr="'len='+len"></log>
+					<goto next="#playcatname"/>
+				</if>
+				
+								
+				<if cond="choice=='7'">
+					<script>counter_cat=1</script>
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+					<goto next="New_MainMenu.vxml#LASTRELIGION_PROFILE"/>
+				</if>
+				<if cond="choice=='8'">
+					<script>counter_cat=1</script>
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+					<goto next="New_MainMenu.vxml"/>
+				</if>
+				<if cond="choice=='9'">
+					<script>counter_cat=1</script>
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+					<goto next="dev_ManageAccount.vxml"/>
+				</if>
+				<if cond="choice=='0'">
+					<if cond="counter_cat &lt; 3">
+						<script>counter_cat=counter_cat+1</script>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/> 
+						</prompt>
+						<goto next="#FETCHCATGORY"/>
+					<else/>
+						<assign name="playconfig" expr="array1[0]"/>
+						<assign name="HEARD" expr="playconfig" />
+						<script>counter_cat=1</script>
+						<goto next="devoplaycontent.vxml"/>
+					</if>
+				</if>				
+				<if cond="choice &lt; len+1">					
+					
+					<script>choice=choice-1</script>
+					<if cond="end_index &lt; 6">
+						<script>unike_play=choice</script>
+					<else/>
+						<!-- <script>unike_play=end_index-start_index+start_index_pre+choice</script> -->
+						<script>unike_play=start_index+choice</script> 
+					</if>
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/> 
+					<assign name="cat" expr="array1[unike_play]"/>
+					 <assign name="playconfig" expr="cat"/>
+					<assign name="HEARD" expr="playconfig" />
+					<script>counter_cat=1</script>
+					<goto next="devoplaycontent.vxml"/>
+				 <else/>
+					
+					<if cond="counter_cat &lt; 3">
+						<script>counter_cat=counter_cat+1</script>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/> 
+						</prompt>
+						<goto next="#FETCHCATGORY"/>
+					<else/>
+						<assign name="playconfig" expr="array1[0]"/>
+						<assign name="HEARD" expr="playconfig" />
+						<script>counter_cat=1</script>
+						<goto next="devoplaycontent.vxml"/>
+					</if>
+					
+				</if>				
+		</filled>
+
+		<noinput count="1">
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_waiting_response.wav'"/> 
+				</prompt>
+				<reprompt></reprompt>
+		  </noinput>
+
+		<noinput count="2">
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_waiting_response.wav'"/> 
+				</prompt>
+				<reprompt></reprompt>
+		  </noinput>
+
+
+		<noinput count="3">
+			<assign name="playconfig" expr="array1[0]"/>
+			<assign name="HEARD" expr="playconfig" />
+			<goto next="devoplaycontent.vxml"/>
+ 	
+		</noinput>
+
+		
+		
+		<nomatch count="1">
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/> 
+				</prompt>
+				<reprompt></reprompt>
+						
+		</nomatch>	
+		<nomatch count="2">
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/dev_invalidoption.wav'"/> 
+				</prompt>
+				<reprompt></reprompt>
+						
+		</nomatch>	
+
+		<nomatch count="3">
+				<assign name="playconfig" expr="array1[0]"/>
+				<assign name="HEARD" expr="playconfig" />
+				<goto next="devoplaycontent.vxml"/>
+						
+		</nomatch>	
+			
+		</field>
+	</form>
+
+</vxml>
