@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_PKP_Root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_PKP_SelectLang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+	
+<form id="Main">
+	<block>
+		<assign name="promptpath" expr="'http://192.168.1.4:8088/hungama/promptfiles/PKPprompts'"/>
+		<assign name="contentpath" expr="'http://192.168.1.4:8088/content/'"/> 
+		<assign name="IP" expr="'192.168.1.4:8088'"/>
+		<assign name="lang" expr="'01'"/>
+
+
+		<assign name="C_Start" expr="start_time()"/>
+			<assign name="operator" expr="'bsnl'"/>
+				<assign name="dbservlet" expr="'bsnlhungama_dbinteraction'"/>
+			<script>  
+				realDNIS=session.connection.local.uri;                   
+				ANI=session.connection.remote.uri;						   
+			</script>
+			<script>
+				length = ANI.length;
+				if(length == 15)
+					ANI = ANI.substring(5,15);
+				if(length == 14)
+					ANI = ANI.substring(4,14);
+				if(length == 13)
+					ANI = ANI.substring(3,13);
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+			</script>  
+			<assign name="DNIS" expr="realDNIS"/>
+
+			
+			<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+			<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+			<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+			<log> operator-circle identification </log>
+
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+								circle = out_string[j];
+
+							  }
+
+						]]>
+
+				</script>
+
+				<log> FIRST DB FETCH circle  is	<value expr="circle"/>    </log>
+
+			<assign name="DNIS" expr="'546464'"/>
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+		<log expr="'contentlog=='+contentlog"></log>
+		
+		<goto next="Hungama_PKP_Userstatus.vxml"/>
+	</block>
+  </form>
+
+</vxml>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_LoveGuru.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<var name="TOKEN" expr="''"/>
+	<var name="ConfigPath" expr="''"/>
+	<var name="UploadFileName" expr="''"/>
+	<var name="day" expr="''"/>
+	<var name="month" expr="''"/>
+	<var name="ANSWER" expr="''"/>
+<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	
+	<form id="MAINMENU1">	
+	<block>
+	<assign name="Section_Name" expr="'LOVEGURU'" />
+		<script>
+			 <![CDATA[
+			if(timerflag==1)
+			 start_BalenceMinute=starttime();
+		   ]]>	 	
+		</script>
+	</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start15" version="1.0">
+						<rule id="start15" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								
+								 <item>  8  </item>
+								 <item>  9  </item>
+																 
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_new_546462.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/loveguru_options.wav'"/>	
+														
+				</prompt>
+				
+				
+				<filled>
+					<goto next="Hungama_54646_MainMenu.vxml"/>			
+				</filled>
+
+			<noinput>
+				<goto next="Hungama_54646_MainMenu.vxml"/>
+			</noinput>			
+			<nomatch>
+				<goto next="Hungama_54646_MainMenu.vxml"/>
+			</nomatch>	
+			</field>		
+	</form>
+
+	
+
+</vxml>

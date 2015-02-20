@@ -1,0 +1,5 @@
+West zone vxml code on server -
+
+54646 -
+/var/lib/apache-tomcat-6.0.29/webapps/hungama/HMP_54646
+

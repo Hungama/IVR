@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Precall.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+<var name="connectionid1" expr="" />
+<var name="ANI" expr="" />
+<var name="connectionid2" expr="" />
+<var name="realDNIS" expr="" />
+
+
+	<var name="promptpath" expr="'http://192.168.1.2:8080/hungama/promptfiles/54646_version2_prompts/01'"/>	
+
+
+	
+
+	<form id="play1">
+		<block>
+			 	  <prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/tollmodal_3rs_del.wav'"/>	
+			          </prompt>
+			          <exit/>
+
+		</block>
+	</form>
+</vxml>

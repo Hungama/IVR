@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ccxml version="1.0" xmlns="http://www.w3.org/2002/09/ccxml">  
+  <meta name="HUNGAMA_ROOT.ccxml" content="" />
+  <meta name="Author" content="" />
+  <meta name="Date" content="" />
+  <meta name="Description" content="" />
+  <meta name="Support" content="" />  
+   <!-- Declaration of the state variable. Let's start in the init state. -->
+  <var name="stateVar" expr="'init'"/>
+  <var name="dialogid1" expr="''"/>
+  <var name="connid1" expr="''"/>
+  <var name="connid2" expr="''"/>
+  <var name="CallCount" expr="0"/>
+  <script> 
+    <![CDATA[
+               tempTime = new Date();		
+               Minutes = tempTime.getMinutes();               
+               Hour = tempTime.getHours();		
+               Seconds = tempTime.getSeconds();
+
+               //** ensure that any singular return values are padded with a preceding zero
+
+         function padZeroH ()
+		 {
+                tempTime = new Date();		
+                t = tempTime.getHours();		
+ 	
+              	if(t < 10) {
+                	t = "0" + t;
+        		}
+
+		    return t;						
+		 }
+			 
+         function padZeroM ()
+		 {
+               tempTime = new Date();		
+               t = tempTime.getMinutes();		 	
+               if(t < 10) {
+                 t = "0" + t;
+       		   } 
+     		return t;						
+		 }
+			 
+         function padZeroS ()
+		 {
+              tempTime = new Date();		
+              t = tempTime.getSeconds();		 	
+              if(t < 10) {
+             	t = "0" + t;
+		      }
+
+  		    return t;						
+		 }
+function calculateLength(sh, sm, ss, eh, em, es)
+		 {
+
+               //** account for clock rollover (hour/minute/seconds)
+
+               if (eh < sh) {
+                   eh = (eh + 12);
+               }
+               if (em < sm) {
+                   em = (em + 60);
+               }
+               if (es < ss)  {
+                  es = (es + 60);
+	           }
+
+              //** compute callend time minus callstart time
+
+
+             timerH = padZero((eh - sh));
+             timerM = padZero((em - sm));
+             timerS = padZero((es - ss));
+
+             //** concatenate results to a single value
+ 
+             call_length = timerH + ':' + timerM + ':' + timerS;
+    
+
+            //** return call length to invoking application
+
+            return call_length;
+		 } 
+  
+    ]]>
+  </script>
+  
+  <script>
+	   st=new Object();
+       et=new Object();
+       ani=new Object();
+
+  </script>
+  
+  <var name="ANI" expr="'9999216077'"/>
+  <var name="DNIS" expr="'54646'"/>
+  <var name="ContentTime" expr="'10'"/>
+
+  <var name="startTime"/>
+  <var name="startHour"/>
+  <var name="startMinutes"/>
+  <var name="startSeconds"/>
+  
+  
+  <!-- DECLARE TIMER VARIABLES FOR CONFERENCE END -->
+  <var name="endTime"/>
+  <var name="endHour"/>
+  <var name="endMinutes"/>
+  <var name="endSeconds"/>
+  <var name="total" expr="7775"/>
+  <var name="pass" expr="8885"/>
+  <var name="end" expr="9997"/>
+  <var name="end1" expr="999"/>
+  
+  
+  
+  <var name="caller1id"/> 
+  <var name="caller2id"/> 
+  <var name="confid"/> 
+  <var name="state0" expr="'not_inited'"/> 
+  <var name="incomingcall"/> 
+  <var name="callcount" expr="0"/>
+  <var name="sendid_as" expr="null"/> 
+  <var name="sessionid" expr="null"/>
+  <var name="ServerIp" expr="'localhost:8080'"/>   
+  
+  <var name="evt_name" expr="null"/>
+  <var name="param3" expr="null"/>
+  <var name="bal_c" expr="null"/>
+  <var name="temp_bal" expr="0"/>
+  <var name="status_c" expr="null"/>
+  <var name="lang_c" expr="null"/>
+  <var name="BNI_out" expr=""/>
+  <!-- var name="local_uri" expr="''"/ -->
+  <!-- var name="local_uri_len" expr="0"/ -->
+  <var name="Flag_Check_Sub" expr="1"/>
+  <var name="Tarrif_c" expr="1"/>
+  <var name="tmp"/>
+ 
+   <!-- Event processor for stateVar -->
+  <eventprocessor statevariable="stateVar"> 
+    
+	<!-- <transition event="ccxml.loaded" state="load" name="evt" -->
+ 
+        <!-- assign name="ANI" expr="application.connection.remote"/ -->
+		<!-- assign name="DNIS" expr="application.connection.local"/ -->
+   	    <!-- assign name="ANI" expr="event$.connection.remote"/ -->
+		<!- assign name="DNIS" expr="event$.connection.local"/ -->
+		<!-- log expr="'***** CALLER NUMBER = ' + ANI" / --> 
+	    <!-- log expr="'***** DIALED NUMBER = ' + DNIS" / --> 
+        <!-- assign expr="'init'" name="stateVar"/ -->
+    <!-- /transition> -->
+  
+    <transition event="connection.alerting" state="init" name="evt">
+		  <log expr="'***** CONNECTION ALERTING *****'" /> 
+		 
+		  <assign name="DNIS" expr="event$.connection.local"/>
+  	      <assign name="ANI" expr="event$.connection.remote"/>		  	
+		  <if cond="ANI==''">
+      	      <assign name="ANI" expr="'9999216077'"/>		  	
+		  </if>
+	    	  
+	   	  <log expr="'***** SESSION ID = ' + session.id" /> 
+		  <!-- accept connectionid="event$.connectionid"/ -->		  	     
+		  <assign name="connid1" expr="event$.connectionid"/>
+              <log expr="'***** connid1 = ' + connid1" /> 
+
+		  <!-- accept connectionid="session.dialogs[event$.dialogid].connectionid"/ -->		  
+              <accept/>
+    </transition>
+	
+	
+    <transition event="connection.connected" state="init">
+     
+     <log expr="'***** CALL WAS ANSWERED *****'" /> 
+	 
+	 <assign name="CallCount" expr="CallCount+1"/> 
+     <log expr="'@@@@@@@@@@@@@@ TOTAL CALL IS : @@@@@@@@@@@@@@@@@@' + CallCount"/> 
+						
+	 <log expr="'***** EVENT$.CONNECTION.CONNECTIONID = ' + event$.connection.connectionid" /> 
+	 <!-- log expr="'***** EVENT$.CONNECTION.PROTOCOL.NAME = ' + event$.connection.protocol.name" / --> 
+	 <!-- log expr="'***** EVENT$.CONNECTION.PROTOCOL.VERSION = ' + event$.connection.protocol.version"/ --> 
+	 <log expr="'***** EVENT$.CONNECTION.STATE = ' + event$.connection.state" /> 
+	 <log expr="'***** EVENT$.CONNECTION.LOCAL = ' + event$.connection.local" /> 
+	 <log expr="'***** EVENT$.CONNECTION.REMOTE = ' + event$.connection.remote" /> 
+	 <log expr="'***** EVENT$.CONNECTION.ORIGINATOR = ' + event$.connection.originator" /> 
+	 <log expr="'Call was answered. We are going to start a dialog.'"/>
+	 <!-- assign name="ANI" expr="event$.connection.remote"/ -->
+	 <!-- assign name="DNIS" expr="event$.connection.local"/ -->
+
+  	 <log expr="'Call Connected'" label="'Call Connected'"/>
+  	 <assign name="callcount" expr="callcount+1"/> 
+  	 <log expr="'*** START TIMER ***'"/>   	
+	     <assign name="startTime" expr="padZeroH()+''+padZeroM()+''+ padZeroS()" />	     
+	     <assign name="startHour" expr="padZeroH()" />
+	     <assign name="startMinutes" expr="padZeroM()" />
+	     <assign name="startSeconds" expr="padZeroS()" />
+     <log expr="'****** startTime = ' + startTime "/>
+	 
+	 
+	 	<dialogprepare connectionid="event$.connectionid" dialogid="dialogid1" src="'Hungama_54646_UserStatus.vxml'"/>
+		 <assign name="stateVar" expr="'preparing'"/>
+	 
+   </transition>   
+   
+  <transition state="preparing" event="dialog.prepared" name="evt">
+    <log expr="'@@@@@@@@@@@@@@@ TEST DIALOG PREPARED @@@@@@@@@@@@@@@@@'" /> 		  
+	<log expr="'dialog prepared'" label="'dialog prepared'"/>
+  	<dialogstart connectionid="connid1" prepareddialogid="dialogid1"/>
+  	<assign name="stateVar" expr="'dlgstart'"/>
+   </transition>     
+    
+   <transition state="dlgstart" event="dialog.exit" name="evt">
+    
+    <log expr="'@@@@@@@@@@@@@@@ DIALOG TERMINTED @@@@@@@@@@@@@@@@@'" /> 	 
+  	<log expr="'Dialog Terminated'" label="'Dialog Terminated'"/>
+	<assign name="stateVar" expr="'dlgtrmit'"/>	
+  	<dialogterminate dialogid="dialogid1" immediate="true"/>  	
+			
+   </transition>
+   
+   <transition state="dlgstart" event="dialog.disconnect" name="evt">
+   
+    <log expr="'@@@@@@@@@@@@@@@ DIALOG DISCONNECTED @@@@@@@@@@@@@@@@@'" /> 		  
+  	<log expr="'Dialog Disconnected'" label="'Dialog Disconnected'"/>
+	<assign name="stateVar" expr="'dlgtrmit'"/>	
+  	<dialogterminate dialogid="dialogid1" immediate="true"/>  	
+			
+   </transition>
+   
+    <transition state="dlgtrmit" event="error.dialog" name="evt">  
+    
+        <log expr="'@@@@@@@@@@@@@@@ CALL HANGUP WHEN EVENT error.dialog @@@@@@@@@@@@@@@@@'" /> 		        	
+  	    <log expr="'exit'"/>
+  	    <assign name="stateVar" expr="'dlgtrmit'"/>
+  	              
+  	 
+         <log expr="'exit'"/>
+
+  	   
+		<exit/>
+	
+		 
+   </transition>
+   
+   
+  
+   <transition state="dlgtrmit" event="connection.disconnected" name="evt">  
+    
+        <log expr="'@@@@@@@@@@@@@@@ CALL HANGUP WHEN EVENT dlgtrmit @@@@@@@@@@@@@@@@@'" /> 		
+		<!-- log expr="'*****evt.values.balance = ' + evt.values.balance" / --> 	        	        	
+  	    <log expr="'exit'"/>
+
+  	    <assign name="stateVar" expr="'dlgtrmit'"/>
+		<exit/>
+	
+		 
+   </transition>  
+  
+  
+   <transition event="connection.disconnected" name="evt">
+        <log expr="'@@@@@@@@@@@@@@@ CALL HANGUP @@@@@@@@@@@@@@@@@'" /> 	
+		 
+  	    <assign name="stateVar" expr="'dlgtrmit'"/>  	   
+      		   
+ 	<log expr="'exit'"/>
+
+  	<exit/>
+   </transition>
+
+	<transition event="dialog.transfer" state="dlgstart">
+		<log expr="'***** Transfer initiated to - '+event$.URI" />
+		<log expr="'Transferring call FROM  '+ ANI"/>
+		<createcall dest="event$.URI" callerid="ANI" connectionid="connid2" timeout="'25s'"/>
+           	<assign name="stateVar" expr="'cgTx'"/>	 
+	</transition> 
+
+	<transition event="connection.connected" state="cgTx">
+		<log expr="'cgTx:Transfer call successful'"/>    
+		<join dtmfclamp="true" id1="connid2" id2="connid1" duplex="'full'"/>
+	</transition>
+
+	<transition event="conference.join" state="cgTx">
+		<log expr="'cgTx:Conference joined successfully'"/>    
+		<assign name="stateVar" expr="'cgTxConf'"/>
+		
+	</transition>
+
+	<transition event="connection.disconnnected" state="cgTxConf">
+     		<log expr="'cgTxConf:Transfer call has been disconnected after successful transfer'"/>
+                <exit/>
+	</transition>
+
+	<transition event="conference.unjoined" state="cgTxConf">
+                <log expr="'cgTx:Conference unjoined successfully'"/>
+        </transition>
+
+
+
+	<transition event="connection.failed" state="cgTx">
+     		<log expr="'cgTx:Transfer call has been failed'"/>
+		<exit/>
+	</transition>
+
+	<transition event="connection.disconnnected" state="cgTx">
+       	<log expr="'cgTx:Transfer call has been disconnected'"/> 
+		<exit/>
+	</transition>
+  
+  
+  
+</eventprocessor>     
+  
+</ccxml>

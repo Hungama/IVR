@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_MainMenu.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+ <script>
+		var out_string=new Object();
+	</script>
+	
+	<form id="trans">
+			
+			<block>
+				<prompt bargein="false" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/select_rootcat_new.wav'"/>
+				</prompt>
+
+				<log expr="'SC - 57171'"/>
+				<log expr="'language code - 02'"/>
+				<log expr="'first consent Digit - 5'"/>
+				<log expr="'Mode (IBD) - 0'"/>
+				<log expr="'Service ID - 000072'"/>	
+				<assign name ="DC_DNIS" expr="'571710250000072'"/>
+				<!--		<assign name ="DC_DNIS" expr="'57171'"/>-->
+				<!--<assign name ="DC_DNIS" expr="'57171000072025'"/>-->
+				
+			</block> 
+			<transfer name="mytransfer"  destexpr="DC_DNIS" bridge="true" connecttimeout="2000s" namelist="ANI"> 
+			<filled>
+				<log> transfer done now</log>
+				<clear namelist="mytransfer"/>
+			</filled>
+			</transfer>
+		</form>
+		</vxml>
+
+
+     

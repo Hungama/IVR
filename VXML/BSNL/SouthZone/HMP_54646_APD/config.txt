@@ -1,0 +1,64 @@
+Kerla config :
+
+music config
+
+malayalam top 20 : 0901
+tamil top 20 : 0701
+malayalam romantic songs:0944
+malyalam popular songs : 0903
+bollywood popular songs : 0703
+
+celebrity config :
+
+mollywood gossips : 0945
+bollywood gossips : 0145
+
+
+
+bhaktiras
+lord ayappa songs : 0946
+hindu devotional songs : 0113 
+christian Devotinal songs : 0213
+muslim aayatein 	: 0947
+mapiila : 0948
+
+
+Audio cinema :
+
+Tamil hits =0721
+Bollywood new releases = 0121
+Classic Bollywood = 0122
+Best of Bollywood = 0123
+Love hits = 0124
+
+
+lang grip :
+
+09
+01
+
+APD config :
+
+music config
+tollywood latest hit : 0849
+tollywood top 20 : 0850
+tollywood popular : 0851
+Bollywood hits:0852
+
+Tamil Pouplar : 0803
+
+celebrity config :
+
+Tollywood gossips : 0845
+bollywood gossips : 0145
+
+audio cinema :
+
+tamil hits :0821
+Bollywood new realase : 0121
+best of bollywood : 0123
+Love hits:0124
+
+
+
+

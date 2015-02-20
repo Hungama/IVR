@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_MainMenu.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>	
+ <script>
+		var out_string=new Object();
+	</script>
+
+     <form id="MAINMENU">
+<block>
+<assign name="Section_Name" expr="'MAINMENU'" />
+<!--********************************************DIRECT ACTIVATION ON FLY RESPONSE**********************************************************************************-->
+<if cond="tatc_flag=='1'">
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+								usr_status = out_string[j];
+							       if(j==1)
+								lang = out_string[j];
+							       if(j==2)
+								balance = out_string[j];
+							       if(j==3)
+								moviectr = out_string[j];							      
+							  }
+
+						]]>
+				</script>
+				<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>
+			<if cond="usr_status=='1'">
+					<script>
+						timerflag=1;
+						balance=balance*60;
+					</script>
+					<assign name="start_BalenceMinute" expr="starttime()"/>
+			<else/>			
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+	    </if>
+<!--********************************************************************************************************************************************************-->
+</block>
+
+   		<field name="choice">
+				<grammar mode="dtmf" root="start13" version="1.0">
+						<rule id="start13" scope="public">
+							<one-of>	
+														 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				
+				<prompt bargein="true" timeout="0s" cond="DNIS=='54646' &amp;&amp; (operator=='tatc' || operator=='tatm')">			
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_trai_h.wav'"/>
+				</prompt> 
+
+
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_old_'+var_wel+'.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/select_rootcat_new.wav'"/>
+				</prompt>
+				<filled>					
+					<if cond="choice=='9'">
+					    	<goto next="Hungama_54646_AccountMnger.vxml"/>
+					<else/>
+						<script>choice++;</script>
+						<assign name="cat" expr="choice"/>
+						<log expr="'selected cat is '+cat"></log>
+						<if cond="cat=='2'">
+							<goto next="Hungama_54646_LoveGuru.vxml"/>  
+						<elseif cond="cat=='3'"/>
+							<goto next="Hungama_MUSICWORLD_PlayContent.vxml"/>
+						<elseif cond="cat=='4'"/>
+							<goto next="Hungama_54646_CelebrityWorld.vxml"/>
+						<elseif cond="cat=='5'"/>
+							<goto next="Audio_Cinema_MainMenu.vxml"/>
+						</if>
+					</if>					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+
+</vxml>

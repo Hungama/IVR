@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_54646_End.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+
+<form id="EndLogin">
+<block>
+	<assign name="C_End" expr="start_time()"/>
+	<if cond="song_listen=='START'">
+		<assign name="song_listen" expr="'END'" />
+		<assign name="compare_time" expr="rim(song_begin)"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+		<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+
+		<if cond="CALCULATE_TIME=='SET'">
+			<script>
+			  total_used_bal=rim(start_BalenceMinute);
+			  balance=balance-total_used_bal;					  
+			</script>
+		</if>
+
+		<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+		<log expr="'@@@@@@ left balance is '+balance"/>
+	</if>	
+	<if cond="balance &lt; 0">
+			<script> balance=0;</script> 
+		</if>
+	<if cond="timerflag=='1'">
+		<script>balance=Math.floor(balance/60);</script> 
+		<if cond="balance &lt; 0">
+			<script> balance=0;</script> 
+		</if>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/>
+		
+	</if>
+
+		<if cond="callcharge!='3' &amp;&amp; sub_flag=='true'">
+				<script srcexpr="'http://'+IP+'/hungama/BSNL_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=2202&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime"/>  
+			</if>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+realDNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=BSNL_54646&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+	
+<exit/>
+</block>
+
+ <catch event="error.badfetch">		 								
+    	 	 <exit/>
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 	<exit/>
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+		  	<exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+			<exit/>
+      </catch>
+      
+    
+</form>
+	
+
+
+
+</vxml>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_54646_UserSub_DC.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+  <var name="CLI_ID" expr="'0'"/>
+  <var name="lang_dc" expr="'1'"/>
+  <var name="First_digit" expr="1"/>
+  <var name="IBD_CODE" expr="0"/>
+  <var name="Service_ID" expr="0"/>
+  <var name="double_switch" expr="-1"/>
+
+    <form id="SubIntro">
+	<block>
+		<if cond="lang=='01'">
+			<assign name="lang_dc" expr="'02'"/>
+		<elseif cond="lang=='02'"/>
+			<assign name="lang_dc" expr="'01'"/>
+		<elseif cond="lang=='11'"/>
+			<assign name="lang_dc" expr="'11'"/>
+		<elseif cond="lang=='11'"/>
+			<assign name="lang_dc" expr="'11'"/>
+		<elseif cond="lang=='10'"/>
+			<assign name="lang_dc" expr="'04'"/>
+		<elseif cond="lang=='08'"/>
+			<assign name="lang_dc" expr="'05'"/>
+		<elseif cond="lang=='09'"/>
+			<assign name="lang_dc" expr="'06'"/>
+		<elseif cond="lang=='07'"/>
+			<assign name="lang_dc" expr="'07'"/>
+		<elseif cond="lang=='13'"/>
+			<assign name="lang_dc" expr="'08'"/>
+		<elseif cond="lang=='06'"/>
+			<assign name="lang_dc" expr="'09'"/>
+		<elseif cond="lang=='12'"/>
+			<assign name="lang_dc" expr="'10'"/>
+		<elseif cond="lang=='17'"/>
+			<assign name="lang_dc" expr="'11'"/>
+		<elseif cond="lang=='03'"/>
+			<assign name="lang_dc" expr="'14'"/>
+		<elseif cond="lang=='05'"/>
+			<assign name="lang_dc" expr="'15'"/>
+		<else/>
+			<assign name="lang_dc" expr="'1'"/>
+		</if>
+		
+		<script>
+			CLI_ID='57171'+lang_dc+First_digit+IBD_CODE+'000092';
+		</script>
+		
+			<log expr="'CLI_ID @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ '+CLI_ID"></log>
+			
+		<assign name="Section_Name" expr="'SUBSCRIPTION'" />
+		<if cond="operator=='bsnl'">
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'1'"/>
+			<assign name="service_id" expr="'2202'"/>
+		</if>
+		
+		<goto next="#Switch_check"/>
+	</block>
+     </form>
+		<!--***********************************************************switch checking *********************************************************************-->
+			 <form id="Switch_check">
+				<block>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_Switch&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					<script>
+						 double_switch=out_string[0];
+					</script>				
+					<log>double_switch Sub : <value expr="double_switch"/></log>
+					<if cond="double_switch!='1'">
+						<goto next="#SubOption"></goto>
+					</if>
+				</block>
+					<field name="choice1">			
+					<grammar mode="dtmf" root="start39" version="1.0">
+						<rule id="start39" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+					</grammar>
+					<prompt bargein="true" timeout="0s" cond="(double_switch=='1')">
+						<audio expr="promptspath_54646+'/'+lang+'/subintro_switch.wav'"/>	
+					</prompt>
+					<filled>
+						<assign name="firstconsent" expr="'Y'"/>
+						<assign name="firstconsenttime" expr="start_time()"/>
+						<assign name="sub_flag" expr="'true'"/>	
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+realDNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+						<goto next="#DOUBLE_CONSENT"></goto>
+					</filled>
+				</field>
+				<noinput>
+					<assign name="firstconsent" expr="'Y'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="sub_flag" expr="'true'"/>	
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+realDNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+					<goto next="#DOUBLE_CONSENT"></goto>
+				</noinput>
+				<nomatch>
+					<assign name="firstconsent" expr="'Y'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="sub_flag" expr="'true'"/>	
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+realDNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+					<goto next="#DOUBLE_CONSENT"></goto>
+				</nomatch>
+			   </form>
+		<!--**********************************************************************************************************************************************-->
+
+	
+	<form id="SubOption">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start34" version="1.0">
+						<rule id="start34" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/subintro.wav'"/>	
+				<audio expr="promptspath_54646+'/'+lang+'/tosub_press1.wav'"/>				
+			</prompt>
+			
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="firstconsent" expr="'Y'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="sub_flag" expr="'true'"/>	
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+realDNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+					<goto next="#DOUBLE_CONSENT"></goto>
+					
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_54646_End.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_54646_End.vxml"></goto>
+			
+		</nomatch>
+	</form>
+	
+	<form id="DOUBLE_CONSENT">
+			<block>
+			<assign name="secondconsent" expr="'Y'"/>
+			<assign name="secondconsenttime" expr="start_time()"/>
+			<log expr="'CLI_ID @@@@@@@@@ '+CLI_ID"></log>
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="callcharge!='3' &amp;&amp; sub_flag=='true'">
+				<script srcexpr="'http://'+IP+'/hungama/BSNL_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=2202&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime"/>  
+			</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+realDNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=BSNL_54646&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+
+		</block> 
+			<!--<transfer name="mytransfer"  destexpr="''+CLI_ID" bridge="true" connecttimeout="2000s">--> 
+			<transfer name="mytransfer"  destexpr="CLI_ID" bridge="true" connecttimeout="2000s" namelist="ANI"> 
+			<filled>
+				<log> transfer done now</log>
+				<clear namelist="mytransfer"/>
+			</filled>
+			</transfer>
+		</form>
+
+	
+
+	
+</vxml>

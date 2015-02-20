@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_MainMenu.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>	
+	 <script>
+		var out_string=new Object();
+
+	</script>
+	 <form id="MAINMENU1">
+	 	<block>
+			<log>circle check</log>
+	 		<if cond="circle=='tnu'">
+	 			<goto next="#TNU_MAINMENU"/>
+			<elseif cond="circle=='kar' &amp;&amp; (lang=='01' || lang=='10')"/>
+				<goto next="#MAINMENU_KAR"/>
+			<else/>
+	 			<goto next="#MAINMENU"/>
+	 		</if>
+	 	
+	 	</block>
+	 
+	 </form>
+	<form id="MAINMENU_KAR">
+		<field name="choice">
+				<grammar mode="dtmf" root="start15" version="1.0">
+						<rule id="start15" scope="public">
+							<one-of>	
+														 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_old_2.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/musicworld.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/press_dtmf1.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/moviejunction.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/press_dtmf2.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/loveguru.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/press_dtmf3.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/celebrityworld.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/press_dtmf4.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/accountmanager.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/press_dtmf9.wav'"/>
+
+
+				</prompt>
+				<filled>					
+					<if cond="choice=='9'">
+					    	<goto next="Hungama_54646_AccountMnger.vxml"/>
+					<else/>
+						<script>choice++;</script>
+						<assign name="cat" expr="choice"/>
+						<log expr="'selected cat is '+cat"></log>
+						<if cond="cat=='2'">
+							<goto next="Hungama_MUSICWORLD_PlayContent.vxml"/>
+						<elseif cond="cat=='3'"/>
+							<goto next="Audio_Cinema_MainMenu.vxml"/>
+						<elseif cond="cat=='4'"/>
+							<goto next="Hungama_54646_LoveGuru.vxml"/>
+						<elseif cond="cat=='5'"/>
+							<goto next="Hungama_54646_CelebrityWorld.vxml"/>
+						</if>
+					</if>					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+
+
+     <form id="MAINMENU">
+		<field name="choice">
+				<grammar mode="dtmf" root="start13" version="1.0">
+						<rule id="start13" scope="public">
+							<one-of>	
+														 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_old_'+var_wel+'.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/select_rootcat_new.wav'"/>
+				</prompt>
+				<filled>					
+					<if cond="choice=='9'">
+					    	<goto next="Hungama_54646_AccountMnger.vxml"/>
+					<else/>
+						<script>choice++;</script>
+						<assign name="cat" expr="choice"/>
+						<log expr="'selected cat is '+cat"></log>
+						<if cond="cat=='2'">
+							<goto next="Hungama_54646_LoveGuru.vxml"/>  
+						<elseif cond="cat=='3'"/>
+							<goto next="Hungama_MUSICWORLD_PlayContent.vxml"/>
+						<elseif cond="cat=='4'"/>
+							<goto next="Hungama_54646_CelebrityWorld.vxml"/>
+						<elseif cond="cat=='5'"/>
+							<goto next="Audio_Cinema_MainMenu.vxml"/>
+						</if>
+					</if>					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+	<form id="TNU_MAINMENU">
+		<field name="choice1">
+				<grammar mode="dtmf" root="start14" version="1.0">
+						<rule id="start14" scope="public">
+							<one-of>	
+														 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  9  </item>
+								 <item>  0  </item>
+							</one-of>
+						</rule>
+				</grammar>
+
+				<prompt bargein="true" timeout="2s" cond="lang=='07' &amp;&amp; circle=='tnu'">
+					<audio expr="promptspath_54646+'/'+lang+'/select_ayapp.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/press_dtmf0.wav'"/>
+
+				</prompt>
+
+
+				<prompt bargein="true" timeout="2s">
+					<!--<audio expr="promptspath_54646+'/'+lang+'/welcome_old_'+var_wel+'.wav'"/>-->
+					<audio expr="promptspath_54646+'/'+lang+'/select_rootcat_TN.wav'"/>
+				</prompt>
+
+				<filled>
+					
+					<if cond="choice1=='9'">
+						<goto next="Hungama_54646_AccountMnger.vxml"/>
+					 <elseif cond="choice1=='1'"/>
+						<goto next="Hungama_54646_BSP.vxml"/>  
+					<elseif cond="choice1=='2'"/>
+						<goto next="Hungama_MUSICWORLD_PlayContent.vxml"/>
+					<elseif cond="choice1=='3'"/>
+						<goto next="Hungama_54646_ConmedyJunction.vxml"/>
+					<elseif cond="choice1=='4'"/>
+						<goto next="Audio_Cinema_MainMenu.vxml"/>
+					<elseif cond="lang=='07'&amp;&amp; circle=='tnu' &amp;&amp; choice1=='0'"/>
+						<goto next="Hungama_Aypaa.vxml"/>  
+					<else/>
+						<prompt bargein="true" timeout="0s">
+								<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>
+							<goto next="#MAINMENU"/>
+					</if>
+					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+
+</vxml>

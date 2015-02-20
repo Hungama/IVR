@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_PKP_Root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_PKP_mainmenu.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+<var name="DATE" expr="''"/>
+<var name="movie_idx" expr="0"/>
+<script>
+	var bookmarksave_status=0;
+
+</script>
+
+<form id="SubServices">
+   <script>
+	  	i=0;
+  		charcter.length=0;
+   </script>
+  <block>
+     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=BSNL_PKP.MND_LISTEN_STORY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>
+         <script>
+		 <![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+				  {  	
+				       if (out_string[j]!=0)
+				        {
+					     	charcter[i] = out_string[j];
+						    i++;
+						}
+				  }
+			]]>
+	</script>
+			<script>
+				len=charcter.length;
+			</script>
+			<log expr="'charcter len iss ' +len"></log>
+			<goto next="#Mainmenu"/>		
+  </block>
+</form>
+
+
+
+<form id="Mainmenu">
+	 <block>
+		<assign name="index" expr="0" />
+		<assign name="movie_idx" expr="0" />
+		<assign name="drop_point" expr="'Main_Menu'"/>
+	 </block>
+     <field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+					 <item>  2  </item>
+					 <item>  3  </item>
+					 <item>  4  </item>
+					 <item>  5  </item>
+					 <item>  8  </item>
+							
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="charcter">
+						<assign name="movie_idx" expr="movie_idx+1" />
+						 <log>	index isss    	<value expr="movie_idx"/>  	</log>
+						 <log>	names is is    	<value expr="names"/>  	</log>
+						 <audio expr="promptpath+'/'+lang+'/'+names+'/sub_'+names+'.wav'"/>
+						 <audio expr="promptpath+'/'+lang+'/common/press_dtmf'+movie_idx+'.wav'"/>
+					</foreach>													
+				</prompt>
+				
+				
+		  <filled>
+				<if cond="choice &lt;len+1">	
+					<assign name="playconfig" expr="charcter[--choice]" />
+					<assign name="cat" expr="charcter[choice]" />
+					<assign name="subcat" expr="charcter[choice]" />			
+					<goto next="#loadcliptoplay"/>
+				<elseif cond="choice=='8'"/>
+				   	 <goto next="#SubServices"/>
+				<else/>
+					<assign name="index" expr="'0'" />
+					<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+					<goto next="#Mainmenu"/>
+				</if>		
+	     </filled>				    
+			
+			 <noinput>
+					<assign name="index" expr="'0'" />
+					<assign name="movie_idx" expr="0" />
+					<audio expr="promptpath+'/'+lang+'/common/nodtmf.wav'"/>
+					<reprompt/> 
+			 </noinput>  
+			 
+			 <noinput count="3">
+					<assign name="playconfig" expr="charcter[0]" />
+					<assign name="cat" expr="charcter[0]" />
+					<assign name="subcat" expr="charcter[0]" />			
+					<goto next="#loadcliptoplay"/>
+ 			 </noinput> 
+			    
+
+			<nomatch>
+					<assign name="index" expr="'0'" />
+					<assign name="movie_idx" expr="0" />
+					<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+					<reprompt/>
+			</nomatch> 
+			<nomatch count="3">
+					<assign name="playconfig" expr="charcter[0]" />
+					<assign name="cat" expr="charcter[0]" />
+					<assign name="subcat" expr="charcter[0]" />			
+					<goto next="#loadcliptoplay"/>
+			</nomatch> 
+	    </field>
+</form>
+
+
+<form id="loadcliptoplay">
+	<block> 
+		<assign name="drop_point" expr="'load_story'"/>
+		<log expr="'playconfig isss'+playconfig"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=BSNL_PKP.MND_LAST_HEARD&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=GET&amp;INPARAM[2]='+playconfig+'&amp;INPARAM[3]=0&amp;INPARAM[4]=0'"/>
+		<script>
+			 	lastcat = out_string[0];
+				day = out_string[1];
+				lastcat=parseInt(lastcat);
+		</script>
+
+		
+		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=PKP/'+lang+'/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+				array.length=0;
+				unike_play=0;
+			</script>
+				<assign name="len" expr="favSongs.length" />
+				<assign name="movie_idx" expr="'0'" />
+				<assign name="i" expr="'0'" />   
+			<script>
+				<![CDATA[
+				   for(k=0; k<len ;  k++)
+					  {  	  
+						array[k] = favSongs[k];						   
+					  }
+				]]>		
+			</script> 
+				<assign name="DATE" expr="getcurryyyymmdd()"/>
+				<log>	Today DATE  isssss    <value expr="DATE"/> 	</log>
+				
+				<log>	Today DAY isssss    <value expr="day"/> 	</log>	
+				
+				<assign name="unike_play" expr="lastcat+1" />
+				<assign name="previousvalue" expr="unike_play" />				
+				
+				<log>	unike_play  isssss    <value expr="unike_play"/> 	</log>
+				<log>	lastcat  isssss    <value expr="lastcat"/> 	</log>
+				<log>	previousvalue  isssss    <value expr="previousvalue"/> 	</log>
+				
+							
+				
+				
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/keypad_option.wav'"/>
+				</prompt>
+						       
+				<goto next="#Playclipsstart"/>  					
+	   </block>
+	</form>
+
+
+<form id="Playclipsstart">
+		<block>
+			<assign name="drop_point" expr="'play_story'"/> 
+			<log>	unike_play  isssss    <value expr="unike_play"/> 	</log>
+    	            	<log>	array  isssss    <value expr="array[0]"/> 	</log>
+				
+			
+			
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<!-- <assign name="unike_play" expr="len-1" /> -->
+				<assign name="unike_play" expr="previousvalue" />
+			</if>
+			
+			
+			<script>
+					songcheck=array[unike_play].split("_");
+					contentdir=songcheck[0]; 
+					song = array[unike_play];
+			</script>
+			
+			 <log>	contentdir isssss    <value expr="contentdir"/> </log>	
+			 <log>	song isssss    <value expr="song"/> 	</log>		
+			 <assign name="song_begin" expr="starttime()"/>
+			 <assign name="song_listen" expr="'START'" />
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=BSNL_PKP.MND_LAST_HEARD&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SET&amp;INPARAM[2]='+playconfig+'&amp;INPARAM[3]='+unike_play+'&amp;INPARAM[4]='+song"/>
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=BSNL_PKP.JBOX_LASTCAT_ALLCHARACTER&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]=1'"/>
+		</block>
+		<field name="selectoption">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+				  <one-of>
+					<item>1</item>
+					<item>2</item>
+					<item>3</item>
+					<item>6</item>
+					<item>8</item>
+					
+				  </one-of>
+				</rule>
+			 </grammar>
+			
+			   <prompt bargein="true"  timeout="1s">
+			       <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		       </prompt> 			 
+		      
+		      <filled>
+						 
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+
+				 <if cond="selectoption=='1'">
+				 		<script>
+							unike_play=unike_play+1; 
+							previousvalue=previousvalue+1;
+						</script>	
+						<goto next="#Playclipsstart"/>
+				 <elseif cond="selectoption=='2'"/>
+				 		<script>
+							unike_play=unike_play; 
+							previousvalue=previousvalue;
+						</script>	
+						<goto next="#Playclipsstart"/>
+				 <elseif cond="selectoption=='3'"/>
+				 		<script>
+							unike_play=unike_play-1; 
+						</script>	
+						<goto next="#Playclipsstart"/>
+				 <elseif cond="selectoption=='6'"/>
+				 		 <goto next="#Keypad_option"/>
+				 <elseif cond="selectoption=='8'"/>				 
+					     <goto next="#SubServices"/>
+				 <elseif cond="selectoption=='9'"/>
+						<goto next="Hungama_PKP_Acntmngr.vxml"/>
+				 </if>				 
+			  </filled>				  
+				     
+			<noinput>
+				 
+				 
+				  <assign name="song_listen" expr="'END'" />
+				  <assign name="compare_time" expr="rim(song_begin)"/>
+				  <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				  <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+				<script>
+					unike_play=unike_play+1; 
+					previousvalue=previousvalue+1;	
+				</script>
+				   <goto next="#Playclipsstart"/>
+	
+			</noinput>
+			<nomatch>
+				
+				  <assign name="song_listen" expr="'END'" />
+				  <assign name="compare_time" expr="rim(song_begin)"/>
+				  <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				  <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+				 
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+				</prompt>
+				<goto next="#Playclipsstart"/>
+			</nomatch>	
+			<catch event="error.badfetch.http.404">
+	   				<script>
+						unike_play=0;
+					</script>
+				<goto next="#Playclipsstart"/>
+			</catch>
+	  </field>
+	  	
+	</form>
+	
+	
+<form id="Keypad_option">
+ 		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">	
+						<one-of>
+							<item>1</item>
+							<item>2</item>
+							<item>3</item>
+							<item>6</item>
+							<item>8</item>
+						     
+						</one-of>
+					</rule>
+				</grammar>
+				
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/keypad_option.wav'"/>
+				</prompt>
+				
+			<filled>
+				<if cond="choice=='1'">
+				 		<script>
+							unike_play=unike_play+1; 
+							previousvalue=previousvalue+1;
+						</script>	
+						<goto next="#Playclipsstart"/>
+				 <elseif cond="choice=='2'"/>
+				 		<script>
+							unike_play=unike_play; 
+							previousvalue=previousvalue;
+						</script>	
+						<goto next="#Playclipsstart"/>
+				 <elseif cond="choice=='3'"/>
+				 		<script>
+							unike_play=unike_play-1; 
+						</script>	
+						<goto next="#Playclipsstart"/>
+				
+			
+				 <elseif cond="choice=='6'"/>
+				 		 <goto next="#Keypad_option"/>
+				 <elseif cond="choice=='8'"/>				 
+					     <goto next="#SubServices"/>
+				
+				 </if>					
+		    </filled>				    
+			
+			<noinput>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/common/nodtmf.wav'"/>
+					</prompt>
+					<goto next="#Keypad_option"/>
+			</noinput>  
+			
+			<noinput count="3">
+					<goto next="#Playclipsstart"/>
+			</noinput>
+			
+			<nomatch>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+					</prompt>
+					<goto next="#Keypad_option"/>					
+		    </nomatch> 
+		    <nomatch count="3">
+					
+					<goto next="#Playclipsstart"/>
+		    </nomatch> 
+		</field>
+</form>
+ </vxml>
+
+ 

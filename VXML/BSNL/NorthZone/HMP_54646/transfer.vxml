@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_MainMenu.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>	
+ <var name="lang_dc" expr="'1'"/>
+ <script>
+		var out_string=new Object();
+	</script>
+	
+	<form id="trans">
+			
+			<block>
+			
+			<!--	<prompt bargein="false" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/select_rootcat_new.wav'"/>
+				</prompt>
+	
+				<assign name ="DC_DNIS" expr="'546469530662263070000310000000'"/>-->
+				<if cond="lang=='01'">
+					<assign name="lang_dc" expr="'2'"/>
+				<elseif cond="lang=='02'"/>
+					<assign name="lang_dc" expr="'1'"/>
+				<else/>
+					<assign name="lang_dc" expr="'1'"/>
+				</if>
+			
+				<prompt bargein="false" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/select_rootcat_new.wav'"/>
+				</prompt>
+	
+				<assign name ="DC_DNIS" expr="'546469530662263070000310000000'"/>
+				<script>
+					DC_DNIS='54646'+ANI+'0700003'+lang_dc+'0000000';
+				</script>
+<log expr="'DC_DNIS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ '+DC_DNIS"></log>
+				
+			</block> 
+			<transfer name="mytransfer"  destexpr="DC_DNIS" bridge="true" connecttimeout="2000s" namelist="ANI"> 
+			<filled>
+				<log> transfer done now</log>
+				<clear namelist="mytransfer"/>
+			</filled>
+			</transfer>
+		</form>
+		</vxml>
+
+
+     

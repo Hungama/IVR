@@ -1,0 +1,9 @@
+North zone vxml code on server -
+
+54646 -
+/var/lib/apache-tomcat-6.0.29/webapps/hungama/HMP_54646
+/var/lib/apache-tomcat-6.0.29/webapps/hungama/HMP_54646_PUB
+
+
+PKP -
+/var/lib/apache-tomcat-6.0.29/webapps/hungama/Hungama_PKP
