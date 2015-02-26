@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="jyotish_root1.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="NewUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="usr_status_uni" expr=" '0' "/>
+	<script>
+		var ciropr1=new Object();
+		var out_string = new Object();
+	</script>
+<error>
+<goto next="end.vxml"/>
+</error>
+
+	<form id="newuser">
+		<block>
+		<assign name="program_name" expr="'NewUser'"/>
+		<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=UNI_QUERY_WBASE&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						usr_status_uni = out_string[j];
+					    }
+				]]>
+		</script>
+		<log expr="'usr_status_uni @@@@@@@@@ '+usr_status_uni"></log>
+		<log expr="'lang @@@@@@@@@ '+lang"></log>
+		<if cond="lang=='null' || lang==''">
+			<assign name="lang" expr="'01'"/>
+		</if>
+		<if cond="usr_status_uni=='1'">
+			<goto next="NewUser_DC.vxml"/>
+		</if>-->
+		<goto next="NewUser_DC.vxml"/>
+		<if cond="ANI=='8376903442'">		
+			<assign name="circle" expr="'mah'"/>	
+		</if>
+
+		<log>New User call</log>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/subintro.wav'"/>
+		</block>
+
+		<field name="askinput" type="digits?length=1">
+			<grammar src="all.grxml" mode="dtmf"/>
+
+			<catch event="noinput">
+				<prompt>
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+				<goto next="#newuser"/>
+
+			</catch>
+
+
+			<filled>
+				<if cond="askinput == '1'">
+					<goto next="#SubRequest"/>
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+
+			
+			<nomatch count="1">
+				<prompt>
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+				<prompt>
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/thanks_nosub.wav'"/>
+				</prompt>
+					<goto next="end.vxml"/>
+			</nomatch>
+
+
+		</field>
+	</form>
+	
+
+<form id="DoubleConfirm">
+		<block>
+			<assign name="program_name" expr="'DoubleConfirm'"/>
+			<log>New User call</log>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/confirm_sub_other_full.wav'"/>
+		</block>
+
+		<field name="askinput" type="digits?length=1">
+			<grammar src="all.grxml" mode="dtmf"/>
+
+			
+
+			<filled>
+				<if cond="askinput == '5'">
+					<goto next="#SubRequest"/>
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+
+			
+			<nomatch count="1">
+				<prompt>
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+				<prompt>
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/thanks_nosub.wav'"/>
+				</prompt>
+					<goto next="end.vxml"/>
+			</nomatch>
+			
+			<noinput count="1">
+				<prompt>
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+
+			<noinput count="2">
+				<goto next="end.vxml"/>
+			</noinput>
+
+
+		</field>
+</form>
+
+	<form id="SubRequest">
+		<block>
+		
+		<!--<log>calling sub url:http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=1&amp;INPARAM[5]=1416&amp;INPARAM[6]=34</log>-->
+		
+			<log>Sub url:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=30&amp;INPARAM[5]=1416&amp;INPARAM[6]=89'"/></log>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=30&amp;INPARAM[5]=1416&amp;INPARAM[6]=89'"/>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/charging_wait.wav'"/>
+			<goto next="#CheckRequest"/>
+		</block>
+	</form>
+
+
+<form id="CheckRequest">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+<![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					lang = out_string[j];
+				       if(j==2)
+					balance = out_string[j];
+						if(j==3)
+					sunsign = out_string[j];
+					if(j==4)
+					sunsignname = out_string[j];
+				  }
+			]]>			
+			</script>
+
+			<script>
+				balance=balance*60;
+				curbalance=balance;
+			</script>
+				
+		<log> user status is:<value expr="usr_status"/></log>	         	
+		<log> lang status is:<value expr="lang"/></log>
+		<log> balance status is:<value expr="balance"/></log>
+		<log> sunsign status is:<value expr="sunsign"/></log>
+		<log> sunsignname status is:<value expr="sunsignname"/></log>
+				
+			<if cond="usr_status=='1'">
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/welcome_new.wav'"/>
+				<goto next="PlaySunSign.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+			<else/>
+				<log>delay charging</log>
+
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+					<goto next="end.vxml"/>
+			</if>
+		</block>
+	</form>
+
+</vxml>

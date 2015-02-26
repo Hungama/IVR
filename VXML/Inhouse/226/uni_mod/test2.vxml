@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_ModRoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="test2.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<form id="LANGSEL1">
+		
+		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  9  </item>
+
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="Prompts_Path+'/'+'testprompts/1.wav'" lengthexpr="10000"/>
+					
+				</prompt>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="Prompts_Path+'/'+'testprompts/2.wav'"/>
+					
+																									
+				</prompt>
+				<prompt bargein="true" timeout="1s">
+					
+					
+					<audio expr="Prompts_Path+'/'+'testprompts/3.wav'"/>
+					
+																					
+				</prompt>
+
+				<prompt bargein="true" timeout="1s">
+					
+					
+					<audio expr="Prompts_Path+'/'+'testprompts/4.wav'"/>
+					
+																					
+				</prompt>
+
+				<prompt bargein="true" timeout="1s">
+					
+					
+					<audio expr="Prompts_Path+'/'+'testprompts/5.wav'"/>
+					
+																					
+				</prompt>
+
+				
+
+			<filled>
+				
+				<log expr="I got into valid field"></log>
+			</filled>
+		</field>
+		<noinput count="1">
+			
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			
+			<goto next="Hungama_ModEnd.vxml"></goto>
+			
+		</noinput>
+		<nomatch count="1">
+			
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			
+			<goto next="Hungama_ModEnd.vxml"></goto>
+			
+		</nomatch>
+	</form>
+	<form id="tryform">
+		<block>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Prompts_Path+'/'+'testprompts/Pay.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/Rs.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/20.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/and.wav'"/>	
+				<audio expr="Prompts_Path+'/'+'testprompts/get.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/50.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/pracent.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/off.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/on.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/room.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/tarrif.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/in.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/delhi.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/at.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/liv.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/inn.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/also.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/get.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/10.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/pracent.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/off.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/on.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/food.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/and.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/beverages.wav'"/>
+
+				</prompt>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Prompts_Path+'/'+'testprompts/Pay.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/Rs.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/10.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/to.wav'"/>	
+				<audio expr="Prompts_Path+'/'+'testprompts/get.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/50.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/pracent.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/off.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/on.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/room.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/tarrif.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/at.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/mirage.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/Quality.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/hotel.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/the.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/Regency.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/Pune.wav'"/>
+				</prompt>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Prompts_Path+'/'+'testprompts/Pay.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/Rs.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/10.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/to.wav'"/>	
+				<audio expr="Prompts_Path+'/'+'testprompts/get.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/50.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/pracent.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/off.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/on.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/1.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/night.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/stay.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/in.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/Haridwar.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/at.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/hotel.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/Classic.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/Residency.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/the.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/Regency.wav'"/>
+				<audio expr="Prompts_Path+'/'+'testprompts/Pune.wav'"/>
+				</prompt>
+		</block>
+	</form>
+
+</vxml>

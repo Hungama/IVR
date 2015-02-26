@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+
+<vxml version="2.0" application="NineXMPortalRoot.vxml" 	
+xmlns="http://www.w3.org/2001/vxml" 	
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 	
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">  
+
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+	
+<meta name="NineXMMainMenu.vxml" content="" /> 	
+<meta name="Author" content="" /> 	
+<meta name="Date" content="" /> 	
+<meta name="Description" content="" /> 	
+<meta name="Support" content="" />	
+
+<var name="play" expr="''"/>
+
+
+<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var dishes=new Array();	
+		var movie_idx=0;
+</script>
+
+
+<form id="DirectMM">
+           
+	<block>
+	<assign name="Section_Name" expr="'MAINMENU'"/>
+	<if cond="timerflag=='1'">
+			   <script>
+			     total_used_bal=rim(start_BalenceMinute);
+			     balance=balance-total_used_bal;  						  
+			   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+				   <if cond="balance &lt;= '0'">          
+					 <goto next="Topup.vxml"/>
+				   </if>     
+			</if>
+
+				<assign name="playconfig" expr="'joke_54646MM'"/>
+				<goto next="playcontent.vxml"/>				   
+	</block>	
+</form>
+
+<form id="nav">
+           
+	<block>
+	<if cond="timerflag=='1'">
+			   <script>
+			     total_used_bal=rim(start_BalenceMinute);
+			     balance=balance-total_used_bal;  						  
+			   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+				   <if cond="balance &lt;= '0'">          
+					 <goto next="Topup.vxml"/>
+				   </if>     
+			</if>
+
+<script>
+    <![CDATA[
+	if(timerflag==1)
+	start_BalenceMinute=starttime();
+       ]]>	 	
+     </script>					   
+</block>	
+		<field name="choice">			
+			<grammar mode="dtmf" root="start1" version="1.0">
+				<rule id="start1" scope="public">
+					<one-of>								 							
+						 <item>  1  </item>
+						 <item>  9  </item>
+				    </one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_old.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/select_jokes.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/select_acmanager.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf9.wav'"/>
+			</prompt>		
+
+		<filled>
+			<if cond="timerflag=='1'">
+			   <script>
+			     total_used_bal=rim(start_BalenceMinute);
+			     balance=balance-total_used_bal;  						  
+			   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+				   <if cond="balance &lt;= '0'">          
+					 <goto next="Topup.vxml"/>
+				   </if>     
+			</if>
+			
+			<if cond="choice=='1'">
+				<assign name="playconfig" expr="'joke_54646MM'"/>
+				<goto next="playcontent.vxml"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="ManageAccount.vxml"/>
+			</if>
+								
+		</filled>
+		
+		
+		<noinput count="1">
+			<assign name="movie_idx" expr="0"/>
+			<assign name="i" expr="0" />
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt/>
+		</noinput>
+
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt/>
+		</noinput>
+
+		<noinput count="3">
+			<if cond="timerflag=='1'">
+			   <script>
+			     total_used_bal=rim(start_BalenceMinute);
+			     balance=balance-total_used_bal;  						  
+			   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+				   <if cond="balance &lt;= '0'">          
+					 <goto next="Topup.vxml"/>
+				   </if>     
+			</if>
+				<assign name="playconfig" expr="'joke_54646MM'"/>
+				<goto next="playcontent.vxml"/>
+	
+		</noinput>
+
+
+		<nomatch count="1">
+			<assign name="movie_idx" expr="0"/>
+			<assign name="i" expr="0" />
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt/>
+		</nomatch>
+
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt/>
+		</nomatch>
+
+		<nomatch count="3">
+			<if cond="timerflag=='1'">
+			   <script>
+			     total_used_bal=rim(start_BalenceMinute);
+			     balance=balance-total_used_bal;  						  
+			   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+				   <if cond="balance &lt;= '0'">          
+					 <goto next="Topup.vxml"/>
+				   </if>     
+			</if>
+
+			<assign name="playconfig" expr="'joke_54646MM'"/>
+				<goto next="playcontent.vxml"/>
+
+		</nomatch>
+	</field>
+   </form>
+</vxml>

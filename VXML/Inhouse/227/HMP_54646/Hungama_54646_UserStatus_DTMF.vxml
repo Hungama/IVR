@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_54646_UserStatus_DTMF.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="SUBANI" expr="''"/>
+	<var name="TEMPANI" expr="''"/>
+	<var name="SUBDNIS" expr="''"/>
+	<var name="TEMPDNIS" expr="''"/>
+	<var name="ciropr" expr="''"/>
+	<var name="operator2" expr="''"/>
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+
+
+	<form id="USRSTATUS_TOLL">
+		<block>
+			<script>  
+					realDNIS=session.connection.local.uri;                   
+					ANI=session.connection.remote.uri;						   
+                </script>
+
+                <script>
+					length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				</script>  
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CHK_LANG&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];						      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+			<log expr="'contentlog=='+contentlog"></log>
+
+	
+			<if cond="usr_status=='-1'">
+				<goto next="Hungama_54646_NewUser.vxml#WELNEW_TOLL"></goto>
+			<elseif cond="usr_status=='1'"/>
+				<script> 					 
+					balance=500*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+				<if cond="lang=='99'">
+					<assign name="lang" expr="'01'"/>
+					<goto next="Hungama_54646_NewUser.vxml#WELNEW_TOLL"></goto>	
+				<else/>
+					<if cond="lang=='01'">
+						<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+					<elseif cond="lang=='02'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+					<elseif cond="lang=='06'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+					<elseif cond="lang=='07'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					<elseif cond="lang=='08'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+					<elseif cond="lang=='10'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+					<elseif cond="lang=='17'" />
+                       				<assign name="LANG_DESCRIPTION" expr="'ASM'"/>
+					<else/>
+						<if cond="circle=='kar'">
+								<assign name="lang" expr="'10'"/>
+							        <assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+							<else/>
+								<assign name="lang" expr="'01'"/>
+							        <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+							</if>
+					</if>							    									
+					<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				</if>
+			<else/>
+				<goto next="Hungama_54646_NewUser.vxml#WELNEW_TOLL"></goto>
+			</if>
+		</block>
+	</form>
+</vxml>

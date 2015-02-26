@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Chat_Root.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Chat_Music.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="TXFLAG" expr="'1'"/>
+<var name="IP" expr="'192.168.100.226:8080'"/>
+<var name="dbservlet" expr= "'Chat_dbinteraction'"/>
+<var name="servlet_path" expr="'hungama'"/>
+<var name="trans_status" expr="'1'"/>
+<var name="ANI" expr="'9911718483'"/>       
+<var name="DNIS" expr="'54646'"/>
+<var name="realDNIS" expr="'54646'"/>
+	<script>
+		var out_string=new Object();
+		var len=0;
+	</script>
+	<form id="MAINMENU">
+		<block>
+			<script>  
+				realDNIS=session.connection.local.uri;                   
+				ANI=session.connection.remote.uri;						   
+			</script>
+		
+						<script>
+							length = ANI.length;
+							if(length == 15)
+								ANI = ANI.substring(5,15);
+							if(length == 14)
+								ANI = ANI.substring(4,14);
+							if(length == 13)
+								ANI = ANI.substring(3,13);
+							if(length == 12)
+								ANI = ANI.substring(2,12);
+							if(length == 11)
+								ANI = ANI.substring(1,11);
+						</script>  
+
+			<script srcexpr="'http://192.168.100.226:8080/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.CHAT_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3'"/>
+				<script>
+					 <![CDATA[
+						for(j=0; j< out_string.length;  j++)
+							 {  	  
+							  if(j==0)
+								trans_status = out_string[j];
+							 }
+
+					]]>
+				</script>
+			<log expr="'trans_status issssss =' + trans_status"/>
+			<if cond="trans_status=='1'">
+				<assign name="TXFLAG" expr="'2'" />
+			<else/>
+				<assign name="TXFLAG" expr="'1'" />
+			</if>
+		
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath_chat+'/'+lang+'/wait_music.wav'"/>
+				<audio expr="promptpath_chat+'/'+lang+'/wait_music.wav'"/>
+				<audio expr="promptpath_chat+'/'+lang+'/wait_music.wav'"/>
+			</prompt>
+			
+			<goto next="#NE"/>
+		</block>
+		
+			
+	</form>
+	<form id="NE">
+	<block>
+		<goto next="#CALL_CONNECTED"/>
+	</block>
+
+	</form>
+	
+	<form id="CALL_CONNECTED">
+		<transfer name="mytransfer"  destexpr="'546460'" bridge="true" connecttimeout="2000s" namelist="ANI TXFLAG"> 
+				<filled>
+					<log> transfer done now</log>
+					<clear namelist="mytransfer"/>
+				</filled>
+			</transfer>
+	</form>
+</vxml>
+
+	

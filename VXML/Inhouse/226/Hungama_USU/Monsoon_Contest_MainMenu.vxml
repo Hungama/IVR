@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Monsoon_ContestRoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="Monsoon_Contest_MainMenu.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<property name="documentmaxstale" value="0s"/>
+	<property name="documentmaxage" value="0s"/>
+	
+	
+	<var name="AnswerStatus" expr="'0'"/>
+	<var name="bedge_prompt" expr="''"/>
+	
+	<script>
+		var QuestionStartTime=0;
+		var scorepartsecond=0;
+		var playScore=0;
+		var B2B=0;
+		var bedgescount=0;
+	</script>	
+	
+
+	<form id="MainMenu">
+		<block>
+			<!-- Checking for Last Heard -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2'"/>
+			<script>
+					 last_heard=out_string[0];
+			</script>
+			
+			<if cond="last_heard &gt; 1">
+				<assign name="drop_point" expr="'Last_Heard'"/>
+				   <goto next="#Last_Heard"/>
+			<else/>
+				   <goto next="#Game_Start"/>
+			</if>			
+		</block>
+	</form>		
+	
+	<form id="Last_Heard">
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+				<rule id="start1" scope="public">
+					<one-of>
+						<item> 1 </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/listening_cat_c1.wav'"/>
+			</prompt>
+			<filled>
+					<goto next="#Game_Start"/>
+			</filled>
+			<noinput>
+					<goto next="#Game_Start"/>
+			</noinput>
+			<nomatch>
+					<goto next="#Game_Start"/>
+			</nomatch>
+		</field>
+	</form>	
+	
+	<form id="Game_Start">
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+				<rule id="start1" scope="public">
+					<one-of>
+						<item> 1 </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/contest_option.wav'"/>
+			</prompt>
+			<filled>
+					<goto next="#Game_Play"/>
+			</filled>
+			<noinput>
+					<goto next="#Game_Play"/>
+			</noinput>
+			<nomatch>
+					<goto next="#Game_Play"/>
+			</nomatch>
+		</field>
+	</form>	
+	
+	<form id="Game_Play">
+		<block>
+			<assign name="drop_point" expr="'Question_Play'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_QUESTIONSTATUS&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+diff_level"/>		    
+			<script>
+				 <![CDATA[
+				    for(j=0; j< out_string.length;  j++)
+					  { 		    
+						if(j==0)
+						  Question = out_string[j];
+						if(j==1)
+						  QuestionNo = out_string[j];
+						if(j==2)
+						  AnswerKey = out_string[j];
+						 if(j==3)
+						  diff_level = out_string[j];
+						 if(j==4)
+						  skiplimit= out_string[j];
+						if(j==5)
+						 UserScore= out_string[j];
+						if(j==6)
+						 QuestCorrectCount= out_string[j];
+						if(j==7)
+						 Totalquestionplayed = out_string[j];
+					  }
+				]]>
+			</script>
+				<log>Question is <value expr="Question"/></log>
+				<log>QuestionNo  is <value expr="QuestionNo"/></log>
+				<log>AnswerKey is <value expr="AnswerKey"/></log>
+				<log>diff_level is <value expr="diff_level"/></log>
+				<log>skiplimit is <value expr="skiplimit"/></log>
+				<log>UserScore is <value expr="UserScore"/></log>
+				<log>QuestCorrectCount is <value expr="QuestCorrectCount"/></log>
+				<log>Totalquestionplayed is <value expr="Totalquestionplayed"/></log>
+				
+				<script>
+						UserScore=parseInt(UserScore);
+						QuestionStartTime=start_time();
+				</script>
+				 
+				 <assign name="song_begin" expr="starttime()"/>
+				 <assign name="song_listen" expr="'START'" />
+				 
+				<script>
+					var songcheck1=Question.split("_");
+					Song_Path=songcheck1[0];
+				</script>	
+
+				<if cond="Question=='hi' || Question=='0'">
+					<goto next="Monsoon_Contest_end.vxml"/>
+				</if>				
+		</block>	
+		
+			<field name="userdtmf" type="digits?length=1">
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+									<item>  1  </item>
+									<item>  2  </item>
+									<item>  3  </item>
+									<item>  4  </item>
+									<item>  9  </item>
+									<item>  *  </item>
+							</one-of>
+						</rule>
+				</grammar>
+
+				<prompt timeout="6s"  bargein="false">
+					<audio expr="contentpath+'/'+Song_Path+'/'+Question+'.wav'"/>
+				</prompt>
+				
+				<filled>
+					<assign name="AskedQuestCount" expr="AskedQuestCount +1"/>
+					<log>userdtmf  is<value expr="userdtmf "/></log>
+					<log>AnswerKey is<value expr="AnswerKey"/></log>
+					<log>UserScore is<value expr="UserScore"/></log>
+
+				<if cond="userdtmf == AnswerKey">
+						 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="rim(song_begin)"/>
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						 <assign name="contentlog" expr="contentlog+hash+Question+hash+cat+hash+subcat+hash+compare_time"/>
+				
+						<log>QuestCorrectCount:<value expr="QuestCorrectCount"/></log>
+						
+						<script>
+							QuestCorrectCount=parseInt(QuestCorrectCount);
+							QuestCorrectCount=QuestCorrectCount+1;
+							UserScore=UserScore+10;
+							B2B=B2B+1;
+						</script>
+						<assign name="AnswerStatus" expr="AnswerStatus+1"/>
+						<!--<assign name="QuestCorrectCount" expr="QuestCorrectCount+1"/>-->
+	
+						<log>currentscore:<value expr="UserScore"/></log>
+	
+						<assign name="correct" expr="getRandom(1,4)" />
+	
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_QUESTIONSTATUSUPDATE&amp;INTOKEN=13&amp;OUTTOKEN=0&amp;INPARAM[0]=SUMMERBONAZA&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+QuestionNo+'&amp;INPARAM[3]='+AnswerKey+'&amp;INPARAM[4]='+userdtmf+'&amp;INPARAM[5]=1&amp;INPARAM[6]='+diff_level+'&amp;INPARAM[7]='+lang+'&amp;INPARAM[8]=IVR&amp;INPARAM[9]='+QuestionNo+'&amp;INPARAM[10]='+QuestionStartTime+'&amp;INPARAM[11]='+compare_time+'&amp;INPARAM[12]='+UserScore"/>
+
+						<prompt timeout="2s"  bargein="true">
+							<audio expr="promptpath+'/'+lang+'/correct_ans'+correct+'.wav'"/>
+						</prompt>
+						
+											
+						<goto next="#BadgesPlay"/>
+
+				<elseif cond="userdtmf=='*' &amp;&amp; skiplimit &lt; 3"/>
+						 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="rim(song_begin)"/>
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						 <assign name="contentlog" expr="contentlog+hash+Question+hash+cat+hash+subcat+hash+compare_time"/>
+						
+						 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_QUESTIONSTATUSUPDATE&amp;INTOKEN=13&amp;OUTTOKEN=0&amp;INPARAM[0]=SUMMERBONAZA&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+QuestionNo+'&amp;INPARAM[3]='+AnswerKey+'&amp;INPARAM[4]='+userdtmf+'&amp;INPARAM[5]=3&amp;INPARAM[6]='+diff_level+'&amp;INPARAM[7]='+lang+'&amp;INPARAM[8]=IVR&amp;INPARAM[9]='+QuestionNo+'&amp;INPARAM[10]='+QuestionStartTime+'&amp;INPARAM[11]='+compare_time+'&amp;INPARAM[12]='+UserScore"/>						
+						 
+						<goto next="#Game_Play"/>
+						
+				<elseif cond="userdtmf=='*' &amp;&amp; skiplimit &gt;= 3"/>	
+					<assign name="AskedQuestCount" expr="AskedQuestCount -1"/>
+					<audio expr="promptpath+'/'+lang+'/skip_limit_exceed.wav'"/>
+					<goto nextitem="userdtmf"/>  
+			
+				<elseif cond="userdtmf== '9'"/>
+						 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="rim(song_begin)"/>
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						 <assign name="contentlog" expr="contentlog+hash+Question+hash+cat+hash+subcat+hash+compare_time"/>
+						 
+						<goto next="Monsoon_Contest_Help.vxml"/>
+				
+				<else/>
+						 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="rim(song_begin)"/>
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						 <assign name="contentlog" expr="contentlog+hash+Question+hash+cat+hash+subcat+hash+compare_time"/>
+						 
+						<assign name="wrong" expr="getRandom(1,4)" />
+						<script>
+							UserScore=UserScore+0;
+							B2B=0;
+						</script>
+					
+						<prompt timeout="2s"  bargein="true">
+							<audio expr="promptpath+'/'+lang+'/wrong_ans'+wrong+'.wav'"/>
+						</prompt>
+					
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_QUESTIONSTATUSUPDATE&amp;INTOKEN=13&amp;OUTTOKEN=0&amp;INPARAM[0]=SUMMERBONAZA&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+QuestionNo+'&amp;INPARAM[3]='+AnswerKey+'&amp;INPARAM[4]='+userdtmf+'&amp;INPARAM[5]=0&amp;INPARAM[6]='+diff_level+'&amp;INPARAM[7]='+lang+'&amp;INPARAM[8]=IVR&amp;INPARAM[9]='+QuestionNo+'&amp;INPARAM[10]='+QuestionStartTime+'&amp;INPARAM[11]='+compare_time+'&amp;INPARAM[12]='+UserScore"/>
+
+						<goto next="#BadgesPlay"/>
+
+				</if>
+			</filled>
+			
+			<nomatch>
+						 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="rim(song_begin)"/>
+
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						 <assign name="contentlog" expr="contentlog+hash+Question+hash+cat+hash+subcat+hash+compare_time"/>
+			
+					<assign name="AskedQuestCount" expr="0"/>
+					
+					<prompt>
+						<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					
+					<log>nomatchcnt value isssss:<value expr="nomatchcnt"/></log>
+					<if cond="nomatchcnt=='1'">
+						<script>nomatchcnt=0;</script>
+						<script>WrongCorrectCount=WrongCorrectCount+1;</script>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_QUESTIONSTATUSUPDATE&amp;INTOKEN=13&amp;OUTTOKEN=0&amp;INPARAM[0]=SUMMERBONAZA&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+QuestionNo+'&amp;INPARAM[3]='+AnswerKey+'&amp;INPARAM[4]='+userdtmf+'&amp;INPARAM[5]=2&amp;INPARAM[6]='+diff_level+'&amp;INPARAM[7]='+lang+'&amp;INPARAM[8]=IVR&amp;INPARAM[9]='+QuestionNo+'&amp;INPARAM[10]='+QuestionStartTime+'&amp;INPARAM[11]='+compare_time+'&amp;INPARAM[12]='+UserScore"/>
+						<goto next="#Game_Play"/>
+					<else/>
+						<script>nomatchcnt=nomatchcnt+1;</script>
+						<goto nextitem="userdtmf"/>
+					</if>
+			</nomatch>
+
+		
+
+
+			<noinput>
+					 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="rim(song_begin)"/>
+
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						 <assign name="contentlog" expr="contentlog+hash+Question+hash+cat+hash+subcat+hash+compare_time"/>
+			
+					<assign name="AskedQuestCount" expr="0"/>
+					<prompt>
+						<audio expr="promptpath+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>
+					<log>noinputcnt value isssss:<value expr="noinputcnt"/></log>
+					<if cond="noinputcnt=='1'">
+						<script>noinputcnt=0;</script>
+						<script>WrongCorrectCount=WrongCorrectCount+1;</script>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_QUESTIONSTATUSUPDATE&amp;INTOKEN=13&amp;OUTTOKEN=0&amp;INPARAM[0]=SUMMERBONAZA&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+QuestionNo+'&amp;INPARAM[3]='+AnswerKey+'&amp;INPARAM[4]='+userdtmf+'&amp;INPARAM[5]=2&amp;INPARAM[6]='+diff_level+'&amp;INPARAM[7]='+lang+'&amp;INPARAM[8]=IVR&amp;INPARAM[9]='+QuestionNo+'&amp;INPARAM[10]='+QuestionStartTime+'&amp;INPARAM[11]='+compare_time+'&amp;INPARAM[12]='+UserScore"/>
+						<goto next="#Game_Play"/>
+					<else/>
+						<script>noinputcnt=noinputcnt+1;</script>
+						<goto nextitem="userdtmf"/>
+					</if>
+			</noinput>
+	
+				
+			</field>
+	</form>
+	
+	
+	<form id="BadgesPlay">
+		<block>
+			<assign name="drop_point" expr="'BadgesPlay'"/>
+			<log>QuestCorrectCount for bedges is<value expr="QuestCorrectCount"/></log>
+			<!--  BEDGE PROMPT START   -->
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_GET_BEDGES&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+QuestCorrectCount"/>		    
+			<script>
+				 <![CDATA[
+				    for(j=0; j< out_string.length;  j++)
+					  { 		    
+						if(j==0)
+							  bedgescount = out_string[j];
+					  }
+				]]>
+			</script>
+				
+				<if cond="Totalquestionplayed=='1' &amp;&amp; WrongCorrectCount=='0'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_SEND_BADGES&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=Astar'"/>
+						<assign name="bedge_prompt" expr="'badge_q1'"/>
+				<elseif cond="Totalquestionplayed=='1' &amp;&amp; WrongCorrectCount=='1'"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_SEND_BADGES&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=Astar'"/>
+						<assign name="bedge_prompt" expr="'badge_q1_1'"/>
+				<elseif cond="QuestCorrectCount=='5' &amp;&amp; bedgescount=='0'"/>
+						<assign name="bedge_prompt" expr="'badge_q5'"/>
+						<script>UserScore=UserScore+5;</script>			
+				<elseif cond="QuestCorrectCount=='10' &amp;&amp; bedgescount=='0'"/>
+						<assign name="bedge_prompt" expr="'badge_q10'"/>
+						<script>UserScore=UserScore+10;</script>
+				<elseif cond="QuestCorrectCount=='20' &amp;&amp; bedgescount=='0'"/>
+						<assign name="bedge_prompt" expr="'badge_q20'"/>
+						<script>UserScore=UserScore+20;</script>
+				<elseif cond="QuestCorrectCount=='25' &amp;&amp; bedgescount=='0'"/>
+						<assign name="bedge_prompt" expr="'badge_q25'"/>
+						<script>UserScore=UserScore+25;</script>
+				<elseif cond="QuestCorrectCount=='30' &amp;&amp; bedgescount=='0'"/>
+						<assign name="bedge_prompt" expr="'badge_q30'"/>
+						<script>UserScore=UserScore+30;</script>
+				<elseif cond="B2B=='3'"/>
+						<script>B2B=0;</script>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_SEND_BADGES&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=teenpati'"/>
+						<assign name="bedge_prompt" expr="'badge_b2b'"/>
+						<script>UserScore=UserScore+10;</script>
+
+						<!--  MIS ONLY -->
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_MIS&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]=0&amp;INPARAM[3]=2'"/>
+
+				<else/>
+						<goto next="#PlayScore"/>
+				</if>
+				
+				<if cond="QuestCorrectCount=='5' || QuestCorrectCount=='10' || QuestCorrectCount=='20' || QuestCorrectCount=='25' || QuestCorrectCount=='30'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_SEND_BADGES&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+QuestCorrectCount"/>
+						
+						<!--  MIS ONLY -->
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_MIS&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+QuestCorrectCount+'&amp;INPARAM[2]=0&amp;INPARAM[3]=2'"/>
+				</if>
+		
+			<!--  BEDGE PROMPT END   -->
+			</block>
+			
+			<field name="choice">
+				<grammar mode="dtmf" root="start1" version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>
+							<item> 1 </item>
+						</one-of>
+					</rule>
+				</grammar>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/'+bedge_prompt+'.wav'"/>
+					</prompt>
+				<filled>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_SCOREUPDATE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+UserScore+'&amp;INPARAM[2]=1'"/>
+					<goto next="#PlayScore"/>
+				</filled>
+				<noinput>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_SCOREUPDATE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+UserScore+'&amp;INPARAM[2]=1'"/>
+						<goto next="#PlayScore"/>
+				</noinput>
+				<nomatch>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_SCOREUPDATE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+UserScore+'&amp;INPARAM[2]=1'"/>
+						<goto next="#PlayScore"/>
+				</nomatch>
+		</field>
+	</form>
+	
+<form id="PlayScore">
+		<block>
+			<assign name="drop_point" expr="'ScorePlay'"/>
+
+			<assign name="UserScore" expr="getPromptCtr(UserScore)"/>
+			<log>UserScore<value expr="UserScore"/></log>
+			
+			</block>
+			
+			<field name="choice">
+				<grammar mode="dtmf" root="start1" version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>
+							<item> 1 </item>
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/score_is.wav'"/>
+				</prompt>	
+				<prompt bargein="true" timeout="1s">
+					<foreach item="singledigit" array="num2play_Array">
+							<audio expr="promptpath+'/'+lang+'/score'+parseInt(singledigit)+'.wav'"/>
+							<log>	-----------------------
+									<value expr="singledigit"/>
+							</log>
+					</foreach>
+				</prompt>
+					
+					
+				<filled>
+						<goto next="#Game_Play"/>
+				</filled>
+				<noinput>
+						<goto next="#Game_Play"/>
+				</noinput>
+				<nomatch>
+						<goto next="#Game_Play"/>
+				</nomatch>
+		</field>
+	</form>	
+</vxml>

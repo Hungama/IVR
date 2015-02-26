@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Endless_Playcontest.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+<script>
+	var favSongs=new Object();
+	var out_string=new Object();
+	var SongArray=new Object();
+	var AnswerArray=new Object();
+	var ClipArray=new Object();
+	var Song=new Array();
+	var Answer=new Array();
+	var Clip=new Array();
+	var v=0;
+	var c3=0;
+	var c4=0;
+</script>
+
+<var name="NumberOfSongs" expr="'0'"/>
+<var name="ind" expr="0"/>
+<var name="word" expr="0"/>
+
+<var name="scorepartfirstnew" expr="0"/>
+
+<var name="ans" expr="0"/>
+<var name="contentdir" expr="''"/>
+
+
+<form id="playcontest">
+	<block>	
+		<assign name="lang" expr="'01'"/>
+
+		
+
+		<if cond="circle=='raj' || circle=='hay' || circle=='pun' || circle=='del' || circle=='hpd' || circle=='jnk' || circle=='kol' || circle=='wbl'">
+		        <assign name="CIRCLE_OPTION" expr="circle"/>  
+		<else/>
+			<assign name="CIRCLE_OPTION" expr="'other_circle'"/>
+		</if>
+		
+	<log>Endless url:<value expr="'http://'+IP+'/'+servlet_path+'/Song_Ans_MM?ConfigPath=config/EndlessContestconfig/'+CIRCLE_OPTION+'/contestlevel'+round+'.cfg'"/></log>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/Song_Ans_MM?ConfigPath=config/EndlessContestconfig/'+CIRCLE_OPTION+'/contestlevel'+round+'.cfg'"/>
+		<script>
+			<![CDATA[
+			  for(j=0; j<SongArray.length; j++)
+			     {  	  
+			         Song[j] = SongArray[j];
+		            }
+			 for(j=0; j<AnswerArray.length; j++)
+			     {  	  
+			         Answer[j] = AnswerArray[j];
+			     }
+			 for(j=0; j<ClipArray.length; j++)
+			     {  	  
+			         Clip[j] = ClipArray[j];
+			     }
+		]]>	
+		</script>
+		<assign name="NumberOfSongs" expr="SongArray.length"/>
+		<log> NumberOfSongs <value expr="NumberOfSongs"/></log>
+		
+		<goto next="#PlayGame"/>
+	</block>
+</form>
+
+<form id="PlayGame">
+	<block>
+ 		
+		<if cond="round==1">
+			      <assign name="index" expr="getRandom(1,15)" />
+	              <log expr="'@@@@@@@ VALUE OF INDEX ISSSSSS ===>' +index"/>
+	              <log expr="'@@@@@@@ VALUE OF SIT_COUNTER ISSSSSS ===>' +Sit_Counter"/>
+	        <elseif cond="round==2"/>
+	        	  <assign name="index" expr="getRandom(1,20)" />
+	              <log expr="'@@@@@@@ VALUE OF INDEX ISSSSSS ===>' +index"/>
+	              <log expr="'@@@@@@@ VALUE OF SIT_COUNTER ISSSSSS ===>' +Sit_Counter"/>
+	              <if cond="Sit_Counter==3">
+	              		<goto next="#UpdateScore"/>
+	              </if>
+	        <elseif cond="round==3"/>
+	        	  <assign name="index" expr="getRandom(1,25)" />
+	              <log expr="'@@@@@@@ VALUE OF INDEX ISSSSSS ===>' +index"/>
+	              <log expr="'@@@@@@@ VALUE OF SIT_COUNTER ISSSSSS ===>' +Sit_Counter"/>
+	              <if cond="Sit_Counter==4">
+	              		<goto next="#UpdateScore"/>
+	              </if>
+	        <elseif cond="round==4"/>
+	              <assign name="index" expr="getRandom(1,33)" />
+	              <log expr="'@@@@@@@ VALUE OF INDEX ISSSSSS ===>' +index"/>
+	              <log expr="'@@@@@@@ VALUE OF SIT_COUNTER ISSSSSS ===>' +Sit_Counter"/>
+	              <if cond="Sit_Counter==5">
+	              		<goto next="#UpdateScore"/>
+	              </if>
+	        </if>
+	        
+			<script>ind=index-1</script>
+			<log expr="'@@@@@@@ VALUE OF IND ISSSSSS ===>' +ind"/>
+			<assign name="song" expr="Song[ind]"/>
+			<log expr="'@@@@@@@ VALUE OF SONG ISSSSSS ===>' +song"/>
+			<assign name="word" expr="Clip[ind]"/>
+			<log expr="'@@@@@@@ VALUE OF WORD ISSSSSS ===>' +word"/>
+			<assign name="ans" expr="Answer[ind]"/>
+			<log expr="'@@@@@@@ VALUE OF ANS ISSSSSS ===>' +ans"/>
+			<assign name="right_opt" expr="getRandom(1,3)" />
+			<log expr="'@@@@@@@ VALUE OF RIGHT OPTION ===>' +right_opt"/>
+			<assign name="wrong_opt" expr="getRandom(1,3)" />
+			<log expr="'@@@@@@@ VALUE OF WRONG OPTION ===>' +wrong_opt"/>
+			<script>
+					var songcheck=Song[ind].split("_");
+					contentdir=songcheck[0]; 
+			</script>
+			<log expr="'@@@@@@@ VALUE OF CONTENTDIR ===>' +contentdir"/>
+
+		</block>
+		<field name="choice">
+				  <grammar mode="dtmf"  root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>						
+							<item>8</item>
+						</one-of>
+					</rule>
+				  </grammar>
+				<prompt bargein="true" timeout="1s" cond="Sit_Counter==1">
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_round'+round+'.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/contest_brief.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/contest_intro.wav'"/>
+				</prompt>
+				<prompt bargein="true" timeout="0s">
+					 <audio expr="promptspath_54646+'/clip/'+word+'.wav'"/>  
+				</prompt>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/contest_complete.wav'"/>
+				</prompt>
+		  <filled>
+			<if cond="choice=='8'">
+			          <assign name="Game_mou" expr="'false'"/>
+				   <script>
+				   	total_used_time=rim(Game_Start);
+				   	mou=mou+total_used_time;
+					mou=Math.floor(mou/60);  						  
+				   </script>
+				   	<log expr="'used time is '+total_used_time"/>
+					<log expr="'Total time is '+mou"/>				   
+			
+				   <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_ENDLESS_CONTEST_UPDATETIME&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+Sit_Counter+'&amp;INPARAM[5]='+round+'&amp;INPARAM[6]='+mou"/>
+				   <goto next="Hungama_ModMainMenu.vxml"/>
+			<else/>
+				   <goto next="#GameStart"/>
+			</if>
+		 </filled>
+					
+	      <noinput>
+			<goto next="#GameStart"/>
+	      </noinput>	
+	      <nomatch>
+			<goto next="#GameStart"/>
+	      </nomatch>		
+						
+	</field>
+
+</form>
+
+<form id="GameStart">
+	<block>
+			<log>Play Content</log>
+
+		
+
+			
+			<prompt bargein="true" timeout="0s">
+			  	 <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		      	</prompt>
+			<goto next="#GameStart1"/>
+		</block>
+
+</form>
+
+<form id="GameStart1">
+		<field name="choice" type="digits?minlength=1;maxlength=2">
+				  <grammar mode="dtmf" root="start1" version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>						
+							<item>1</item>
+							<item>2</item>
+							<item>3</item>
+							<item>4</item>
+							<item>5</item>
+							<item>6</item>
+							<item>7</item>
+							<item>8</item>
+							<item>9</item>
+							<item>0</item>
+							<item>*</item>
+							<item>#</item>
+						</one-of>
+					</rule>
+				  </grammar>
+				
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/contest_post.wav'"/>
+				<audio expr="promptspath_54646+'/clip/'+word+'.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/contest_complete.wav'"/>
+			</prompt>
+										   		
+					
+		<filled>
+			<log expr="'@@@@@@@ VALUE OF CHOICE ISSSSS ===>' +choice"/>
+			<if cond="choice=='*' || choice=='**' || choice=='#' || choice=='##' || choice=='*#' || choice=='#*'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</if>
+			<if cond="round==1">			
+					<if cond="choice==ans">
+						   <assign name="score" expr="score+50"/>
+						   <prompt bargein="true" timeout="2s">
+							     <audio expr="promptspath_54646+'/'+lang+'/right_answer'+right_opt+'.wav'"/>
+						   </prompt>
+						   <goto next="#UpdateScore"/>
+					<else/>
+						<assign name="score" expr="score+0"/>
+						
+						<log>Score=<value expr="score"/></log>
+
+						   <prompt bargein="true" timeout="2s">
+							     <audio expr="promptspath_54646+'/'+lang+'/wrong_answer'+wrong_opt+'.wav'"/>
+						   </prompt>
+						   <goto next="#UpdateScore"/>
+					</if>
+			<elseif cond="round==2"/>
+					<if cond="choice==ans">
+						   <assign name="score" expr="score+50"/>
+						   
+						   <prompt bargein="true" timeout="2s">
+							     <audio expr="promptspath_54646+'/'+lang+'/right_answer'+right_opt+'.wav'"/>
+						   </prompt>
+						   <prompt bargein="true" timeout="2s" cond="Sit_Counter &lt; 2">
+							     <audio expr="promptspath_54646+'/'+lang+'/next_song.wav'"/>
+						   </prompt>
+						   <script>Sit_Counter = Sit_Counter + 1;</script>
+						   <goto next="#PlayGame"/>
+					<else/>
+						   <prompt bargein="true" timeout="2s">
+							     <audio expr="promptspath_54646+'/'+lang+'/wrong_answer'+wrong_opt+'.wav'"/>
+						   </prompt>
+						   <prompt bargein="true" timeout="2s" cond="Sit_Counter &lt; 2">
+							     <audio expr="promptspath_54646+'/'+lang+'/next_song.wav'"/>
+						   </prompt>
+						   <script>Sit_Counter = Sit_Counter + 1;</script>
+						   <goto next="#PlayGame"/>
+					</if>
+			<elseif cond="round==3"/>
+					<if cond="choice==ans">
+						   <assign name="score" expr="score+50"/>
+						   <prompt bargein="true" timeout="2s">
+							     <audio expr="promptspath_54646+'/'+lang+'/right_answer'+right_opt+'.wav'"/>
+						   </prompt>
+						   <prompt bargein="true" timeout="2s" cond="Sit_Counter &lt; 3">
+							     <audio expr="promptspath_54646+'/'+lang+'/next_song.wav'"/>
+						   </prompt>
+						   <script>Sit_Counter = Sit_Counter + 1;</script>
+
+						   <goto next="#PlayGame"/>
+					<else/>
+						   <prompt bargein="true" timeout="2s">
+							     <audio expr="promptspath_54646+'/'+lang+'/wrong_answer'+wrong_opt+'.wav'"/>
+						   </prompt>
+						   <prompt bargein="true" timeout="2s" cond="Sit_Counter &lt; 3">
+							     <audio expr="promptspath_54646+'/'+lang+'/next_song.wav'"/>
+						   </prompt>
+						   <script>Sit_Counter = Sit_Counter + 1;</script>
+
+						   <goto next="#PlayGame"/>
+					</if>
+			<elseif cond="round==4"/>
+					<if cond="choice==ans">
+						   <assign name="score" expr="score+50"/>
+						   <prompt bargein="true" timeout="2s">
+							     <audio expr="promptspath_54646+'/'+lang+'/right_answer'+right_opt+'.wav'"/>
+						   </prompt>
+						   <prompt bargein="true" timeout="2s" cond="Sit_Counter &lt; 4">
+							     <audio expr="promptspath_54646+'/'+lang+'/next_song.wav'"/>
+						   </prompt>
+						   <script>Sit_Counter = Sit_Counter + 1;</script>
+
+						   <goto next="#PlayGame"/>
+					<else/>
+						   <prompt bargein="true" timeout="2s">
+							     <audio expr="promptspath_54646+'/'+lang+'/wrong_answer'+wrong_opt+'.wav'"/>
+						   </prompt>
+						   <prompt bargein="true" timeout="2s" cond="Sit_Counter &lt; 4">
+							     <audio expr="promptspath_54646+'/'+lang+'/next_song.wav'"/>
+						   </prompt>
+						   <script>Sit_Counter = Sit_Counter + 1;</script>
+
+						   <goto next="#PlayGame"/>
+					</if>
+			</if>
+		</filled>
+					
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="round==1">
+				<goto next="#UpdateScore"/>
+			<else/>
+				<script>Sit_Counter = Sit_Counter + 1;</script>
+					<goto next="#PlayGame"/>
+			</if>
+
+		</noinput>	
+	    <nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+	    </nomatch>		
+						
+		</field>
+
+</form>	
+
+
+<form id="UpdateScore">
+	<block>	
+		<log expr="'@@@@@@@ score total issss===>' +score"/>
+		<log expr="'@@@@@@@ Sit_Counter issss===>' +Sit_Counter"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_ENDLESS_CONTEST_UPDATETIME&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+Sit_Counter+'&amp;INPARAM[5]='+round+'&amp;INPARAM[6]='+mou"/>
+		
+		<if cond="score==0">
+			<log>Play Content Update Time</log>
+			<prompt bargein="true"  timeout="1s">
+				<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/0.wav'"/>
+			</prompt>
+ 		<else/>			
+			<script>
+				scorepartfirst = score/100;
+				scorepartthird = score/1000;
+			</script>
+			<assign name="scorepartsecond" expr="''+scorepartthird+''"/>
+			<assign name="scorepartfirstnew" expr="''+scorepartfirst+''"/>
+
+			<script>
+				var v1=scorepartsecond.split(".");
+				var v2=v1[0];
+				var v3=v1[1];
+				var c1=scorepartfirstnew.split(".");
+				var c2=c1[0];
+				var c3=c1[1];
+				var c4=c3*10;
+			</script>
+			<assign name="v" expr="''+v3+''"/>
+
+			<log> v varible length is  <value expr="v"/></log>
+			<log> scorepartsecond varible length is  <value expr="scorepartsecond"/></log>
+			<log> scorepartfirstnew varible length is  <value expr="scorepartfirstnew"/></log>
+
+			<script>
+				var vinay=parseInt(v);
+				var v5=vinay/10;
+			</script>
+			<assign name="v" expr="''+v5+''"/>
+			<log> v5 length varible length is  <value expr="v5"/></log>
+			<log> v.length varible length is  <value expr="v.length"/></log>
+
+		<if cond="v3.length &gt; 1">
+			<script>
+				var v4=v.split(".");
+				var v6=v4[0];
+				var c6=v4[1];
+				var c8=c6*10;
+			</script>
+			<assign name="v3" expr="''+v6+''"/>
+			<assign name="c3" expr="''+c6+''"/>
+			<assign name="c4" expr="''+c8+''"/>
+			<log expr="'VALUE OF C3 ISSSS ===>' +c3"/>
+			<log expr="'VALUE OF C4 ISSSS ===>' +c4"/>
+	
+		</if>
+		<log> scorepartfirst varible length is  <value expr="scorepartfirst"/></log>
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+		</prompt>
+
+		<prompt bargein="true" timeout="1s" cond="score &gt; 990">
+			<audio expr="promptspath_54646+'/'+lang+'/'+v2+'.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/1000.wav'"/>
+		</prompt>
+
+		 <prompt bargein="true" timeout="1s" cond="v3 &gt; 0.9">
+			<audio expr="promptspath_54646+'/'+lang+'/'+v3+'.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/100.wav'"/>
+		</prompt> 
+
+		<prompt bargein="true" timeout="1s" cond="c3 &gt; 0">
+			<audio expr="promptspath_54646+'/'+lang+'/'+c4+'.wav'"/>
+		</prompt>
+		<prompt bargein="true" timeout="1s" cond="score==90 || score==80">
+			<audio expr="promptspath_54646+'/'+lang+'/'+score+'.wav'"/>
+		</prompt>
+
+	</if>
+		
+		<if cond="round &lt; 4">
+			<assign name="round" expr="round+1"/>
+			<assign name="Sit_Counter" expr="1"/>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/next_round.wav'"/>
+			</prompt>
+			<goto next="#playcontest"/>
+		<else/>
+			<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/thanks.wav'"/>
+			</prompt>
+			<goto next="#GameRepeat"/>
+		</if>
+	</block>
+</form>
+
+<form id="GameRepeat">
+	<block>
+		<assign name="index" expr="1" />
+		<assign name="Sit_Counter" expr="1" />
+		<assign name="round" expr="1" />
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_ENDLESS_CONTEST_UPDATETIME&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]=1&amp;INPARAM[4]=1&amp;INPARAM[5]=1&amp;INPARAM[6]='+mou"/>
+	</block>
+		<field name="choice">
+				  <grammar mode="dtmf" root="start2" version="1.0">
+					<rule id="start2" scope="public">
+						<one-of>						
+							<item>1</item>
+							<item>8</item>
+						</one-of>
+					</rule>
+				  </grammar>
+				
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/contest_repeat.wav'"/>
+				</prompt>			
+											   		
+					
+		<filled>
+						
+			<if cond="choice=='1'">
+				  <goto next="Endless_Playcontest.vxml"/>
+			<elseif cond="choice=='8'"/>
+			           <assign name="Game_mou" expr="'false'"/>
+				   <script>
+				   	total_used_time=rim(Game_Start);
+				   	mou=mou+total_used_time;
+					mou=Math.floor(mou/60);						  
+				   </script>
+				   	<log expr="'used time is '+total_used_time"/>
+					<log expr="'Total time is '+mou"/>				   			           
+			           <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_ENDLESS_CONTEST_UPDATETIME&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+Sit_Counter+'&amp;INPARAM[5]='+round+'&amp;INPARAM[6]='+mou"/>
+				   <goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+
+		</filled>
+					
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>	
+	    <nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+	    </nomatch>		
+						
+		</field>
+
+</form>
+
+</vxml>

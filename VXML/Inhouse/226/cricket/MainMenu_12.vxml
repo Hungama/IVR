@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="CricketRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MainMenu.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	
+	<script>
+		var favSongs=new Object();
+		
+	</script>
+
+
+	<form id="livescore">
+		<block>
+				<if cond="ipl_flag=='0'">
+					<script>
+						ipl_flag=ipl_flag+1;
+					</script>
+						<goto next="WC_Prediction.vxml"/>
+				</if>
+		
+			<assign name="Usage_time" expr="time_duration(section_begin)"/>
+			<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+			<assign name="SECTION" expr="'LIVESCORE'"/>
+			<assign name="Section_Name" expr="'LIVESCORE'" />
+			<assign name="section_begin" expr="start_time()"/>
+			
+				<script srcexpr="'http://'+S_IP+'/'+servlet_path_1+'/ar_ReadConfigSong?ConfigPath=ls.cfg&amp;TOKEN=FREE'"/>
+
+			
+			<assign name="len" expr="favSongs.length" />
+			
+			<script>
+				 <![CDATA[
+				     	  	
+								livescore = favSongs[0];						   
+					  
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="livescore"/>    </log>
+			
+			<if cond="lang=='10' || lang=='08' || lang=='07' || lang=='09'">
+				<assign name="LIVE_LANG" expr="'02'" />
+			<elseif cond="lang=='06' || lang=='17'"/>
+				<assign name="LIVE_LANG" expr="'01'" />
+			<else/>
+				<assign name="LIVE_LANG" expr="lang" />
+			</if>
+		</block>
+		
+		<field name="choice">
+				<grammar mode="dtmf" root="start15" version="1.0">
+						<rule id="start15" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  9  </item>
+								 <item>  *  </item>
+								 <item>  #  </item>
+								 <item>  0  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="'http://'+S_IP+'/'+CONTENT_PATH+'/'+LIVE_LANG+'/ls/'+livescore+'.wav'"/>
+					 <!--<audio expr="'http://192.168.100.242:6666/'+CONTENT_PATH+'/'+LIVE_LANG+'/ls/12201210.wav'"/>-->
+				</prompt>
+				
+				<filled>
+					<goto next="#p_contest"/>
+				</filled>
+				
+				<noinput>
+					<goto next="#p_contest"/>
+				</noinput>
+				
+				<nomatch>
+					<goto next="#p_contest"/>
+				</nomatch>
+		</field>
+	</form>
+
+
+	<form id="p_contest">
+	
+	<block>
+		
+		
+			<prompt bargein="true" timeout="2s">
+				<audio expr="'http://'+S_IP+'/'+CONTENT_PATH+'/'+lang+'/prompts/p1_in.wav'"/>
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/press_dtmf1.wav'"/>	
+			</prompt>
+		
+		
+	
+	</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start16" version="1.0">
+						<rule id="start16" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 
+							</one-of>
+						</rule>
+				</grammar>
+			
+				
+			
+
+			<filled>
+				<if cond="choice==1 ">
+					<goto next="PredictionContest.vxml" />
+			<elseif cond="choice==2"/>
+					<goto next="#player" />
+				</if>			
+			</filled>
+
+			<noinput>				
+				<goto next="#player"/>
+			</noinput>
+			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>
+			
+			<nomatch count="3">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<throw event="connection.disconnect.hangup"/>
+			</nomatch>
+		</field>
+	</form>
+
+<form id="player">
+<field name="player_opt">
+			<grammar mode="dtmf" root="start17" version="1.0">
+						<rule id="start17" scope="public">
+							<one-of>
+								 <item>  3  </item>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+				</grammar>
+           <prompt bargein="true" timeout="2s">             
+						<audio expr="'http://'+S_IP+'/'+CONTENT_PATH+'/'+LIVE_LANG+'/prompts/select_player.wav'"/>
+           </prompt> 
+           
+           <filled>
+				<if cond="player_opt=='2'">
+						<assign name="cat" expr="'pw'"/>
+						<goto next="PlayerOfTheWeek.vxml"/>
+				<else/>
+					<goto next="#welcome_refer"/>				
+				</if>						
+		</filled>
+
+			<noinput>				
+					<goto next="#welcome_refer"/>	
+			</noinput>
+			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<throw event="connection.disconnect.hangup"/>
+			</nomatch>		
+		</field>	
+
+</form>
+
+
+<form id="welcome_refer">
+<field name="refer_opt">
+			<grammar mode="dtmf" root="start18" version="1.0">
+						<rule id="start18" scope="public">
+							<one-of>
+								 <item>  3  </item>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+				</grammar>
+           <prompt bargein="true" timeout="0s">             
+               <audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_refer.wav'"/>          
+           </prompt> 
+           
+           <filled>
+				<if cond="refer_opt=='3'">
+						<assign name="cat" expr="'rf'"/>				
+						<goto next="Refer.vxml"/>
+				<else/>
+					<goto next="#category_selection"/>				
+				</if>			
+			</filled>
+
+			<noinput>				
+					<goto next="#category_selection"/>	
+			</noinput>
+			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<throw event="connection.disconnect.hangup"/>
+			</nomatch>		
+		</field>	
+
+</form>
+	
+	<form id="category_selection">
+	<block>
+		<assign name="Usage_time" expr="time_duration(section_begin)"/>
+		<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+		<assign name="SECTION" expr="'MAINMENU'"/>
+		<assign name="Section_Name" expr="'MAINMENU'" />
+		<assign name="section_begin" expr="start_time()"/>
+			
+	</block>
+	
+		<field name="catopt">
+		
+				<prompt bargein="true" timeout="1s">
+
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/select_catname_345.wav'"/>
+				</prompt>
+				
+				<grammar mode="dtmf" root="start19" version="1.0">
+						<rule id="start19" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  0  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<filled>
+					<if cond="catopt=='1'">
+						<assign name="cat" expr="'pc'"/>
+						<goto next="PredictionContest.vxml"/>
+					<elseif cond="catopt=='2'"/>
+						<assign name="cat" expr="'pw'"/>
+						<goto next="PlayerOfTheWeek.vxml"/>
+					<elseif cond="catopt=='3'"/>
+						<assign name="cat" expr="'rf'"/>
+						<goto next="Refer.vxml"/>						
+					<elseif cond="catopt=='4'"/>
+						<assign name="cat" expr="'mc'"/>
+						<goto next="MatchCenter.vxml"/>
+					<elseif cond="catopt=='5'"/>
+						<assign name="cat" expr="'ms'"/>
+						<goto next="MatchSchedule.vxml"/>
+					<elseif cond="catopt=='6'"/>
+						<goto next="FeedBack.vxml"/>
+					<elseif cond="catopt=='7'"/>
+						<goto next="RecordShare.vxml"/>
+					<elseif cond="catopt=='8'"/>
+						<goto next="SMSScoreAlert.vxml"/>
+					<elseif cond="catopt=='0'"/>
+						<goto next="AccountManager.vxml"/>
+					</if>
+				</filled>
+				
+				<noinput>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>
+					<reprompt></reprompt>
+				</noinput>
+				
+				<noinput count="3">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>
+					<goto next="PredictionContest.vxml"/>
+				</noinput>
+				
+				<nomatch>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<reprompt></reprompt>
+				</nomatch>
+				
+				<nomatch count="3">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<goto next="PredictionContest.vxml"/>
+				</nomatch>	
+		</field>
+	</form>
+</vxml>

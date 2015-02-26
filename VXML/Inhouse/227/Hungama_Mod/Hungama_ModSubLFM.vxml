@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+	xmlns:lang="en-US"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	
+	<meta name="Hungama_ModSubLFM.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	
+     	<var name="specialzonedate" expr="0"/>
+     	<var name="PlayPrompt" expr="'0'"/>
+ 	<var name="CurrentHour" expr="0"/>
+	<var name="maxlang" expr="0"/>	
+	<var name="DurgaCat" expr="''"/>	
+	
+	<script>
+		function GetDate()
+		{
+		var currentDT = new Date();
+		var day = currentDT.getDate();
+		var month = currentDT.getMonth() + 1;
+	 	var year = currentDT.getFullYear();
+		var hours = currentDT.getHours();
+	  	var minutes = currentDT.getMinutes();
+	  	var seconds = currentDT.getSeconds();
+	
+		if (month.length == 1) {month = "0" + month; }
+		if (day.length == 1) {day = "0" + day; }
+		
+		var strDateTime =  year + "-" + month + "-" + day;
+		return strDateTime;
+		}
+		function GetCurrentHour()
+		{
+			var currentDT = new Date();
+			var hours = currentDT.getHours();
+			return hours;
+		}
+	</script>	
+
+	<form id="MAINMENU">
+		<block>
+			<assign name = "specialzonedate" expr = "GetDate()" />
+			<prompt  timeout="0s">					
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/wel_old_'+specialzonedate+'.wav'"/>
+			</prompt>
+		</block>
+		<field name="selectCat">
+			<grammar mode="dtmf" root="start11" version="1.0">
+					<rule id="start11" scope="public">
+						<one-of>
+							 <item>  1  </item>
+						</one-of>
+					</rule>
+			</grammar>				
+			<prompt  timeout="5s">					
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_2015-2-11.wav'"/>
+			</prompt>				
+
+			<filled>
+				<if cond="selectCat=='1'">
+					<assign name="firstconsent" expr="'Y'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="sub_flag" expr="'true'"/>
+					<if cond="operator=='tatm'">
+						<assign name="planid" expr="'2'"/>
+						<assign name="Amt" expr="'14'"/>
+						<assign name="serviceid" expr="'1001'"/> 
+						<goto next="Hungama_ModSub1.vxml#Doubleconfirm"/>
+
+					<elseif cond="operator=='tatc'"/>
+						<assign name="planid" expr="'26'"/>
+						<assign name="Amt" expr="'14'"/>
+						<assign name="serviceid" expr="'1601'"/> 
+						<goto next="Hungama_ModSub1.vxml#Doubleconfirm"/>														
+					</if>	
+				<else/>
+					<goto next="#MAINMENU"/>
+				</if>
+
+			</filled>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</noinput>			
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<goto next="Hungama_ModEnd.vxml"></goto>
+			</noinput>	
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</nomatch>			
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="Hungama_ModEnd.vxml"></goto>
+			</nomatch>			
+		</field>					
+</form>
+</vxml>

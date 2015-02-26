@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="SIVR_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_54646_UserStatus_MM.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="blacklist_status" expr="0"/> 
+<var name="ad_compagin" expr="'0'"/> 
+<var name="double_switch" expr="-1"/>
+<var name="skip_level" expr="0"/>
+
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+		var ciropr=new Object();
+		
+	</script>
+
+	<form id="CIRCLEID">
+		<block>
+		<assign name="Section_Name" expr="'USER_STATUS_CHECK'"/>
+				<assign name="C_Start" expr="start_time()"/>
+				<script>  
+					realDNIS=session.connection.local.uri;                   
+					ANI=session.connection.remote.uri;						   
+                </script>
+                <script>
+					var length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				</script>                             			    		        		                                      		   
+            	<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+            	<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+        		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+				<log> operator-circle identification </log>
+				<script srcexpr="'http://192.168.100.226:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							circle = out_string[j];
+
+						  }
+
+					]]>
+
+		</script>
+
+	 <log> FIRST DB FETCH circle  is	<value expr="circle"/>    </log>
+	 <if cond="circle=='oth'">
+		<script srcexpr="'http://192.168.100.226:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+		<assign name="DNIS" expr="realDNIS"/>
+		<assign name="operator" expr="'und'"/>
+		<goto next="Hungama_54646_End.vxml"></goto>
+
+	 </if>
+
+			<if cond="realDNIS=='66291430'">
+				<assign name="DNIS" expr="'5464630'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291431'"/>
+				<assign name="DNIS" expr="'5464631'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291432'"/>
+				<assign name="DNIS" expr="'5464632'"/>
+				<assign name="operator" expr="'unim'"/>		   
+			<elseif cond="realDNIS=='66291433'"/>
+				<assign name="DNIS" expr="'5464633'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291434'"/>
+				<assign name="DNIS" expr="'5464634'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291424'"/>
+				<assign name="DNIS" expr="'5464624'"/>
+				<assign name="operator" expr="'unim'"/>
+			</if>		
+	        	 <log expr="'callingggggDNIS ISSSSSSSSSSSSSSSSSSSSSSSS@@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+			 <assign name="dbservlet" expr="'unihungama_dbinteraction'"/>
+			 <if cond="realDNIS=='66291424'">
+			 
+		<!--*******************************UNINOR SWITHC***************************************-->
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Inhouse_IVR.UNINOR_DOUBLECONSENT&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=9999'"/>
+				<script>
+					 double_switch=out_string[0];
+					 skip_level=out_string[1];
+				</script>
+		<log>double_switch Sub : <value expr="double_switch"/></log>
+		<log>skip_level for msisdn : <value expr="skip_level"/></log>
+
+			
+		<!--************************************************************************************-->
+				 <if cond="circle=='apd'">
+					<assign name="lang" expr="'08'"/>
+				<else/>
+					<assign name="lang" expr="'01'"/>
+				</if>
+			 	<goto next="#SIVR_USRSTATUS"></goto>
+			 
+			 <else/>
+				<goto next="#USRSTATUS"></goto>
+			  </if>
+		</block>		
+	</form>
+	
+<form id="USRSTATUS">
+		<block>
+			<if cond="realDNIS=='66291430'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Uninor_BollyAlerts.BA_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+							if(j==0)
+								usr_status = out_string[j];
+							if(j==1)
+								lang = out_string[j];
+							if(j==2)
+								balance = out_string[j];
+							if(j==3)
+								moviectr = out_string[j];
+							if(j==4)
+								modesub = out_string[j];							      
+						  }
+					]]>
+				</script>
+			<elseif cond="realDNIS=='66291432'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Uninor_BollywoodMasala.BM_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+							if(j==0)
+								usr_status = out_string[j];
+							if(j==1)
+								lang = out_string[j];
+							if(j==2)
+								balance = out_string[j];
+							if(j==3)
+								moviectr = out_string[j];
+							if(j==4)
+								modesub = out_string[j];							      
+						  }
+					]]>
+					</script>		
+			<elseif cond="realDNIS=='66291432'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Uninor_FilmiWords.FW_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+							if(j==0)
+								usr_status = out_string[j];
+							if(j==1)
+								lang = out_string[j];
+							if(j==2)
+								balance = out_string[j];
+							if(j==3)
+								moviectr = out_string[j];
+							if(j==4)
+								modesub = out_string[j];							      
+						  }
+					]]>
+					</script>	
+
+			<elseif cond="realDNIS=='66291433'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Uninor_FilmiHeath.FH_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+						if(j==0)
+							usr_status = out_string[j];
+						if(j==1)
+							lang = out_string[j];
+						if(j==2)
+							balance = out_string[j];
+						if(j==3)
+							moviectr = out_string[j];
+						if(j==4)
+							modesub = out_string[j];							      
+					  }
+				]]>
+				</script>
+
+			<elseif cond="realDNIS=='66291434'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Uninor_CelebrityFashion.CF_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+							if(j==0)
+								usr_status = out_string[j];
+							if(j==1)
+								lang = out_string[j];
+							if(j==2)
+								balance = out_string[j];
+							if(j==3)
+								moviectr = out_string[j];
+							if(j==4)
+								modesub = out_string[j];							      
+						  }
+					]]>
+					</script>			
+						
+			</if>			
+							
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'modesub  @@@@@@@@@ '+modesub"></log>
+			<log expr="'servlet_path @@@@@@@@@ '+servlet_path"></log>	
+			<log expr="'dbservlet @@@@@@@@@ '+dbservlet"></log>
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+			<log expr="'contentlog=='+contentlog"></log>
+			<if cond="usr_status=='-1'">
+					<if cond="realDNIS=='66291430'">
+						<assign name="amt" expr="'30'"/>
+						<assign name="plan_id" expr="'228'"/>
+						<assign name="service_id" expr="'1430'"/>
+						<assign name="CPPID" expr="'HUI0043970'"/>
+						<assign name="PRODTYPE" expr="'Subscription'"/>	
+						<assign name="PMARKNAME" expr="'BollyAlerts'"/>
+						<assign name="PD" expr="'BollyAlerts'"/>
+						<goto next="SIVR_UserSub.vxml#SubOptionDoubleconfirm_BA"></goto>
+					<elseif cond="realDNIS=='66291431'"/>
+						<assign name="amt" expr="'30'"/>
+						<assign name="plan_id" expr="'229'"/>
+						<assign name="service_id" expr="'1431'"/>
+						<assign name="CPPID" expr="'HUI0043971'"/>
+						<assign name="PRODTYPE" expr="'Subscription'"/>	
+						<assign name="PMARKNAME" expr="'FilmiWords'"/>
+						<assign name="PD" expr="'FilmiWords'"/>
+						<goto next="SIVR_UserSub.vxml#SubOptionDoubleconfirm_FW"></goto>
+					<elseif cond="realDNIS=='66291432'"/>
+						<assign name="amt" expr="'30'"/>
+						<assign name="plan_id" expr="'230'"/>
+						<assign name="service_id" expr="'1432'"/>
+						<assign name="CPPID" expr="'HUI0043972'"/>
+						<assign name="PRODTYPE" expr="'Subscription'"/>	
+						<assign name="PMARKNAME" expr="'Bollywood Masala'"/>
+						<assign name="PD" expr="'Bollywood Masala'"/>
+						<goto next="SIVR_UserSub.vxml#SubOptionDoubleconfirm_BM"></goto>
+					<elseif cond="realDNIS=='66291433'"/>
+						<assign name="amt" expr="'30'"/>
+						<assign name="plan_id" expr="'231'"/>
+						<assign name="service_id" expr="'1433'"/>
+						<assign name="CPPID" expr="'HUI0043973'"/>
+						<assign name="PRODTYPE" expr="'Subscription'"/>	
+						<assign name="PMARKNAME" expr="'FilmiHeath'"/>
+						<assign name="PD" expr="'FilmiHeath'"/>
+						<goto next="SIVR_UserSub.vxml#SubOptionDoubleconfirm_FH"></goto>
+					<elseif cond="realDNIS=='66291434'"/>
+						<assign name="amt" expr="'30'"/>
+						<assign name="plan_id" expr="'232'"/>
+						<assign name="service_id" expr="'1434'"/>
+						<assign name="CPPID" expr="'HUI0043974'"/>
+						<assign name="PRODTYPE" expr="'Subscription'"/>	
+						<assign name="PMARKNAME" expr="'CelebrityFashion'"/>
+						<assign name="PD" expr="'CelebrityFashion'"/>
+						<goto next="SIVR_UserSub.vxml#SubOptionDoubleconfirm_CF"></goto>
+					</if>
+			<elseif cond="usr_status=='1'"/>
+					<goto next="SIVR_End.vxml"></goto>	
+			<elseif cond="usr_status=='5'"/>
+				<goto next="#Play_delay_charging"></goto>
+
+			<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/charge_req_recd.wav'"/>
+					</prompt>
+								
+				<goto next="SIVR_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+	
+<form id="Play_delay_charging">
+<block>
+<assign name="Section_Name" expr="'PLAY_DELAY_CHARGING'"/>
+</block>
+	<field name="mnuopt">
+	<grammar mode="dtmf" root="start171" version="1.0">
+	       <rule id="start171" scope="public">
+		 <one-of>				 
+			   <item>1</item>					  			  		      
+		 </one-of>
+	       </rule>
+	</grammar>			
+
+	<prompt bargein="true" timeout="0s" cond="lang!='99'">
+		<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+	</prompt>
+	<prompt bargein="true" timeout="0s" cond="lang=='99'">
+		<audio expr="promptspath_54646+'/01/delay_charging.wav'"/>
+	</prompt>			
+
+	<filled>
+				<goto next="SIVR_End.vxml"></goto>
+	</filled>		
+
+	<noinput>
+				<goto next="SIVR_End.vxml"></goto> 			     
+	</noinput>
+
+	<nomatch>			   
+				<goto next="SIVR_End.vxml"></goto>             
+	</nomatch>
+	</field>
+</form>
+
+<form id="SIVR_USRSTATUS">
+		<block>
+			
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Uninor_BollyAlerts.BA_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+							if(j==0)
+								BA_usr_status = out_string[j];
+							if(j==1)
+								BA_lang = out_string[j];
+							if(j==2)
+								BA_balance = out_string[j];
+							if(j==3)
+								BA_moviectr = out_string[j];
+							if(j==4)
+								BA_modesub = out_string[j];							      
+						  }
+					]]>
+				</script>
+			
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Uninor_BollywoodMasala.BM_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+							if(j==0)
+								BM_usr_status = out_string[j];
+							if(j==1)
+								BM_lang = out_string[j];
+							if(j==2)
+								BM_balance = out_string[j];
+							if(j==3)
+								BM_moviectr = out_string[j];
+							if(j==4)
+								BM_modesub = out_string[j];							      
+						  }
+					]]>
+					</script>		
+			
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Uninor_FilmiWords.FW_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+							if(j==0)
+								FW_usr_status = out_string[j];
+							if(j==1)
+								FW_lang = out_string[j];
+							if(j==2)
+								FW_balance = out_string[j];
+							if(j==3)
+								FW_moviectr = out_string[j];
+							if(j==4)
+								FW_modesub = out_string[j];							      
+						  }
+					]]>
+					</script>	
+
+			
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Uninor_FilmiHeath.FH_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+						if(j==0)
+							FH_usr_status = out_string[j];
+						if(j==1)
+							FH_lang = out_string[j];
+						if(j==2)
+							FH_balance = out_string[j];
+						if(j==3)
+							FH_moviectr = out_string[j];
+						if(j==4)
+							FH_modesub = out_string[j];							      
+					  }
+				]]>
+				</script>
+
+			
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Uninor_CelebrityFashion.CF_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+							if(j==0)
+								CF_usr_status = out_string[j];
+							if(j==1)
+								CF_lang = out_string[j];
+							if(j==2)
+								CF_balance = out_string[j];
+							if(j==3)
+								CF_moviectr = out_string[j];
+							if(j==4)
+								CF_modesub = out_string[j];							      
+						  }
+					]]>
+					</script>			
+						
+						
+							
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'modesub  @@@@@@@@@ '+modesub"></log>
+			<log expr="'servlet_path @@@@@@@@@ '+servlet_path"></log>	
+			<log expr="'dbservlet @@@@@@@@@ '+dbservlet"></log>
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+			<log expr="'contentlog=='+contentlog"></log>
+			<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_prompt.wav'"/>
+			</prompt>
+			<if cond="double_switch=='1'">
+				<assign name="firstconsent" expr="'Switchlevel-1'"/>
+				<assign name="firstconsenttime" expr="start_time()"/>
+				<assign name="sub_flag" expr="'true'"/>
+				<if cond="CF_usr_status=='1' &amp;&amp; FH_usr_status=='1' &amp;&amp; FW_usr_status=='1' &amp;&amp; BM_usr_status=='1' &amp;&amp; BA_usr_status=='1'">
+					<goto next="SIVR_End.vxml"/>
+				</if>
+				<goto next="SIVR_Switch.vxml"></goto>
+			<else/>
+				<goto next="SIVR_MainMenu.vxml"></goto>
+			</if>
+			
+			
+		</block>
+	</form>	
+	
+</vxml>

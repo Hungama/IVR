@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Rasoi_root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd"> 	
+    
+   <var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="true"/>		
+   <var name="names"/> 
+   <var name="tottopup" expr="''"/>	
+   <var name="topup11" expr="''"/>	
+   <var name="topup12" expr="''"/>	
+   <var name="topup13" expr="''"/>	
+   <var name="topupmnu" expr="''"/>	
+   <var name="balupdatestatus" expr="'1'"/>	
+   
+   <form id="hungamatopupmnu"> 	 
+	    <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+			       <rule id="start" scope="public">
+				 <one-of>				 
+						   <item>1</item>		
+						   <item>2</item>		
+				</one-of>
+			      </rule>
+			  </grammar>						
+		   
+		<prompt bargein="true" timeout="2s">			  	
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'topup3.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'press_dtmf1.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'topup5.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'press_dtmf2.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'topup7.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'press_dtmf3.wav'"/>				
+		</prompt>		
+		<filled>
+			<if cond="operator=='tatm'">		
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/>		
+			<elseif cond="operator=='tatc'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=indicom_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/> 
+			<elseif cond="operator=='relm'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/> 
+			<elseif cond="operator=='virm'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/> 
+			<elseif cond="operator=='unim'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=uninor_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/> 
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/> 
+			</if>			
+
+			<if cond="mnuopt=='1'">		
+				<if cond="operator=='tatm'">		
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='tatc'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=indicom_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='relm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='virm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='unim'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=uninor_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				</if>	
+				<goto next="#topupstatus"/>
+
+			<elseif cond="mnuopt=='2'"/>
+				<if cond="operator=='tatm'">		
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='tatc'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=indicom_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='relm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='virm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='unim'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=uninor_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				</if>
+				<goto next="#topupstatus"/>
+
+			<elseif cond="mnuopt=='3'"/>
+				<if cond="operator=='tatm'">		
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='tatc'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=indicom_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='relm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='virm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='unim'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=uninor_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				</if>
+				<goto next="#topupstatus"/>
+			</if>   
+		</filled>			
+		<noinput timeout="3s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'nodtmf_m.wav'"/>                
+			<reprompt/> 
+		</noinput>	        
+		<noinput count="3">		  
+			<goto next="end.vxml"/>
+		</noinput>	        
+
+		<nomatch>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption_m.wav'"/>		
+			<reprompt/>
+		</nomatch>
+
+		<nomatch count="3">
+			<goto next="end.vxml"/>
+		</nomatch>					
+	  </field>	  		
+    </form>
+    
+   <form id="topupstatus">
+   	<block>	
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_rasoi.RASOI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator"/>
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					lang = out_string[j];
+				       if(j==2)
+					balance = out_string[j];
+				  }
+			]]>
+		</script>	
+		<if cond="balance &lt;= 0">
+			<assign name="timerflag" expr="'0'"/>
+			<if cond="count==3">
+				<prompt bargein="false">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/topup_sorry.wav'"/>
+				</prompt>
+				<exit/>
+			<else/>
+				<script>count=count+1; </script>
+				<prompt bargein="false">
+						<audio expr="promptpath+LANG_DESCRIPTION+'/wait.wav'"/>
+				</prompt>
+				<goto next="#topupstatus"/>
+			</if>
+		<else/>
+			<assign name="timerflag" expr="'1'"/>
+			<script>
+				balance=balance*60;
+			</script>
+			<assign name="initial_balance" expr="start_time()"/>
+			<goto next="Rasoi_MainMenu.vxml"/>
+		</if>				
+   	</block>
+   </form>
+</vxml>

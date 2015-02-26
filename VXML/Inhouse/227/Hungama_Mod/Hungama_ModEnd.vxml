@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModEnd.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	<script>
+		var lenplay=0;
+		var lenCount=0;
+		var out_string=new Object();
+		var j = 0;
+	</script>
+	<var name="lenSize" expr="0"/>
+	<var name="lenLimit" expr="500"/>
+	<var name="updatecontent" expr="''"/>
+	<var name="CheckLen" expr="''"/>
+	<form id="EndLogin">
+		<block>
+			<log>program_name:<value expr="program_name"/></log>
+			<log expr="'Mode of Sub======>'+mod"></log>
+			<log expr="'WMD flag is======>'+flag_wmd"></log>
+			<assign name="C_End" expr="start_time()"/>
+			
+			<if cond="flag_wmd=='TRUE'">			
+			    <if cond="song_listen=='START'">
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+					<if cond="Question!='hi' &amp;&amp; Question!='0' &amp;&amp; Question!='' &amp;&amp; Question!=' '">
+						<assign name="contentlog" expr="contentlog+Question+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+					</if>
+					<log expr="'ContentTime ISSSSSS '+ContentTime"/>
+					<log expr="'contentlog ISSSSSS '+contentlog"/>
+				</if>				
+				 <script>
+					var sou=rim(Game_Start);
+				 </script>
+				<log expr="'@@@@@@ SOU '+sou"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Contest_Sou&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+sou"/>
+			</if>
+   			<if cond="indpc_subflag=='1'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=INDPC_USERPROFILE&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]=SET&amp;INPARAM[3]='+unike_play"/>
+				<script>
+				 <![CDATA[
+					for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+								stat = out_string[j];
+							 }
+					]]>
+				</script>
+			</if>	
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=SEND_VCARD&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator"/>
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+
+				<if cond="flag_cinema=='true'">
+					<assign name="contentlog" expr="contentlog+'106_'+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				<elseif cond="flag_wmd=='TRUE'"/>
+					<assign name="contentlog" expr="contentlog+Question+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				<else/>
+					<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				</if>	
+
+				<log>contentlog is:<value expr="contentlog"/></log>
+				<log>compare_time is:<value expr="compare_time"/></log>
+				
+				<script>
+					lencontent=getstringlength(contentlog);                                                                                                                                                                                               
+				</script>
+			</if>
+			<log>new content log:<value expr="contentlog"/></log>
+			<assign name="lenplay" expr="HEARD.length"/>
+			
+			<if cond="HEARD!='0'">
+				<log>Call Last Heard Updation:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/></log>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+			</if>		
+			
+			<log>C_Start:<value expr="C_Start"/></log>
+			<log>C_End:<value expr="C_End"/></log>
+
+			<assign name="total_time" expr="start_time()-C_Start"/>
+			<log>End Time:<value expr="total_time"/></log>
+			<log>usr_status:<value expr="usr_status"/></log>
+			<log>user status:<value expr="usr_status"/></log>
+			<log>circle:<value expr="circle"/></log>
+			<script>
+			  	total_time=rim(CallTime);
+			  	balance=balance-total_time;  						  
+		 	</script>
+			<!--<script> total_time=Math.floor(total_time/60); </script>-->
+		 	<log>total time is:<value expr="total_time"/></log>
+			<if cond="DNISFlag=='TRUE'">
+				<assign name="DNIS" expr="59090"/>
+			</if> 
+
+			<if cond="DNISset=='5909061'">
+				<assign name="DNIS" expr="'5909061'"/>
+			<elseif cond="DNISset=='5909062'"/>	
+				<assign name="DNIS" expr="'5909062'"/>				
+			</if> 
+			<log expr="'@@@@@@@ TOTAL SCORE ISSSS ===>' +DNISset"/>
+			
+			<assign name="total_time" expr="time_duration(C_Start)"/>
+			<script> total_time=(Math.floor(total_time/60))+1; </script>			
+			
+			<log>exit log call</log>
+			<script>
+				lencontent=getstringlength(contentlog);
+				lenplay= Math.floor(lencontent/lenLimit);					
+			</script>
+			<log>lenplay is:<value expr="lenplay"/></log>
+			<log>lencontentis:<value expr="lencontent"/></log>
+			<log>ContentTime:<value expr="ContentTime"/></log>
+
+	
+				<if cond="ContentTime!='0'">
+					<goto nextitem="callurl"/>
+				</if>
+				<if cond="sub_flag=='true'">
+					<script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service='+serviceid+'&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>
+				</if>
+				<if cond="flag_wmd=='TRUE'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_CT_SMS&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]='+DNIS"/>
+				</if>				
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+program_name+hash+mod+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=MOD&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>							
+				<log expr="'total_time======>'+total_time"></log>
+				<if cond="Ad_switch=='1'">
+					<if cond="block_flag=='0'">
+						<assign name="add_endtime" expr="rim(add_starttime)"/>
+						<log>add_endtime for msisdn : <value expr="add_endtime"/></log>
+						<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+					</if>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Inhouse_IVR.AD_logging&amp;INTOKEN=9&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+AD_id+'&amp;INPARAM[2]='+serviceid+'&amp;INPARAM[3]='+circle+'&amp;INPARAM[4]='+operator+'&amp;INPARAM[5]='+add_endtime+'&amp;INPARAM[6]='+usr_status+'&amp;INPARAM[7]='+DNIS+'&amp;INPARAM[8]='+ADskip_flag"/>
+				</if>				
+				<exit/>
+	</block>
+
+		<block name="callurl">
+			<log>call url</log>
+			<log expr="'j======>'+j"></log>
+			<log expr="'lenplay======>'+lenplay"></log>
+
+			<if cond="j &lt;=lenplay">
+				<goto nextitem="updateexitlog"/>
+			<else/>
+				<script>
+					lencontent=getstringlength(contentlog);
+				</script>
+				<log>total content is:<value expr="lencontent"/></log>
+				<if cond="sub_flag=='true'">
+					<script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=MOD&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>
+				</if>
+				<if cond="flag_wmd=='TRUE'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_CT_SMS&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]='+DNIS"/>
+				<else/>	
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UPDATETIME&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+total_time+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+circle+'&amp;INPARAM[4]='+operator+'&amp;INPARAM[5]=game_n'"/>
+				</if>					
+				<if cond="lencontent &lt;=5000">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+program_name+hash+mod+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=MOD&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+				<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+program_name+hash+mod+hash+pricepoint+'&amp;contenttime=0&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=MOD&amp;subflag='+usr_status"/>	
+				</if>
+				<if cond="Ad_switch=='1'">
+					<if cond="block_flag=='0'">
+						<assign name="add_endtime" expr="rim(add_starttime)"/>
+						<log>add_endtime for msisdn : <value expr="add_endtime"/></log>
+						<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+					</if>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Inhouse_IVR.AD_logging&amp;INTOKEN=9&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+AD_id+'&amp;INPARAM[2]='+serviceid+'&amp;INPARAM[3]='+circle+'&amp;INPARAM[4]='+operator+'&amp;INPARAM[5]='+add_endtime+'&amp;INPARAM[6]='+usr_status+'&amp;INPARAM[7]='+DNIS+'&amp;INPARAM[8]='+ADskip_flag"/>
+				</if>
+				<exit/>
+			</if>			
+		</block>
+
+		<block name="updateexitlog">
+			<log>update content</log>
+				<assign name="updatecontent" expr="contentlog.substring(lenSize, lenSize+lenLimit)"/>
+				<script>
+					lencontent=getstringlength(updatecontent);                                                                                                                                                                                               
+				</script>		
+			<assign name="CheckLen" expr="updatecontent.substring(lencontent-1, lencontent)"/>
+			<log>last character:<value expr="CheckLen"/></log>
+
+			<if cond="CheckLen=='%'">
+				<assign name="lenLimit" expr="503"/>
+				<assign name="updatecontent" expr="contentlog.substring(lenSize, lenSize+lenLimit)"/>
+
+			</if>
+			<log>update content % is:<value expr="updatecontent"/></log>
+			<script>
+				lencontent=getstringlength(updatecontent);                                                                                                                                                                                               
+			</script>
+			<assign name="CheckLen" expr="updatecontent.substring(lencontent-2, lencontent)"/>
+
+			<log>last character:<value expr="CheckLen"/></log>
+			<if cond="CheckLen=='%2'">
+				<assign name="lenLimit" expr="501"/>
+				<log>lenSize is :<value expr="lenSize"/></log>
+				<log>lenLimit is :<value expr="lenLimit"/></log>
+				<assign name="updatecontent" expr="contentlog.substring(lenSize, lenSize+lenLimit)"/>
+			</if>				
+
+			<log>update content %2 is:<value expr="updatecontent"/></log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=misdata.Content_Update&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+updatecontent+'&amp;INPARAM[2]=ENDLESS&amp;INPARAM[3]='+operator+'&amp;INPARAM[4]='+lenSize+'&amp;INPARAM[5]='+circle"/>
+			<script>
+				lenSize=lenSize+lenLimit;
+				j=j+1;
+			</script>
+			<goto nextitem="callurl"/>
+		</block>		 
+	</form>
+	
+	<form id="LASTHEARDSONG">
+		<block>		
+			<assign name="total_time" expr="time_duration(C_Start)"/>
+			<script> total_time=(Math.floor(total_time/60)); </script>
+			<if cond="flag_wmd=='TRUE'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_CT_SMS&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]='+DNIS"/>
+			<else/>	
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UPDATETIME&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+total_time+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+circle+'&amp;INPARAM[4]='+operator+'&amp;INPARAM[5]=game_n'"/>
+			</if>	
+			<if cond="sub_flag=='true'">
+				<script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=MOD&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>
+			</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+program_name+hash+mod+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=MOD&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>	
+			<if cond="Ad_switch=='1'">
+				<if cond="block_flag=='0'">
+					<assign name="add_endtime" expr="rim(add_starttime)"/>
+					<log>add_endtime for msisdn : <value expr="add_endtime"/></log>
+					<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+				</if>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Inhouse_IVR.AD_logging&amp;INTOKEN=9&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+AD_id+'&amp;INPARAM[2]='+serviceid+'&amp;INPARAM[3]='+circle+'&amp;INPARAM[4]='+operator+'&amp;INPARAM[5]='+add_endtime+'&amp;INPARAM[6]='+usr_status+'&amp;INPARAM[7]='+DNIS+'&amp;INPARAM[8]='+ADskip_flag"/>
+			</if>
+		</block>
+	</form>	
+	<catch event="error.badfetch">		 								
+		<exit/>
+	</catch>                       
+	<catch event="telephone.disconnect.hangup">
+		<exit/>
+	</catch>                 
+	<catch event="telephone.disconnect">
+	  	<exit/>
+	</catch>   	  
+	<catch event="connection.disconnect.hangup">
+		<exit/>
+	</catch>            
+</vxml>

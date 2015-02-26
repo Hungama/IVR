@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version = "2.1"  xmlns="http://www.w3.org/2001/vxml">
+<var name="s1" expr = "'song1'"/>
+<var name="s2" expr = "'song2'"/>
+<var name="s3" expr = "'song3'"/>
+<var name="s4" expr = "'song4'"/>
+<var name="digits" expr = "''"/>
+<form id="MainMenu">
+	<block>
+		<prompt  bargein="false">
+			<audio src="http://192.168.100.226:8082/promptFiles/EK_prompts/01/thanx_correct.wav"></audio>
+		</prompt>
+	</block>
+  <field name="Song_1" modal="false">
+    <grammar version="1.0" mode="dtmf" xml:lang="en-US" root="myrule1">
+        <rule id="myrule1">
+			<one-of>
+				<item> 1 </item>
+				<item> 8 </item>
+			</one-of>
+        </rule>
+    </grammar>
+		<prompt  bargein="true">
+			<audio src="http://192.168.1.114:99/vXML/VXML_InhouseTesting/sivr/web/prompts/GreetMsgRsp/VGT_HND_POP1/2001.wav"></audio>
+		</prompt>
+		  <catch cond="true" count="1" event="noinput">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/NoContent.wav"></audio>
+				</prompt>
+			<reprompt/>
+		  </catch>
+		  <catch cond="true" count="2" event="noinput">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/NoContent.wav"></audio>
+				</prompt>
+			<disconnect/>
+		  </catch>
+		<catch cond="true" count="1" event="nomatch">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/902.wav"></audio>
+				</prompt>
+			<reprompt/>
+		</catch>
+		<catch cond="true" count="2" event="nomatch">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/902.wav"></audio>
+				</prompt>
+			<disconnect/>
+		</catch>
+    <filled>
+		<assign name="digits" expr="Song_1"/>
+		<if cond="Song_1 == 1">
+			<submit next="hungama_subdialog.vxml" method="get" fetchhint="safe" fetchaudio="http://192.168.100.226:8082/promptFiles/EK_prompts/01/thanx_correct.wav"/>
+		<elseif cond="Song_1 == 8"/>
+			<goto next="#Fs_2"/>
+		</if>
+    </filled>
+  </field>
+</form>  
+<form id="Fs_2">
+  <field name="Song_2" modal="false">
+    <grammar version="1.0" mode="dtmf" xml:lang="en-US" root="myrule2">
+        <rule id="myrule2">
+			<one-of>
+				<item> 2 </item>
+				<item> 8 </item>
+			</one-of>
+        </rule>
+    </grammar>
+		<prompt  bargein="true">
+			<audio src="http://192.168.1.114:99/vXML/VXML_InhouseTesting/sivr/web/prompts/GreetMsgRsp/VGT_HND_POP1/2002.wav"></audio>
+		</prompt>
+		  <catch cond="true" count="1" event="noinput">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/NoContent.wav"></audio>
+				</prompt>
+			<reprompt/>
+		  </catch>
+		  <catch cond="true" count="2" event="noinput">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/NoContent.wav"></audio>
+				</prompt>
+			<disconnect/>
+		  </catch>
+		<catch cond="true" count="1" event="nomatch">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/902.wav"></audio>
+				</prompt>
+			<reprompt/>
+		</catch>
+		<catch cond="true" count="2" event="nomatch">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/902.wav"></audio>
+				</prompt>
+			<disconnect/>
+		</catch>
+    <filled>
+		<assign name="digits" expr="Song_2"/>
+		<if cond="Song_2 == 2">
+			<submit next="confirm.vxml" namelist="s2 digits" method="get"	fetchhint="safe" fetchaudio="http://192.168.1.114:99/vXML/VXML_InhouseTesting/sivr/web/prompts/GreetMsgRsp/VGT_HND_POP1/2006.wav"/>
+		<elseif cond="Song_2 == 8"/>
+			<goto next="#Fs_3"/>
+		</if>
+    </filled>
+  </field> 
+</form>	
+<form id="Fs_3">
+  <field name="Song_3" modal="false">
+    <grammar version="1.0" mode="dtmf" xml:lang="en-US" root="myrule3">
+        <rule id="myrule3">
+			<one-of>
+				<item> 3 </item>
+				<item> 8 </item>
+			</one-of>
+        </rule>
+    </grammar>
+		<prompt  bargein="true">
+			<audio src="http://192.168.1.114:99/vXML/VXML_InhouseTesting/sivr/web/prompts/GreetMsgRsp/VGT_HND_POP1/2003.wav"></audio>
+		</prompt>
+		  <catch cond="true" count="1" event="noinput">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/NoContent.wav"></audio>
+				</prompt>
+			<reprompt/>
+		  </catch>
+		  <catch cond="true" count="2" event="noinput">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/NoContent.wav"></audio>
+				</prompt>
+			<disconnect/>
+		  </catch>
+		<catch cond="true" count="1" event="nomatch">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/902.wav"></audio>
+				</prompt>
+			<reprompt/>
+		</catch>
+		<catch cond="true" count="2" event="nomatch">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/902.wav"></audio>
+				</prompt>
+			<disconnect/>
+		</catch>
+    <filled>
+		<if cond="Song_3 == 3">
+			<submit next="confirm.vxml" namelist="s3" method="get" fetchhint="safe" fetchaudio="http://192.168.1.114:99/vXML/VXML_InhouseTesting/sivr/web/prompts/GreetMsgRsp/VGT_HND_POP1/2006.wav"/>
+		<elseif cond="Song_3 == 8"/>
+			<goto next="#Fs_4"/>
+		</if>
+    </filled>
+  </field> 
+
+</form>		
+<form id="Fs_4">
+  <field name="Song_4" modal="false">
+    <grammar version="1.0" mode="dtmf" xml:lang="en-US" root="myrule4">
+        <rule id="myrule4">
+			<one-of>
+				<item> 4 </item>
+				<item> 8 </item>
+			</one-of>
+        </rule>
+    </grammar>
+		<prompt  bargein="true">
+			<audio src="http://192.168.1.114:99/vXML/VXML_InhouseTesting/sivr/web/prompts/GreetMsgRsp/VGT_HND_POP1/2004.wav"></audio>
+		</prompt>
+		  <catch cond="true" count="1" event="noinput">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/NoContent.wav"></audio>
+				</prompt>
+			<reprompt/>
+		  </catch>
+		  <catch cond="true" count="2" event="noinput">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/NoContent.wav"></audio>
+				</prompt>
+			<disconnect/>
+		  </catch>
+		<catch cond="true" count="1" event="nomatch">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/902.wav"></audio>
+				</prompt>
+			<reprompt/>
+		</catch>
+		<catch cond="true" count="2" event="nomatch">
+				<prompt bargein="true">
+					<audio src="http://192.168.1.114:99/vXML/prompts/902.wav"></audio>
+				</prompt>
+			<disconnect/>
+		</catch>
+    <filled>
+		<if cond="Song_4 == 4">
+			<submit next="confirm.vxml" namelist="s4" method="get" fetchhint="safe" fetchaudio="http://192.168.1.114:99/vXML/VXML_InhouseTesting/sivr/web/prompts/GreetMsgRsp/VGT_HND_POP1/2006.wav"/>
+		<elseif cond="Song_4 == 8"/>
+			<goto next="#MainMenu"/>
+		</if>
+    </filled>
+  </field> 
+</form>		
+</vxml>

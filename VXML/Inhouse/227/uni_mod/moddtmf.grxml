@@ -1,0 +1,46 @@
+<?xml version= "1.0"?>
+
+<grammar mode="dtmf"
+         type="application/srgs+xml"
+         root="root_rule"
+         tag-format="semantics/1.0"
+         version="1.0"
+         xmlns="http://www.w3.org/2001/06/grammar">
+  <rule id="root_rule" scope="public">
+    <one-of>
+      <item>
+        <one-of>
+          <item>
+            1
+          </item>
+        </one-of>
+        <tag>out.dept = "010";</tag>
+      </item>
+      <item>
+        <one-of>
+          <item>
+            2
+          </item>
+        </one-of>
+        <tag>out.dept = "020";</tag>
+      </item>
+      <item>
+        <one-of>
+          <item>
+            3
+          </item>
+        </one-of>
+        <tag>out.dept = "030";</tag>
+      </item>
+      <item>
+        <one-of>
+          <item>
+            4
+          </item>
+        </one-of>
+        <tag>out.dept = "040";</tag>
+      </item>
+    </one-of>
+  </rule>
+
+</grammar>

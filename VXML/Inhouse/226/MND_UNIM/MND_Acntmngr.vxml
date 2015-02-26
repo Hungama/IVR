@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MND_Acntmngr.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+<form id="WelcomeAcntmngr">
+	<block>
+		<assign name="prompt_name" expr="'HELP_MENU'"/>
+	</block>
+	<field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+					 <item>  2  </item>
+					 <item>  3  </item>
+					 <item>  8  </item>
+					 <item>  9  </item>
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/welcome_acmanager.wav'"/>
+				</prompt>
+
+				
+		  <filled>
+				<if cond="choice=='1'">
+					<goto next="Topup.vxml"/>
+				<elseif cond="choice=='2'"/>
+					<goto next="MND_UnSub.vxml"/>
+				<elseif cond="choice=='3'"/>
+					<goto next="#LangChange"/>
+				<elseif cond="choice=='8'"/>
+					<goto next="MND_mainmenu.vxml"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="MND_Acntmngr.vxml"/>
+				</if>
+	         </filled>				    
+			 <noinput>
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/nodtmf.wav'"/>
+				<reprompt/> 
+			</noinput>  
+		          
+			<nomatch>
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/invalidoption.wav'"/>
+				<reprompt/>
+		        </nomatch> 
+         </field>
+</form>
+
+
+<form id="LangChange">
+	<block>
+		<assign name="prompt_name" expr="'LANG_CHANGE'"/>
+	</block>
+	 <field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+					 <item>  2  </item>
+					 <item>  8  </item>
+					 <item>  9  </item>
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/01/common/lang01.wav'"/>
+					<audio expr="promptpath+'/01/common/press_dtmf1.wav'"/>
+					<audio expr="promptpath+'/08/common/lang08.wav'"/>
+					<audio expr="promptpath+'/08/common/press_dtmf2.wav'"/>
+				</prompt>
+				
+		  <filled>
+					<if cond="choice=='1'">
+						<assign name="lang" expr="'01'" />
+
+						<prompt bargein="true" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/common/lang_thanks.wav'"/>
+						</prompt>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/> 
+						<goto next="MND_mainmenu.vxml"/> 
+					<elseif cond="choice=='2'"/>
+						<assign name="lang" expr="'08'" />
+
+						<prompt bargein="true" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/common/lang_thanks.wav'"/>
+						</prompt>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/> 
+						<goto next="MND_mainmenu.vxml"/> 
+					<elseif cond="choice=='8'"/>
+						<goto next="MND_mainmenu.vxml"/>
+					<elseif cond="choice=='9'"/>
+						<goto next="MND_Acntmngr.vxml"/>
+					</if>
+	     </filled>				    
+			
+			 <noinput>
+				<assign name="index" expr="'0'" />
+				<audio expr="promptpath+'/'+lang+'/common/nodtmf.wav'"/>
+				<reprompt/> 
+			 </noinput>  
+			 
+			 <noinput count="3">
+				<goto next="MND_mainmenu.vxml"/> 
+ 			 </noinput> 
+			    
+          
+			<nomatch>
+				<assign name="index" expr="'0'" />
+				<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+				<reprompt/>
+		        </nomatch> 
+			<nomatch count="3">
+				<goto next="MND_mainmenu.vxml"/>
+		        </nomatch> 
+		      
+
+	    </field>
+</form>
+
+
+</vxml>

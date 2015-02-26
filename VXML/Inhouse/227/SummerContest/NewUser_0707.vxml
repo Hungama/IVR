@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Contest_root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="NewUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+	<script>
+		var ciropr1=new Object();
+		var out_string = new Object();
+	</script>
+	<var name="Plan_Id" expr="0"/>
+	<var name="AMNT" expr="0"/>
+
+	<form id="CheckLang">
+		<block>
+			<log>Select Lang option</log>
+			
+			<if cond="ANI=='8527000779'">
+				<goto next="NewUser_DC.vxml"/>
+			</if>
+
+
+		</block>
+		<field name="askinput" type="digits?length=1">
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								  <item> 4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+							</one-of>
+						</rule>
+				</grammar>	
+				
+			<prompt bargein="true" timeout="1s">
+			
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang_option.wav'"/>
+
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang01.wav'"/>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang02.wav'"/>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/press_dtmf2.wav'"/>
+
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang04.wav'"/>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/press_dtmf3.wav'"/>
+
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang11.wav'"/>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/press_dtmf4.wav'"/>
+
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang08.wav'"/>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/press_dtmf5.wav'"/>
+
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang12.wav'"/>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/press_dtmf6.wav'"/>
+
+			</prompt>
+
+
+			<filled>
+				<if cond="askinput=='1'">
+				   	<assign name="LANG_DESCRIPTION" expr="'01'"/>
+				 <elseif cond="askinput=='2'"/>
+					<!--<assign name="LANG_DESCRIPTION" expr="'02'"/>-->
+					<assign name="LANG_DESCRIPTION" expr="'01'"/>
+				<elseif cond="askinput=='3'"/>
+					<!--<assign name="LANG_DESCRIPTION" expr="'04'"/>-->
+					<assign name="LANG_DESCRIPTION" expr="'01'"/>
+				<elseif cond="askinput=='4'"/>
+					<!--<assign name="LANG_DESCRIPTION" expr="'11'"/>-->
+					<assign name="LANG_DESCRIPTION" expr="'01'"/>
+				<elseif cond="askinput=='5'"/>
+					<!--<assign name="LANG_DESCRIPTION" expr="'08'"/>-->
+					<assign name="LANG_DESCRIPTION" expr="'01'"/>
+				<elseif cond="askinput=='6'"/>
+					<!--<assign name="LANG_DESCRIPTION" expr="'12'"/>-->
+					<assign name="LANG_DESCRIPTION" expr="'01'"/>
+
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+
+				<log>Update Lang:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Contest_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+LANG_DESCRIPTION"/></log>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Contest_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+LANG_DESCRIPTION"/>
+
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/lang_thanks.wav'"/>
+
+				<if cond="usr_status=='-1'">
+					<goto next="#Subscription"/>
+				<else/>
+					<goto next="MainMenu.vxml"/>					
+				</if>
+
+			</filled>
+		<nomatch>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			<reprompt></reprompt>
+		</nomatch>
+
+		<noinput>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			<reprompt></reprompt>
+		</noinput>
+	</field>
+
+	</form>
+
+
+<form id="Subscription">
+		<block><log>SelectCat</log></block>
+
+		<field name="askinput" type="digits?length=1">
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								
+							</one-of>
+						</rule>
+				</grammar>	
+
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/subintro.wav'"/>
+			</prompt>
+			
+			<filled>
+				<if cond="askinput == '1'">
+					<assign name="Plan_Id" expr="181"/>
+					<assign name="AMNT" expr="5"/>
+
+					<goto next="#SubRequest"/>
+				<!--<elseif cond="askinput =='2'"/>
+					<assign name="Plan_Id" expr="182"/>
+					<assign name="AMNT" expr="3"/>
+
+					<goto next="#SubRequest"/>
+				<elseif cond="askinput =='3'"/>
+					<assign name="Plan_Id" expr="183"/>
+					<assign name="AMNT" expr="2"/>
+
+					<goto next="#SubRequest"/>-->
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+				<goto next="#Subscription"/>
+			</filled>
+
+			<nomatch>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				<reprompt></reprompt>
+			</nomatch>
+
+			<noinput>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				<reprompt></reprompt>
+			</noinput>
+
+		</field>
+</form>
+
+
+	<form id="SubRequest">
+		<block>
+		
+			<log>Sub url:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Contest_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+AMNT+'&amp;INPARAM[5]=1423&amp;INPARAM[6]='+Plan_Id"/></log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Contest_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+AMNT+'&amp;INPARAM[5]=1423&amp;INPARAM[6]='+Plan_Id"/>
+
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/charging_wait.wav'"/>
+			<goto next="#CheckRequest"/>
+		</block>
+	</form>
+
+
+<form id="CheckRequest">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Contest_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  
+					if(j==0)
+					  usr_status = out_string[j];
+				        if(j==1)
+					  lang = out_string[j];
+					if(j==2)
+					  channel = out_string[j];
+					if(j==3)
+					  maxscore = out_string[j];
+					if(j==4)
+					  diff_level = out_string[j];
+					if(j==5)
+					  QuestCount = out_string[j];
+					if(j==6)
+					  Amt = out_string[j];
+					 if(j==7)
+					  TotalQuestion = out_string[j];
+				      
+				  }
+			]]>
+		</script>
+		
+		<assign name="LANG_DESCRIPTION" expr="lang"/>
+				
+		<log> user status is:<value expr="usr_status"/></log>	         	
+		<log> lang status is:<value expr="lang"/></log>
+						
+		<log> channel status is:<value expr="channel"/></log>	         	
+		<log> maxscore status is:<value expr="maxscore"/></log>
+						
+		<log> diff_level status is:<value expr="diff_level"/></log>	         	
+		<log> QuestCount status is:<value expr="QuestCount"/></log>
+		
+		<if cond="usr_status=='1' &amp;&amp; QuestCount &lt; 1">
+			  <goto next="AccountManager.vxml#topup" fetchhint="prefetch" fetchtimeout="10s"/>	
+		<elseif cond="usr_status=='1' &amp;&amp; QuestCount &gt; 1"/>
+			<goto next="MainMenu.vxml#Main1" fetchhint="prefetch" fetchtimeout="10s"/>
+		<elseif cond="usr_status=='-1'"/>
+			<log>New User call</log>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+			<goto next="end.vxml"/>
+		<else/>
+			<log>result Pending</log>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+			<goto next="end.vxml"/>
+		</if>
+
+
+		</block>
+	</form>
+
+
+
+</vxml>

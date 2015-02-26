@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_AccountMnger.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="conn2" expr="''"/>
+	<var name="conidnewvin" expr="'CONFERENCE1'"/>
+	<var name="conn1" expr="''"/>
+	<var name="j" expr="0"/>
+	<var name="user_value" expr="''"/>
+	<var name="in_out_user" expr="''"/>
+	<var name="user_value_other" expr="''"/>
+	<var name="CheckCelebStatus" expr="''"/>
+	<var name="connection_id" expr="'callleg_dummy'"/>
+	<var name="celeb_rec_fcount" expr="0"/>
+	<var name="celeb_rec_fcount_check" expr="0"/>
+	<var name="celeb_status" expr="''"/>
+	<var name="chat_status" expr="''"/>
+	<var name="lang_dc" expr="0" />
+	<var name="DC_DNIS" expr="0" />
+	<var name="mobilenumber" expr="0" />
+	<var name="number" expr="0" />
+<form id="nameing">
+<field name="mobilenumber" type="digits?length=10">
+
+<grammar mode="dtmf" root="start" version="1.0">
+		<rule id="start" scope="public">
+			<one-of>
+				 <item>  1  </item>
+				 <item>  2  </item>
+				 <item>  3  </item>
+				 <item>  4  </item>
+				 <item>  5  </item>
+				 <item>  6  </item>
+				  <item>  7  </item>
+				    <item>  8  </item>
+				      <item>  9 </item>
+				        <item>  0  </item>
+
+			</one-of>
+		</rule>
+</grammar>
+<prompt bargein="true" timeout="3s">
+	<audio expr="promptspath_54646+'/01/welcome_new_1.wav'"/>
+
+</prompt>
+
+		<filled>
+				<script>
+					mobilenumber= mobilenumber.replace(/\s+/g,'');
+					number = mobilenumber.length;
+					mobilenumber="isdn:0"+mobilenumber;
+				</script>
+				<if cond="number=='10'">
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/01/thank_sub.wav'"/>
+				</prompt>
+				<else />	
+					<goto next="#nameing"/>
+				</if>	
+			
+		</filled>
+		<noinput>
+		<goto next="#nameing"/>
+		</noinput>
+	</field>
+	
+	<transfer name="mytransfer"  destexpr="mobilenumber" bridge="true" connecttimeout="2000s"> 
+<!--<transfer name="mytransfer"  dest="sip:2345@192.168.4.224" bridge="true" connecttimeout="2000s"> -->
+
+		<filled>
+			<log> transfer done now</log>
+			<clear namelist="mytransfer"/>
+		</filled>
+		</transfer>
+</form>
+</vxml>

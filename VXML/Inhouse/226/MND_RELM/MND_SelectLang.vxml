@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MND_SelectLang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	
+<form id="Main">
+	<block>		
+		<assign name="C_Start" expr="start_time()"/>
+
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+		</script>
+
+	        <script>
+			var length = ANI.length;
+			ANI = ANI.substring(length-10,length);
+		</script>
+			
+	       <script srcexpr="'http://192.168.100.226:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+               <script>
+                            circle = out_string[0];
+	       </script>
+                     
+              <log> FIRST DB FETCH circle  is   <value expr="circle"/>    </log>
+              <if cond="circle=='oth'">
+                    <script srcexpr="'http://192.168.100.226:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+                    <assign name="DNIS" expr="realDNIS"/>
+                    <assign name="operator" expr="'und'"/>
+                    <goto next="MND_end.vxml"></goto>                    
+               </if>
+		
+		
+			
+		
+		<assign name="DNIS" expr="'546464'"/>
+		<assign name="operator" expr="'relm'"/>
+		<assign name="dbservlet" expr="'tatm_mnd_dbinteraction'"/>
+
+		<assign name="lang" expr="'01'" />
+		
+		
+		<log>circle  is	<value expr="circle"/>    </log>
+		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>	
+		<log expr="'operator issssss =' + operator"/>
+		<log expr="'dbservlet issssss =' + dbservlet"/>
+
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/>
+		
+		<goto next="#Checkuser"/>
+	</block>
+  </form>
+
+<form id="Checkuser">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_hungama.MND_LAST_CAT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]=2'"/>
+		<script>
+			<![CDATA[
+				for(j=0; j< out_string.length;  j++)
+					{  	
+						playconfig = out_string[j];
+					}
+			]]>
+		</script>
+
+			
+		<if cond="playconfig=='-1'">
+			<assign name="playconfig" expr="'ch4'" />
+			
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/welcome_old.wav'"/>
+			</prompt>
+						
+			<goto next="MND_mainmenu.vxml"/>
+		<else/>
+			<assign name="drop_point" expr="'LAST_CAT'"/>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/repeat_'+playconfig+'.wav'"/>
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/last_cat.wav'"/>
+			</prompt>
+			
+			<goto next="MND_mainmenu.vxml#loadcliptoplay"/>
+		</if>
+	
+	</block>
+</form>
+</vxml>

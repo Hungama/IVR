@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" 
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="PlayPrompt.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="songcheck" expr=""/>
+<var name="Content_Path" expr="'http://192.168.100.212:6666/PlayPrompt/'"/>
+<script>
+	var array2=new Array();
+	var unike_play2=0;
+	var len1=0;
+	var j=0;
+	var songcheck=0;
+	var favSongs=new Object();
+
+</script>
+
+<form id="play_schedule_new">
+			<block>
+			
+				<script srcexpr="'http://192.168.100.212:6666/hungamas/Hungama_ReadConfigSong?tomcat_path=/usr/local/apache-tomcat-6.0.29/webapps/PlayPrompt&amp;ConfigPath=test.cfg&amp;TOKEN=FREE'"/>
+				<script>
+						array2.length=0;
+						unike_play2=0;
+						
+				</script>
+					<assign name="len1" expr="favSongs.length" />
+					<log>Length Match Center  is	<value expr="len1"/>    </log>
+					<log>previous Array[2]  is	<value expr="array2[0]"/>    </log>
+					<script>
+						 <![CDATA[
+							   for(j=0; j<len1 ;  j++)
+							   {  	  
+										array2[j] = favSongs[j];						   
+							   }
+	
+						]]>		
+					</script>
+	
+					<log>	unike_play2  is ==<value expr="unike_play2"/>    </log>
+					<log>	array == <value expr="array2[unike_play2]"/>    </log>
+					
+					
+					
+					<goto next="#play_schedule"/>
+		
+			</block>
+	</form>
+	<form id="play_schedule">
+			<block>
+			
+				<script>
+					songcheck=array2[unike_play2];
+				</script>
+				
+				<if cond="unike_play2 &gt; len1-1">
+					<assign name="unike_play" expr="0" />
+					
+				<elseif cond="unike_play2 &lt; 0" />
+					<assign name="unike_play2" expr="len1-1" />
+				</if>
+		    		
+			</block>
+		<field name="choice">
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Content_Path+songcheck+'.wav'"/> 
+			</prompt>
+				<grammar mode="dtmf" root="start23" version="1.0">
+							<rule id="start23" scope="public">
+								<one-of>
+									 
+									
+									 <item> 1  </item>
+									 <item> 2 </item>
+									  <item> 3 </item>
+									 
+								</one-of>
+							</rule>
+				</grammar>
+				<filled>
+				
+					
+					<if cond="choice=='1'">
+						<script> unike_play2=unike_play2+1;</script>
+						<goto next="#play_schedule"/>
+					<elseif cond="choice=='2'"/>
+						<script> unike_play2=unike_play2;</script>
+						<goto next="#play_schedule"/>
+					<elseif cond="choice=='3'"/>
+						
+						<script> unike_play2=unike_play2-1;</script>
+						<goto next="#play_schedule"/>
+					</if>
+				</filled>
+					
+				<noinput>
+						
+						<goto next="#play_schedule"/>
+				</noinput>
+					
+				<nomatch>
+						
+						<goto next="#play_schedule"/>
+				</nomatch>
+				
+	
+			</field>
+	</form>
+	</vxml>
+	

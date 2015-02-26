@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="NineXMPortalRoot.vxml"
+
+xmlns="http://www.w3.org/2001/vxml"
+
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+
+<meta name="ManageAccount.vxml" content="" />
+
+<meta name="Author" content="" />
+
+<meta name="Date" content="" />
+
+<meta name="Description" content="" />
+
+<meta name="Support" content="" />	
+<script>
+var UserStatus1=new Object();
+var out_string=new Object();		
+</script>
+
+<var name="PlayOnce" expr="'true'"/>		
+<var name="names"/> 
+
+<form id="accountmanager">
+
+<block>
+<assign name="Section_Name" expr="'ACCOUNTMANAGER'"/>
+<script>
+       <![CDATA[
+       if(timerflag==1)
+		 start_BalenceMinute=starttime();
+       ]]>	 	
+     </script>					   
+</block>
+
+
+<field name="actmgrmnuopt" cond="PlayOnce">
+
+	 <grammar mode="dtmf" root="start2" version="1.0">
+<rule id="start2" scope="public">
+ <one-of>				 
+		  <item>1</item>			
+		  <item>2</item>
+		  <item>7</item>
+		  <item>8</item>
+</one-of>
+</rule>
+</grammar>
+
+
+	<prompt bargein="true" timeout="1s">
+		<audio expr="promptpath+LANG_DESCRIPTION+'/welcome_acmanager.wav'"/>
+		<audio expr="promptpath+LANG_DESCRIPTION+'/return_option.wav'"/>
+	</prompt>
+
+
+		<filled>
+
+		<if cond="actmgrmnuopt=='1'">
+		<if cond="timerflag=='1'">
+			   <script>
+		     total_used_bal=rim(start_BalenceMinute);
+		     balance=balance-total_used_bal;  						  
+		   </script>
+			   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			   <log expr="'@@@@@@ left balance is '+balance"/>
+				     <if cond="balance &lt;= '0'">          
+					   <goto next="Topup.vxml"/>
+			  </if>     
+		 </if>
+		 <goto next="#AcntBalance"/>
+		</if>
+
+		<if cond="actmgrmnuopt=='2'">
+			<if cond="timerflag=='1'">
+				   <script>
+			     total_used_bal=rim(start_BalenceMinute);
+			     balance=balance-total_used_bal;  						  
+			   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+					     <if cond="balance &lt;= '0'">          
+						   <goto next="Topup.vxml"/>
+				  </if>     
+			 </if>
+
+			<goto next="#UnSubOption"/>
+		</if>
+
+		<if cond="actmgrmnuopt=='7'">
+		<if cond="timerflag=='1'">
+			   <script>
+		     total_used_bal=rim(start_BalenceMinute);
+		     balance=balance-total_used_bal;  						  
+		   </script>
+			   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			   <log expr="'@@@@@@ left balance is '+balance"/>
+				     <if cond="balance &lt;= '0'">          
+					   <goto next="Topup.vxml"/>
+			  </if>     
+		 </if>
+		 <goto next="NineXMMainMenu.vxml#nav"/>
+		</if>
+
+		<if cond="actmgrmnuopt=='8'">
+		<if cond="timerflag=='1'">
+			   <script>
+		     total_used_bal=rim(start_BalenceMinute);
+		     balance=balance-total_used_bal;  						  
+		   </script>
+			   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			   <log expr="'@@@@@@ left balance is '+balance"/>
+				     <if cond="balance &lt;= '0'">          
+					   <goto next="Topup.vxml"/>
+			  </if>     
+		 </if>
+		 <goto next="NineXMMainMenu.vxml#nav"/>
+		</if>
+
+
+		</filled>
+
+
+<noinput count="1">
+	<prompt bargein="true" timeout="0s">
+		<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+	</prompt>
+	<reprompt></reprompt>
+</noinput>
+
+<noinput count="2">
+	<prompt bargein="true" timeout="0s">
+		<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+	</prompt>
+	<reprompt></reprompt>
+</noinput>
+
+<noinput count="3">
+	<if cond="timerflag=='1'">
+			   <script>
+		     total_used_bal=rim(start_BalenceMinute);
+		     balance=balance-total_used_bal;  						  
+		   </script>
+			   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			   <log expr="'@@@@@@ left balance is '+balance"/>
+				     <if cond="balance &lt;= '0'">          
+					   <goto next="Topup.vxml"/>
+			  </if>     
+		 </if>
+
+	<goto next="NineXMMainMenu.vxml#nav"/>
+</noinput>
+
+
+<nomatch>
+	<prompt bargein="true" timeout="0s">
+		<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+	</prompt>
+	<reprompt></reprompt>
+</nomatch>
+
+
+
+</field>	 
+
+</form> 
+
+<form id="AcntBalance">
+<block>
+	<assign name="Section_Name" expr="'ACCOUNTMANAGER_BALANCE'"/>
+	<script>
+       	<![CDATA[
+	       if(timerflag==1)
+		 start_BalenceMinute=starttime();
+       	]]>	 	
+     </script>					   
+
+
+	<assign name="localbal" expr="balance"/>
+	 <log expr="' Server ip is :' +localbal"/>
+
+	<script> 
+		  localbal=Math.floor(localbal/60); 
+
+	</script>
+	 <log expr="' Server ip is :' +localbal"/>
+
+	<if cond="localbal &lt;= '0'">          
+		<prompt bargein="false" >
+			<audio expr="promptpath+LANG_DESCRIPTION+'/acmanager_balanceis.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/0.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/minutes.wav'"/>
+		</prompt>
+	<elseif cond="localbal &gt;= '100'"/>
+		<script>localbal=localbal-100;</script>
+		<prompt bargein="false" >
+			<audio expr="promptpath+LANG_DESCRIPTION+'/acmanager_balanceis.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/1.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/100.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+localbal+'.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/minutes.wav'"/>
+		</prompt>
+	<else/>
+		<prompt bargein="false" >
+			<audio expr="promptpath+LANG_DESCRIPTION+'/acmanager_balanceis.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+localbal+'.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/minutes.wav'"/>
+		</prompt>
+	</if> 
+
+		<if cond="timerflag=='1'">
+			   <script>
+			     total_used_bal=rim(start_BalenceMinute);
+			     balance=balance-total_used_bal;  						  
+			   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+				   <if cond="balance &lt;= '0'">          
+					 <goto next="Topup.vxml"/>
+				   </if>     
+			</if>
+
+
+	<goto next="NineXMMainMenu.vxml#nav"/>
+</block>
+</form>
+
+<form id="UnSubOption">
+<block>
+<assign name="Section_Name" expr="'ACCOUNTMANAGER_UNSUB'"/>
+	<script>
+       	<![CDATA[
+	       if(timerflag==1)
+		 start_BalenceMinute=starttime();
+       ]]>	 	
+     </script>					   
+</block>
+
+		<field name="choice">			
+			<grammar mode="dtmf" root="start3" version="1.0">
+				<rule id="start3" scope="public">
+					<one-of>								 							
+						 <item>  1  </item>
+						 <item>  2  </item>
+				    </one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/confirm_unsub.wav'"/>
+			</prompt>		
+
+		<filled>
+			<if cond="timerflag=='1'">
+			   <script>
+			     total_used_bal=rim(start_BalenceMinute);
+			     balance=balance-total_used_bal;  						  
+			   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+				   <if cond="balance &lt;= '0'">          
+					 <goto next="Topup.vxml"/>
+				   </if>     
+			</if>
+			
+			<if cond="choice=='1'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+
+				<prompt bargein="true" timeout="2s">	
+				<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_nosub.wav'"/>		
+				</prompt>				    
+				<throw event="connection.disconnect.hangup"/>
+			<elseif cond="choice=='2'"/>
+
+				<if cond="timerflag=='1'">
+			  		 <script>
+					     total_used_bal=rim(start_BalenceMinute);
+					     balance=balance-total_used_bal;  						  
+				   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+				   <if cond="balance &lt;= '0'">          
+					 <goto next="Topup.vxml"/>
+				   </if>     
+				</if>
+
+				<goto next="NineXMMainMenu.vxml#nav"/>
+			</if>
+								
+		</filled>
+		
+		
+		<noinput count="1">
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="3">
+			<if cond="timerflag=='1'">
+			   <script>
+			     total_used_bal=rim(start_BalenceMinute);
+			     balance=balance-total_used_bal;  						  
+			   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+				   <if cond="balance &lt;= '0'">          
+					 <goto next="Topup.vxml"/>
+				   </if>     
+			</if>
+
+
+			<goto next="#accountmanager"/>	
+		</noinput>
+
+
+		<nomatch count="1">
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="3">
+			<if cond="timerflag=='1'">
+			   <script>
+			     total_used_bal=rim(start_BalenceMinute);
+			     balance=balance-total_used_bal;  						  
+			   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+				   <if cond="balance &lt;= '0'">          
+					 <goto next="Topup.vxml"/>
+				   </if>     
+			</if>
+
+
+			<goto next="#accountmanager"/>	
+		</nomatch>
+	</field>
+   </form>
+
+
+</vxml>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="GLC_celeb_offline.vxml" content="" />
+<var name="disconn_join_user" expr="''"/>
+<var name="conn3" expr="''"/>
+<var name="getDigitsnext" expr="''"/>
+<var name="in_out_user" expr="''"/>
+<var name="celeb_rec_fcount" expr="0"/>
+<var name="celeb_status" expr="''"/>
+<var name="chat_status" expr="''"/>
+<var name="connection_id" expr="''"/> 
+<var name="j" expr="0"/>
+
+<var name="var_wel_random" expr="0"/>
+<var name="celeb_rec_fcount_new" expr="0"/>
+<var name="celeb_rec_fcount_check" expr="0"/>
+<var name="celeb_status" expr="''"/>
+ 
+
+
+<script>
+	realDNIS=session.connection.local.uri;                   
+        ANI=session.connection.remote.uri;
+	var out_string=new Object();
+	var favSongs=new Object();
+</script>
+
+<form id="two">
+<block>
+	<prompt bargein="true" timeout="1s">
+		<audio expr="promptpath+'/'+lang+'/celeb_onbreak.wav'"/>
+	</prompt>
+	<goto next="#one"/>
+</block>
+
+</form>
+
+<form id="one">
+
+  
+    <field name="getDigits">
+	<grammar mode="dtmf" root="r1" version="1.0">
+      		<rule id="r1" scope="public">
+        	<one-of>
+	          <item>1</item>
+        	  <item>2</item>
+	          <item>3</item>
+	          <item>4</item>
+	          <item>5</item>
+	          <item>6</item>
+	          <item>7</item>
+	          <item>8</item>
+	          <item>9</item>
+	          <item>0</item>
+	          <item>*</item>
+	          <item>#</item>
+        	 </one-of>
+	       </rule>
+     	</grammar>
+     	 <prompt bargein="true" timeout="1s">
+		<audio expr="promptpath+'/'+lang+'/wait_music.wav'"/>
+	</prompt>
+	
+	<filled>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+		<log> before fetch</log>
+		<script>
+			<![CDATA[
+			for(j=0; j< out_string.length;  j++)
+			{  	  
+				if(j==1)
+				celeb_status = out_string[j];
+			}
+    	  	    ]]>
+		</script>
+	
+		<if cond="celeb_status=='TRUE'">
+			
+			<goto next="Hungama_GLC_LiveChatDeffered.vxml"></goto>
+		<else/>
+			<goto next="#one"/>
+		</if>
+	</filled>
+		
+	<noinput>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+				<log> before fetch</log>
+				<script>
+					<![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					{  	  
+						if(j==1)
+						celeb_status = out_string[j];
+					}
+		    	  	    ]]>
+				</script>
+			
+				<if cond="celeb_status=='TRUE'">
+					
+					<goto next="Hungama_GLC_LiveChatDeffered.vxml"></goto>
+				<else/>
+					<goto next="#one"/>
+		</if>
+	</noinput>
+	
+	<nomatch>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+				<log> before fetch</log>
+				<script>
+					<![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					{  	  
+						if(j==1)
+						celeb_status = out_string[j];
+					}
+		    	  	    ]]>
+				</script>
+			
+				<if cond="celeb_status=='TRUE'">
+					
+					<goto next="Hungama_GLC_LiveChatDeffered.vxml"></goto>
+				<else/>
+					<goto next="#one"/>
+		</if>
+	</nomatch>
+    </field>
+</form>		
+
+</vxml>

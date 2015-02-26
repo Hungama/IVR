@@ -1,0 +1,11 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_Mod_Root.vxml">
+
+<form>
+	<block>
+		<log>Exception page</log>
+		<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/welcome_old.wav'"/>	
+	</block>	
+ </form>
+</vxml>

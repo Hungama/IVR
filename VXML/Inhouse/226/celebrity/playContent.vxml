@@ -1,0 +1,773 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="FMJRoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<!--<property name="timeout" value="2s"/> -->
+	<meta name="playContent.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	<var name="counter" expr="'1'"/> 
+	<var name="nextchoice" expr="''"/>
+	<var name="end_time" expr="''"/>	
+       <var name="contentpath" expr="'http://192.168.100.212:6666/hungama/'"/>
+	<script>
+	<!--	var favSongs=new Object(); -->
+		var UserStatus1=new Object();
+		 var out_string = new Object();
+		 var get_duration=new Object();
+		var songname="";	
+	</script>
+	
+	
+<form id="starclubMnu"> 
+		<script>
+			<![CDATA[
+			if(timerflag==1)
+				start_BalenceMinute=starttime();
+			]]>	 	
+		</script>
+	<block>
+	       <assign name="prompt_name" expr="'SONGPLAY'"/>
+		<if cond="playconfig=='05'">
+			<prompt bargein="true" timeout="0s">
+				 <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'archive_no_convers.wav'"/>	
+	   	     </prompt> 
+   		     <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+	   	 </if>
+	</block>
+			  
+	<field name="starclubclipoptions">               
+		    	 
+		 <grammar mode="dtmf" root="start1" version="1.0">
+		    <rule id="start1" scope="public">
+		      <one-of>
+				     <item>1</item>
+		       	     <item>2</item>	
+	                          <item>3</item>	
+	                          <item>4</item>	
+	                          <item>5</item>	
+	                          <item>6</item>	
+	                          <item>7</item>	
+	                          <item>8</item>	
+	                          <item>9</item>	
+	                          <item>0</item>	               			 
+				     <item>#</item>
+				     <item>*</item>			      
+          	     </one-of>
+	          </rule>
+	       </grammar> 		 
+	       <prompt bargein="true" timeout="0s">
+		     <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'keypad.wav'"/>	
+    	       </prompt> 
+				 
+              <filled>               
+                	     <if cond="starclubclipoptions=='7'">
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>					 				 	
+			  		<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>				        
+			     <elseif cond="starclubclipoptions=='9'"/>	
+						<if cond="timerflag=='1'">
+							<script>
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							   <log expr="'@@@@@@ left balance is '+balance"/>
+							   <if cond="balance &lt;= '0'">          
+								   <goto next="TopupRenew.vxml"/>
+							   </if>
+						 </if>				 				 	
+					<goto next="actmanager.vxml"/>  
+
+			     <elseif cond="starclubclipoptions=='6'"/>	
+						<if cond="timerflag=='1'">
+							<script>
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							   <log expr="'@@@@@@ left balance is '+balance"/>
+							   <if cond="balance &lt;= '0'">          
+								   <goto next="TopupRenew.vxml"/>
+							   </if>
+						 </if>	
+
+					<!-- <prompt bargein="true" timeout="0s">
+					     <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'keypad_options'+usropt+'.wav'"/>	
+			    	       </prompt> --> 
+					<goto next="#starclubclipOption"/>  
+
+			     <elseif cond="starclubclipoptions=='8'"/>
+						<if cond="timerflag=='1'">
+							<script>
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							   <log expr="'@@@@@@ left balance is '+balance"/>
+							   <if cond="balance &lt;= '0'">          
+								   <goto next="TopupRenew.vxml"/>
+							   </if>
+						 </if>				 				 	
+					<if cond="DNIS=='566669'">
+    						<goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/>	 	
+				    	<elseif cond="DNIS=='56666' || DNIS=='566660' ||DNIS=='5646124'" />
+    						<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>	
+					<else/>
+						<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+					</if>  
+			   <else/>	
+				       <clear namelist="starclubclipoptions"/> 	
+						<if cond="timerflag=='1'">
+							<script>
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							   <log expr="'@@@@@@ left balance is '+balance"/>
+							   <if cond="balance &lt;= '0'">          
+								   <goto next="TopupRenew.vxml"/>
+							   </if>
+						 </if>	
+					<log> @@@@@@ left balance is Honey </log>
+					<goto next="#loadstarclubmf"/>
+					
+		 	  </if>
+                  
+   		</filled>
+			  
+		<noinput>		  
+			   <clear namelist="starclubclipoptions"/> 	
+						<if cond="timerflag=='1'">
+							<script>
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							   <log expr="'@@@@@@ left balance is '+balance"/>
+							   <if cond="balance &lt;= '0'">          
+								   <goto next="TopupRenew.vxml"/>
+							   </if>
+						 </if>	
+		              <goto next="#loadstarclubmf"/>	     
+		</noinput>		
+	 </field>		 
+</form>
+	
+<form id="loadstarclubmf">   
+		<script>
+			<![CDATA[
+			if(timerflag==1)
+				start_BalenceMinute=starttime();
+			]]>	 	
+		</script>
+	<block>   
+  	   <script>
+			i=0;			    
+			Totalmf=0;
+			len=0;					
+	  </script>			
+	  				
+	  <script srcexpr="'http://'+IP+'/ar_ReadConfigSong?ConfigPath=starclubconfig/'+operator+'/songconfig/'+lang+playconfig+'.cfg'"/>    
+  	  <script>
+		len=0;
+		len=i;
+		Totalmf=i;
+		i=0;
+		j=0;
+	  </script>
+ 	<log expr="'@@@@@@ favSongs.length IS@@@@@@@@@@@@@@@@@@@@@@2 '+favSongs.length"/>
+	  <if cond="favSongs.length==0 || favSongs.length &lt; 0">
+			<goto next="starclub_End.vxml"/>
+	  </if>
+
+	  <!-- <log> TOTAL Master file IS <value expr="Totalmf"/>     </log>
+	  <log expr="'@@@@@@ PLAYCONFIG IS@@@@@@@@@@@@@@@@@@@@@@2 '+playconfig"/>
+	  <log expr="'@@@@@@ lanmmmmmmmmmmmmmmgggggggggggggggggggggg '+lang"/>-->
+	  <script>
+		<![CDATA[
+	 		for(i=0; i<favSongs.length;  i++)
+	   		{  	  
+				 mfFileNames[i] = favSongs[i];						   
+	  		 }
+		]]>		
+	  </script>
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+					   <if cond="balance &lt;= '0'">          
+						   <goto next="TopupRenew.vxml"/>
+					   </if>
+				 </if>	
+	 <goto next="#loadstarclubcf"/>  					
+		  
+      </block>	
+</form>
+	
+<form id="loadstarclubcf">
+	     <script>
+			<![CDATA[
+			if(timerflag==1)
+				start_BalenceMinute=starttime();
+			]]>	 	
+		</script>
+<block>   
+	<script>
+		i=0;
+		<![CDATA[
+			 if(mfFileNames[i].indexOf("_")>0)
+				var cnt_length=1;
+			 else
+				var cnt_length=0;
+		]]>
+	</script>
+		<if cond="cnt_length=='0'">
+			<log expr="'@file name isssssssssssssssssss '+mfFileNames[i]"/>
+			<goto next="starclub_End.vxml"/>
+		</if>
+	<script>	
+
+		<![CDATA[			    			  	
+			var str=mfFileNames[i].split("_");
+			contentdir=str[0];
+			contentid=str[1];
+			totpartion=str[2];
+		]]>					
+	</script>			
+	<log expr="'@file name isssssssssssssssssss '+cnt_length"/>		
+	<script srcexpr="'http://'+IP+'/ar_ReadConfigSong?ConfigPath=starclubconfig/'+operator+'/songconfig/'+lang+playconfig+'-'+contentid+'.cfg'"/>
+	  <log expr="'@@@@@@ favSongs.length IS@@@@@@@@@@@@@@@@@@@@@@2 '+favSongs.length"/>
+	  <if cond="favSongs.length==0 || favSongs.length &lt; 0">
+			<goto next="starclub_End.vxml"/>
+	  </if>
+
+  	<script>
+					 
+		<![CDATA[
+			var str1;
+			for(i=0; i<favSongs.length; i++)
+			{ 				       
+			 	cfFileNames[i]=favSongs[i];
+				
+				if(cfFileNames[i].indexOf("_")>0)
+					var cnt_length=1;
+				 else
+					var cnt_length=0;
+				if(cnt_length=='0')
+					break;
+
+				str1=cfFileNames[i].split("_");		  
+				contentflag[i]=str1[0];
+   				songarray[i]=str1[1];
+          	   	       crbt[i]=str1[2];	
+				ringtone[i]=str1[3];	
+				starfollow[i]=str1[4];						   							  
+ 	 	 	 }
+				 								   							
+		 ]]>	
+					   
+	</script> 
+	<if cond="cnt_length=='0'">
+			<log expr="'GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG '+cfFileNames[i]"/>
+			<goto next="starclub_End.vxml"/>
+	</if>	
+	<!--<log expr="'@@@@@@ 2nd   PLAYCONFIG IS@@@@@@@@@@@@@@@@@@@@@@2 '+playconfig"/>
+	<log expr="'@@@@@@ lanmmmmmmmmmmmmmmgggggggggggggggggggggg '+lang"/>
+	<log expr="'@@@@@@ str111111111111111111111111 '+cfFileNames[0]"/>
+					   
+	<log expr="'@@@@@@loadstarclubcf contentdir is >>>>>> '+contentdir"/>	 
+	<log expr="'@@@@@@loadstarclubcf contentflag is >>>>>> '+contentflag[0]"/>
+	<log expr="'@@@@@@loadstarclubcf songarray is >>>>>> '+songarray[0]"/>
+	<log expr="'@@@@@@loadstarclubcf crbt is >>>>>> '+crbt[0]"/>
+ 	<log expr="'@@@@@@loadstarclubcf ringtone is >>>>>> '+ringtone[0]"/>
+	<log expr="'@@@@@@loadstarclubcf starfollow is >>>>>> '+starfollow[0]"/>-->
+					 
+	<script>
+		len=0;
+	 	len=i;					 
+		i=0;
+	</script>
+					 
+				<log> TOTAL partion IS <value expr="totpartion"/> </log>        		    
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>		
+					<goto next="#StartToPlaystarclub"/>  					
+		  
+ </block>
+		  
+			  
+</form>
+	
+
+<form id="StartToPlaystarclub">
+
+<block>
+		<script>
+			<![CDATA[
+			if(timerflag==1)
+				start_BalenceMinute=starttime();
+			]]>	 	
+		</script>
+
+        <if cond="i == totpartion">	
+	       <script>	
+	       	i=0; 
+	       </script>
+		<goto next="#loadstarclubcf"/>  					
+	 <elseif cond="i &lt; 0"/>		   
+   	     <script>	
+   	            i=0; 
+   	     </script>
+	     <goto next="#loadstarclubcf"/>  					
+	 </if>
+		   
+  	 <log expr="'@@@@@@StartToPlaystarclub StartToPlaystarclub@@@@@ StartToPlaystarclub songarray is >>>>>> '+songarray[i]"/>
+             		               
+        <script>
+		       <![CDATA[
+		       	var temp;
+				   temp=songarray[i].split("."); 
+				   contentfile=temp[0];
+				]]>
+	</script>		
+ 		  
+
+	<script>
+	     song_begin=starttime();
+	</script>
+      	<assign name="song_listen" expr="'START'" /> 
+	<!-- <log> VALUE OF SONG LISTEN in PlayContent<value expr="song_listen"/>  </log> -->
+     </block>
+	   
+	  
+     <field name="Playstarclub">
+	   <grammar mode="dtmf" root="start2" version="1.0">
+              <rule id="start2" scope="public">
+              	<one-of>
+		    		<item>0</item>	
+		        	<item>1</item>
+				<item>2</item>	
+				<item>3</item>			  			 			  				       				        
+				<item>6</item>	
+				<item>7</item>	
+				<item>8</item>
+   				<item>9</item>		
+				<item>*</item>		      
+                    </one-of>
+               </rule>
+          </grammar>
+			   
+    	   <!-- <log> VALUE OF I IS <value expr="i"/> , AND starclub IS <value expr="songarray[i]"/>  </log>-->				 
+	   <prompt bargein="true"  timeout="1s">
+		  <audio expr="contentpath+contentdir+'/'+contentdir+'_'+songarray[i]"/>	
+  	   </prompt> 			 
+			             
+	   <!--<log> USER OPT IS @@@@@@@@@@@@@@@@@@@@@ <value expr="Playstarclub"/>  </log>-->
+		  
+	   <filled>
+		<assign name="nextchoice" expr="Playstarclub"></assign>
+		<assign name="songcrbt" expr="'0'"></assign>
+		<log> USER OPT nextchoice @@@@@@@@@@@@@@@@@@@@@ <value expr="nextchoice"/>  </log>
+		<goto next="#contentlogin" />					 
+	   </filled>	
+		
+		     
+	   <noinput>	
+			<assign name="nextchoice" expr="'1'"></assign>
+			<assign name="songcrbt" expr="'0'"></assign>
+			<goto next="#contentlogin" />	
+          </noinput>
+			 
+			  
+          <nomatch>	
+            <prompt bargein="true">
+				 <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+	   	     </prompt>		    
+             <!--<assign name="nextchoice" expr="'1'"></assign>-->
+			<goto next="#starclubclipOption" /> 
+          </nomatch> 		          
+	  </field>
+	
+	</form>
+
+<form id="contentlogin">
+	<block>
+		
+		<script>
+			songname=contentdir+'_'+contentfile;
+		</script>
+
+		<assign name="song_listen" expr="'END'" />
+		<assign name="compare_time" expr="rim(song_begin)"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+		<log expr="'compare_time=='+compare_time"></log>
+		<log expr="'ContentTime=='+ContentTime"></log>
+		<log expr="'hash=='+hash"></log>
+		<log expr="'!!!!!!!!!!!!!!!!!!!!contentfileg=='+songname"></log>
+		<log expr="'cat=='+cat"></log>
+		<log expr="'subcat=='+subcat"></log>
+		<log expr="'contentlog=='+contentlog"></log>
+		<assign name="contentlog" expr="contentlog+songname+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+		<script>
+			lencontent=getstringlength(contentlog);                                                                                                                                                                                               
+		</script>
+		<if cond="lencontent &gt; 250">
+              	  <script srcexpr="'http://192.168.100.226:8080/hungama/appendcontent?ani='+ANI+'&amp;contentlog='+contentlog"/>
+	                <assign name="lencontent" expr="0"/>
+       	         <assign name="contentlog" expr="''"/>
+			<log expr="'content log written into temp file '+ANI+'.tmp'"/>
+		</if>
+
+
+
+		<if cond="nextchoice=='1'">	
+			<script>					                        
+			  	i=i+1;
+			</script> 
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+					   <if cond="balance &lt;= '0'">          
+						   <goto next="TopupRenew.vxml"/>
+					   </if>
+				 </if>		
+		       <goto next="#StartToPlaystarclub"/> 		
+	 		<elseif cond="nextchoice=='2'"/>	
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+					   <if cond="balance &lt;= '0'">          
+						   <goto next="TopupRenew.vxml"/>
+					   </if>
+				 </if>		
+				<goto next="#StartToPlaystarclub"/> 	 				 
+			<elseif cond="nextchoice=='3'"/>
+				<script>
+					i=i-1; 					   
+				</script>   
+				<if cond="i &lt; '0'">
+					<script>
+						 i=totpartion-1;
+					</script> 
+				</if>
+				<if cond="i &gt; totpartion">
+					<script>
+						 i=0;
+					</script> 
+				</if>
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+					   <if cond="balance &lt;= '0'">          
+						   <goto next="TopupRenew.vxml"/>
+					   </if>
+				 </if>		
+					 	
+				<goto next="#StartToPlaystarclub"/>	 
+			<elseif cond="nextchoice=='7'"/>
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+					   <if cond="balance &lt;= '0'">          
+						   <goto next="TopupRenew.vxml"/>
+					   </if>
+				 </if>			 				 	
+				  <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>	
+			<elseif cond="nextchoice=='8'"/>
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+					   <if cond="balance &lt;= '0'">          
+						   <goto next="TopupRenew.vxml"/>
+					   </if>
+				 </if>					 				 	
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>	
+			<elseif cond="nextchoice=='9'"/>
+				<script>
+					 i=i; 					   
+				</script>
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+					   <if cond="balance &lt;= '0'">          
+						   <goto next="TopupRenew.vxml"/>
+					   </if>
+				 </if>					 				 	
+				<goto next="actmanager.vxml"/>		   
+		     <elseif cond="nextchoice=='6'"/>					 
+				 <clear namelist="nextchoice"/> 
+					<if cond="timerflag=='1'">
+						<script>
+							total_used_bal=rim(start_BalenceMinute);
+							balance=balance-total_used_bal;  						  
+						</script>
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+						   <if cond="balance &lt;= '0'">          
+							   <goto next="TopupRenew.vxml"/>
+						   </if>
+					 </if>						 				 	
+			 	   <goto next="#starclubclipOption"/>					
+		       <else/>
+				 <prompt bargein="true">
+				       <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+	   		         </prompt>
+				<goto next="playContent.vxml#StartToPlaystarclub"/>
+		       </if> 
+	</block>
+</form>	
+		
+<form id="starclubclipOption">
+		<script>
+			<![CDATA[
+			if(timerflag==1)
+				start_BalenceMinute=starttime();
+			]]>	 	
+		</script>
+	    <field name="starclubclipOptionInfo">
+			 <grammar mode="dtmf" root="start3" version="1.0">
+               <rule id="start3" scope="public">
+                 <one-of>				
+				  <item>0</item>	 
+				  <item>1</item>
+				  <item>2</item>	
+				  <item>3</item>			
+				  <item>9</item>						  
+				  <item>7</item>	
+				  <item>8</item>
+				  <item>#</item>		      
+				  <item>*</item>	
+                </one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true" timeout="3s">
+				<!--<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'starclub_postclipoptions.wav'"/>-->
+				<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'keypad_options'+usropt+'.wav'"/>
+	   	       </prompt>
+		    			
+			
+			<filled>
+			    <if cond="starclubclipOptionInfo=='1'">
+				     <script>
+					   i=i+1; 					   
+					 </script>  
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>					 				 	
+					 <goto next="#StartToPlaystarclub"/> 
+					<!-- <goto next="#loadstarclubcf"/> -->
+			   <elseif cond="starclubclipOptionInfo=='2'"/>
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>					 				 	
+					 <goto next="#StartToPlaystarclub"/>  
+			    <elseif cond="starclubclipOptionInfo=='3'"/>
+				     <script>
+					   i=i-1; 					   
+					 </script>   
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>			 
+					 <goto next="#StartToPlaystarclub"/>  					
+				
+				<elseif cond="starclubclipOptionInfo=='7'"/>
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>		
+				     <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>	
+				<elseif cond="starclubclipOptionInfo=='8'"/>	
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>				 				 	
+				     <if cond="DNIS=='566669'">
+    			       <goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/>	 	
+    		         <elseif cond="DNIS=='56666' || DNIS=='566660'" />
+    			       <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<else/>
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+				 
+			         </if> 
+				<elseif cond="starclubclipOptionInfo=='9'"/>	
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>					 				 	
+				     <goto next="actmanager.vxml"/>		 
+				<else/>
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>					 				 	
+                     <goto next="#StartToPlaystarclub"/>  		 																													
+				</if>
+			</filled>		
+			
+			<noinput>	
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>					 				 	
+			                    <goto next="#StartToPlaystarclub"/>  	
+            		</noinput> 
+			<noinput count="3">	
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>					 				 	
+                    <goto next="#StartToPlaystarclub"/>  	
+            </noinput> 
+          
+            <nomatch>   
+		      <prompt bargein="false">          
+                 <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+			  </prompt>
+              <clear/>
+              <reprompt/>
+            </nomatch>
+			
+			<nomatch count="3"> 		      
+              <clear/>
+							<if cond="timerflag=='1'">
+								<script>
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="TopupRenew.vxml"/>
+								   </if>
+							 </if>		
+                <goto next="#StartToPlaystarclub"/>  	
+            </nomatch>
+	
+           
+						
+	  </field>	
+	  
+		  	 
+		
+</form>
+	
+	
+	
+</vxml>	

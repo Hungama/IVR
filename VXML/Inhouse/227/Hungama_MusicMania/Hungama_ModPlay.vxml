@@ -1,0 +1,274 @@
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	<meta name="Hungama_ModPlay.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+	<var name="cRBTMODE" expr="''"></var>
+	<var name="CLIPID" expr="''"></var>
+        <var name="len_rng" expr="0"/>
+        <var name="cRBTSTATUS" expr="''"/>
+        <var name="Song_counter" expr="0"/>
+        <var name="Number" expr="0"/>        
+        <var name="SongCount" expr="0"/>
+        
+	<script>
+		var UserStatus1=new Object();
+		var out_string = new Object();
+	</script>
+
+	
+	<script>		
+		var out_string=new Object();
+		KeyPad_Cnt=parseInt(KeyPad_Cnt);
+		Song_counter=parseInt(Song_counter);
+		SongCount=parseInt(SongCount);
+		Number=parseInt(Number);
+	</script>
+	
+	<form id="next">
+		<block>		
+			<prompt bargein="true" timeout="2s" cond="KeyPad_Cnt==1">					
+				<audio expr="Prompt_Path+'/'+lang+'/keypad.wav'"/>
+			</prompt>
+			<script> KeyPad_Cnt=KeyPad_Cnt+1</script>
+			<log>Key pad counter isssssss  <value expr="KeyPad_Cnt"/>    </log>
+			<assign name="Section_Name" expr="'SONG_PLAY'+playconfig"/>
+			<log>Section Name isssssss  <value expr="Section_Name"/>  </log>
+
+			<if cond="timerflag=='1'">
+				<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					bal=bal-total_used_bal;  						  
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+bal"/>
+				<if cond="bal &lt;= 0">          
+					<goto next="Hungama_Topup.vxml"/>
+				</if> 
+			</if>		
+			<assign name="total_time" expr="time_duration(C_Start)"/>
+			<log>valuEEEEEEEEEEEEEEEEEEEE unike_play  is	<value expr="unike_play"/>    </log>
+					
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+			</if>
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="array1[unike_play]"/>    </log>
+			<script>
+				<![CDATA[
+				     if(array1[unike_play].indexOf("_")>0)
+					    TotalFM=1;
+				     else
+					    TotalFM=0;
+				]]>
+			</script>
+			<if cond="TotalFM=='0'">
+				<log expr="'@in config data havent split name isssssssssssssssssss '+array[unike_play]"/>
+				<goto next="Hungama_ModEnd.vxml"></goto>
+			</if>
+			<script>
+				var songcheck1=array1[unike_play].split("_");
+				Song_Path=songcheck1[0];
+				songID = array1[unike_play];
+			</script>
+			<log>AFTER    valuEEEEEEEEEEEEEEEEEEEE unike_play  is	<value expr="unike_play"/>    </log>		
+	<!--**********************************CRBTCHECK**********************************************************************-->
+			<!--<if cond="directaccess!='ComedyPortal' &amp;&amp; playconfig!='00'">		
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_rngmenu?SONGID='+songID+'&amp;IN_TYPE=CRBT&amp;CIRCLE='+circle+'&amp;OPERATOR='+operator"/>
+			<log expr="'CLIPID=='+out_string[0]"></log>
+			<assign name="len_rng" expr="out_string.length" />
+			<log>previous Array[1]  is	<value expr="CLIPID"/>    </log>
+			<script>
+				 CLIPID = out_string[0];		
+			</script>
+			<log>after Array[1]  is	<value expr="CLIPID"/>    </log>
+			<if cond="CLIPID==''">
+			<script srcexpr="'http://'+IP+'/hungama/CRBT_unavailable_log?SONG='+songID+hash+playconfig"/>
+				<script>unike_play=unike_play+1;</script> 				 				 	
+				<goto next="#next"/> 
+			</if>
+			</if>-->
+	<!--*******************************************************************************************************************-->
+			<script>
+				<![CDATA[
+				if(timerflag==1)
+					start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+			 <assign name="song_begin" expr="start_time()"/>
+			 <assign name="song_listen" expr="'START'"/>	 
+			 
+			<prompt bargein="true" timeout="1s">			
+				<audio expr="contentpath+Song_Path+'/'+songID+'.wav'"/>					
+			</prompt>				
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  0  </item>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>								 
+						 <item>  7  </item>
+						 <item>  8  </item>
+						 <item>  9  </item>
+						 <item>  #  </item>
+						 <item>  *  </item>
+					</one-of>
+				</rule>
+			</grammar>		
+
+			<filled>
+				<assign name="nextchoice" expr="choice"></assign>
+				<goto next="#contentlogin" />				
+			</filled>
+
+			<noinput>
+				<assign name="nextchoice" expr="'1'"/>
+				<goto next="#contentlogin" />
+			</noinput>
+			<nomatch>
+				<goto next="#nomatch" />
+			</nomatch>
+		</field>		
+	</form>
+	
+	<form id="nomatch">
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>								 
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>		
+			<filled>
+				<assign name="nextchoice" expr="choice"></assign>
+				<goto next="#contentlogin" />				
+			</filled>
+			<noinput>
+				<goto next="Hungama_ModNav.vxml"/>
+			</noinput>
+			<nomatch>
+				<goto next="Hungama_ModNav.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+	
+	<form id="contentlogin">
+		<block>
+			<assign name="song_listen" expr="'END'" />
+			<assign name="compare_time" expr="time_duration(song_begin)"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+			<log expr="'compare_time=='+compare_time"></log>
+			<log expr="'ContentTime=='+ContentTime"></log>
+			<log expr="'hash=='+hash"></log>
+			<log expr="'songID=='+songID"></log>
+			<log expr="'cat=='+cat"></log>
+			<log expr="'subcat=='+subcat"></log>
+			<log expr="'contentlog=='+contentlog"></log>
+			<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				 
+			<if cond="nextchoice=='1'">
+				<script> unike_play=unike_play+1</script>
+				<script> Song_counter=Song_counter+1</script>
+				<goto next="#next"/>
+
+			<elseif cond="nextchoice=='2'"/>
+				<script> unike_play=unike_play</script>
+				<script> Song_counter=Song_counter+1</script>
+				<goto next="#next"/>
+
+			<elseif cond="nextchoice=='3'"/>
+				<script> unike_play=unike_play-1</script>
+				<script> Song_counter=Song_counter+1</script>
+				<goto next="#next"/>
+
+			<elseif cond="nextchoice=='7'"/>
+				<goto next="Hungama_ModNav.vxml"/>
+
+			<elseif cond="nextchoice=='8'"/>
+				<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+
+			<elseif cond="nextchoice=='9'"/>
+				<goto next="Hungama_ModMngAccnt.vxml"/>
+
+			<elseif cond="nextchoice=='#'"/>
+				<goto next="#MU_FaceBook"/>	
+
+			<elseif cond="nextchoice=='*'"/>
+				<goto next="Hungama_ModCRBT.vxml"/>
+				
+			<elseif cond="nextchoice=='0'"/>
+				<goto next="Hungama_ModRngMenu.vxml"/>
+				
+			<else/>
+				<script> unike_play=unike_play+1</script>
+				<goto next="#next"/>
+			</if>
+		</block>
+	</form>
+	<form id="MU_FaceBook">
+		<block>
+			<assign name="flag_FB" expr="'TRUE'"/>
+			<log>FACEBOOK FLAG isssssss  <value expr="flag_FB"/>  </log>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_facebook&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]=543219'"/>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Prompt_Path+'/'+lang+'/thanks_sns_1.wav'"/>
+			</prompt>
+			<goto next="Hungama_ModPlay.vxml#next"/>
+		</block>
+	</form>	
+	<error>
+		<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+songID+'/RMUSICMANIA/'+playconfig"/>
+		<if cond="nextchoice=='3'">
+			<script>unike_play=unike_play-1;</script> 				 				 	
+			<goto next="#next"/> 
+		<else/>
+			<script>unike_play=unike_play+1;</script> 				 				 	
+			<goto next="#next"/> 
+		</if>
+	</error>
+	<!--<catch vxmlexception event="error.noresource">
+	   <script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+songID+'/RMUSICMANIA/'+playconfig"/>
+		<if cond="choice=='3'">
+			<script>unike_play=unike_play-1;</script> 				 				 	
+			<goto next="#next"/> 
+		<else/>
+			<script>unike_play=unike_play+1;</script> 				 				 	
+			<goto next="#next"/> 
+		</if>
+	</catch>  
+
+	<catch vxmlexception event="error.*">
+		<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+songID+'/MOD/'+playconfig"/>
+		<if cond="choice=='3'">
+			<script>unike_play=unike_play-1;</script>				 	
+			<goto next="#next"/>
+		<else/>
+			<script>unike_play=unike_play+1;</script>
+			<goto next="#next"/>
+		</if>
+	</catch>-->
+</vxml>

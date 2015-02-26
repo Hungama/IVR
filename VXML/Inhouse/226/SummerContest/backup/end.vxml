@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Contest_root.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="end.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<var name="rem_time" expr="0"/>
+	<var name="realDNIS" expr="0"/>
+	<script>
+		var out_string=new Object();
+		var SOU=0;
+	</script>
+	<form id="EndLogin">
+		<block>
+			<log>calling end page</log>
+			<assign name="C_End" expr="start_time()"/>
+
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>	
+				<if cond="Question!='hi' &amp;&amp; Question!='0'">						 
+					<assign name="contentlog" expr="contentlog+hash+Question+hash+diff_level+hash+diff_level+hash+compare_time+hash"/>
+				</if>
+				<log expr="'ContentTime ISSSSSS '+ContentTime"/>
+				<log expr="'contentlog ISSSSSS '+contentlog"/>
+			</if>
+
+			<assign name="SOU" expr="rim(Game_Start)"/>
+			<log expr="'SOU ISSSSSS '+SOU"/>
+
+			<if cond="(operator=='unim') &amp;&amp; sub_flag=='true'">
+                                <script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1423&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>  
+			</if>
+
+						
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_SOU&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+SOU"/>
+					
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_CT_SMS&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]='+DNIS"/>		
+	
+			<script srcexpr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realdnis+hash+drop_point+hash+modeofsub+hash+price_point+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=summer-contest&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			
+			
+
+			<exit/>
+		</block>
+		<!-- <catch event="error.*">
+			<log>
+				Inside Error BadCatch catch  End2222
+			</log>
+			<exit/>
+		</catch> -->
+		<catch event="error.badfetch">
+			<log>
+				Inside Error BadCatch catch  End2222
+			</log>
+			<exit/>
+		</catch>
+		<catch event="telephone.disconnect.hangup">
+			<log>
+				Inside Telephone Disconnect Hangup catch  End3333
+			</log>
+			<exit/>
+		</catch>
+		<catch event="telephone.disconnect">
+			<log>
+				Inside Telephonet Disconnected catch  End4444
+			</log>
+			<exit/>
+		</catch>
+		<catch event="connection.disconnect.hangup">
+			<log>
+				Inside connection.disconnect.hangup catch  End5555
+			</log>
+			<exit/>
+		</catch>
+		<catch event="error.semantic">
+			<log>
+				$$$$$$$$$$$$$$$$ error.semantic $$$$$$$$$$$$$$$$
+			</log>
+			<exit/>
+		</catch>
+	</form>
+</vxml>

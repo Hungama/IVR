@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="jyotish_root1.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="ExistingUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="content_time" expr="0"/>
+	<var name="realDNIS" expr="0"/>
+	
+
+<error>
+<goto next="end.vxml"/>
+</error>
+
+	<form id="ExistingUser">
+		<block>
+			<assign name="program_name" expr="'ExistingUser'"/>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/Welcome_old.wav'"/>
+			<assign name="gSunSign" expr="sunsignname"/>
+
+
+			<if cond="sunsign != '' &amp;&amp;  sunsign != '0'">
+				<prompt>
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/listening_cat.wav'"/>
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/'+sunsign+'.wav'"/>
+				
+					
+				</prompt>
+			<else/>
+				
+				
+				<goto next="PlaySunSign.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+			</if>
+		</block>
+
+		<field name="existuser" type="digits?length=1">
+
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/return_option.wav'"/>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/Keypad_1.wav'"/>
+
+
+			<grammar src="all.grxml" mode="dtmf"/>
+			<catch event="noinput nomatch">
+				<goto next="#LastHeard"/>
+			</catch>
+
+			<filled>
+				<if cond="existuser == '8'">
+					<goto next="PlaySunSign.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+				<elseif cond="existuser == '#'"/>
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/thanks_alarm.wav'"/>
+					<assign name="songID" expr="sunsign"/>
+					
+					<script>
+						var mainmenu1=sunsign.split("_")
+					</script>
+
+					<assign name="songID" expr="mainmenu1[0]"/>
+					<assign name="content_time" expr="start_time()"/>
+					<log>Curent Date is:<value expr="CurrentDate()"/></log>		
+			
+					<log>Calling Alarm url:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_UpdateAlarm&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+CurrentDateChngFrmt().toString()+':'+C_Start+'&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+alertCircle+'&amp;INPARAM[3]='+songID+'&amp;INPARAM[4]=09:00:00&amp;INPARAM[5]='+circle+''"/></log>
+
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_UpdateAlarm&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+CurrentDateChngFrmt().toString()+':'+C_Start+'&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+alertCircle+'&amp;INPARAM[3]='+songID+'&amp;INPARAM[4]=09:00:00&amp;INPARAM[5]='+circle+''"/>
+					<goto next="#LastHeard"/>
+
+				<else/>
+					<goto next="#LastHeard"/>
+				</if>
+			</filled>
+		</field>
+	</form>
+
+	
+
+	<form id="LastHeard">
+		<block>
+			<log>Last Heard Page</log>
+		<if cond="channel== 'TIVR'">
+
+			<script>
+		    		total_used_bal=chkBalenceMinute(start_BalenceMinute);
+             			curbalance=balance-total_used_bal;  						  
+		    	</script>
+			<if cond="curbalance &lt;= '0'">
+				<log>unsub from Try n Buy:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_UNSUB_TrynBuy&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQS'"/></log>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_UNSUB_TrynBuy&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQS'"/>
+				<goto next="checkuserstatus.vxml"/>
+
+			</if>
+			<log>Balance Minute is:<value expr="curbalance"/></log>
+
+		</if>
+
+
+			<assign name="backmovepage" expr="'PlaySunSign.vxml'"/>
+			<assign name="filetoplay" expr="CurrentDate()"/>
+			
+			  <assign name="song_begin" expr="start_time()"/>
+			  <!--<assign name="song_listen" expr="'START'" />-->
+
+			<log>current date is <value expr="filetoplay"/></log>
+
+			<if cond="sunsign == '' &amp;&amp;  sunsign == '0'">
+				<goto next="PlaySunSign.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+			</if>
+		</block>
+		<field name="LastHeardPlay" type="digits?length=1">
+			<grammar src="all.grxml" mode="dtmf"/>
+
+			<catch event="noinput">
+					<assign name="content_time" expr="start_time()"/>
+
+					 <assign name="song_listen" expr="'END'" />							 
+					 <assign name="compare_time" expr="time_duration(song_begin)"/>
+					 <log>@@@@@@@ content listen time  <value expr="compare_time"/> </log>
+					 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+					 <log>@@@@@@@ content add time  <value expr="ContentTime"/> </log>
+					 <assign name="songID" expr="sunsignname+'_'+filetoplay"/>
+				 	<assign name="contentlog" expr="contentlog+songID+hash+compare_time+hash+'NA'+hash+'NA'+hash"></assign>
+
+
+					<log>Content Log:<value expr="contentlog"/></log>
+
+				<goto next="PlaySunSign.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+
+			</catch>
+			<prompt cond="sunsign != '' &amp;&amp;  sunsign != '0'">
+
+				<audio expr="'http://192.168.100.212:6666/hungama/jyotish/'+LANG_DESCRIPTION+'/'+sunsignname+'/'+sunsignname+'_'+filetoplay+'.wav'"/>
+
+			</prompt>
+		
+			<filled>
+
+					<assign name="content_time" expr="start_time()"/>
+
+					 <assign name="song_listen" expr="'END'" />							 
+					 <assign name="compare_time" expr="time_duration(song_begin)"/>
+					 <log>@@@@@@@ content listen time  <value expr="compare_time"/> </log>
+					 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+					 <log>@@@@@@@ content add time  <value expr="ContentTime"/> </log>
+					 <assign name="songID" expr="sunsignname+'_'+filetoplay"/>
+				
+				 	<assign name="contentlog" expr="contentlog+songID+hash+compare_time+hash+'NA'+hash+'NA'+hash"></assign>
+
+					<log>Content Log:<value expr="contentlog"/></log>
+				<if cond="LastHeardPlay== '8'">
+					<goto next="PlaySunSign.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+				<elseif cond="LastHeardPlay== '#'"/>
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/thanks_alarm.wav'"/>
+					<assign name="songID" expr="sunsign"/>
+
+					<script>
+						var mainmenu1=sunsign.split("_")
+					</script>
+
+					<assign name="songID" expr="mainmenu1[0]"/>
+					
+
+					<assign name="content_time" expr="start_time()"/>
+
+										
+					<log>Calling Alarm url:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_UpdateAlarm&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+CurrentDateChngFrmt().toString()+':'+C_Start+'&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+alertCircle+'&amp;INPARAM[3]='+songID+'&amp;INPARAM[4]=09:00:00&amp;INPARAM[5]='+circle+''"/></log>
+
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_UpdateAlarm&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+CurrentDateChngFrmt().toString()+':'+C_Start+'&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]='+alertCircle+'&amp;INPARAM[3]='+songID+'&amp;INPARAM[4]=09:00:00&amp;INPARAM[5]='+circle+''"/>
+					<log>calling lasteheard</log>
+					<goto nextitem="LastHeardPlay"/>
+
+				<else/>
+					<goto next="#LastHeard"/>
+				</if>
+			</filled>
+		</field>
+
+		
+	</form>
+	<form id="checkbalance">
+	   <block>			
+		<if cond="channel== 'TIVR'">
+
+			<script>
+		    		total_used_bal=chkBalenceMinute(start_BalenceMinute);
+             			curbalance=balance-total_used_bal;  						  
+		    	</script>
+			<if cond="curbalance &lt;= '0'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_UNSUB_TrynBuy&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQS'"/>
+				<goto next="checkuserstatus.vxml"/>
+
+			<else/>
+				<goto next="#LastHeard"/>
+			</if>
+		</if>
+	</block>
+	</form>
+</vxml>

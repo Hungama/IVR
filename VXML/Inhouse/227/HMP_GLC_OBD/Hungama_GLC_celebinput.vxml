@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_celebinput.vxml" content="" />
+<var name="disconn_join_user" expr="''"/>
+<var name="counter_celeb_action" expr="0"/>
+<var name="celeb_action" expr="''"/>
+<var name="connection_id" expr="''"/>
+<var name="in_out_user" expr="''"/>
+<var name="ANI" expr="''"/> 
+<var name="realDNIS" expr="''"/> 
+<var name="operator1" expr="''"/>
+<var name="operator" expr="''"/>
+
+<var name="j" expr="0"/>
+<script>
+	
+	var out_string=new Object();
+	
+	var length=0;
+</script>
+
+<form id="one">
+   <block>
+<assign name="dbservlet" expr="'hul_dbinteraction'"/>
+
+     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INPUT_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=GET&amp;INPARAM[1]=no'"/>
+	<script>
+	<![CDATA[
+	   for(j=0; j< out_string.length;  j++)
+	   {  	  
+	       if(j==0)
+			celeb_action = out_string[j];
+  	   }
+	]]>
+	</script>
+
+<log expr="'celeb_action @@@@@@@@@@@@@@@@@@@@ =' + celeb_action"/>
+		
+
+	<if cond="celeb_action=='star'">
+		<log> Got the dtmf input..blacklisted </log>
+		
+		<assign name="connection_id" expr="session.connection.ccxml.connectionid"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_CHAT_DESIDE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+connection_id+'&amp;INPARAM[2]=BLACKLIST'"/>
+				<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+					   {  	  
+					       if(j==0)
+							in_out_user = out_string[j];
+		
+					  }
+					]]>
+		</script>
+		<goto next="#two"></goto>
+
+	<elseif cond="celeb_action=='hash'"/>
+		<log> Got the dtmf input.. </log>
+		
+	
+		<goto next="#two"></goto>
+	
+	</if>
+   </block> 
+</form>	
+
+
+
+<form id="two">
+<field name="userinput">
+	<grammar mode="dtmf" root="r5" version="1.0">
+      		<rule id="r5" scope="public">
+        	<one-of>
+			<item>1</item>
+			<item>2</item>
+			<item>3</item>
+			<item>4</item>
+			<item>5</item>
+			<item>6</item>
+			<item>7</item>
+			<item>8</item>
+			<item>9</item>
+			<item>0</item>
+			<item>*</item>
+			<item>#</item>
+
+        	 </one-of>
+	       </rule>
+     	</grammar>
+     	 <prompt bargein="true" timeout="0s" cond="celeb_action=='star'">
+		 <audio expr="promptpath+'/'+lang+'/celeb_star_celeb.wav'"/>
+	</prompt>
+	 <prompt bargein="true" timeout="0s" cond="celeb_action=='hash'">
+			<!--<audio expr="promptpath+'/'+lang+'/celeb_hash_celeb.wav'"/>-->
+			<audio expr="promptpath+'/'+lang+'/chat_skip_user.wav'"/>
+			
+	</prompt>
+	
+	
+		<filled>
+			
+			<if cond="celeb_action=='hash'">
+				
+				<goto next="Hungama_GLC_LiveChatDeffered.vxml"/>
+			<else/>
+				<goto next="Hungama_GLC_End.vxml"/>
+			</if>
+				<!--<goto next="Hungama_GLC_RootMenu.vxml"/>-->
+			
+
+		</filled>
+		<noinput>
+		
+			<if cond="celeb_action=='hash'">
+				
+				<goto next="Hungama_GLC_LiveChatDeffered.vxml"/>
+			<else/>
+				<goto next="Hungama_GLC_End.vxml"/>
+			</if>
+			<!--<goto next="Hungama_GLC_RootMenu.vxml"/>-->
+			
+
+		</noinput>
+		<nomatch>
+		
+			<if cond="celeb_action=='hash'">
+				
+				<goto next="Hungama_GLC_LiveChatDeffered.vxml"/>
+			<else/>
+				<goto next="Hungama_GLC_End.vxml"/>
+			</if>
+			<!--<goto next="Hungama_GLC_RootMenu.vxml"/>-->
+			
+		</nomatch>
+	    </field>
+</form>	
+</vxml>
+

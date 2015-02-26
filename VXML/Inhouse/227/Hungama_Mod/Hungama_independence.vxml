@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_independence.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="contentfilepath" expr="''"/>
+<var name="cfgFile" expr="''"/>
+<var name="contentfile" expr="''"/>
+<var name="k" expr="0"/>
+<var name="CDSIP" expr="'192.168.100.212:6666'"/>
+     <script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var len=0;
+	</script>
+	<form id="MAINMENU">
+		<block>
+			<assign name="program_name" expr="'INDEPENDENCE_MAINMENU'"/>
+			<if cond="usr_status=='-1'">
+				<assign name="indpc_subflag" expr="'1'"/>
+				<goto next="#new_user"/>	
+			<else/>
+				<assign name="indpc_subflag" expr="'1'"/>	
+				<script> 					 
+					balance=balance*60;
+					timerflag=1;      
+				</script>							
+				<script>
+					<![CDATA[
+						if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<goto next="#loadcliptoplay"/>
+			</if>
+		</block>
+	</form>
+	<form id="new_user">
+			  <block> 
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/EVENT/15AUG_NEW.cfg&amp;TOKEN=FREE'"/>
+				<script>
+					array1.length=0;
+				</script>
+				<assign name="len" expr="favSongs.length" />
+				<assign name="var_wel" expr="getRandom(1,len)" />
+				<log>previous Array[1]  is	<value expr="favSongs[var_wel]"/>    </log>
+			
+			<script>
+				var songcheck=favSongs[var_wel].split("_");
+				Song_Path=songcheck[0]; 
+				songID =favSongs[var_wel]; 
+			</script>
+			 </block>
+			   <field name="choice1">
+					<grammar mode="dtmf" root="start39" version="1.0">
+					<rule id="start39" scope="public" >
+						<one-of>
+							 <item>  1  </item>
+							 
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" >
+					<audio expr="'http://'+CDSIP+'/'+cds_path+'/'+Song_Path+'/'+songID+'.wav'"/>
+				</prompt>
+				
+			<filled>
+				<goto next="Hungama_ModSub1.vxml"/>								
+			</filled>
+			<noinput>
+				<goto next="Hungama_ModSub1.vxml"/>
+			</noinput>
+			<nomatch>
+				<goto next="Hungama_ModSub1.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+	
+ <form id="loadcliptoplay">
+		  <block> 
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/EVENT/15AUG_EXE.cfg&amp;TOKEN=FREE'"/>
+			<script>
+				array.length=0;
+				unike_play=0;
+			</script>			
+			<assign name="len" expr="favSongs.length" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<script>
+				<![CDATA[
+				   	for(k=0; k<len ;  k++)
+				   	{  	  
+						array[k] = favSongs[k];						   
+				   	}
+				]]>		
+			</script> 
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=INDPC_USERPROFILE&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]=GET&amp;INPARAM[3]=0'"/>
+				<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+								inde_HEARD = out_string[j];
+						   }
+						]]>
+
+					</script>
+					<if cond="inde_HEARD!= 'new'">
+						<script>
+							inde_HEARD=parseInt(inde_HEARD);
+						</script>
+					</if>
+					<log>inde_HEARD of usr_status is <value expr="inde_HEARD"/>    </log>
+				<if cond="inde_HEARD!= 'new'">	
+					<assign name="unike_play" expr="inde_HEARD" />
+					<log>unike_playunike_playunike_playunike_play of usr_status is <value expr="unike_play"/>    </log>
+				<elseif cond="inde_HEARD== 'new'"/>
+					<assign name="unike_play" expr="0" />
+					<assign name="inde_HEARD" expr="0" />
+				</if>
+				<goto next="#StartToPlaysongs"/>  					
+		   </block>
+	</form>
+	<form id="StartToPlaysongs">
+		<block>				
+				<assign name="program_name" expr="'independence_CONTENT'"/>
+					      <script>
+							 <![CDATA[
+							if(timerflag==1)
+							 start_BalenceMinute=starttime();
+						   ]]>	 	
+					  </script>
+					  
+					  	<if cond="unike_play &gt; len-1">
+							<assign name="unike_play" expr="0" />
+						<elseif cond="unike_play &lt; 0" />
+							<assign name="unike_play" expr="len-1" />
+						</if>
+					<log expr="'@@@@@@ used balance is '+unike_play"/>
+						   <log expr="'@@@@@@ left balance is '+songcheck[0]"/>
+						<script>
+							songcheck=array[unike_play].split("_");
+							Song_Path=songcheck[0]; 
+							songID = array[unike_play]; 						
+						</script>			
+					 <assign name="song_begin" expr="starttime()"/>
+					 <assign name="song_listen" expr="'START'" />
+					 <assign name="cat" expr="'independence'"/>
+					 <assign name="subcat" expr="'independence'"/>					 
+						<script>
+						 if(songID.match("TataTisconLink"))
+						 {
+							inde_counter="1";
+						 }
+						</script>
+						<log expr="'@@@@@@ inde_counter is '+inde_counter"/>
+						<if cond="unike_play &gt; len-1">
+							<assign name="unike_play" expr="0" />
+						<else/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=INDPC_USERPROFILE&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]=SET&amp;INPARAM[3]='+unike_play"/>	
+							<script>
+							 <![CDATA[
+								for(j=0; j< out_string.length;  j++)
+										  {  	  
+										       if(j==0)
+											stat = out_string[j];
+										 }
+								]]>
+							</script>
+						</if>
+      </block>
+		   <field name="selectoption">
+
+				    <grammar mode="dtmf" root="start32" version="1.0">
+			   		<rule id="start32" scope="public">
+			   		  <one-of>
+					     
+				       	      <item>8</item>
+					      <item>9</item>  
+					 </one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			  <audio expr="'http://'+CDSIP+'/'+cds_path+'/'+Song_Path+'/'+songID+'.wav'"/>
+		  </prompt> 
+			<prompt bargein="true"  timeout="1s" cond="inde_counter=='1'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/return_option.wav'"/>
+			</prompt> 
+		  
+		      <filled>
+				<script> 
+		      			unike_play=unike_play+1;
+			      	</script>
+		     			<assign name="inde_counter" expr="'0'" />						
+					<assign name="song_listen" expr="'END'" />
+					 <assign name="compare_time" expr="rim(song_begin)"/>
+					 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					 <assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				 <if cond="selectoption=='8'">
+					<assign name="indpc_subflag" expr="'0'"/>	
+				 	<goto next="Hungama_ModMainMenu.vxml"/>		
+				 <elseif cond="selectoption=='9'"/>
+					 <goto next="Hungama_ModMngAccnt.vxml"/>
+				  </if>				 
+			  </filled>				  		     
+			<noinput>	
+			 	<script> 
+			      		unike_play=unike_play+1;
+			      	</script> 
+			      	<assign name="inde_counter" expr="'0'" />
+				 <assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="rim(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>								 			
+				<goto next="#StartToPlaysongs"/> 	
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="inde_counter" expr="'0'" />
+			 	<assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="rim(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				 <assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>			
+				<reprompt></reprompt>
+			</nomatch>	
+			 
+			<catch event="error.badfetch">
+				<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+songID+'/MOD/'+playconfig"/>
+				<if cond="selectoption=='3'">
+					<script>unike_play=unike_play-1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				<else/>
+					<script>unike_play=unike_play+1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				</if>
+			</catch>			
+	  	</field>	  	
+	</form>		
+	
+</vxml>

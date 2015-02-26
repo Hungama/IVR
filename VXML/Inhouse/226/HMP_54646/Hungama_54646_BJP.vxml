@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_BJP.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	
+	 <var name="livmin" expr="0" />
+  	<var name="livmin1" expr="0" />
+  	<script>
+		function GetDate()
+		{
+			var currentDT = new Date();
+			var day = currentDT.getDate();
+			var month = currentDT.getMonth() + 1;
+		 	var year = currentDT.getFullYear();
+			var hours = currentDT.getHours();
+		  	var minutes = currentDT.getMinutes();
+		  	var seconds = currentDT.getSeconds();
+		
+			if (month.length == 1) {month = "0" + month; }
+			if (day.length == 1) {day = "0" + day; }
+			
+	
+			var strDateTime = minutes;
+			return strDateTime;
+	}
+		</script>
+
+<form id="bjp">
+<block>
+<assign name="livmin" expr="GetDate()"/>
+<log expr="'livmin@@@@@@@@@@@@@@@@@@@  =' + livmin"/>
+<script>
+	livmin1=parseInt(livmin);
+	livmin1=livmin1-2;
+</script>
+<log expr="'livmin@@@@@@@@@@@@@@@@@@@  =' + livmin1"/>
+</block>
+<field name="mobilenumber" type="digits?length=10">
+
+<grammar mode="dtmf" root="start" version="1.0">
+		<rule id="start" scope="public">
+			<one-of>
+				 <item>  1  </item>
+				 <item>  2  </item>
+				 <item>  3  </item>
+				 <item>  4  </item>
+				 <item>  5  </item>
+				 <item>  6  </item>
+				  <item>  7  </item>
+				    <item>  8  </item>
+				      <item>  9 </item>
+				        <item>  0  </item>
+
+			</one-of>
+		</rule>
+</grammar>
+<prompt bargein="false" timeout="0s" cond="livmin=='1'">			
+	<audio expr="'http://192.168.100.212:6666/BJP_LIVE/59.wav'"/>
+
+</prompt>
+<prompt bargein="false" timeout="0s" cond="livmin=='0'">			
+	<audio expr="'http://192.168.100.212:6666/BJP_LIVE/58.wav'"/>
+
+</prompt>
+<prompt bargein="false" timeout="0s" cond="livmin!='0' &amp;&amp; livmin!='1'">			
+	<audio expr="'http://192.168.100.212:6666/BJP_LIVE/'+livmin1+'.wav'"/>
+
+</prompt>
+
+		<filled>
+			<goto next="#bjp"/>	
+			
+		</filled>
+		<noinput>
+			<goto next="#bjp"/>
+		</noinput>
+		<nomatch>
+			<goto next="#bjp"/>
+		</nomatch>
+	</field>
+	
+	
+</form>
+</vxml>

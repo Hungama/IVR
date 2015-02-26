@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Endless_Contest_UserStatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+
+	
+		
+
+<form id="Check_user_round">
+	<block>
+
+
+
+		<assign name="Game_Start" expr="starttime()"/>
+		<assign name="lang" expr="'01'"/>
+		<assign name="game_play" expr="'true'"/>
+		<assign name="Game_mou" expr="'true'"/>
+		<log>Calling Url</log>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_ENDLESS_CONTEST_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					    if(j==0)
+						    score = out_string[j];
+					    if(j==1)
+						    questionnum = out_string[j];
+						if(j==2)
+						    Sit_Counter= out_string[j];
+					    if(j==3)
+						    round= out_string[j];
+				            if(j==4)
+						    mou= out_string[j];
+					  }
+
+				]]>
+
+		</script>
+		<script>
+			score=parseInt(score);
+			questionnum=parseInt(questionnum);
+			Sit_Counter=parseInt(Sit_Counter);
+			round=parseInt(round);
+			mou=parseInt(mou);
+			mou=mou*60;
+		</script>
+		<log expr="'@@@@@@@ Total score issss ===>' +score"/>
+		<log expr="'@@@@@@@ questionnum isss ===>' +questionnum"/>
+		<log expr="'@@@@@@@ Sit_Counter issss ===>' +Sit_Counter"/>
+		<log expr="'@@@@@@@ round issss ===>' +round"/>
+		<log expr="'@@@@@@@ mou issss ===>' +mou"/>
+		
+		<if cond="questionnum!=0">
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_resume.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/return_option.wav'"/>
+				</prompt>
+				<goto next="Endless_Playcontest.vxml"/>
+		<else/>
+				<goto next="#MAINMENU"/>
+		</if>
+
+	</block>
+</form>
+		
+
+<form id="MAINMENU">
+		<field name="choice">
+				  <grammar mode="dtmf" root="start"  version="1.0">
+					<rule id="start" scope="public">
+						<one-of>						
+							<item>1</item>
+							<item>2</item>
+							<item>8</item>
+						</one-of>
+					</rule>
+				  </grammar>
+				
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_contest.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/return_option.wav'"/>
+				</prompt>
+			
+											   		
+					
+		<filled>
+						
+			<if cond="choice=='1'">
+				   <goto next="Endless_Playcontest.vxml"/>
+			<elseif cond="choice=='2'"/>
+				   <goto next="#Endless_Contest_Rules"/>
+			<elseif cond="choice=='8'"/>
+			          <assign name="Game_mou" expr="'false'"/>
+				   <script>
+				   	total_used_time=rim(Game_Start);
+				   	mou=mou+total_used_time;
+					mou=Math.floor(mou/60);
+				   </script>
+				   	<log expr="'used time is '+total_used_time"/>
+					<log expr="'Total time is '+mou"/>
+				   <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_ENDLESS_CONTEST_UPDATETIME&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+Sit_Counter+'&amp;INPARAM[5]='+round+'&amp;INPARAM[6]='+mou"/>
+				   <goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+
+		</filled>
+					
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>	
+	    <nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+	    </nomatch>		
+						
+		</field>
+
+</form>	
+	
+<form id="Endless_Contest_Rules">
+		<field name="choice">
+				  <grammar mode="dtmf" root="start1"  version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>						
+							<item>1</item>
+							<item>2</item>
+							<item>8</item>
+						</one-of>
+					</rule>
+				  </grammar>	
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/contest_rules.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/contest_menu.wav'"/>
+			</prompt>
+		
+		<filled>
+						
+			<if cond="choice=='1'">
+				   <goto next="Endless_Playcontest.vxml"/>
+			<elseif cond="choice=='2'"/>
+				   <goto next="#Endless_Contest_Rules"/>
+			<elseif cond="choice=='8'"/>
+			         <assign name="Game_mou" expr="'false'"/>
+				   <script>
+				   	total_used_time=rim(Game_Start);
+				   	mou=mou+total_used_time;
+					mou=Math.floor(mou/60);  						  
+				   </script>
+				   	<log expr="'used time is '+total_used_time"/>
+					<log expr="'Total time is '+mou"/>				   
+				   <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_ENDLESS_CONTEST_UPDATETIME&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+Sit_Counter+'&amp;INPARAM[5]='+round+'&amp;INPARAM[6]='+mou"/>
+				   <goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+
+		</filled>
+		
+		<noinput>
+				<goto next="Endless_Playcontest.vxml"/>
+		</noinput>	
+	    <nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+	    </nomatch>		
+						
+		</field>	
+			
+</form>
+	
+
+</vxml>

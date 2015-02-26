@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="LRADIO_TopUp.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="rem_time" expr="0"/>	
+	<script>
+		var bill_min=new Object();
+    	var billing_code=new Object();	 
+	</script>
+	
+	<form id="main">
+		<block>
+			<assign name="compare_time" expr="time_duration(C_Start)"/>
+			<assign name="drop_point" expr="'Topup'" /> 
+			<script>
+				rem_time = balance - compare_time;
+			</script>
+			 <log>
+			 	Compare time is <value expr="compare_time"/>
+			 	rem_time time is <value expr="rem_time"/>
+			 </log>
+			  <if cond="rem_time &lt; 300 &amp;&amp; rem_time &gt; 61">
+			  		<if cond="flag_5min == 'F'">
+			  			<assign name="flag_5min" expr="'T'"/>
+			      		<goto next="#Reminder5"/>
+			      	<else/>
+				  		<goto next="#TopUp"/>
+			  		</if>
+			  	<else/>
+			  		<goto next="#TopUp"/>
+		      </if>
+		</block>
+	</form>
+	<form id="Reminder5">
+		<field name="opt">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>  1  </item>
+						<item>  2  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/minutes-reminder-'+lang+'.wav'"/>
+	     	</prompt>
+	     	<filled>
+	     		<if cond="opt == '2'">
+	     			<script srcexpr="'http://'+IP+'/'+servlet_path+'/WriteDTMFLogging?ANI='+ANI+'&amp;Prompt=minutes-reminder&amp;DTMF='+opt+'&amp;DNIS='+DNIS+'&amp;event=Hungama_RedFMTOP_UP'"/>
+	     			<assign name="mod" expr="'IVR'"/>
+					<assign name="sub_amount" expr="'10'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/Hungama_RedFMSUB?ani='+ANI+'&amp;lang='+lang+'&amp;sub_amount='+sub_amount+'&amp;token=2'"/>
+					<prompt bargein="false">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subscription-wait-'+lang+'.wav'" />
+					</prompt>
+					<goto next="#BillingCheck"/>
+	     		<elseif cond="opt == '1'"/>	
+					<goto expr="backmovepage"/>
+	     		<else/>	
+			  		 <goto expr="backmovepage"/>
+	     		</if>
+	     	</filled>
+	     	<noinput count="1" timeout="3s">
+				<prompt bargein="true">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/no-response-'+lang+'.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="2" timeout="3s">
+				<prompt bargein="true">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/no-response-'+lang+'.wav'"/>
+
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="3">
+				 <goto expr="backmovepage"/>
+			</noinput>   
+
+			<nomatch count="1">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalid-input-'+lang+'.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalid-input-'+lang+'.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				 <goto expr="backmovepage"/>
+			</nomatch> 
+		</field>
+	</form>
+	<form id="TopUp">
+		<field name="opt">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>  1  </item>
+						<item>  *  </item>
+						<item>  #  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/topup-options-'+lang+'.wav'"/>
+	     	</prompt>
+	     	<filled>
+	     		<if cond="opt == '1'">
+	     			<script srcexpr="'http://'+IP+'/'+servlet_path+'/WriteDTMFLogging?ANI='+ANI+'&amp;Prompt=topup-options&amp;DTMF='+opt+'&amp;DNIS='+DNIS+'&amp;event=Hungama_RedFMTOP_UP'"/>
+	     			<assign name="mod" expr="'IVR'"/>
+					<assign name="sub_amount" expr="'10'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/Hungama_RedFMSUB?ani='+ANI+'&amp;lang='+lang+'&amp;sub_amount='+sub_amount+'&amp;token=2'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/UpdateCcxmlSession?sessionid='+sessionid+'&amp;bal=12000'"/>                                        
+					<prompt bargein="false">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subscription-wait-'+lang+'.wav'" />
+					</prompt>
+					<goto next="#BillingCheck"/>
+				<elseif cond="opt=='*'"/>
+	        		
+		          <goto next="Hungama_RedFMHELP.vxml#Menu"/>
+		          
+	        	<elseif cond="opt=='#'"/>
+	        			<goto next="Hungama_RedFMexisting.vxml#navi"/>
+	     		<else/>	
+			  		 <goto expr="backmovepage"/>
+	     		</if>
+	     	</filled>
+		</field>
+		<noinput count="1" timeout="3s">
+				<prompt bargein="true">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/no-response-'+lang+'.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="2" timeout="3s">
+				<prompt bargein="true">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/no-response-'+lang+'.wav'"/>
+
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="3">
+				 <goto expr="backmovepage"/>
+			</noinput>   
+
+			<nomatch count="1">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalid-input-'+lang+'.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalid-input-'+lang+'.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				 <goto expr="backmovepage"/>
+			</nomatch> 
+	</form>
+	<form id="BillingCheck">
+          <field name="opt" type="digits?length=1">
+	      	<prompt bargein="false" timeout="0s">
+				<audio expr="'../promptFiles/audio/common_prompts/airtel.wav'" />
+			</prompt>
+			<grammar mode="dtmf" root="start" version="1.0">
+ 		    	<rule id="start" scope="public">
+ 		    		<one-of>
+ 		    			<item>  #  </item>
+					    <item>  *  </item>
+ 		    		</one-of>
+ 		     	</rule>
+   			</grammar>
+   			
+   			<noinput count="1">
+   				<goto next="#bill"/>
+   			</noinput>
+   			<nomatch count="1">
+   				<goto next="#bill"/>
+   			</nomatch>
+   			
+			<filled>
+				<goto next="#bill"/>
+		    </filled>	
+	
+		</field>
+	</form>
+
+	<form id="bill">
+		<block>
+			<assign name="cmp_time" expr="start_time()"/>		
+			<script fetchtimeout="5s" srcexpr="'http://'+IP+'/'+servlet_path+'/Timer?ani='+ANI"/>	 
+			<assign name="bill" expr="billing_code.value"/>
+			<log>	billing_code is	<value expr="bill"/> </log>
+			<log>	bill_min is	<value expr="bill_min.value"/> </log>
+			<if cond="bill=='1'">
+                <if cond="bill_min.value=='5'">
+					<assign name="New_User_bal" expr="'3000'"/>	
+				</if>                
+                <prompt bargein="true">
+	      			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subscribed-live-radio-'+lang+'.wav'"/>
+				</prompt>
+				 <assign name="compare_time" expr="time_duration(C_Start)"/>
+				 <script>
+				 	compare_time = parseInt(compare_time);
+				 	balance = compare_time + New_User_bal;
+				 	 <![CDATA[
+                              
+                           if(balance > 36000)
+                           		balance = New_User_bal;
+           			   ]]>		
+				 </script>
+				 <script srcexpr="'http://'+IP+'/'+servlet_path+'/UpdateCcxmlSession?sessionid='+sessionid+'&amp;bal='+balance"/>                         
+				 <goto expr="backmovepage"/>
+			<elseif cond="bill=='3'"/>
+				<prompt>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/insufficient-balance-'+lang+'.wav'"/>
+				</prompt>
+				 <goto expr="backmovepage"/>
+			<else/>
+				<prompt>
+					<audio expr="'../promptFiles/audio/odsprompts/subscription-request-processing-'+lang+'.wav'"/>
+
+				</prompt>
+				 <goto expr="backmovepage"/>
+			</if>
+		</block>
+	</form>
+</vxml>

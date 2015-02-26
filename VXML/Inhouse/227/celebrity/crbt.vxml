@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="FMJRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="crbt.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<var name="cRBTMODE" expr="''"></var>
+		
+	<script>
+		var UserStatus1=new Object();
+		 var out_string = new Object();
+	</script>
+	<form id="CRBT">
+		<block>		    
+		   <!-- <script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_rngmenu?SONGID='+songid+'&amp;IN_TYPE=CRBT&amp;CIRCLE='+circle"/>
+		    <log expr="'CLIPID=='+out_string[0]"></log>
+		    <assign name="len_rng" expr="out_string.length" />
+		    <assign name="songcrbt" expr="'1'" />
+			<log>previous Array[1]  is	<value expr="CLIPID"/>    </log>
+			<script>
+				 CLIPID = out_string[0];		
+			</script>
+			<log>after Array[1]  is	<value expr="CLIPID"/>    </log>
+			<if cond="CLIPID==''">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/nocrbt.wav'"/>
+				</prompt>
+				<goto next="playContent.vxml#StartToPlaystarclub"/>
+			</if>   -->      	
+         	<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_dbinteraction?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]=crbt'"/>-->
+			<script srcexpr="'http://119.82.69.211:8088/'+servlet_path+'/starclub_cRBT?ANI='+ANI+'&amp;TOKEN=USERSTATUS'"/>
+			<assign name="cRBTSTATUS" expr="UserStatus1.value"/>
+			<!--<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log> -->
+			<script>
+				 <![CDATA[					     	  
+								 if(cRBTSTATUS.indexOf("EAUC")>0)
+								 	 cRBTMODE = "EAUC";
+								 else if(cRBTSTATUS.indexOf("RBT_ACT")>0)					      
+									cRBTMODE = "RBT";
+								 else
+									cRBTMODE = "NEW";
+				]]>
+				
+			</script>
+			<!--<log expr="'cRBTSTATUS=='+cRBTSTATUS"></log>
+			<log expr="'cRBTMODE=='+cRBTMODE"></log> -->
+			<if cond="cRBTMODE=='NEW'">
+			    <prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+LANG_DESCRIPTION+'/crbt_status_nosub.wav'"/>
+				</prompt>
+				<goto next="#NEWSUB"></goto>
+			<elseif cond="cRBTMODE=='RBT'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+LANG_DESCRIPTION+'/crbt_status_3015.wav'"/>
+				</prompt>
+				<goto next="#PLANCHANGE"></goto>
+			<elseif cond="cRBTMODE=='EAUC'"/>
+				<goto next="#DOWNLOAD"></goto>
+			<else/>
+				<goto next="playContent.vxml#StartToPlaystarclub"/>
+			</if>		
+		</block>
+	</form>
+
+	<form id="NEWSUB">
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/crbt_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+				    <script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_dbinteraction?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtACTIVATE&amp;INPARAM[4]='+circle"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/starclub_cRBT?ANI='+ANI+'&amp;CLIPID='+CLIPID+'&amp;TOKEN=ACTIVATE'"/>
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>
+				<!--	<log expr="'cRBTSTATUS=='+cRBTSTATUS"></log> -->
+					<goto next="#THANKS"/>
+				<elseif cond="choice=='2'"/>
+					<goto next="#NOTHANKS"/>
+				</if>
+			</filled>	
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<goto next="playContent.vxml#next"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<goto next="playContent.vxml#StartToPlaystarclub"/>
+		</nomatch>
+	</form>
+	
+	<form id="PLANCHANGE">
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/crbt_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+				    <script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_dbinteraction?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtMIGRATE&amp;INPARAM[4]='+circle"/>					
+					<goto next="#MIGRATED"/>
+				<elseif cond="choice=='2'"/>
+				    <script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_dbinteraction?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtDOWNLOAD15&amp;INPARAM[4]='+circle"/>					
+					<goto next="#THANKS"/>
+				<else/>
+					<goto next="playContent.vxml#StartToPlaystarclub"/>
+				</if>
+			</filled>	
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<goto next="playContent.vxml#next"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<goto next="playContent.vxml#StartToPlaystarclub"/>
+		</nomatch>
+	</form>
+	
+	<form id="DOWNLOAD">
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/crbt_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+				    <script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_dbinteraction?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtDOWNLOAD&amp;INPARAM[4]='+circle"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/starclub_cRBT?ANI='+ANI+'&amp;CLIPID='+CLIPID+'&amp;TOKEN=DOWNLOAD'"/>
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>
+				<!--	<log expr="'cRBTSTATUS=='+cRBTSTATUS"></log> -->
+					<goto next="#THANKS"/>
+				<else/>
+					<goto next="#NOTHANKS"/>
+				</if>
+			</filled>	
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<goto next="playContent.vxml#StartToPlaystarclub"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<goto next="playContent.vxml#StartToPlaystarclub"/>
+		</nomatch>
+	</form>
+	
+	<form id="MIGRATED">
+		<block>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/thanks_crbt.wav'"/>
+			</prompt>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_dbinteraction?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtDOWNLOAD&amp;INPARAM[4]='+circle"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/starclub_cRBT?ANI='+ANI+'&amp;CLIPID='+CLIPID+'&amp;TOKEN=DOWNLOAD'"/>
+			<assign name="cRBTSTATUS" expr="UserStatus1.value"/>
+		<!--	<log expr="'cRBTSTATUS=='+cRBTSTATUS"></log> -->
+			<goto next="playContent.vxml#StartToPlaystarclub"/>	
+		</block>
+	</form>
+	
+	
+	<form id="THANKS">
+		<block>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/thanks_crbt.wav'"/>
+			</prompt>
+			<goto next="playContent.vxml#StartToPlaystarclub"/>	
+		</block>
+	</form>
+	
+	<form id="NOTHANKS">
+		<block>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/nothanks_crbt.wav'"/>
+			</prompt>
+			<goto next="playContent.vxml#StartToPlaystarclub"/>	
+		</block>
+	</form>
+
+</vxml>

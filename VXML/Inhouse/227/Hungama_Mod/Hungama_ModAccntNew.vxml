@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Hungama_ModAccntNew.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<!--<script>
+		var UserStatus1=new Object();		
+	</script>-->
+	
+	<form id="AcntOption">
+		<block>
+			<assign name="program_name" expr="'Hungama_ModMngAccnt_AcntOption'"/>
+		</block>
+
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+				</grammar>
+
+
+			<prompt bargein="true" timeout="3s" cond="directaccess!='DEVOHAY'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_acmanager.wav'"/>
+			</prompt>
+
+			<prompt bargein="true" timeout="3s" cond="directaccess=='DEVOHAY'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_acmanagerdevo.wav'"/>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/acmanager_optiondevo.wav'"/>
+
+			</prompt>
+
+
+			<filled>
+				<if cond="choice=='1' &amp;&amp; directaccess!='DEVOHAY'">
+					<goto next="#AcntLanguage"></goto>
+				<elseif cond="choice=='2' &amp;&amp; directaccess!='DEVOHAY'"/>
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='3' &amp;&amp; directaccess=='DEVOHAY'"/>
+					<goto next="#AcntUnsubscription"></goto>
+
+				<elseif cond="choice=='8' &amp;&amp; directaccess!='DEVOHAY'"/>
+					<if cond="directaccess=='false'">
+						<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+					<else/>
+						<goto next="Hungama_EndlessMainMenu.vxml#MAINMENU"/>
+					</if>
+				<else/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+
+					<goto next="#AcntOption"/>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="directaccess=='false'">
+				<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+			<else/>
+				<goto next="Hungama_EndlessMainMenu.vxml#MAINMENU"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="directaccess=='false'">
+				<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+			<else/>
+				<goto next="Hungama_EndlessMainMenu.vxml#MAINMENU"/>
+			</if>
+		</nomatch>
+	</form>
+	
+	
+	<form id="AcntBalance">
+		<block>
+			<!-- GET BALANCE -->
+			<assign name="program_name" expr="'Hungama_ModMngAccnt_AcntBalance'"/>
+
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/Acmanager_balanceis.wav'"/>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/g_29.wav'"/>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/minutes.wav'"/>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/g_30.wav'"/>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/seconds.wav'"/>
+			</prompt>
+			<goto next="Hungama_EndlessMainMenu.vxml"></goto>
+		</block>
+	</form>
+
+	<form id="AcntLanguage">
+		<block>
+			<assign name="program_name" expr="'Hungama_ModMngAccnt_AcntLanguage'"/>
+			<if cond="directaccess=='false'">
+				<goto next="Hungama_ModNewUserMM.vxml#LANGSEL1"/>
+			<else/>
+				<goto next="Hungama_ModNewUser.vxml#LANGSEL1"/>
+			</if>			
+		</block>
+	</form>
+	
+	<form id="AcntUnsubscription">
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start2" version="1.0">
+						<rule id="start2" scope="public">
+							<one-of>
+								 <item>  *  </item>
+								 <item>  1  </item>
+
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s" cond="operator!='virm' &amp;&amp; directaccess!='DEVOHAY'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/acmanager_unsub_confirm.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="operator=='virm' &amp;&amp; directaccess!='DEVOHAY'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/acmanager_unsub_confirm_virm.wav'"/>
+			</prompt>
+
+
+			<prompt bargein="true" timeout="3s" cond="operator!='virm' &amp;&amp; directaccess=='DEVOHAY'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/acmanager_unsub_confirmdevo.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="operator=='virm' &amp;&amp; directaccess=='DEVOHAY'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/acmanager_unsub_confirm_virm.wav'"/>
+			</prompt>
+
+
+
+			<filled>	
+
+			<if cond="choice=='1' &amp;&amp; directaccess=='DEVOHAY'">
+					<!-- UNSUB REQUEST -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+
+			<else/>
+
+				<if cond="choice=='1'">
+					<!-- UNSUB REQUEST -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				<else/>
+					<if cond="directaccess=='false'">
+						<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+					<else/>
+						<goto next="Hungama_EndlessMainMenu.vxml#MAINMENU"/>
+					</if>
+				</if>
+			</if>
+			</filled>
+		</field>	
+	</form>
+
+</vxml>

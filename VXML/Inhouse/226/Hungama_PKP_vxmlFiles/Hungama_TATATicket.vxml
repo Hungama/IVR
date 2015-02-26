@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_PKPRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_TATATicket.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="DATE" expr="''"/>
+<var name="double_switch" expr="0"/>
+<var name="prompt_switch" expr="0"/>
+<var name="skip_level" expr="0"/>
+<var name="sub_flag" expr="'0'"/>
+
+<script>
+	var out_string=new Object();
+</script>
+<script>
+	function getUNIMDT()
+		{
+			var currentDT = new Date();
+			var day = currentDT.getDate();
+			var month = currentDT.getMonth() + 1;
+			var year = currentDT.getFullYear();
+			var hours = currentDT.getHours();
+			var minutes = currentDT.getMinutes();
+			var seconds = currentDT.getSeconds();
+			if (!(month > 9)) {month = "0" + month; }
+			if (!(day > 9 )) {day = "0" + day; }
+			if (!(hours > 9)) {hours = "0" + hours; }
+			if (!(minutes > 9 )) {minutes = "0" + minutes ; }
+			if (!(seconds > 9) ) {seconds = "0" + seconds ; }
+			var strDateTime =  year + "-" + month + "-" + day +" "+ hours+":"+minutes+":"+seconds ;	
+			return strDateTime;
+		}
+	function gettransidtime_event() 
+		{
+			var d3=new Date();
+			var date3 = d3.getDate();
+			var month3=d3.getMonth()+1;
+				var hh = d3.getHours();
+				var mm = d3.getMinutes();
+				var ss = d3.getSeconds();
+				var ms = d3.getMilliseconds();
+			if(!(month3>9)) {
+				month3 = "0" + month3;
+			}
+			if(!(date3 >9)) {
+				date3 = "0" + date3;
+			}
+			var year3=d3.getYear()+1900;
+			return(""+year3+month3+date3+hh+mm+ss+ms);						
+		}
+</script>
+
+
+
+<form id="ChatSubsEvent">
+	<block>
+		
+		
+		<assign name="firstconsent" expr="'Y'"/>
+		<assign name="firstconsenttime" expr="start_time()"/>
+		<assign name="sub_flag" expr="'true'"/>
+		<if cond="(operator=='tatm' || operator=='virm')">
+			<assign name="amt" expr="'10'"/>
+			<assign name="plan_id" expr="'101'"/>
+			<assign name="service_id" expr="'1009'"/>
+			
+		<elseif cond="operator=='tatc'"/>
+			<assign name="amt" expr="'10'"/>
+			<assign name="plan_id" expr="'160'"/>
+			<assign name="service_id" expr="'1609'"/>
+		</if>
+			<goto next="#EventOptionDoubleconfirm_tata"/>	
+	</block>		 
+</form> 
+<form id="EventOptionDoubleconfirm_tata">
+		<block>
+			<if cond="operator=='tatm'">
+					<assign name="productID" expr="'GSMMissriacontent10'"/>
+			<elseif cond="operator=='tatc'"/>
+					<assign name="productID" expr="'CDMAMissriacontent10'"/>
+			<elseif cond="operator=='virm'"/>
+					<assign name="productID" expr="'GSMMissriacontent10'"/>
+			</if>
+				<assign name="pName" expr="'Miss Riya'"/>
+				<assign name="CpId" expr="'hug'"/>
+				<assign name="CpPwd" expr="'hug@8910'"/>
+				<assign name="CpName" expr="'Hungama'"/>
+				<assign name="reqMode" expr="'IVR'"/>               
+				<assign name="Ivr_approach" expr="'VXML'"/>
+				<assign name="NetworkId" expr="'ISDNPRI'"/>
+				<assign name="circleId" expr="circle"/>
+				<assign name="trans_id" expr="gettransidtime()"/>
+				<assign name="Lang_A" expr="'F'"/>
+				<assign name="reqType" expr="'Event'"/>
+				<assign name="ismID" expr="'16'"/>
+				<assign name="transID" expr="C_Start"/>
+
+						<script>
+								pPrice=amt*100;
+						</script>
+					<assign name="pVal" expr="amt"/>
+						<if cond="lang=='01'">
+								<assign name="Lang" expr="'Hin'"/>
+						<elseif cond="lang=='02'"/>
+								<assign name="Lang" expr="'Eng'"/>
+						<elseif cond="lang=='11'"/>
+								<assign name="Lang" expr="'Mar'"/>
+						<elseif cond="lang=='10'"/>
+								<assign name="Lang" expr="'Kan'"/>
+						<elseif cond="lang=='08'"/>
+								<assign name="Lang" expr="'Tel'"/>
+						<elseif cond="lang=='09'"/>
+								<assign name="Lang" expr="'Mal'"/>
+						<elseif cond="lang=='07'"/>
+								<assign name="Lang" expr="'Tam'"/>
+						<elseif cond="lang=='13'"/>
+								<assign name="Lang" expr="'Ori'"/>
+						<elseif cond="lang=='06'"/>
+								<assign name="Lang" expr="'Ben'"/>
+						<elseif cond="lang=='12'"/>
+								<assign name="Lang" expr="'Guj'"/>
+						<elseif cond="lang=='17'"/>
+								<assign name="Lang" expr="'Asm'"/>
+						<elseif cond="lang=='18'"/>
+								<assign name="Lang" expr="'Maw'"/>
+						<elseif cond="lang=='03'"/>
+								<assign name="Lang" expr="'Pun'"/>
+						<elseif cond="lang=='05'"/>
+								<assign name="Lang" expr="'Har'"/>
+						<else/>
+								<assign name="Lang" expr="'Hin'"/>
+						</if>       
+				</block>
+				
+				 <subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.80:8091/API/CCG?MSISDN=91'+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpPwd='+CpPwd+'&amp;CpName='+CpName+'&amp;reqMode='+reqMode+'&amp;Ivr_approach='+Ivr_approach+'&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID='+ismID+'&amp;transID='+gettransidtime()">
+				<filled>
+						<assign name="secondconsent" expr="'Y'"/>
+						<assign name="secondconsenttime" expr="start_time()"/>
+						<assign name="ccgresult" expr="confirmUserChoice.CCGResponse"/>
+						<!--<assign name="CPTID" expr="trans_id"/>-->
+						<script srcexpr="'http://192.168.100.226:8082/'+servlet_path+'/TATA_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=546460&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+trans_id+'&amp;ccgresult='+confirmUserChoice.CCGResponse"/> 
+						<log>Confirmation page</log>
+						<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+						<log>back from the confirmation app, the CCGRESPONSE:<value expr="confirmUserChoice.CCGResponse"/></log>
+						<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userinput"/></log>
+						<log>back from the confirmation app, the user tranId:<value expr="confirmUserChoice.tranId"/></log>
+						<if cond="confirmUserChoice.CCGResponse=='Success'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.CHAT_SUB_TATA&amp;INTOKEN=9&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id+'&amp;INPARAM[7]='+operator+'&amp;INPARAM[8]='+trans_id"/>
+							<goto next="#ChatSubsEventRequest"></goto>
+						<else/>
+							<goto next="Hungama_PKP_end.vxml"/>
+						</if>                                      
+				</filled>
+		</subdialog>
+</form>
+
+<form id="ChatSubsEventRequest">
+
+    <field name="actmgrmnuopt">
+	     <grammar mode="dtmf" root="start11112" version="1.0">
+		   <rule id="start11112" scope="public">
+		     <one-of>				 
+			  <item>1</item>			
+		     </one-of>
+		  </rule>
+		</grammar>
+
+		<prompt bargein="false" timeout="0s">
+			
+			 <audio expr="promptpath+'/'+lang+'/common/charging_wait.wav'"/>
+			 <audio expr="promptpath+'/'+lang+'/common/charging_wait.wav'"/>
+			 <audio expr="promptpath+'/'+lang+'/common/charging_wait.wav'"/>
+		</prompt>
+
+		<filled>
+			<goto next="#ChatSubsEventCheck"/>
+		</filled>
+
+	<noinput>
+		<goto next="#ChatSubsEventCheck"/>
+	</noinput>
+	
+	<nomatch>	
+		<goto next="#ChatSubsEventCheck"/>
+	</nomatch>
+  </field>	 
+</form> 
+
+<form id="ChatSubsEventCheck">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.CHAT_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+						 <![CDATA[
+							for(j=0; j< out_string.length;  j++)
+								 {  	  
+								  if(j==0)
+									usr_status_chat = out_string[j];
+								 }
+		
+						]]>
+			</script>
+			
+			<if cond="usr_status_chat=='1'">
+					<prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/CHAT/'+lang+'/thanks_ticket.wav'"/>
+					</prompt>
+				<goto next="Chat_Operation.vxml#CelebTimeCheck"/>
+			</if>
+		
+	</block>
+
+		<field name="actmgrmnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+				   <rule id="start" scope="public">
+					     <one-of>				 
+						  <item>1</item>			
+					     </one-of>
+				  </rule>
+			 </grammar>
+	
+			
+			
+			<prompt bargein="false" timeout="0s" cond="usr_status_chat!='1' &amp;&amp; (operator=='tatm' || operator=='tatc' || operator=='virm')">
+				<audio expr="promptpath+'/'+lang+'/common/delay_charging.wav'"/>
+			</prompt>
+	
+			<filled>
+				
+					<if cond="usr_status_chat=='1'">
+							<goto next="Chat_Operation.vxml#CelebTimeCheck"/>
+					<else/>
+							<goto next="Hungama_PKP_mainmenu.vxml#SubServices"/>
+					</if>
+				
+			</filled>
+	
+		<noinput>
+				
+				
+				<if cond="usr_status_chat=='1'">
+						<goto next="Chat_Operation.vxml#CelebTimeCheck"/>
+				<else/>
+						<goto next="Hungama_PKP_mainmenu.vxml#SubServices"/>
+				</if>
+				
+				
+		</noinput>
+		
+		<nomatch>	
+				
+				
+			<if cond="usr_status_chat=='1'">
+					<goto next="Chat_Operation.vxml#CelebTimeCheck"/>
+			<else/>
+					<goto next="Hungama_PKP_mainmenu.vxml#SubServices"/>
+			</if>
+				
+		</nomatch>
+	  </field>	 
+
+</form> 
+
+</vxml>

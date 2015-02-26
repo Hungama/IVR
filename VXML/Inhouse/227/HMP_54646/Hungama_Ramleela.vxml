@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_Ramleela.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+ <var name="contentfilepath" expr="''"/>
+ <var name="cfgFile" expr="''"/>
+<var name="contentfile" expr="''"/>
+     <script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var spzone=new Object();
+		var len=0;
+		var Rml_counter=0;
+		var RML_HEARD=0;
+	</script>
+	<form id="MAINMENU">
+		<block>
+		<assign name="Section_Name" expr="'Ramleela'"/>
+			<assign name="CATEGORY" expr="'Ramleela'"/>
+			<assign name="lang" expr="'01'"/>
+			<assign name="var_wel" expr="getRandom(1,5)"/>
+			<prompt bargein="true" timeout="3s">
+				<!--<audio expr="promptspath_54646+'/'+lang+'/welcome_catname_ramleela.wav'"/>-->
+				<audio expr="promptspath_54646+'/'+lang+'/Hun-13-7839'+var_wel+'.wav'"/>
+			</prompt>
+
+		
+				<goto next="#loadcliptoplay"/>
+			
+
+		</block>
+	</form>
+
+<form id="loadcliptoplay">
+		  <block> 
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/RAMLEELA/RML.cfg'"/>
+			<script>
+						array.length=0;
+						unike_play=0;
+			</script>
+			<!--<assign name="HEARD" expr="playconfig" />-->
+					<assign name="len" expr="favSongs.length" />
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Inhouse_IVR.RamLeela_LastHeard&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]=GET&amp;INPARAM[3]=0'"/>
+			<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+							RML_HEARD = out_string[j];
+					       if(j==1)
+							Rml_counter = out_string[j];								
+					   }
+					]]>
+
+				</script>
+				<log>RML_HEARD of usr_status is <value expr="RML_HEARD"/>    </log>					
+				<if cond="RML_HEARD!= 'new'">	
+					<script>
+						Rml_counter=parseInt(Rml_counter);
+					</script>
+					<assign name="unike_play" expr="Rml_counter" />
+					<log>unike_playunike_playunike_playunike_play of usr_status is <value expr="unike_play"/>    </log>
+				
+				</if>
+			<goto next="#StartToPlaysongs"/>  					
+		   </block>
+	</form>
+
+	
+
+	
+	<form id="StartToPlaysongs">
+
+
+				<block>
+				<assign name="Section_Name" expr="'Ramleela_CONTENT'"/>
+					<script>
+							 <![CDATA[
+							if(timerflag==1)
+							 start_BalenceMinute=starttime();
+						   ]]>	 	
+					  </script>
+					  	<if cond="unike_play &gt; len-1">
+							<assign name="unike_play" expr="0" />
+						<elseif cond="unike_play &lt; 0" />
+							<assign name="unike_play" expr="len-1" />
+						</if>
+					<log expr="'@@@@@@ used balance is '+unike_play"/>
+						   <log expr="'@@@@@@ left balance is '+songcheck[0]"/>
+						<script>
+							songcheck=array[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = array[unike_play];
+							
+						</script>
+			
+					 <assign name="song_begin" expr="starttime()"/>
+					 <assign name="song_listen" expr="'START'" />
+					 <assign name="CALCULATE_TIME" expr="'SET'" />
+					 <assign name="cat" expr="'HinduHindiRamleela'"/>
+					  <assign name="subcat" expr="'HinduHindiRamleela'"/>
+					 
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Inhouse_IVR.RamLeela_LastHeard&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song+'&amp;INPARAM[2]=SET&amp;INPARAM[3]='+unike_play"/>		 
+					 <script>
+						contentfilepath="54646config_V2/"+operator+"/mwconfig/songconfig/";
+	 				 </script>
+					 <script>
+					 	cfgFile=playconfig+".cfg";
+					 </script>
+					 <assign name="contentfile" expr="song+hash+contentfilepath+hash+cfgFile+hash+compare_time"></assign>
+ 
+      </block>
+		   <field name="selectoption">
+
+				    <grammar mode="dtmf" root="start32" version="1.0">
+			   		<rule id="start32" scope="public">
+			   		  <one-of>
+					      <item>1</item>
+					      <item>2</item>	
+					      <item>3</item>
+					     </one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			  <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		      </prompt> 			 
+		  
+		      <filled>
+						
+			<assign name="song_listen" expr="'END'" />
+			 <assign name="compare_time" expr="rim(song_begin)"/>
+			 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+			 <!-- <script srcexpr="'http://'+IP+'/'+servlet_path+'/content_score_log?contenttime='+ContentTime+'&amp;contentfile='+contentfile"/> -->
+
+		          <if cond="selectoption=='1'">
+				  <script> unike_play=unike_play+1; </script>
+				 <goto next="#StartToPlaysongs"/>	
+				
+				
+				 <elseif cond="selectoption=='2'"/>
+				 	<script> unike_play=unike_play</script>
+					<goto next="#StartToPlaysongs"/> 				 
+				 
+				 <elseif cond="selectoption=='3'"/>	
+				 	 <script> unike_play=unike_play-1</script>
+					<goto next="#StartToPlaysongs"/> 
+					
+				 </if>				 
+			  </filled>				  
+		
+		     
+			   <noinput>	
+			        <script> 
+			      		unike_play=unike_play+1;
+			      	</script> 
+			      	
+				 <assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="rim(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+					<goto next="#StartToPlaysongs"/> 	
+			</noinput>
+			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				
+			 <assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="rim(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+				
+								 
+			
+			
+ 			
+			<reprompt></reprompt>
+			</nomatch>	
+			 
+			<catch event="error.badfetch">
+				<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+song+'/54646_version2/'+playconfig+'.cfg'"/>
+				<if cond="selectoption=='3'">
+					<script>unike_play=unike_play-1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				<else/>
+					<script>unike_play=unike_play+1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				</if>
+			</catch>
+			
+	  </field>
+	  	
+	</form>	
+	
+	
+</vxml>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ModRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_Topup.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="topup_wait" expr="0"/>
+	<var name="count" expr="0"/>
+<script>
+	var favSongs=new Object();
+	var out_string=new Object();
+	var spzone=new Object();
+</script>	
+<form id="topup">  
+	<block>
+		<assign name="Section_Name" expr="'ACCOUNT_MANAGER'"/>
+	</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">	
+				<audio expr="Prompt_Path+'/'+lang+'/topup1.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/press_dtmf1.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/topup2.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/press_dtmf2.wav'"/>
+	           	</prompt>			
+			<filled>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_updatetime&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/>
+				<if cond="choice=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_topup&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+					<goto next="#topupstatus"/>
+				<elseif cond="choice=='2'"/>					
+				     	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_topup&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+					<goto next="#topupstatus"/>				
+				<elseif cond="choice=='8'"/>
+					<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"/>
+		</nomatch>
+	</form>
+	
+   <form id="topupstatus">
+   	<block>	
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_query&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						usr_status = out_string[j];
+					       if(j==1)
+						lang = out_string[j];
+					       if(j==2)
+						bal = out_string[j];
+					       if(j==3)
+						mod_of_sub = out_string[j];						       
+					  }
+				]]>		
+		</script>
+		<if cond="bal &lt;= 0">
+			<assign name="timerflag" expr="'0'"/>
+			<if cond="count==3">
+				<prompt bargein="false">
+					<audio expr="Prompt_Path+'/'+lang+'/topup_sorry.wav'"/>
+				</prompt>
+				<exit/>
+			<else/>
+				<script>count=count+1; </script>
+				<prompt bargein="false">
+					<audio expr="Prompt_Path+'/'+lang+'/charging_wait.wav'"/>
+				</prompt>
+				<goto next="#topupstatus"/>
+			</if>
+		<else/>
+			<assign name="timerflag" expr="'1'"/>
+			<script>
+				bal=bal*60;
+			</script>
+			<script>
+				<![CDATA[
+					start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+			<goto next="Hungama_ModMainMenu.vxml"></goto>
+		</if>				
+   	</block>
+   </form>
+</vxml>

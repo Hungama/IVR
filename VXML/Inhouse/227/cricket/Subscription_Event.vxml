@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="CricketRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Subscription_Event.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+
+	<script>
+		var out_string=new Object();
+		var amount=0;
+	</script>
+
+
+	
+	
+	
+	<form id="SubOption">
+		<block>
+				<assign name="SECTION" expr="'SUBCRIPTION'"/>
+				<assign name="Section_Name" expr="'SUBCRIPTION'"/>
+				
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start31" version="1.0">
+						<rule id="start31" scope="public" >
+							<one-of>
+								 <item>  1  </item>
+								
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='54433'">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/sub_intro_event.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="serviceid" expr="'1208'"/>
+					<assign name="amount" expr="20"/>
+					<assign name="planid" expr="'192'"/>
+					<assign name="firstconsent" expr="'Y'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="sub_flag" expr="'true'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_EVENT_ACT_BULK&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amount+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid+'&amp;INPARAM[7]=0'"/>
+					<goto next="#BillStatusChk"/>	
+				</if>
+			</filled>
+			<noinput count="1">
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<goto next="End.vxml"/>
+			</noinput>
+			<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			
+			<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+
+			<goto next="End.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+ 								if(j==3)
+							         frc_status = out_string[j];
+								if(j==4)
+							         modesub = out_string[j];
+
+
+						    }
+
+					]]>
+			
+			</script>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="End.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/thank_sub.wav'"/>
+					</prompt>
+					<goto next="MainMenu.vxml"/>
+				
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="End.vxml"/>
+			</if>
+		</block>
+	</form>
+
+</vxml>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="MND_UnSub.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+<form id="unsubmenu">
+	<block>
+		<assign name="prompt_name" expr="'UNSUB_MENU'"/>
+	</block>
+     <field name="choice">
+     	   <grammar mode="dtmf" root="start" version="1.0">
+     	   	<rule id="start" scope="public">
+     	   		<one-of>
+     	   		      <item>1</item>
+     	   		      <item>8</item>
+     	   		      <item>9</item>
+     	   		</one-of>
+     	   	</rule>
+     	   </grammar>
+     	   
+     	    <prompt bargein="true" timeout="1s">
+     	    	<audio expr="promptpath+'/'+lang+'/common/confirm_unsub.wav'"/>
+     	    </prompt>
+     	    
+     	    <filled>
+		   <if cond="choice=='1'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQS'"/>
+			<goto next="#unsubreq"/>
+		   <elseif cond="choice=='8'"/>
+			<goto next="MND_mainmenu.vxml"/>
+		   <elseif cond="choice=='9'"/>
+			<goto next="MND_Acntmngr.vxml"/>
+		   </if>
+     	    </filled>
+     
+     	                <noinput>
+	    			<audio expr="promptpath+'/'+lang+'/common/nodtmf.wav'"/>
+	    			<reprompt/> 
+	    		</noinput>  
+	    			         
+	    		<nomatch>
+	    			<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+	    			<reprompt/>
+	    		</nomatch> 
+	 </field>
+  
+</form>
+
+<form id="unsubreq">
+	<block>
+		<assign name="prompt_name" expr="'UNSUB_REQS'"/>
+	</block>
+	<field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/common/thanks_unsub1.wav'"/>
+				</prompt>
+		
+		<filled>
+		    	<goto next="MND_end.vxml"/>
+		</filled>				    
+
+			<noinput>
+				<goto next="MND_end.vxml"/> 
+			</noinput>  
+		
+			<nomatch>
+				<goto next="MND_end.vxml"/> 
+		        </nomatch>  
+	 </field>
+</form>
+
+</vxml>

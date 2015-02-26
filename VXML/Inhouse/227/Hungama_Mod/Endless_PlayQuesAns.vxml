@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Endless_PlayQuesAns.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+<var name="score" expr="0"/>
+
+<var name="ans" expr="0"/>
+<var name="contentdir" expr="''"/>
+<var name="ListenQuestion" expr="0"/>
+<var name="QuestionBank" expr="0"/>
+<var name="QuestionId" expr="0"/>
+<var name="Answer" expr="''"/>
+
+<var name="Question" expr="''"/>
+
+<var name="QstStatus" expr="0"/>
+
+<var name="NumberOfSongs" expr="'0'"/>
+<var name="ind" expr="0"/>
+<var name="word" expr="0"/>
+
+<var name="scorepartfirstnew" expr="0"/>
+
+<var name="ans" expr="0"/>
+<var name="contentdir" expr="''"/>
+
+<script>
+	var favSongs=new Object();
+	var out_string=new Object();
+	var SongArray=new Object();
+	var AnswerArray=new Object();
+	var ClipArray=new Object();
+	var Song=new Array();
+	var Answer=new Array();
+	var Clip=new Array();
+	var v=0;
+	var c3=0;
+	var c4=0;
+</script>
+
+
+<form id="PlayGame">
+<block>
+<if cond="lang=='01' || lang=='02' || lang=='04' || lang=='06'|| lang=='07'|| lang=='08'|| lang=='09'|| lang=='10'">
+	<assign name="lang" expr="lang"/>
+<else/>
+	<assign name="lang" expr="'01'"/>
+</if>
+
+
+
+</block>
+		<field name="choice">
+				  <grammar mode="dtmf"  root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>						
+							<item>1</item>
+							<item>2</item>
+						</one-of>
+					</rule>
+				  </grammar>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_catname7.wav'"/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/menu_option.wav'"/>
+				</prompt>
+		  <filled>
+			<if cond="choice=='1'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_round1.wav'"/>
+			         <goto next="#playcontest"/>
+			<elseif cond="choice=='2'"/>
+				 <goto next="#GameInfo"/>
+			<else/>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_round1.wav'"/>
+				  <goto next="#playcontest"/>
+			</if>
+		 </filled>
+					
+	      <noinput>
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_round1.wav'"/>
+			<goto next="#playcontest"/>
+	      </noinput>	
+	      <nomatch>
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_round1.wav'"/>
+			<goto next="#playcontest"/>
+	      </nomatch>		
+						
+	</field>
+
+</form>
+
+<form id="playcontest">
+	<block>	
+		
+		<log>Language is <value expr="lang"/></log>
+		<assign name="contentdir" expr="'EndlessQuesAns'"/>
+		<log>Endless url:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Endles_QuestionAnsQuery&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+circle+''"/></log>
+	
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Endles_QuestionAnsQuery&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+circle+''"/>
+						<script>
+							 <![CDATA[
+							   	for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+								       	 Question = out_string[j];
+								       if(j==1)
+								       	 Answer = out_string[j];
+								       if(j==2)
+								       	 QuestionId = out_string[j];
+									if(j==3)
+								       	 QuestionBank = out_string[j];
+								     
+								  }
+								  		
+							]]>
+					
+						</script>
+
+		<log>Question:<value expr="Question"/></log>
+		<log>Answer:<value expr="Answer"/></log>
+		<log>QuestionId:<value expr="QuestionId"/></log>
+
+		
+		<goto next="#GameStart"/>
+	</block>
+</form>
+
+
+
+<form id="GameStart">
+	
+		<field name="choice" type="digits?length=1">
+				  <grammar mode="dtmf" root="start1" version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>						
+							<item>1</item>
+							<item>2</item>
+							<item>3</item>
+							<item>4</item>
+							<item>5</item>
+							<item>6</item>
+							<item>7</item>
+							<item>8</item>
+							<item>9</item>
+							<item>0</item>
+							<item>*</item>
+							<item>#</item>
+						</one-of>
+					</rule>
+				  </grammar>
+				<!--
+				<prompt bargein="true" timeout="1s" cond="unike_play%2==0">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/keypad.wav'"/>	
+				</prompt>
+				-->
+			<prompt bargein="true" timeout="3s">
+			
+				 <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/'+Question+'.wav'"/>
+			</prompt>
+										   		
+					
+		<filled>
+			<log expr="'@@@@@@@ VALUE OF CHOICE ===>' +choice"/>
+	
+					<if cond="choice==Answer">
+						
+						<assign name="QstStatus" expr="1"/>
+
+						 <assign name="score" expr="score+10"/>
+						   <prompt bargein="true" timeout="2s">
+							<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/correct_ans.wav'"/>
+						   </prompt>
+
+						   <goto next="#UpdateScore"/>
+
+					<elseif cond="choice=='2'"/>
+						 <assign name="QstStatus" expr="0"/>
+						<assign name="score" expr="score+0"/>
+						
+						<log>Score=<value expr="score"/></log>
+
+						   <prompt bargein="true" timeout="2s">
+							 <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/wrong_ans.wav'"/>
+						   </prompt>
+						 <goto next="#UpdateScore"/>
+						
+					<elseif cond="choice=='8'"/>
+						 <assign name="QstStatus" expr="0"/>
+						<goto next="Hungama_ModMainMenu.vxml"></goto>
+	
+
+					<else/>
+						 <assign name="QstStatus" expr="0"/>
+						<assign name="score" expr="score+0"/>
+						
+						<log>Score=<value expr="score"/></log>
+
+						   <prompt bargein="true" timeout="2s">
+							 <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/wrong_ans.wav'"/>
+						   </prompt>
+						   <goto next="#UpdateScore"/>
+					</if>
+			
+		</filled>
+					
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="#UpdateScore"/>
+		</noinput>	
+	    <nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+	    </nomatch>		
+						
+		</field>
+
+</form>	
+
+
+<form id="UpdateScore">
+	<block>	
+		<assign name="ListenQuestion" expr="ListenQuestion+1"/>
+		<log expr="'@@@@@@@ score total issss===>' +score"/>
+		<log>Update Url:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Endles_UpdateQuestionAns&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+score+'&amp;INPARAM[3]='+circle+'&amp;INPARAM[4]='+QuestionId+'&amp;INPARAM[5]='+lang+''"/></log>
+	<if cond="QstStatus==1">
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Endles_UpdateQuestionAns&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]=10&amp;INPARAM[3]='+circle+'&amp;INPARAM[4]='+QuestionId+'&amp;INPARAM[5]='+lang+''"/>
+
+	<else/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Endles_UpdateQuestionAns&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]=0&amp;INPARAM[3]='+circle+'&amp;INPARAM[4]='+QuestionId+'&amp;INPARAM[5]='+lang+''"/>
+
+	</if>
+		
+		<log>Listen Question is:<value expr="ListenQuestion"/></log>
+		<log>QuestionBank is:<value expr="QuestionBank"/></log>
+	
+		<if cond="score==0">
+	     		<prompt bargein="true"  timeout="1s">
+	     				<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/0.wav'"/>
+	     		</prompt>
+	      <elseif cond="score==90 || score==80"/>
+			<prompt bargein="true" timeout="1s">
+					<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+	     				<audio expr="promptspath_54646+'/'+lang+'/'+score+'.wav'"/>
+	     		</prompt>
+	      <elseif cond="score==1090 || score==1080 || score==2080 || score==2090"/>
+			<prompt bargein="true" timeout="1s" cond="score==1090">
+					<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/1.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/1000.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/90.wav'"/>
+	     		</prompt>
+			<prompt bargein="true" timeout="1s" cond="score==1080">
+					<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/1.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/1000.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/80.wav'"/>
+	     		</prompt>
+
+			<prompt bargein="true" timeout="1s" cond="score==2090">
+					<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/2.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/1000.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/90.wav'"/>
+	     		</prompt>
+
+			<prompt bargein="true" timeout="1s" cond="score==2080">
+					<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/2.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/1000.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/80.wav'"/>
+	     		</prompt>
+
+
+				
+ 		<else/>			
+			<script>
+				scorepartfirst = score/100;
+				scorepartthird = score/1000;
+			</script>
+			<assign name="scorepartsecond" expr="''+scorepartthird+''"/>
+			<assign name="scorepartfirstnew" expr="''+scorepartfirst+''"/>
+
+			<script>
+				var v1=scorepartsecond.split(".");
+				var v2=v1[0];
+				var v3=v1[1];
+				var c1=scorepartfirstnew.split(".");
+				var c2=c1[0];
+				var c3=c1[1];
+				var c4=c3*10;
+			</script>
+			<assign name="v" expr="''+v3+''"/>
+
+			<log> v varible length is  <value expr="v"/></log>
+			<log> scorepartsecond varible length is  <value expr="scorepartsecond"/></log>
+			<log> scorepartfirstnew varible length is  <value expr="scorepartfirstnew"/></log>
+
+			<script>
+				var vinay=parseInt(v);
+				var v5=vinay/10;
+			</script>
+			<assign name="v" expr="''+v5+''"/>
+			<log> v5 length varible length is  <value expr="v5"/></log>
+			<log> v.length varible length is  <value expr="v.length"/></log>
+
+		<if cond="v3.length &gt; 1">
+			<script>
+				var v4=v.split(".");
+				var v6=v4[0];
+				var c6=v4[1];
+				var c8=c6*10;
+			</script>
+			<assign name="v3" expr="''+v6+''"/>
+			<assign name="c3" expr="''+c6+''"/>
+			<assign name="c4" expr="''+c8+''"/>
+			<log expr="'VALUE OF C3 ISSSS ===>' +c3"/>
+			<log expr="'VALUE OF C4 ISSSS ===>' +c4"/>
+	
+		</if>
+		<log> scorepartfirst varible length is  <value expr="scorepartfirst"/></log>
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+		</prompt>
+
+		<prompt bargein="true" timeout="1s" cond="score &gt; 990">
+			<audio expr="promptspath_54646+'/'+lang+'/'+v2+'.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/1000.wav'"/>
+		</prompt>
+
+		 <prompt bargein="true" timeout="1s" cond="v3 &gt; 0.9">
+			<audio expr="promptspath_54646+'/'+lang+'/'+v3+'.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/100.wav'"/>
+		</prompt> 
+
+		<prompt bargein="true" timeout="1s" cond="c3 &gt; 0">
+			<audio expr="promptspath_54646+'/'+lang+'/'+c4+'.wav'"/>
+		</prompt>
+		<prompt bargein="true" timeout="1s" cond="score==90 || score==80">
+			<audio expr="promptspath_54646+'/'+lang+'/'+score+'.wav'"/>
+		</prompt>
+
+	</if>
+		<if cond="Question=='question15'">
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/congrats_r3.wav'"/>
+			<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/score_is.wav'"/>-->
+			<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/'+score+'.wav'"/>-->
+			<log>Play Content Update Time</log>	
+			<goto nextitem="ContestStatus"/>
+		<else/>
+			<goto next="#playcontest"/>
+		</if>
+		
+	</block>
+	<field name="ContestStatus" type="digits?length=1">
+				  <grammar mode="dtmf" root="start2" version="1.0">
+					<rule id="start2" scope="public">
+						<one-of>						
+							<item>1</item>
+							<item>2</item>
+							<item>3</item>
+							<item>4</item>
+							<item>5</item>
+							<item>6</item>
+							<item>7</item>
+							<item>8</item>
+							<item>9</item>
+							<item>0</item>
+							<item>*</item>
+							<item>#</item>
+						</one-of>
+					</rule>
+				  </grammar>
+				
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/contest_repeat.wav'"/>
+			</prompt>
+		<filled>
+			<if cond="ContestStatus=='1'">
+			       <goto next="#playcontest"/>
+			<elseif cond="ContestStatus=='2'"/>
+				<goto next="#GameInfo"></goto>
+
+			<elseif cond="ContestStatus=='8'"/>
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			<else/>
+				   <goto next="#playcontest"/>
+			</if>
+		</filled>
+	</field>
+</form>
+
+<form id="GameInfo">
+	<block>
+		<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/contest_info.wav'"/>
+		<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_round1.wav'"/>
+		<goto next="#PlayGame"/>
+	</block>
+
+</form>
+
+</vxml>

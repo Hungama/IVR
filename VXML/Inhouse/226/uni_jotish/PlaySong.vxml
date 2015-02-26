@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" 
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModNewUser.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+<script>
+function GetCurrentDate()
+{
+	var currentDT = new Date();
+
+	var day = currentDT.getDate();
+	var month = currentDT.getMonth() + 1;
+ 	var year = currentDT.getFullYear();
+	var hours = currentDT.getHours();
+  	var minutes = currentDT.getMinutes()-2;
+  	var seconds = currentDT.getSeconds();
+
+	if (month.length == 1) {month = "0" + month; }
+	if (day.length == 1) {day = "0" + day; }
+	
+	var strDateTime =  minutes ;
+	return strDateTime;
+}
+</script>
+
+<var name="counter" expr="0"/> 
+
+
+<var name="IP" expr="'192.168.100.226:8084'"/>
+<var name="servlet_path" expr="'hungama/promptFiles/uni_jyotish/01'"/>
+
+<form id ="fetch">
+	
+	<block name="FetchStream">
+		
+			
+			<log>fetching song</log>
+			<audio expr="'http://'+IP+'/'+servlet_path+'/rl3.wav'"/> 
+
+			<audio expr="'http://'+IP+'/'+servlet_path+'/rl1.wav'"/> 
+			<audio expr="'http://'+IP+'/'+servlet_path+'/rl2.wav'"/> 
+			<audio expr="'http://'+IP+'/'+servlet_path+'/rl2-2.wav'"/> 
+
+		<exit/>
+	</block>
+</form>
+</vxml>

@@ -1,0 +1,820 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_PKPRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_Riya.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="unike_play_new" expr="''"/>
+<var name="celeb_on_time" expr="''"/>
+<var name="usr_status_chat" expr="''"/>
+<var name="celeb_date" expr="''"/>
+<var name="celeb_on" expr="''"/>
+<var name="contentpath" expr="'http://192.168.100.212:6666/hungama/'"/>
+<var name="DATE" expr="''"/>
+<var name="var_wel" expr="''"/>
+<var name="unike_play_preview" expr="0"/>
+<var name="lastplay_index" expr="0"/>
+	
+<script>
+	var bookmarksave_status=0;
+	var favSongs=new Object();
+	ciropr1 = new Object();	
+	var disclaim_count=0;
+	var usr_status_deffered=0;
+	
+</script>
+<form id ="mainmenu">
+	<block>
+<assign name="Riya_promptpath" expr="'http://192.168.100.226:8083/promptFiles/PKPprompts/'"/>
+
+		<if cond="lang=='08'">	
+			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+		<else/>
+			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+		</if>
+
+		<!--<assign name="lang" expr="'01'"/>
+		<assign name="LANG_DESCRIPTION" expr="'HIN'"/>-->
+		<goto next="#LASTHEARD_PROFILE"/>
+	</block>
+
+</form>
+
+<form id="LASTHEARD_PROFILE">
+		<block>
+			<assign name="drop_point" expr="'Last_Heard'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_RIYA&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lastheard_content+'&amp;INPARAM[2]='+lastheard_clip+'&amp;INPARAM[3]=GET'"/>
+			<script>
+			<![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					lastheard_content = out_string[j];
+				       if(j==1)
+					lastheard_clip = out_string[j];									      								       							      
+				  }
+
+			]]>
+			</script>
+			
+			<log expr="'lastheard_content name is @@@@@@@@@ '+lastheard_content"></log>
+			<log expr="'lastheard_clip number is @@@@@@@@@ '+lastheard_clip"></log>
+			<script>
+				lastheard_clip=parseInt(lastheard_clip);
+			</script>
+			<if cond="lastheard_clip=='0' || lastheard_content=='0' || lastheard_content=='00' || lastheard_content=='' || lastheard_content=='-1' || lastheard_content=='undefined'">
+				<goto next="#loadcliptoshortplay"/>
+				<goto next="#MainMenuOptions_New"></goto>
+			<else/>
+				<assign name="song_cfg" expr="lastheard_content"></assign>
+				<assign name="unike_play_new" expr="lastheard_clip"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>					
+		</block>
+	</form>
+	
+
+	
+	
+	<form id="LASTHEARD">		
+		<field name="choice">
+		    <grammar mode="dtmf" root="start5" version="1.0">
+					<rule id="start5" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/listining_cat.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='7'">
+					
+					<goto next="#MainMenuOptions_New"></goto>
+				</if>
+				<if cond="choice=='8'">
+					<goto next="Hungama_PKP_mainmenu.vxml"></goto>
+				</if>
+				<if cond="choice=='9'">
+					<goto next="Hungama_PKP_Acntmngr.vxml"></goto>
+				</if>
+				<if cond="choice &lt; 10 ||choice=='*' || choice=='#'">	       
+    			 		<goto next="#loadcliptoplayForExistingUser"/>		 
+				<else/>                							 				 					 		         
+                 		      
+					<goto next="#MainMenuOptions_New"></goto>
+				</if>
+				
+			</filled>
+		</field>
+		<noinput>
+			<goto next="#loadcliptoplayForExistingUser"/>
+		</noinput>
+		<nomatch>
+			<goto next="#loadcliptoplayForExistingUser"/>
+		</nomatch>
+	</form>
+	
+	<form id="MainMenuOptions_New">
+	   <block>
+	   	<assign name="var_wel" expr="getRandom(1,3)" />
+	   	
+	   </block>
+	  <field name="wait_input">
+		<grammar mode="dtmf" root="start6" version="1.0">
+                   	<rule id="start6" scope="public">
+                     	<one-of>     
+						<item>1</item>
+			                    
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	
+		<filled>
+			<goto next="#loadcliptoshortplay"/>
+		</filled>
+
+		<noinput>
+			<goto next="#loadcliptoshortplay"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#loadcliptoshortplay"/>
+		</nomatch>
+
+	
+	</field>
+      </form>
+	
+
+	<form id ="MainMenuOptions">
+			
+
+		<field name="choice">
+				<grammar mode="dtmf" root="start7" version="1.0">
+						<rule id="start7" scope="public">	
+							<one-of>
+								 <item>  0  </item>
+								 <item>  1  </item>
+								 <item>  9  </item>
+								  <item>  8 </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s" cond="celeb_on=='1' &amp;&amp; LANG_DESCRIPTION=='HIN'">
+					<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/chat_option.wav'"/>
+		 		</prompt> 
+
+				<prompt bargein="true" timeout="1s">
+					<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/select_cat01.wav'"/>
+					<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+					<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/select_acmanager.wav'"/>
+				</prompt>
+				
+				<filled>
+					<if cond="choice=='0' &amp;&amp; celeb_on=='1' &amp;&amp; LANG_DESCRIPTION=='HIN'">
+						<goto next="#CelebTimeCheck"/>
+			   		</if>
+					<if cond="choice=='1'">
+						<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/select_preview.wav'"/>
+						<goto next="#loadcliptoshortplay"></goto>	
+					<elseif cond="choice=='9'"/>
+						<goto next="Hungama_PKP_Acntmngr.vxml"/>
+					<elseif cond="choice=='8'"/>
+						<goto next="Hungama_PKP_mainmenu.vxml"></goto>
+					</if>
+				</filled>
+		    
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+	</field>
+</form>
+
+
+	<form id="mainmenu_new">
+	  <field name="wait_input">
+		<grammar mode="dtmf" root="start8" version="1.0">
+                   	<rule id="start8" scope="public">
+                     	<one-of>     
+						<item>1</item>
+			                    
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	 <prompt bargein="true" timeout="0s">
+				<!--<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/welcome_old_'+var_wel+'.wav'"/>-->
+				<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/select_preview.wav'"/>
+		</prompt>
+		<filled>
+			<goto next="#loadcliptoshortplay"/>
+		</filled>
+
+		<noinput>
+			<goto next="#loadcliptoshortplay"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#loadcliptoshortplay"/>
+		</nomatch>
+	
+	  </field>
+
+	</form>
+	
+	 <form id="loadcliptoshortplay">
+		  <block>
+		    <assign name="lastheard_content" expr="'112_'+lastheard_content"></assign>  		  	          
+			<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=ManchalaConfigRiya/songconfignewsub/'+lang+'/RiyaPreviewClip.cfg&amp;TOKEN=FREE'"/>
+			<script>
+						array1.length=0;
+						unike_play=0;
+			</script>
+			<assign name="len" expr="favSongs.length" />
+			<script>		      	
+				<![CDATA[
+					    for(k=0,i=0; k<len ;  k++)
+					   {  
+						  
+						  if(lastheard_content != favSongs[k])
+						  {
+							 array1[i++] = favSongs[k];
+							 
+						  }
+						  else
+						  { 
+							n=i+1;
+							for(k=i+1,j=0; k<len ;  k++)
+							  {
+								array1[j++] = favSongs[k];
+							  }
+							for(k=0; k<n ;  k++)
+							  {
+								array1[j++] = favSongs[k];
+							  }
+							k=len;
+							
+						  }
+					   } 					 
+				]]>		
+			</script>
+
+			        <log expr="'array1 @@@@@@@@@@@@@@@@@@@  =' +array1[0]"/>
+				<log expr="'array1 @@@@@@@@@@@@@@@@@@@  =' +array1[3]"/>
+				<log expr="'array1 @@@@@@@@@@@@@@@@@@@  =' +array1[6]"/>
+				<log expr="'array1 @@@@@@@@@@@@@@@@@@@  =' +array1[11]"/>
+			<goto next="#StartToPlayClips"/>  					
+		   </block>
+	</form>
+
+	      <form id="StartToPlayClips">
+				<block>
+					<assign name="drop_point" expr="'Clip_Play'"/>
+					  	<if cond="unike_play &gt; len-1">
+							<assign name="unike_play" expr="0" />
+						<elseif cond="unike_play &lt; 0" />
+							<assign name="unike_play" expr="len-1" />
+						</if>
+			
+						<script>
+							songcheck=array1[unike_play].split("_");
+							contentdir=songcheck[0];
+							song_cfg=songcheck[1]; 
+							song = array1[unike_play];
+						</script>
+				  </block>
+	   
+		   <field name="selectoption">
+
+				    <grammar mode="dtmf" root="start9" version="1.0">
+			   		<rule id="start9" scope="public">
+			   		  <one-of>
+					     <item>0</item>
+					     <item>1</item>
+					     <item>2</item>
+					     <item>3</item>	
+					     <item>7</item>
+					     <item>8</item>
+					     <item>9</item>
+					 </one-of>
+			   		</rule>
+		       		    </grammar>
+		     
+		    <prompt bargein="true" timeout="3s" cond="celeb_on=='1' &amp;&amp; LANG_DESCRIPTION=='HIN'">
+			<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/chat_option.wav'"/>
+		    </prompt> 
+
+		      <prompt bargein="true"  timeout="2s" cond="circle!='mpd'">
+			    <audio expr="contentpath+contentdir+'/'+song+'-preview.wav'"/>
+			    <audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/select_preview.wav'"/>
+			    <audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/press_dtmf2.wav'"/>
+		     </prompt> 
+
+		     <prompt bargein="true"  timeout="2s" cond="circle=='mpd'">
+			    <audio expr="contentpath+'112/112_HUN-54646-0031769-preview.wav'"/>
+			    <audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/select_preview.wav'"/>
+			    <audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/press_dtmf2.wav'"/>
+		     </prompt> 
+
+
+		     <prompt bargein="true"  timeout="0s">
+			        <audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/wait_music.wav'"/>
+		     </prompt> 						 		  
+		      <filled>
+			    <if cond="selectoption=='0' &amp;&amp; celeb_on=='1' &amp;&amp; LANG_DESCRIPTION=='HIN'">
+				<goto next="#CelebTimeCheck"/>
+			    </if>
+		             <if cond="selectoption=='2'">
+						<script>unike_play_preview=unike_play;</script>
+						<assign name="song_begin" expr="start_time()"/>
+						<assign name="song_listen" expr="'START'" />  
+						<goto next="#loadcliptoplay"/>
+				<elseif cond="selectoption=='1'"/>
+					 <script>unike_play=unike_play+1;</script>
+					 <goto next="#StartToPlayClips"/>
+			        <elseif cond="selectoption=='3'"/>
+					 <script>unike_play=unike_play-1;</script>
+					 <goto next="#StartToPlayClips"/>	 		
+			        <elseif cond="selectoption=='7'"/>
+					 <goto next="#mainmenu_new"/>
+				<elseif cond="selectoption=='8'"/>
+					<goto next="Hungama_PKP_mainmenu.vxml"></goto>
+				<elseif cond="selectoption=='9'"/>
+					<goto next="Hungama_PKP_Acntmngr.vxml"/>
+				<else/>
+					<prompt bargein="false">
+					      <audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>          
+			                </prompt>
+					 <goto next="#StartToPlayClips"/>
+			    </if>				 
+			 </filled>				  
+		
+			<noinput>	
+			         <script> 
+			      		unike_play=unike_play+1;
+			      	</script> 	
+			      	<goto next="#StartToPlayClips"/> 	
+			 </noinput>
+			  
+			<nomatch>   
+				        <prompt bargein="false">
+					      <audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>          
+			            </prompt>
+			           <reprompt></reprompt>
+			</nomatch>
+	 </field>	  	
+</form>	
+
+
+<form id="loadcliptoplay">
+	       <block>
+			<assign name="song_listen" expr="'START'" />
+	     		<log expr="'SONG CFG  @@@@@@@@@@@@@@@@@@@  ='+song_cfg"/>  
+	     		<log expr="'LANG ISSSS  @@@@@@@@@@@@@@@@@@@  ='+lang"/>  
+            <script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=ManchalaConfigRiya/songconfignewsub/'+lang+'/'+song_cfg+'.cfg'"/>
+			<script>
+						array.length=0;
+						unike_play=0; 
+			</script>
+			<assign name="len" expr="favSongs.length" />
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#PlayFullSongs"/>  					
+		  </block>
+	</form>
+
+
+<form id="PlayFullSongs"> 
+		  
+		 <block> 
+
+			<assign name="drop_point" expr="'Keypad'"/>
+		</block>
+	 <field name="keypadoption">               
+		<grammar mode="dtmf" root="start10" version="1.0">
+                   	<rule id="start10" scope="public">
+                     	<one-of>
+					<item>1</item>
+					<item>2</item>
+					<item>3</item>
+					<item>6</item>
+					<item>7</item>
+					<item>8</item>
+				        <item>9</item>
+				</one-of>
+                	</rule>
+               	</grammar>
+           <prompt bargein="true"  timeout="1s">
+                 	<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/keypad.wav'"/>
+		   </prompt> 
+				 
+       <filled>              
+                    <if cond="keypadoption=='6'">
+    			       <goto next="#playoption"/>
+			<elseif cond="keypadoption=='7'"/>
+   			      <goto next="#loadcliptoshortplay"/>
+			<elseif cond="keypadoption=='8'"/>
+			     <goto next="Hungama_PKP_mainmenu.vxml"></goto>
+			<elseif cond="keypadoption=='9'"/>
+			      <goto next="Hungama_PKP_Acntmngr.vxml"/>
+			<elseif cond="keypadoption=='1'"/>
+			      <goto next="#StartToPlaysongs"/>
+			<elseif cond="keypadoption=='2'"/>
+			      <goto next="#StartToPlaysongs"/>
+			<elseif cond="keypadoption=='3'"/>
+			      <goto next="#StartToPlaysongs"/>
+			<else/>                							 				 					 		         
+			      <goto next="#StartToPlaysongs"/>
+		</if>	
+       </filled>
+	   <noinput>		  
+	          <goto next="#StartToPlaysongs"/>	     
+       </noinput>
+	    <nomatch>   
+			  <prompt bargein="false">
+					<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>          
+			   </prompt>
+			   <reprompt/> 	        
+		</nomatch>
+    </field>		
+</form>
+	
+	   
+
+	<form id="loadcliptoplayForExistingUser">
+	    <block>  
+		<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=ManchalaConfigRiya/songconfignewsub/'+lang+'/RiyaPreviewClip.cfg&amp;TOKEN=FREE'"/>
+			<script>array1.length=0;</script>
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								array1[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script>
+
+		  	
+            <script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=ManchalaConfigRiya/songconfignewsub/'+lang+'/'+song_cfg+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+						array.length=0;
+						<!-- unike_play=0; -->
+			</script>
+			<assign name="unike_play" expr="unike_play_new" />
+			<assign name="len" expr="favSongs.length" />
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#StartToPlaysongs"/>  					
+		  </block>
+	</form>
+
+	<form id="StartToPlaysongs">
+                <block>
+                		<log expr="'SONG @@@@@@@@@@@@@@@@@@@  ='+song"/>
+					<if cond="unike_play &gt; len-1">
+							<assign name="song_listen" expr="'END'" />
+							<assign name="compare_time" expr="time_duration(song_begin)"/>
+							<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+							<assign name="contentlog" expr="contentlog+hash+songcheck[0]+'_'+songcheck[1]+hash+compare_time"></assign>
+							   <if cond="unike_play_preview=='17'">
+							      <script>unike_play_preview=0;</script>
+							   </if>
+							<script>
+								unike_play_preview=unike_play_preview+1;
+								songcheck=array1[unike_play_preview].split("_");
+								contentdir=songcheck[0];
+								song_cfg=songcheck[1]; 
+								song = array1[unike_play];
+							</script>
+							<goto next="#loadcliptoplay"/>
+						<elseif cond="unike_play &lt; 0" />
+							<assign name="unike_play" expr="len-1" />                                                                                     								
+						</if>
+			
+						<script>
+							songcheck=array[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = array[unike_play];
+							
+						</script>
+						<script>lastplay_index=unike_play-1;</script>
+						<if cond="unike_play=='0'">
+							<script>lastplay_index=unike_play;</script>
+						</if>
+
+					<assign name="drop_point" expr="'Clips_play'"/>
+		          </block>
+	   
+		   <field name="selectoption">
+
+				    <grammar mode="dtmf" root="start11" version="1.0">
+			   		<rule id="start11" scope="public">
+			   		  <one-of>
+					      <item>1</item>
+					      <item>2</item>	
+					      <item>3</item>
+					      <item>6</item>
+					      <item>7</item>
+					        <item>8</item>
+					    <item>9</item>
+				       	 </one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			     <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+  	   	      </prompt> 			 
+		  
+		      <filled>
+				 <if cond="selectoption=='1'">
+					 <script> unike_play=unike_play+1</script>											 
+					 <goto next="#StartToPlaysongs"/>					
+				 <elseif cond="selectoption=='2'"/>
+					 <script> unike_play=unike_play</script>					
+					 <goto next="#PauseAndPlayClip"/> 				 				 
+				 <elseif cond="selectoption=='3'"/>
+					 <script> unike_play=unike_play-1</script>					
+					 <goto next="#StartToPlaysongs"/> 					
+				 <elseif cond="selectoption=='6'"/>
+					 <goto next="#playoption"/>
+				 <elseif cond="selectoption=='7'"/>
+					 <goto next="#loadcliptoshortplay"/>
+				 <elseif cond="selectoption=='8'"/>
+					<goto next="Hungama_PKP_mainmenu.vxml"></goto>
+				 <elseif cond="selectoption=='9'"/>
+					<goto next="Hungama_PKP_Acntmngr.vxml"/>
+				 <else/>
+				 	<script> unike_play=unike_play+1</script>		
+				    	<goto next="#StartToPlaysongs"/> 		
+				 </if>				 
+			  </filled>				  
+				
+	  </field>
+
+			<noinput>	
+			        <script> 
+			      		unike_play=unike_play+1;
+			      	</script> 		
+			  	<goto next="#StartToPlaysongs"/> 	
+              		   </noinput>
+			 	  
+			<nomatch>   
+				        <prompt bargein="false">
+					      <audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>          
+			               </prompt>
+			               <clear/>
+				       <reprompt/>
+                        </nomatch>
+
+	   <catch event="error.badfetch">
+			<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+song+'/RIYA/'+song_cfg"/>
+				<if cond="selectoption=='3'">
+					<script>unike_play=unike_play-1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				<else/>
+					<script>unike_play=unike_play+1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				</if>
+		</catch>
+
+	  	
+	</form>
+
+	<form id="playoption">
+	           
+	        <field name="playclipOptionInfo">
+			<grammar mode="dtmf" root="start12" version="1.0">
+               			<rule id="start12" scope="public">
+                		 <one-of>				 
+					  <item>1</item>
+					  <item>2</item>	
+					  <item>3</item>
+					  <item>6</item>
+					  <item>7</item>
+					   <item>8</item>
+					    <item>9</item>
+				 </one-of>
+              		</rule>
+            		</grammar>
+			
+			<prompt bargein="true">
+			     <audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/keypad_options1.wav'"/>
+	   	        </prompt>
+		   	
+		<filled>
+			    <if cond="playclipOptionInfo=='1'">
+				     <script> unike_play=unike_play+1</script> 
+				     <goto next="#StartToPlaysongs"/>   
+			   <elseif cond="playclipOptionInfo=='2'"/>
+				     <script> unike_play=unike_play</script>
+				     <goto next="#PauseAndPlayClip"/>  
+			   <elseif cond="playclipOptionInfo=='3'"/>
+				     <script> unike_play=unike_play-1</script>
+				     <goto next="#StartToPlaysongs"/>
+		           <elseif cond="playclipOptionInfo=='6'"/>
+				     <goto next="#playoption"/>
+			   <elseif cond="playclipOptionInfo=='7'"/>
+		 	 	    <goto next="#loadcliptoshortplay"/>
+			    <elseif cond="playclipOptionInfo=='8'"/>
+			            <goto next="Hungama_PKP_mainmenu.vxml"></goto>
+			    <elseif cond="playclipOptionInfo=='9'"/>						
+						<goto next="Hungama_PKP_Acntmngr.vxml"/>
+                           </if>
+			    
+		</filled>		
+			
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+	</field>	  	 
+   </form>
+
+   <form id="PauseAndPlayClip">
+	               
+	        <field name="playclipOptionInfo">
+			<grammar mode="dtmf" root="start13" version="1.0">
+               			<rule id="start13" scope="public">
+                		 <one-of>				 
+					  <item>2</item>	
+				 </one-of>
+              		</rule>
+            		</grammar>
+			
+			<prompt bargein="true">
+			     <audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/play_story.wav'"/>
+	   	        </prompt>
+		   	
+		<filled>
+			    <if cond="playclipOptionInfo=='2'">
+				     <script> unike_play=unike_play</script> 
+				     <goto next="#StartToPlaysongs"/> 
+                         </if>
+			    
+		</filled>		
+			
+		<noinput>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/play_story.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/play_story.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+	</field>	  	 
+   </form>
+
+
+<form id="CelebTimeCheck">
+   <block>
+		<!--  pre and post event check start -->
+		<if cond="celeb_on=='1'" >
+			<!-- its chat date and neet to check time -->
+			<!-- Logic -->
+			<!-- if more than 30 mins left then play chat_today_tollfree.wav if less than 30 min and more than 0 min is left then play pre_event_engagement_tollfree.wav-->
+			<!-- if post the event call then play call_postevent.wav else take user to chat section -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_manchala.RIYA_CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=2'"/>
+	        	<script>
+	    			<![CDATA[
+		  			 for(j=0; j< out_string.length;  j++)
+					 {  	  
+			    		 	if(j==0)
+							celeb_on_time = out_string[j];
+			  		 }
+				]]>
+	        	</script>
+		
+			<if cond="ANI=='8885357481' || ANI=='9031952983' || ANI=='9210643979' || ANI=='9247672827' || ANI=='9900014500' || ANI=='8714516306' || ANI=='8109332603' || ANI=='9200337880' || ANI=='8446023664' || ANI=='8976730731' || ANI=='9223849262' || ANI=='7737635641' || ANI=='9042545391' || ANI=='8519819842' || ANI=='8546048758' || ANI=='8421022777'">
+				<assign name="celeb_on_time" expr="'1'"/>
+			</if>			
+
+			<if cond="celeb_on_time=='2'">
+				<prompt bargein="true">	
+                  			<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/chat_today_toll_5464669.wav'"/>
+				</prompt>
+				  	<goto next="#loadcliptoshortplay"/>
+				  
+			<elseif cond="celeb_on_time=='3'"/>
+				<prompt bargein="true">	
+                  			<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/pre_event_engagement_tollfree_5464669.wav'"/>
+				</prompt>
+				<goto next="#loadcliptoshortplay"/>
+				   
+			<elseif cond="celeb_on_time=='4'"/>
+				<prompt bargein="true">	
+                  			<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/call_postevent.wav'"/>
+				</prompt>
+				<goto next="#loadcliptoshortplay"/>
+
+			<else/>
+				<!--<goto next="#CallSentForCeleb"/>-->
+				<if cond="usr_status_deffered=='213'">
+					<!-- call hangup details stored -->
+					
+					<assign name="C_End" expr="start_time()"/>
+					<log expr="'song_listen isss'+song_listen"/>
+
+					<if cond="song_listen=='START'">
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="time_duration(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+						<assign name="contentlog" expr="contentlog+hash+songcheck[0]+'_'+songcheck[1]+hash+compare_time+hash"></assign>
+						<log expr="'contentlog isss'+contentlog"/>
+					</if>
+			
+						<log expr="'dbservlet isss'+dbservlet"/>
+			
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=-111&amp;INPARAM[2]='+DNIS"/>			
+			
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=54646&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+
+					<if cond="lastheard_content!='0'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_RIYA&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song_cfg+'&amp;INPARAM[2]='+lastplay_index+'&amp;INPARAM[3]=SET'"/>
+						<script>var res = out_string[0];</script>
+					</if>
+					
+					<script srcexpr="'http://192.168.100.226:8080/hungama/newselebhungama_dbinteraction?PROCEDURE=USER_TRF_RIYA&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=213&amp;INPARAM[2]='+realDNIS"/>
+
+					<submit expr="'http://192.168.100.226:8080/hungama/Newseleb/starclub-SelectLang.vxml'"/>				
+
+				<else/>
+					<log expr="'@@@@@@ usr_status_deffered is '+usr_status_deffered"/>
+					<script srcexpr="'http://192.168.100.226:8080/hungama/newselebhungama_dbinteraction?PROCEDURE=USER_TRF_RIYA&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=217&amp;INPARAM[2]='+realDNIS"/>
+					<goto next="ChatDeffered.vxml"/>
+					
+				</if>
+				 
+			</if>
+	
+		<else/>
+			<prompt bargein="true" timeout="0s">	
+					<audio expr="Riya_promptpath+lang+'/RIYA/'+LANG_DESCRIPTION+'/call_postevent_next.wav'"/>
+        	 		</prompt>
+			 <goto next="#loadcliptoshortplay"/>
+		</if>
+
+		
+	</block>
+  </form>
+
+</vxml>

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="devRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="DIGI_DEVO.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="movie_idx" expr="0"/>
+	<var name="playconfigcattemp" expr="''"/>
+	<script>
+		var cou=0;
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var dishes=new Array();	
+		var lang1=new Array();
+		var lang2=new Array();
+	</script>
+		
+  <form id="FETCHCATGORY">
+            <block>
+				<assign name="prompt_name" expr="'CAT_SELECTION'"/>
+				<assign name="HEARD" expr="'mainmenu'" />			
+				<if cond="playconfigcat=='hindu01'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/songconfig/'+playconfigcat+'_'+day+'.cfg'"/>
+				<else/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=dev/'+operator+'/songconfig/'+playconfigcat+'.cfg'"/>				
+				</if>
+				<script>
+						array1.length=0;
+						lang1.length=0;
+						lang2.length=0;
+						unike_play=0;
+				</script>					
+				<assign name="len" expr="favSongs.length" />
+				<assign name="new_len" expr="len" />
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+					 <![CDATA[
+						for(j=0; j<len ;  j++)
+						{  	  
+							array1[j] = favSongs[j];						   
+						}	
+					]]>
+				</script> 	       					       
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[0]  is	<value expr="array1[0]"/>    </log>
+				<log>Array[1]  is	<value expr="array1[1]"/>    </log>
+				<log>Array[2]  is	<value expr="array1[2]"/>    </log>
+				<log>Array[3]  is	<value expr="array1[3]"/>    </log>
+				<log>Array[4]  is	<value expr="array1[4]"/>    </log>
+				<log>Array[5]  is	<value expr="array1[5]"/>    </log>
+				<assign name="start_index_pre" expr="0"/>
+				<assign name="start_index" expr="0"/>
+	
+				<if cond="len &lt; 5 || len==5">
+					<assign name="end_index" expr="len"/>
+					<assign name="OTHER_RECIPES" expr="'FALSE'"/>
+				<else/>
+					<assign name="end_index" expr="5"/>
+					<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+				</if>	
+	
+				<if cond="start_index_1=='0' || end_index_1=='0' || len &lt; 5 || len==5">
+					<assign name="start_index_pre" expr="0"/>
+					<assign name="start_index" expr="0"/>
+				<else/>
+					<assign name="start_index" expr="start_index_1"/>
+					<assign name="end_index" expr="end_index_1"/>
+					<assign name="start_index_pre" expr="start_index-5"/>
+				</if>
+				<assign name="keypad_option" expr="'TRUE'"/>
+				<log>STATRING INDEX======	<value expr="start_index"/>    </log>
+				<log>PRE INDEX=====	<value expr="start_index_pre"/>    </log>
+				<log>END INDEX=====	<value expr="end_index"/>    </log>
+				<goto next="#playcatname" />
+	            </block>        	
+        </form>        
+    <form id="playcatname">
+		<block>
+			<log> circle is <value expr="circle"/></log>		
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<script>
+					 <![CDATA[
+						for(j=start_index; j<end_index ;  j++)
+						{  	  
+						dishes[i] = array1[j];
+						var temp = dishes[i].split("-");
+							lang1[i] = temp[0];
+							lang2[i] = temp[1];			
+							i++;													   
+						}	
+					]]>		
+				</script>									
+				<if cond="end_index ==len">
+					<assign name="OTHER_RECIPES" expr="'FALSE'"/>
+				</if>
+		</block>
+		<field name="choice">			
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  0  </item>	
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  #  </item>				
+								
+							</one-of>
+						</rule>
+				</grammar>			
+			<prompt bargein="true" timeout="1s" cond="(LANG_DESCRIPTION=='07') &amp;&amp; RELIGION=='hindu'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/cat0732.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf0.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="1s">
+				<foreach item="names" array="lang1">
+					<mark nameexpr="movie_idx++"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/select_'+names+'.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf'+movie_idx+'.wav'"/>
+				</foreach>													
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="OTHER_RECIPES=='TRUE'">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/select_othercat.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="1s" cond="keypad_option=='TRUE'">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/select_playlist.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf7.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/select_acmanager.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf9.wav'"/>
+			</prompt>						
+		<filled>
+				<log expr="'=====> dtmf is  ===== '+choice"/>
+				<if cond="choice=='6'">	
+					<if cond="OTHER_RECIPES=='FALSE'">
+					<throw event="nomatch"/>
+					</if>
+					<script>
+						start_index_pre = start_index;
+						start_index = end_index;
+						end_index = end_index+5;						
+					</script>
+
+					<if cond="len &lt; end_index || len==end_index">					
+						<script>
+							end_index = len;
+							lang1.length=0;
+							<!-- len = len-5; -->
+						</script>
+						<assign name="OTHER_RECIPES" expr="'FALSE'"/>						
+					</if>
+					<log expr="'start_index_pre='+start_index_pre"></log>
+					<log expr="'start_index='+start_index"></log>
+					<log expr="'end_index='+end_index"></log>
+					<log expr="'len='+len"></log>
+					<assign name="keypad_option" expr="'FALSE'"/>
+					<goto next="#playcatname"/>
+				</if>			
+						
+				<if cond="choice=='0'">
+					<if cond="(LANG_DESCRIPTION=='07') &amp;&amp; RELIGION=='hindu'">
+						 <assign name="OTHER_lang" expr="'TRUE'"/> 
+						 <assign name="cat" expr="'cat0732'"/>
+						 <assign name="playconfig" expr="cat"/>
+						 <assign name="HEARD" expr="playconfig" />
+						 <log expr="'CAT NAME IF NO PARTS ===='+cat"></log>
+						 <log expr="'CONFIG TO PLAY WITH NO PARTS ===='+playconfig"></log>
+						 <goto next="devoplaycontent.vxml"/>												
+					<else/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+						</prompt>
+					</if>
+					<log>playconfig @@@@@@@@  is	<value expr="playconfigcat"/>    </log>
+							<if cond="start_index=='0'">
+							    		<script>
+												var tem=playconfigcat.split("-");
+												playconfigcattemp=tem[0]; 
+										</script>
+										<log>playconfigcattemp @@@@@@@@  is	<value expr="playconfigcattemp"/>    </log>
+							    	<if cond="playconfigcattemp=='temple' ||playconfigcattemp=='majid' ||playconfigcattemp=='myth_stories'|| playconfigcattemp=='Church' || playconfigcattemp=='Monestries' || playconfigcattemp=='Gurudwara' ||playconfigcattemp=='templejain'">
+							    		<if cond="playconfigcattemp=='myth_stories'">
+											 <assign name="cat_flag" expr="'FALSE'"/>
+										<else/>
+											 <assign name="cat_flag" expr="'TRUE'"/>
+										</if>
+										<assign name="playconfigcat" expr="RELIGION+vinaycat"/>	
+										<goto next="DIGI_DEVO.vxml#FETCHCATGORY"/>
+
+								<else/>
+								  		<log>going to main menu @@@@@@@@  is	   </log>
+								  		<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>
+								  	</if>								  		
+								 </if>
+
+							<if cond="start_index=='5'">
+								<script>
+									end_index = start_index;
+									start_index_pre=0;
+									start_index = 0;
+								</script>
+								<assign name="OTHER_RECIPES" expr="'TRUE'"/> 
+								<assign name="keypad_option" expr="'TRUE'"/>										
+							<else/>	
+								<script>
+									end_index = start_index;
+									start_index_pre=0;
+									start_index = 5;	
+								</script>
+								<assign name="OTHER_RECIPES" expr="'TRUE'"/>
+								<assign name="keypad_option" expr="'FALSE'"/>
+
+								<log>Looping to other category @@@@@@@@=================@@@@@@@@@@   </log>
+							</if>
+								<log expr="'start_index_pre='+start_index_pre"></log>
+								<log expr="'start_index='+start_index"></log>
+								<log expr="'end_index='+end_index"></log>
+								<log expr="'len='+len"></log>
+								<goto next="#playcatname"/>
+				</if>
+				<if cond="choice=='8'">
+			  		<goto next="New_MainMenu.vxml#PlayLangAsPerReligion"/>		
+				</if>
+				<if cond="choice=='9'">		
+					<assign name="OTHER_lang" expr="'TRUE'"/>
+					<goto next="dev_ManageAccount.vxml"/>
+				</if>
+				<if cond="choice=='7'">			
+					<assign name="OTHER_lang" expr="'TRUE'"/>
+					<goto next="dev_PlayList.vxml"/>
+				</if>
+				<if cond="choice=='#'">
+					<assign name="OTHER_lang" expr="'TRUE'"/>
+					<goto next="dev_Alarm.vxml"/>
+				</if>				
+				<if cond="choice &lt; i+1">								
+					<script>choice=choice-1</script>
+					<if cond="end_index &lt; 6">
+						<script>unike_play=choice</script>
+					<else/>
+						<script>unike_play=start_index+choice</script> 
+					</if>
+					<if cond="lang2[choice]=='1'">							
+							 <assign name="playconfigcat" expr="lang1[choice]+'-'+vinaycat"/>							
+							 <log expr="'CAT NAME ===='+lang1[choice]"></log>	
+							 <log expr="'CONFIG ===='+playconfigcat"></log>
+							  <log expr="'CONFIG TO PLAY WITH PARTS ===='+playconfig"></log>
+							 <assign name="cat_flag" expr="'TRUE'"/>
+							 <goto next="#FETCHCATGORY"/>							 
+					 <else/>	
+						 	 <assign name="start_index_1" expr="start_index"/>
+						 	 <assign name="end_index_1" expr="end_index"/>
+							 <assign name="OTHER_lang" expr="'TRUE'"/> 
+							 <assign name="cat" expr="lang1[choice]"/>
+							 <assign name="playconfig" expr="cat"/>
+							 <assign name="HEARD" expr="playconfig" />
+							 <log expr="'CAT NAME IF NO PARTS ===='+cat"></log>
+							 <log expr="'CONFIG TO PLAY WITH NO PARTS ===='+playconfig"></log>
+							 <goto next="devoplaycontent.vxml"/>
+					</if>				
+				 <else/>
+					<throw event="nomatch"/>					
+				</if>				
+		</filled>
+
+		<noinput>
+				<log expr="'count of noinput==='+count"></log>
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/> 
+				</prompt>			
+			<script>
+			cou=cou+1;
+			</script>			
+			<if cond="cou &lt; '3'">
+					<goto next="#playcatname"/>
+			<else/>			
+					<if cond="lang2[0]=='1'">
+									 <assign name="playconfigcat" expr="lang1[0]+'-'+vinaycat"/>
+									 <goto next="#FETCHCATGORY"/>
+					<else/>
+									 <assign name="OTHER_lang" expr="'TRUE'"/> 
+									 <assign name="cat" expr="lang1[0]"/>
+									 <assign name="playconfig" expr="cat"/>
+									 <assign name="HEARD" expr="playconfig" />
+									 <goto next="devoplaycontent.vxml"/>
+					</if>			
+			</if>
+		</noinput>						
+		<nomatch>
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/> 
+				</prompt>				
+			<script>
+			cou=cou+1;
+			</script>			
+			<if cond="cou &lt; '3'">
+					<goto next="#playcatname"/>
+			<else/>			
+					<if cond="lang2[0]=='1'">
+							 <assign name="playconfigcat" expr="lang1[0]+'-'+vinaycat"/>
+							 <goto next="#FETCHCATGORY"/>
+					<else/>
+							 <assign name="OTHER_lang" expr="'TRUE'"/> 
+							 <assign name="cat" expr="lang1[0]"/>
+							 <assign name="playconfig" expr="cat"/>
+							 <assign name="HEARD" expr="playconfig" />
+							 <goto next="devoplaycontent.vxml"/>
+					</if>			
+			</if>						
+		</nomatch>	
+		</field>
+	</form>
+</vxml>

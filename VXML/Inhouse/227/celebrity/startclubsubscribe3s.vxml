@@ -1,0 +1,61 @@
+
+<vxml version="2.0" application="FMJRoot.vxml">      
+   
+   <property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+    
+   <var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="true"/>		
+   <var name="names"/> 
+   
+   <form id="hungamasubmnu3s">
+   
+       <block>
+         <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=30&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>	
+		 <assign name="usr_status" expr="'0'"/> 
+	   </block>	
+         
+		<!--<log expr="'welcome to the hungama subs main menu '"/> 
+        
+        <log expr="' Server ip is :' + IP"/>
+	    <log expr="'Ani IS : ' + ANI"/> 	
+		<log expr="'DNIS IS : ' + DNIS"/> 	-->		
+		 
+	    <field name="mnuopt">
+			 
+		   
+			<prompt bargein="true">	
+               <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'thank_sub.wav'"/>		
+            </prompt>
+		    			
+			
+			<filled>				     
+    			    <goto next="HUNGAMA_startclub_MainMnu_subs.vxml"/>				 			        
+			</filled>		
+			
+	        
+            <noinput>		
+			      <goto next="HUNGAMA_startclub_MainMnu_subs.vxml"/>		
+            </noinput>       
+            
+	
+	        <nomatch>
+			     <goto next="HUNGAMA_startclub_MainMnu_subs.vxml"/>					
+	        </nomatch>                
+    
+            	
+						
+	  </field>	 
+	  
+	 
+	  		
+    </form> 
+</vxml>
+
+
+
+   

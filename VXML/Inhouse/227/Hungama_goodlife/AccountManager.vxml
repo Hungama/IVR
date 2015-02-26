@@ -1,0 +1,784 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Rasoi_root.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd"> 	
+<meta name="AccountManager.vxml" content="" /> 	
+<meta name="Author" content="" /> 	
+<meta name="Date" content="" /> 	
+<meta name="Description" content="" /> 	
+<meta name="Support" content="" />	 
+
+	<var name="points" expr="''"/>
+	<var name="minbalance" expr="0"/>
+
+<form id="AcntOption">
+	<block>
+		<assign name="program_name" expr="'AccountManager'"/>
+	</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>								 
+								 <item>  8  </item>								 
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'welcome_acmanager.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'acmanager_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="timerflag=='1'">
+					<script> 
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+balance"/>
+					<if cond="balance &lt;= '0'">          
+						<goto next="Topup.vxml"/>
+					</if>
+				</if>				
+				<if cond="choice=='1'">
+					<goto next="SelectLang.vxml#New_User"/>
+				<elseif cond="choice=='2'"/>
+					<goto next="#points_start"></goto>
+				<elseif cond="choice=='3'"/>
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='8'"/>
+					<goto next="Rasoi_MainMenu.vxml"></goto>
+				</if>
+			</filled>
+		</field>
+		<noinput >
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+	</form>
+
+<form id="act_option_del">
+	
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  8  </item>								 
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'welcome_acmanager.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'acmanager_option_del.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="SelectLang.vxml#New_User"/>
+				<elseif cond="choice=='2'"/>									
+					<goto next="#Acntbalance"></goto>
+				<elseif cond="choice=='3'"/>
+					<goto next="#points_start"></goto>
+				<elseif cond="choice=='4'"/>
+					<goto next="#Topup"></goto>
+				<elseif cond="choice=='5'"/>
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='8'"/>
+					<goto next="Rasoi_MainMenu.vxml"></goto>
+				</if>
+			</filled>
+		</field>
+		<noinput >
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+	</form>
+
+	<form id="Topup">
+ 		<block> 
+			<if cond="timerflag=='1'">
+				<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;  						  
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+balance"/>
+			</if>			
+			<script>
+				minbalance=Math.floor(balance/60); 
+			</script>	   
+			<if cond="operator=='tatm'">		
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+minbalance+'&amp;INPARAM[2]='+DNIS"/>		
+			<elseif cond="operator=='tatc'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=indicom_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+minbalance+'&amp;INPARAM[2]='+DNIS"/> 
+			<elseif cond="operator=='relm'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+minbalance+'&amp;INPARAM[2]='+DNIS"/> 
+			<elseif cond="operator=='virm'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+minbalance+'&amp;INPARAM[2]='+DNIS"/> 
+			<elseif cond="operator=='unim'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=uninor_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+minbalance+'&amp;INPARAM[2]='+DNIS"/> 
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+minbalance+'&amp;INPARAM[2]='+DNIS"/> 
+			</if>				
+	   		<assign name="timerflag" expr="'0'"/>
+		</block>	 
+	    	<field name="mnuopt">
+			<grammar mode="dtmf" root="start" version="1.0">
+			       <rule id="start" scope="public">
+				 <one-of>				 
+						   <item>1</item>		
+						   <item>2</item>		
+				</one-of>
+			      </rule>
+			</grammar>	
+		   
+		<prompt bargein="true" timeout="2s">			  	
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'topup3.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'press_dtmf1.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'topup5.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'press_dtmf2.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'topup7.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'press_dtmf3.wav'"/>							
+		</prompt>					
+		<filled>
+			<if cond="mnuopt=='1'">		
+				<if cond="operator=='tatm'">		
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='tatc'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=indicom_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='relm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='virm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='unim'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=uninor_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/>
+				</if>	
+				<goto next="#topupstatus"/>
+
+			<elseif cond="mnuopt=='2'"/>
+				<if cond="operator=='tatm'">		
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='tatc'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=indicom_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='relm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='virm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='unim'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=uninor_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/>
+				</if>
+				<goto next="#topupstatus"/>
+
+			<elseif cond="mnuopt=='3'"/>
+				<if cond="operator=='tatm'">		
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='tatc'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=indicom_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='relm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='virm'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				<elseif cond="operator=='unim'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=uninor_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/>
+				</if>
+				<goto next="#topupstatus"/>
+			</if>
+			</filled>			
+				<noinput timeout="3s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+'nodtmf_m.wav'"/>
+         				<reprompt/> 
+             			</noinput>	        
+				<noinput count="3">		  
+					<goto next="end.vxml"/>
+				</noinput>	        
+				
+				<nomatch>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption_m.wav'"/>		
+				 <reprompt/>
+				</nomatch> 
+
+				 <nomatch count="3">
+					<goto next="end.vxml"/>
+				 </nomatch>				
+	  </field>	 
+	  		
+    </form> 
+    
+   <form id="topupstatus">
+   	<block>
+
+		
+   </block>
+   <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				   <item>1</item>		
+				   <item>2</item>		
+                </one-of>
+              </rule>
+            </grammar>		
+		   
+		<prompt bargein="false" timeout="2s">			  	
+					<audio expr="promptpath+LANG_DESCRIPTION+'/wait.wav'"/>
+		</prompt>			    			
+		<filled>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_rasoi.RASOI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator"/>
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					lang = out_string[j];
+				       if(j==2)
+					balance = out_string[j];
+				  }
+				]]>
+		</script>
+		<if cond="balance &gt; minbalance">
+				<script>
+					balance=balance*60;
+				</script>
+			<assign name="initial_balance" expr="start_time()"/>
+			<prompt bargein="false" timeout="2s">			  	
+					<audio expr="promptpath+LANG_DESCRIPTION+'/topup_request.wav'"/>
+			</prompt>
+			<goto next="Rasoi_MainMenu.vxml"/>
+		</if>	
+		
+				<goto next="#topupstatus"/>
+			</filled>	
+		
+			
+			<noinput>
+			   	 	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_rasoi.RASOI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator"/>
+						<script>
+						 <![CDATA[
+							    for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+									usr_status = out_string[j];
+								       if(j==1)
+									lang = out_string[j];
+								       if(j==2)
+									balance = out_string[j];
+				
+								  }
+				
+							]]>
+						</script>
+						<if cond="balance &gt; minbalance">
+								<script>
+									balance=balance*60;
+								</script>
+							<assign name="initial_balance" expr="start_time()"/>
+				<prompt bargein="false" timeout="2s">			  	
+					<audio expr="promptpath+LANG_DESCRIPTION+'/topup_request.wav'"/>
+				</prompt>
+							<goto next="Rasoi_MainMenu.vxml"/>
+						</if>	
+		
+				<reprompt/>
+				
+             </noinput>
+	        
+             <noinput count="3">		  
+       			<prompt bargein="false">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/topup_sorry.wav'"/>
+				</prompt>
+			<goto next="end.vxml"/>				
+              </noinput>
+	        
+             <nomatch>
+					   	 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_rasoi.RASOI_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator"/>
+							<script>
+							 <![CDATA[
+								    for(j=0; j< out_string.length;  j++)
+									  {  	  
+									       if(j==0)
+										usr_status = out_string[j];
+									       if(j==1)
+										lang = out_string[j];
+									       if(j==2)
+										balance = out_string[j];
+					
+									  }
+					
+								]]>
+							</script>
+							<if cond="balance &gt; minbalance">
+							<assign name="timerflag" expr="'1'"/>
+									<script>
+									balance=balance*60;
+									curbalance=balance;
+									</script>
+								<assign name="initial_balance" expr="start_time()"/>
+						<prompt bargein="false" timeout="2s">			  	
+							<audio expr="promptpath+LANG_DESCRIPTION+'/topup_request.wav'"/>
+						</prompt>
+								<goto next="Rasoi_MainMenu.vxml"/>
+							</if>	
+							
+				<reprompt/>
+             </nomatch> 
+	
+	         <nomatch count="3">
+       		<prompt bargein="false">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/topup_sorry.wav'"/>
+			</prompt>
+			<goto next="end.vxml"/>
+	         </nomatch> 		 
+		
+	  </field>	 
+ </form>
+
+<form id="points_start">
+<block>
+
+<script>
+out_string.length=0;
+</script>
+
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_rasoi.GET_POINTS&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+		<script>
+					points = out_string[0];
+					index=0;
+		</script>
+		<if cond="points=='-1'">
+		<goto next="SelectLang.vxml"/>
+		<else/>
+
+		<goto next="#point"/>
+		</if>
+</block>	
+	
+</form>
+<form id="point">
+  <block>
+                 <script>	
+   				     totalbalminute=points;	
+				</script>    	
+			    
+			    <prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+'reward_balanceis.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+'g_'+totalbalminute+'.wav'"/>
+					<audio expr="promptpath+LANG_DESCRIPTION+'/'+'points.wav'"/>
+				</prompt> 					 
+			  	
+			  	<goto next="Rasoi_MainMenu.vxml"/>
+				  				       
+ 		
+	</block>
+	</form>
+  
+  
+  <form id="AcntUnsubscription">
+         
+  
+		<block>
+		<log expr="'welcome to the hungama un sub category main menu '"/>
+        
+        <log expr="' Server ip is :' + IP"/>
+	    <log expr="'Ani IS : ' + ANI"/> 	
+		<log expr="'DNIS IS : ' + DNIS"/> 			
+		 </block>
+	    <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               			<rule id="start" scope="public">
+				<one-of>				 
+					  <item>1</item>
+					  <item>2</item>	
+				</one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true" cond="DNIS!='55001000'" timeout="3s">	
+				 <audio expr="promptpath+LANG_DESCRIPTION+'/'+'acmanager_unsub_confirm.wav'"/>		
+			</prompt>
+			<prompt bargein="true" cond="DNIS=='55001000'" timeout="3s">	
+				 <audio expr="promptpath+LANG_DESCRIPTION+'/'+'acmanager_unsub_confirm_000.wav'"/>		
+			</prompt>
+			
+			<filled>
+				<if cond="mnuopt=='1'">
+				     <clear namelist="mnuopt"/>
+					<goto next="#double_conf"/>								
+				<elseif cond="mnuopt=='2'"/>
+					<if cond="DNIS=='55001000'">
+						<throw event="nomatch"/>
+					<else/>	  							
+						<goto next="Rasoi_MainMenu.vxml"></goto>
+					</if>
+				</if>
+			</filled>
+			
+			 <noinput timeout="3s">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/'+'waiting_response.wav'"/>                
+			<reprompt/> 
+	             </noinput>
+	        
+   	        
+             <nomatch>
+                <audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+                <reprompt/>
+             </nomatch> 
+	
+	
+						
+	  </field>	 
+	  		
+    </form> 
+   
+<form id="Acntbalance">
+	<block>	
+		<if cond="timerflag=='1'">
+			<script> 
+				total_used_bal=rim(start_BalenceMinute);
+				balance=balance-total_used_bal;  						  
+			</script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+balance"/>
+		</if> 
+		<script>
+			var	curbalance_new=Math.floor(balance/60); 
+		</script>
+		<prompt bargein="true" timeout="1s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'account_balanceis.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'g_'+curbalance_new+'.wav'"/>
+			<audio expr="promptpath+LANG_DESCRIPTION+'/'+'minutes.wav'"/>
+		</prompt>		-->		
+		<script> 
+			var ac_balance=Math.floor(curbalance/60); 
+			var totalbalminute=ac_balance;	
+			var temp_totalbalminute=Math.floor(totalbalminute/100);
+			var temp1_totalbalminute=totalbalminute-temp_totalbalminute*100;
+		</script>
+			<if cond="totalbalminute &gt; 100">
+				<prompt bargein="true" timeout="0s">
+					 <audio expr="promptpath+LANG_DESCRIPTION+'/account_balanceis.wav'"></audio>				
+	        	<!--<audio expr="promptpath+LANG_DESCRIPTION+version+'/'+temp_totalbalminute+'.wav'"/>-->
+					<audio expr="promptpath+LANG_DESCRIPTION+'/g_1.wav'"/>
+		 			<audio expr="promptpath+LANG_DESCRIPTION+'/g_100.wav'"/>
+					 <audio expr="promptpath+LANG_DESCRIPTION+'/g_'+temp1_totalbalminute+'.wav'"/>
+	        	 	<audio expr="promptpath+LANG_DESCRIPTION+'/minutes.wav'"></audio>
+	     		</prompt>
+			<else/>
+	
+	<!--<script>
+		totalbalminute=Math.floor(balance/60);
+	</script>-->
+	
+			<prompt bargein="true" timeout="0s">	
+					<audio expr="promptpath+LANG_DESCRIPTION+'/account_balanceis.wav'"/>		  	
+		          <audio expr="promptpath+LANG_DESCRIPTION+'/g_'+totalbalminute+'.wav'"/>	
+				<audio expr="promptpath+LANG_DESCRIPTION+'/minutes.wav'"/>
+            </prompt>
+		</if>
+	<goto next="Rasoi_MainMenu.vxml"/>
+</block>	
+
+	
+</form>
+   
+   
+ <form id="double_conf">
+      <field name="mnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>
+				  <item>2</item>	
+				</one-of>
+              </rule>
+            </grammar>
+			
+		   
+			
+		    	<prompt bargein="true" cond="DNIS!='55001000'" timeout="3s">	
+				 <audio expr="promptpath+LANG_DESCRIPTION+'/'+'continue_prompt.wav'"/>		
+			</prompt>
+			<prompt bargein="true" cond="DNIS=='55001000'" timeout="3s">	
+				 <audio expr="promptpath+LANG_DESCRIPTION+'/'+'continue_prompt_000.wav'"/>		
+			</prompt>
+		
+			
+			<filled>
+				<if cond="mnuopt=='1'">			
+					<if cond="operator=='tatm'">		
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<elseif cond="operator=='tatc'"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=indicom_hungama.JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<elseif cond="operator=='relm'"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_hungama.JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<elseif cond="operator=='virm'"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<elseif cond="operator=='unim'"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=uninor_hungama.JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<else/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=docomo_hungama.JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					</if>					 
+				    	<prompt bargein="true" timeout="3s">	
+						<audio expr="promptpath+LANG_DESCRIPTION+'/'+'thanks_nosub.wav'"/>		
+				    	</prompt>	
+			 	   	<throw event="connection.disconnect.hangup"/>			
+			   	<elseif cond="mnuopt=='2'"/>				    							
+					<goto next="Rasoi_MainMenu.vxml"></goto>		
+			   	</if>
+		   
+		   </filled>
+			
+			 <noinput timeout="3s">
+			     <audio expr="promptpath+LANG_DESCRIPTION+'/'+'waiting_response.wav'"/>                
+			<reprompt/> 
+	             </noinput>
+	        
+   	        
+             <nomatch>
+                <audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+                <reprompt/>
+             </nomatch> 	
+						
+	  </field>	 	  		
+    </form>
+
+<form id="AcntLanguage">
+<field name="langopt">
+			  <grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>						
+						<item>1</item>
+						<item>2</item>
+											
+					</one-of>
+				</rule>
+			  </grammar>
+				
+														   		
+				<prompt bargein="true" timeout="3s"><audio expr="promptpath+'ENG/lang_option_apd.wav'"/></prompt>
+				<prompt bargein="true" timeout="3s"><audio expr="promptpath+'ENG/lang01.wav'"/></prompt>
+				<prompt bargein="true" timeout="3s"><audio expr="promptpath+'ENG/press_dtmf1.wav'"/></prompt>
+				<prompt bargein="true" timeout="3s"><audio expr="promptpath+'ENG/lang02.wav'"/></prompt>										   		
+				<prompt bargein="true" timeout="3s"><audio expr="promptpath+'ENG/press_dtmf1.wav'"/></prompt>        				
+									   		
+				
+				<filled>
+				      <if cond="langopt=='1'">
+					     <assign name="lang" expr="'01'"/> 		
+					     <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+				      <elseif cond="langopt=='2'"/>
+				          <assign name="lang" expr="'02'"/> 		
+				          <assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+				    	     				  				    
+				      </if>
+				      <log expr="'language selected option:'+langopt+' is :'+lang"/>
+				    
+				      <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_rasoi.RASOI_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>
+						
+						<goto next="Rasoi_MainMenu.vxml"></goto> 	
+				</filled>
+					
+			    <nomatch>
+					<prompt>						
+						<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>		 
+			   		</prompt>
+			   		<reprompt></reprompt>
+		   	    </nomatch>		
+		   		
+				
+				<noinput>
+					<prompt>						
+						<audio expr="promptpath+LANG_DESCRIPTION+'/waiting_response.wav'"/>		 
+			   		</prompt>
+					<reprompt></reprompt>
+				</noinput>
+				
+					
+		</field>
+</form>
+<form id="act_option_sat1_del">
+	
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+																 
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'welcome_acmanager.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'lang.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'topup_store.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'unsubscribe.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf3.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="SelectLang.vxml#New_User"/>
+				<elseif cond="choice=='2'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_rasoi.STOREATONE_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]='+DNIS"/>
+					 
+
+					 <goto next="playContentstoreatone.vxml#topupstatus"/>
+				<elseif cond="choice=='3'"/>
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='8'"/>
+					<goto next="Rasoi_MainMenu.vxml"></goto>
+				</if>
+			</filled>
+		</field>
+		<noinput >
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2" >
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'waiting_response.wav'"/>
+			</prompt>
+			
+				<goto next="playContentstoreatone.vxml"></goto>
+
+			
+		</noinput>
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			</prompt>
+			<goto next="playContentstoreatone.vxml"></goto>
+		</nomatch>
+
+	</form>
+<form id="act_option_sat1">
+	
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+															 
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'welcome_acmanager.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'lang.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'unsubscribe.wav'"/>
+				<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf2.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="SelectLang.vxml#New_User"/>
+				<elseif cond="choice=='2'"/>
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='8'"/>
+					<goto next="Rasoi_MainMenu.vxml"></goto>
+				</if>
+			</filled>
+		</field>
+		<noinput >
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2" >
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'waiting_response.wav'"/>
+			</prompt>
+			
+				<goto next="playContentstoreatone.vxml"></goto>
+
+			
+		</noinput>
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+
+		<nomatch count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>
+			</prompt>
+			<goto next="playContentstoreatone.vxml"></goto>
+		</nomatch>
+	</form>  
+</vxml>

@@ -1,0 +1,677 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_CHATUSRPROFILE.vxml" content="" />
+xmlns="http://www.w3.org/2001/vxml"
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="conn2" expr="''"/>
+<var name="TXFLAG" expr="'3'"/>
+<var name="conidnewvin" expr="'CONFERENCE1'"/>
+<var name="conn1" expr="''"/>
+<var name="j" expr="0"/>
+<var name="user_value" expr="''"/>
+<var name="in_out_user" expr="''"/>
+<var name="user_value_other" expr="''"/>
+<var name="CheckCelebStatus" expr="''"/>
+<var name="connection_id" expr="'callleg_dummy'"/>
+<var name="celeb_rec_fcount" expr="0"/>
+<var name="celeb_rec_fcount_check" expr="0"/>
+<var name="celeb_status" expr="''"/>
+<var name="chat_status" expr="''"/>
+<var name="celeb_on_time" expr="0"/>
+<var name="ALREADY_USER" expr="'0'"/>
+<var name="MyError" expr="0"/>
+<var name="uninorretry_counter" expr="1"/>
+<var name="MyErrorMsg" expr="0"/>
+<var name="myfileplay" expr="0"/>
+<var name="RECORD_DUR" expr="0"/>
+<var name="retry_counter" expr="0"/>
+<var name="DIFF_DUR" expr="0"/>
+	<property name="compatibility.audio.badfetch" value="ocmpbre32"></property>
+
+	<script>
+		var out_string=new Object();
+		
+	</script>
+<catch event="JoinCelebAsNextCallerSignal">
+	<send event="timerEnd"/>
+	 <goto next="Hungama_GLC_NextJoin.vxml"/>
+</catch>
+<catch event="error">
+		<assign name="MyError" expr="_event"  />
+		<assign name="MyErrorMsg" expr="_message.replace(/\s+/g,'-')"/>
+		<log>MY ERROR VALUES:<value expr="MyError"/></log>
+
+		<goto next="Hungama_GLC_celebspecial.vxml"/>
+	</catch>
+
+<form id="fetchingg">
+<block>
+	<assign name="Usage_time" expr="rim(section_begin)"/>
+	<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+	<assign name="Section_Name" expr="'Chat_queue'"/>
+	<assign name="section_begin" expr="starttime()"/>
+	
+	
+  </block>
+	<field name="user_call12">
+			<grammar mode="dtmf" root="start1113" version="1.0">
+				<rule id="start1113" scope="public">
+				<one-of>     
+					<item>1</item>                   
+				</one-of>
+				</rule>
+			</grammar>
+	
+				<prompt bargein="false" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/inqueue.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/disclaimer_pre_chat.wav'"/>
+				</prompt>
+				
+				
+			<filled>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+				<log> before fetch</log>
+				<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+					   {  	  
+					       if(j==0)
+							celeb_rec_fcount = out_string[j];
+					       if(j==1)
+							celeb_status = out_string[j];
+					       if(j==2)
+							chat_status = out_string[j];
+
+					  }
+					]]>
+				</script>
+				<script>celeb_rec_fcount=parseInt(celeb_rec_fcount);</script>
+				<script>celeb_rec_fcount=celeb_rec_fcount-2;</script>
+				
+				
+				 <log> after prompt   checking  <value expr="celeb_rec_fcount"/> </log>
+				<goto next="#Main"/>
+			</filled>
+	
+			<noinput>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+					<log> before fetch</log>
+					<script>
+						<![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+						   {  	  
+						       if(j==0)
+								celeb_rec_fcount = out_string[j];
+						       if(j==1)
+								celeb_status = out_string[j];
+						       if(j==2)
+								chat_status = out_string[j];
+
+						  }
+						]]>
+					</script>
+					<script>celeb_rec_fcount=parseInt(celeb_rec_fcount);</script>
+					<script>celeb_rec_fcount=celeb_rec_fcount-2;</script>
+					 <log> after prompt   checking  <value expr="celeb_rec_fcount"/> </log>
+				<goto next="#Main"/>
+			</noinput>
+	
+			<nomatch>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+					<log> before fetch</log>
+					<script>
+						<![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+						   {  	  
+						       if(j==0)
+								celeb_rec_fcount = out_string[j];
+						       if(j==1)
+								celeb_status = out_string[j];
+						       if(j==2)
+								chat_status = out_string[j];
+
+						  }
+						]]>
+					</script>
+					<script>celeb_rec_fcount=parseInt(celeb_rec_fcount);</script>
+				<script>celeb_rec_fcount=celeb_rec_fcount-2;</script>
+				 <log> after prompt   checking  <value expr="celeb_rec_fcount"/> </log>
+				<goto next="#Main"/>
+			</nomatch>
+	</field>
+
+
+</form>
+
+
+<form id="ComingFormChatRoom">
+   <block>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+	<log> before fetch</log>
+	<script>
+		<![CDATA[
+		   for(j=0; j< out_string.length;  j++)
+		   {  	  
+		       if(j==0)
+				celeb_rec_fcount = out_string[j];
+		       if(j==1)
+				celeb_status = out_string[j];
+		       if(j==2)
+				chat_status = out_string[j];
+
+		  }
+		]]>
+	</script>
+	
+		
+	<if cond="celeb_status=='FALSE'">
+		<goto next="Hungama_GLC_celebspecial.vxml"/>
+	</if>
+	
+	<prompt bargein="false" timeout="1s">
+		<audio expr="promptpath+'/'+lang+'/inqueue.wav'"/>
+	</prompt>
+
+	<script>celeb_rec_fcount=parseInt(celeb_rec_fcount);</script>
+	<script>celeb_rec_fcount=celeb_rec_fcount-1;</script>
+	<goto next="#Main_before"/>
+  </block>
+</form>
+
+
+
+<form id="Main_before">
+   <block>
+   	<log> please tell me tne ANI @@@ <value expr="ANI"/> </log>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_STATUS&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]=1&amp;INPARAM[3]=1'"/>
+	<log> before fetch</log>
+	<script>
+		<![CDATA[
+		   for(j=0; j< out_string.length;  j++)
+		   {  	  
+		       if(j==0)
+				user_value = out_string[j];
+
+		  }
+		]]>
+	</script>
+	<log> after <value expr="user_value"/> </log>
+	<assign name="user_value" expr="out_string[0]"/>
+
+	<if cond="user_value=='TRUE'">
+	     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_CHAT_DESIDE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+connection_id+'&amp;INPARAM[2]=2'"/>
+		<script>
+			<![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+			   {  	  
+			       if(j==0)
+					in_out_user = out_string[j];
+
+			  }
+			]]>
+	      </script>
+	      <log> after <value expr="in_out_user"/> </log>
+	      
+	      <if cond="in_out_user=='IN'">	 
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_STATUS&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]=FALSE&amp;INPARAM[3]=2'"/>
+			 <script>
+				<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+					   {  	  
+					       if(j==0)
+							user_value_other = out_string[j];
+
+					  }
+				]]>
+			 </script>
+			 <log> user set status as false for other </log>
+
+			
+
+			 <goto next="#TransferNextCaller"/>
+
+	      <else/>
+			<script>celeb_rec_fcount=celeb_rec_fcount+1;</script>
+			<goto next="#Main"/>
+	       </if>
+
+	<else/>
+	<!--***************21 JULY *********************-->
+		 <!--<script>celeb_rec_fcount=celeb_rec_fcount+1;</script>-->
+		 <goto next="#Main"/>
+	</if>
+  </block>	
+ 
+</form>
+<form id="catch_counter">
+	<block>
+		<script>
+		retry_counter=retry_counter+1;
+		</script>
+		<prompt bargein="false" timeout="0s">
+			<audio expr="promptpath+'/'+lang+'/blank2.wav'"/>
+		</prompt>
+	</block>
+    <field name="wait_input13">
+	<grammar mode="dtmf" root="start135" version="1.0">
+		<rule id="start135" scope="public">
+		<one-of>     
+			<item>8</item>                   
+		</one-of>
+		</rule>
+	</grammar>
+
+	       <prompt bargein="false" timeout="0s">
+			<audio expr="promptpath+'/'+lang+'/blank2.wav'"/>
+		</prompt>
+	<filled>
+		<goto next="#Main"/>
+
+	</filled>
+
+	<noinput>
+		 <goto next="#Main"/>
+	</noinput>
+
+	<nomatch>
+		 <goto next="#Main"/>
+	</nomatch>
+</field>
+
+
+
+</form>
+
+<form id="catch_main_incre">
+<block>
+	<script>
+			retry_counter=0;
+			celeb_rec_fcount=celeb_rec_fcount+1;
+			myfileplay=myfileplay+1;
+	</script>
+	
+	<goto next="#Main"/>
+</block>
+
+</form>
+<form id="catch_counter_lcd">
+	<block>
+	<script>
+		retry_counter=0;
+	</script>
+
+	</block>
+    <field name="wait_input15">
+	<grammar mode="dtmf" root="start136" version="1.0">
+		<rule id="start136" scope="public">
+		<one-of>     
+			<item>8</item>                   
+		</one-of>
+		</rule>
+	</grammar>
+	 <prompt bargein="true" timeout="0s">
+		<audio expr="promptpath+'/'+lang+'/wait_music.wav'"/>
+	</prompt>
+	
+	<filled>
+		<goto next="#Main"/>
+
+	</filled>
+
+	<noinput>
+		 <goto next="#Main"/>
+	</noinput>
+
+	<nomatch>
+		 <goto next="#Main"/>
+	</nomatch>
+</field>
+</form>
+
+<form id="Main">
+<catch event="error.badfetch">
+	<if cond="retry_counter=='3'">
+		<goto next="#catch_counter_lcd"/>
+	<else/>
+		 <goto next="#catch_counter"/>
+	</if>
+</catch>
+<block>
+		<if cond="myfileplay=='2'">
+			<script>
+				myfileplay=0;
+			</script>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+				<log> cll will not go black if play file count value will exeed the celeb_rec_fcount value</log>
+				<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+					   {  	  
+					       if(j==0)
+							celeb_rec_fcount_check = out_string[j];
+					  }
+					]]>
+			</script>
+				<if cond="celeb_rec_fcount_check &lt; celeb_rec_fcount">
+						
+					<log> INNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN  celeb_rec_fcount <value expr="celeb_rec_fcount"/> </log>
+					 <log> INNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN  celeb_rec_fcount_check<value expr="celeb_rec_fcount_check"/> </log>
+					 <goto next="Hungama_GLC_celebspecial.vxml"/>
+					 
+				</if>
+			
+		</if>
+		
+<!--****************************************************************RECORDING GET SIZE*******************************************************************8-->
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_record_submit&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=celeb_record_'+celeb_rec_fcount+'.wav&amp;INPARAM[1]=1&amp;INPARAM[2]=GET'"/>
+	<log> before fetch</log>
+<script>
+	<![CDATA[
+	   for(j=0; j< out_string.length;  j++)
+	   {  	  
+	       if(j==0)
+			RECORD_DUR = out_string[j];
+		if(j==1)
+			DIFF_DUR = out_string[j];
+	  }
+	]]>
+</script>
+<log> ################RECORD_DUR <value expr="RECORD_DUR"/> </log>
+<log> ################DIFF_DUR <value expr="DIFF_DUR"/> </log>
+
+<!--**************************************************************************************************************************************************-->
+		
+	
+	</block>
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start1" version="1.0">
+			<rule id="start1" scope="public">
+			<one-of>     
+				<item>8</item>                   
+			</one-of>
+			</rule>
+		</grammar>
+
+		<prompt bargein="false" timeout="0s">
+			<audio expr="'http://192.168.100.226:8080/hungama/RecordChat/celeb_record_'+celeb_rec_fcount+'.wav'"/>
+		</prompt>
+		<filled>
+			<script>
+				myfileplay=myfileplay+1;;
+			</script>
+			<if cond="wait_input=='8'">
+				<goto next="Hungama_GLC_RootMenu.vxml"/>
+			<else/>
+				<goto next="#Main_next"/>
+			</if>
+		</filled>
+
+		<noinput>
+			<script>
+				myfileplay=myfileplay+1;;
+			</script>
+			<goto next="#Main_next"/>
+		</noinput>
+
+		<nomatch>
+			<script>
+				myfileplay=myfileplay+1;;
+			</script>
+			<goto next="#Main_next"/>
+		</nomatch>
+		
+ 
+	</field>
+	
+</form>
+
+
+<form id="Main_new">
+<block>
+<script>
+	myfileplay=2;
+</script>
+	<goto next="#Main"/>
+</block>
+
+</form>
+<form id="Main_next">
+   <block>
+   		
+   	<if cond="DIFF_DUR &lt;'100'">	
+		 <script>celeb_rec_fcount=celeb_rec_fcount+1;</script>
+		 <goto next="#Main"/>
+	<else/>
+	
+		 <goto next="#play_blank"/>
+	</if>
+	
+  </block>
+  
+  </form>
+
+<form id="play_blank">
+<block>
+	<if cond="DIFF_DUR !='NOK'">
+		<send event="timerStart" namelist="DIFF_DUR"/>
+	 	<script>celeb_rec_fcount=celeb_rec_fcount+1;</script>
+	 </if>
+		
+</block>
+<field name="wait_input12">
+		<grammar mode="dtmf" root="start134" version="1.0">
+			<rule id="start134" scope="public">
+			<one-of>     
+				<item>8</item>                   
+			</one-of>
+			</rule>
+		</grammar>
+
+		        <prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/GLC_blank.wav'"/>
+			</prompt>
+		<filled>
+			
+			<if cond="wait_input12=='8'">
+				<goto next="Hungama_GLC_RootMenu.vxml"/>
+			<else/>
+				<goto next="#Main"/>
+			</if>
+		</filled>
+
+		<noinput>
+			 <goto next="#Main"/>
+		</noinput>
+
+		<nomatch>
+			 <goto next="#Main"/>
+		</nomatch>
+	<catch event="timerUP">
+		<log> received event <value expr="_event"/></log>
+		<goto next="#Main"/>
+	</catch>	
+ 
+	</field>
+	
+</form>
+
+<!--*************************************************transfercallersection******************************************-->
+<form id="TransferNextCaller">
+	<block>
+	<!--*********addd new send event *********-->
+		<send event="setUserANI" namelist="ANI"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_ALREADY_CHAT_USER&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+	<script>
+	<![CDATA[
+	   for(j=0; j< out_string.length;  j++)
+	   {  	  
+	       if(j==0)
+			ALREADY_USER = out_string[j];
+  	   }
+	]]>
+	</script>
+
+	<if cond="ALREADY_USER=='1'">
+		<log> ALREADY_USER </log>
+		<goto next="#user_call_second"/>
+	</if>
+	<log> FIRST TIME USER </log>
+	<goto next="#user_call_first"/>
+
+	</block>
+</form>
+
+<form id="user_call_first">
+		
+	<field name="user_call">
+		<grammar mode="dtmf" root="start111" version="1.0">
+			<rule id="start111" scope="public">
+			<one-of>     
+				<item>1</item>                   
+			</one-of>
+			</rule>
+		</grammar>
+
+		<prompt bargein="false" timeout="1s">
+			<audio expr="promptpath+'/'+lang+'/next_caller.wav'"/>
+		</prompt>
+		<filled>
+			<goto next="#vinaytwo"/>
+		</filled>
+
+		<noinput>
+			<goto next="#vinaytwo"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#vinaytwo"/>
+		</nomatch>
+	</field>		
+</form>
+
+<form id="user_call_second">
+		
+	<field name="user_call">
+		<grammar mode="dtmf" root="start112" version="1.0">
+			<rule id="start112" scope="public">
+			<one-of>     
+				<item>1</item>                   
+			</one-of>
+			</rule>
+		</grammar>
+
+		<prompt bargein="false" timeout="1s">
+			<audio expr="promptpath+'/'+lang+'/next_caller.wav'"/>
+		</prompt>
+		<filled>
+			<goto next="#vinaytwo"/>
+		</filled>
+
+		<noinput>
+			<goto next="#vinaytwo"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#vinaytwo"/>
+		</nomatch>
+	</field>		
+</form>
+<!--****************************************************************************************************************-->
+<form id="vinaytwo">
+	<block>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_STATUS&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]=1&amp;INPARAM[3]=CELSTATUS'"/>
+	<script>
+		<![CDATA[
+		   for(j=0; j< out_string.length;  j++)
+		   {  	  
+		       if(j==0)
+				CheckCelebStatus = out_string[j];
+
+		  }
+		]]>
+	</script>
+	<log> after <value expr="CheckCelebStatus"/> </log>
+	<assign name="CheckCelebStatus " expr="out_string[0]"/>
+	<if cond="CheckCelebStatus=='FALSE'">
+		<!-- <prompt bargein="false" timeout="1s">
+		 	<audio expr="promptpath+'/'+lang+'/next_caller.wav'"/>
+		</prompt>-->
+		 <goto next="Hungama_GLC_RootMenu.vxml"/>
+	<else/>
+		<!--*********************************************changes for comment servlet ***************************-->
+		 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]=CHAT_CURRENT_USER'"/>
+		 <goto next="#SendINConf"/>
+	</if>
+	</block>
+</form>
+
+<form id="SendINConf">
+	<block>
+		<assign name="Usage_time" expr="rim(section_begin)"/>
+		<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+		<assign name="Section_Name" expr="'Chat_active'"/>
+		<assign name="section_begin" expr="starttime()"/>
+		<assign name="conn1" expr="session.connection.ccxml.connectionid"/>
+		<log> after assignment <value expr="conn1"/> </log>
+		<send event="setUserANI" namelist="conn1 ANI"/>
+			<assign name="C_End" expr="start_time()"/>
+			<assign name="Usage_time" expr="rim(section_begin)"/>
+			<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+
+				<if cond="CALCULATE_TIME=='SET'">
+					<script>
+					  total_used_bal=rim(start_BalenceMinute);
+					  balance=balance-total_used_bal;					  
+					</script>
+				</if>
+
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+balance"/>
+			</if>	
+			<if cond="balance &lt; 0">
+					<script> balance=0;</script> 
+				</if>
+			<if cond="timerflag=='1'">
+				<script>balance=Math.floor(balance/60);</script> 
+				<if cond="balance &lt; 0">
+					<script> balance=0;</script> 
+				</if>
+			</if>
+				<if cond="CATEGORY=='NONLIVE'">
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=HUL_RECEIVE_OBD_NONLIVE&amp;INTOKEN=6&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3&amp;INPARAM[2]='+compare_time+'&amp;INPARAM[3]=NONLIVE_APP&amp;INPARAM[4]='+C_Start+'&amp;INPARAM[5]=NA'"/>		
+				<else/>
+					<assign name="compare_time_live" expr="rim(song_begin_live)"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=HUL_RECEIVE_OBD_NEW&amp;INTOKEN=6&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]='+compare_time_live+'&amp;INPARAM[3]=LIVE_APP&amp;INPARAM[4]='+C_Start+'&amp;INPARAM[5]=NA'"/>		
+				</if>
+					<if cond="(HEARD!='0' || HEARD!='') &amp;&amp; CATEGORY=='GLC_RADIO_MENU'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_USERPROFILE&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]='+HEARD_Song+'&amp;INPARAM[3]='+HEARD_Folder+'&amp;INPARAM[4]=SET'"/>
+						<script>
+							var res = out_string[0];
+						</script>
+					</if>
+ <!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=GLC&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>-->
+<script srcexpr="'http://'+IP+'/hungama/Hungama_ExitLog?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=GLC&amp;subflag='+usr_status+'&amp;contentlog='+contentlog+'&amp;Usagelog='+Usagelog"/>
+	</block> 
+	
+	<transfer name="mytransfer"  dest="sip:2345@192.168.4.224" bridge="true" connecttimeout="2000s" namelist="conn1 ANI TXFLAG"> 
+	<filled>
+		<log> transfer done now</log>
+		<clear namelist="mytransfer"/>
+	</filled>
+	</transfer>
+</form>
+
+</vxml>

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="NineXMPortalRoot.vxml"
+
+xmlns="http://www.w3.org/2001/vxml"
+
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<meta name="Topup.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+
+<var name="len" expr="''"/>	
+<var name="Digit1st" expr="0"/>
+<var name="Digit2nd" expr="0"/>
+<var name="Digit3rd" expr="0"/>
+<var name="Digit4th" expr="0"/>
+<var name="PlayOnce" expr="true"/>		
+<var name="names"/> 
+<var name="tottopup" expr="''"/>	
+<var name="topup11" expr="''"/>	
+<var name="topup12" expr="''"/>	
+<var name="topup13" expr="''"/>	
+<var name="topupmnu" expr="''"/>	
+<var name="balupdatestatus" expr="'1'"/>	
+
+<script>
+var out_string=new Object();
+var get_duration=new Object();
+</script>
+
+
+<form id="hungamatopupmnu">
+<block>
+<assign name="Section_Name" expr="'JOKES_TOPUP'"/>
+</block>
+<field name="mnuopt">
+        <grammar mode="dtmf" root="start4" version="1.0">
+	<rule id="start4" scope="public">
+	 <one-of>				 
+			   <item>1</item>		
+			   <item>2</item>		
+			   <item>3</item>				  			  		      
+	</one-of>
+	</rule>
+	</grammar>			
+
+
+	<prompt bargein="true" timeout="0s">
+		<audio expr="promptpath+LANG_DESCRIPTION+'/balance_0.wav'"/>	
+		<audio expr="promptpath+LANG_DESCRIPTION+'/topup10.wav'"/>
+		<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+		<audio expr="promptpath+LANG_DESCRIPTION+'/topup20.wav'"/>
+		<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf2.wav'"/>
+		<audio expr="promptpath+LANG_DESCRIPTION+'/topup30.wav'"/>
+		<audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf3.wav'"/>		  	
+	</prompt>
+
+
+	<filled>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/> 
+
+		<if cond="mnuopt=='1'">
+		     <clear namelist="mnuopt"/> 
+		     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[1]='+DNIS"/>
+		     <goto next="#BillingWaitTopup"/>		           	  					
+		<elseif cond="mnuopt=='2'"/>
+		     <clear namelist="mnuopt"/> 
+		     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[1]='+DNIS"/>
+		     <goto next="#BillingWaitTopup"/>				
+		<elseif cond="mnuopt=='3'"/>
+		     <clear namelist="mnuopt"/> 
+		     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[1]='+DNIS"/>
+		     <goto next="#BillingWaitTopup"/>
+		</if>
+	</filled>		
+
+<noinput>
+	   <audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+	<reprompt/>
+</noinput>
+
+<nomatch>
+	<audio expr="promptpath+LANG_DESCRIPTION+'/invalid.wav'"/>			   
+	<reprompt/>
+</nomatch>  
+
+</field>	 
+</form> 
+
+
+<form id="BillingWaitTopup">
+<field name="wait_input">
+<grammar mode="dtmf" root="start5">
+	<rule id="start5" scope="public">
+	<one-of>     
+				<item>1</item>
+
+	</one-of>
+	</rule>
+</grammar>
+
+ <prompt bargein="false" timeout="2s">
+		<audio expr="promptpath+LANG_DESCRIPTION+'/topup_wait.wav'"/>
+</prompt>
+<filled>
+	<goto next="#update_topup"/>
+</filled>
+
+<noinput>
+	<goto next="#update_topup"/>
+</noinput>
+
+<nomatch>
+	<goto next="#update_topup"/>
+</nomatch>
+
+
+</field>
+</form>
+
+
+
+<form id="update_topup">
+<block>
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+	<script>
+	 <![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					lang = out_string[j];
+				       if(j==2)
+					balance = out_string[j];
+				       if(j==3)
+					movienumber = out_string[j];
+					 if(j==4)
+					modesub = out_string[j];
+				  }
+
+			]]>
+
+	</script>
+
+		<script> 					 
+			balance=balance*60;
+			timerflag=1;      
+		</script>
+		<script>
+			<![CDATA[
+				if(timerflag==1)
+				start_BalenceMinute=starttime();
+			]]>	 	
+		</script>
+
+
+	<if cond="balance &gt; '0'">			         			 
+		<log expr="'@@@@@@ user top up balance is '+balance"/>
+		 <prompt bargein="true" timeout="1s">
+			<audio expr="promptpath+LANG_DESCRIPTION+'/thanks_topup.wav'"/>
+		</prompt>
+	    	<goto next="NineXMMainMenu.vxml"/>
+
+	<else/>	
+		<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>			      
+		<goto next="End.vxml"/>						 	    			   	
+	</if>
+</block>
+</form>
+</vxml>
+
+
+

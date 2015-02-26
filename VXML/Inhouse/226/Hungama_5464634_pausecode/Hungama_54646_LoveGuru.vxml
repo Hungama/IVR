@@ -1,0 +1,1097 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_LoveGuru.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<var name="TOKEN" expr="''"/>
+	<var name="ConfigPath" expr="''"/>
+	<var name="UploadFileName" expr="''"/>
+	<var name="day" expr="''"/>
+	<var name="month" expr="''"/>
+	<var name="DATE_NEW" expr="''"/>
+<var name="TIME_NEW" expr="''"/>
+
+
+	<!-- <form id="PlaySol">
+		<block>
+																								
+			<log> fetching Answer </log>
+			<script srcexpr="'http://'+RECORD_IP+'/'+servlet_path+'/lovesol_Read?ConfigPath=loveguruANS.txt&amp;stringSearch='+ANI+'_'+lang+'_A&amp;TOKEN=FREE'"/>
+			<script>
+						array1.length=0;
+						unike_play=0;
+			</script>
+			<assign name="len" expr="lovesol.length" />			
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+							array1[j] = lovesol[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+			<goto next="#PlayRecordAns"/>  
+		</block>
+				
+	
+	</form>
+	
+	
+	<form id="PlayRecordAns">
+	
+			<block>
+				<if cond="unike_play &gt; len-1">
+					<goto next="#MAINMENU"/> 
+			        <elseif cond="unike_play &lt; 0" />
+					<assign name="unike_play" expr="len-1" />
+				</if>
+					
+				<script>ANSWER = array1[unike_play];</script>			 						
+	 		</block>
+			<field name="selectoption">
+					<grammar mode="dtmf" root="start14" version="1.0">
+				   		<rule id="start14" scope="public">
+				   		  <one-of>
+						      <item>1</item>
+						      
+						  </one-of>
+				   		</rule>
+			       		 </grammar>
+				
+			      <prompt bargein="true"  timeout="1s">
+				 <audio expr="'http://192.168.100.213:8080/hungama/Content/111/'+ANSWER+'.wav'"/>			   
+			      </prompt> 			 
+			  
+			         <filled>
+			         	 	    <script> unike_play=unike_play+1</script>		
+						    <goto next="#PlayRecordAns"/> 		
+					 			 
+				  </filled>				  
+			
+			     
+				 <noinput>	
+				        <script> 
+				      		unike_play=unike_play+1;
+				      	</script> 		
+				  	 
+				  	<goto next="#PlayRecordAns"/> 	
+				</noinput>
+				<nomatch>
+					<script> 
+						unike_play=unike_play+1;
+				 	</script> 		
+									  	 
+				  	<goto next="#PlayRecordAns"/> 
+					
+				</nomatch>	
+				 
+				
+		  </field>
+		  	
+	</form>	   -->
+
+	<form id="MAINMENU">	
+	<block>
+		<script>
+			 <![CDATA[
+			if(timerflag==1)
+			 start_BalenceMinute=starttime();
+		   ]]>	 	
+		</script>
+		<assign name="drop_point" expr="'LG_Menu'"/>
+	</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start15" version="1.0">
+						<rule id="start15" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+																 
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/welcome_new_546462.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/loveguru_options.wav'"/>															
+				</prompt>
+				
+				
+				<filled>
+					<if cond="choice=='1'">
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+						<goto next="#OTHERPROB"/>
+					<elseif cond="choice=='2'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+						<assign name="TOKEN" expr="'LP'"></assign>						
+						<goto next="#RECORDPROB"/>
+					<elseif cond="choice=='3'"/>	
+						<if cond="timerflag=='1'">
+							<script>
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+						<goto next="#LOVESTATUS"/>
+					<elseif cond="choice=='8'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+						<goto next="Hungama_54646_MainMenu.vxml"/>
+					<elseif cond="choice=='9'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+						<goto next="Hungama_54646_AccountMnger.vxml"/>
+										
+					</if>					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+	
+	<form id="OTHERPROB">
+		<block>
+					<script>
+			 <![CDATA[
+			if(timerflag==1)
+			 start_BalenceMinute=starttime();
+		   ]]>
+			<assign name="drop_point" expr="'Other_probs'"/>	 	
+		</script>
+														
+			<log> fetching songs </log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/'+operator+'/loveguru/loveproblem-'+lang+'.cfg'"/>
+			<script>
+						array1.length=0;
+						unike_play=0;
+			</script>
+			<assign name="len" expr="favSongs.length" />			
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+								array1[j] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+			<assign name="cat" expr="'loveguru'"/>
+			<assign name="subcat" expr="'LOVEPROBLEM'"/>
+							
+		</block>
+
+		<field name="choice">
+			
+			<grammar mode="dtmf" root="start16" version="1.0">
+						<rule id="start16" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>								 
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptspath_54646+'/'+lang+'/keypad_option.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/return_perv_menu.wav'"/>
+			</prompt>
+
+			<filled>
+				<if cond="choice=='1'">
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+					<script> unike_play=unike_play-1</script>
+					<goto next="#next" />
+				<elseif cond="choice=='2'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+					<script> unike_play=unike_play</script>
+					<goto next="#next" />
+				<elseif cond="choice=='3'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+					<script> unike_play=unike_play+1</script>
+					<goto next="#next" />
+				<elseif cond="choice=='7'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+					<goto next="Hungama_54646_LoveGuru.vxml"/>
+				<elseif cond="choice=='8'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+					<goto next="Hungama_54646_MainMenu.vxml"/>
+				<elseif cond="choice=='9'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+
+					<goto next="Hungama_54646_AccountMnger.vxml"/>
+				</if>				
+			</filled>
+
+			<noinput>				
+				<script> unike_play=unike_play+1</script>
+				<goto next="#next" />
+			</noinput>
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<script> unike_play=unike_play</script>
+				<goto next="#next" />
+			</nomatch>
+		</field>
+	</form>
+	
+	<form id="RECORDPROB">	
+		<block>
+					<script>
+						 <![CDATA[
+						if(timerflag==1)
+						 start_BalenceMinute=starttime();
+					   ]]>	 	
+					</script>
+				<assign name="drop_point" expr="'Record_probs'"/>
+		</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start17" version="1.0">
+						<rule id="start17" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/rec_start.wav'"/>
+					<audio expr="promptspath_54646+'/'+lang+'/return_perv_menu.wav'"/>
+				</prompt>
+				<filled>
+					<if cond="choice=='1'">
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="#RECORD"/>
+					<elseif cond="choice=='7'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="Hungama_54646_LoveGuru.vxml"/>
+					<elseif cond="choice=='8'"/>
+						<if cond="timerflag=='1'">
+							<script>
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="Hungama_54646_MainMenu.vxml"/>
+					<elseif cond="choice=='9'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="Hungama_54646_AccountMnger.vxml"/>
+					</if>					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+	
+	<form id="LOVESTATUS">
+	
+		<block>
+				<script>
+					 <![CDATA[
+					if(timerflag==1)
+					 start_BalenceMinute=starttime();
+				   ]]>	 	
+				</script>
+
+		</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start18" version="1.0">
+						<rule id="start18" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/lovesutras_options.wav'"/>															
+				</prompt>
+				<filled>
+					<if cond="choice=='1'">
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="#LOVESUTRAS"/>
+					<elseif cond="choice=='2'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="#LOVE_SMS"/>
+					<elseif cond="choice=='7'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="Hungama_54646_LoveGuru.vxml"/>
+					<elseif cond="choice=='8'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="Hungama_54646_MainMenu.vxml"/>
+					<elseif cond="choice=='9'"/>
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+						<goto next="Hungama_54646_AccountMnger.vxml"/>
+					<else/>
+						<goto next="#OTHERPROB"/>
+						<!-- SMS PART -->
+					</if>					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+
+	<form id="LOVESUTRAS">
+		<block>
+					<script>
+						 <![CDATA[
+						if(timerflag==1)
+						 start_BalenceMinute=starttime();
+					   ]]>	 	
+					</script>
+			<assign name="drop_point" expr="'lovesutra'"/>
+																		
+			<log> fetching songs </log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/'+operator+'/loveguru/lovetips-'+lang+'.cfg'"/>
+			<script>
+						array1.length=0;
+						unike_play=0;
+			</script>
+			<assign name="len" expr="favSongs.length" />			
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+								array1[j] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+			<assign name="cat" expr="'loveguru'"/>
+			<assign name="subcat" expr="'LOVESUTRAS'"/>
+						
+		</block>
+
+		<field name="choice">
+			<grammar mode="dtmf" root="start19" version="1.0">
+						<rule id="start19" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>								 
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptspath_54646+'/'+lang+'/keypad_option.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/return_perv_menu.wav'"/>
+			</prompt>
+
+			<filled>
+				<if cond="choice=='1'">
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<script> unike_play=unike_play-1</script>
+					<goto next="#next" />
+				<elseif cond="choice=='2'"/>
+					<if cond="timerflag=='1'">
+							<script>
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<script> unike_play=unike_play</script>
+					<goto next="#next" />
+				<elseif cond="choice=='3'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<script> unike_play=unike_play+1</script>
+					<goto next="#next" />
+				<elseif cond="choice=='7'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<goto next="Hungama_54646_LoveGuru.vxml"/>
+				<elseif cond="choice=='8'"/>
+					<if cond="timerflag=='1'">
+							<script>
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<goto next="Hungama_54646_MainMenu.vxml"/>
+				<elseif cond="choice=='9'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<goto next="Hungama_54646_AccountMnger.vxml"/>
+				</if>				
+			</filled>
+
+			<noinput>				
+				<script> unike_play=unike_play+1</script>
+				<goto next="#next" />
+			</noinput>
+			<nomatch>				
+				<script> unike_play=unike_play</script>
+				<goto next="#next" />
+			</nomatch>
+		</field>
+	</form>
+	
+	<form id="LOVESTORY">			
+			<field name="choice">
+				<grammar mode="dtmf" root="start20" version="1.0">
+						<rule id="start20" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  2  </item>								 							 
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/'+lang+'/lovestory_options.wav'"/>															
+				</prompt>
+				<filled>					
+					<if cond="choice=='1'">
+						<goto next="#OTHERPROB"/>
+					<else/>
+						<goto next="#RECORDPROB"/>
+					</if>					
+				</filled>
+			</field>
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</noinput>			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>			
+	</form>
+	
+	<form id="next">
+		<block>
+		
+					<script>
+						 <![CDATA[
+						if(timerflag==1)
+						 start_BalenceMinute=starttime();
+					   ]]>	 	
+					</script>
+
+			<assign name="drop_point" expr="'songs_play'"/>
+
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+			</if>
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="array1[unike_play]"/>    </log>
+			<script>
+				var songcheck1=array1[unike_play].split("_");
+				Song_Path=songcheck1[0];
+				songID = array1[unike_play];
+				song = array1[unike_play];
+			</script>	
+			<assign name="song_begin" expr="starttime()"/>
+			<assign name="song_listen" expr="'START'" />
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start21" version="1.0">
+						<rule id="start21" scope="public">
+							<one-of>								 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>								 
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="1s">
+				 <audio expr="contentpath+Song_Path+'/'+song+'.wav'"/>
+			       
+			</prompt>
+
+			<filled>
+				<if cond="choice=='1'">
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<script> unike_play=unike_play-1</script>
+						 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="rim(song_begin)"/>
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+								 
+					<goto next="#next" />
+				<elseif cond="choice=='2'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<script> unike_play=unike_play</script>
+						 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="rim(song_begin)"/>
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+					<goto next="#next" />
+				<elseif cond="choice=='3'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<script> unike_play=unike_play+1</script>
+						 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="rim(song_begin)"/>
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+					<goto next="#next" />
+				<elseif cond="choice=='7'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<goto next="Hungama_54646_LoveGuru.vxml"/>
+				<elseif cond="choice=='8'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<goto next="Hungama_54646_MainMenu.vxml"/>
+				<elseif cond="choice=='9'"/>
+					<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+							           <goto next="Topup.vxml"/>
+							  </if>     
+						</if>
+					<goto next="Hungama_54646_AccountMnger.vxml"/>
+				</if>				
+			</filled>
+
+			<noinput>	
+						 <assign name="song_listen" expr="'END'" />
+						 <assign name="compare_time" expr="rim(song_begin)"/>
+						 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						 <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+				<script> unike_play=unike_play+1</script>
+				<goto next="#next" />
+			</noinput>
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<script> unike_play=unike_play</script>
+				<goto next="#next" />
+			</nomatch>
+			
+			<catch event="error.badfetch">
+				<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+song+'/54646_version2/loveproblem-'+lang+'.cfg'"/>
+				<if cond="choice=='1'">
+					<script>unike_play=unike_play-1;</script> 				 				 	
+			                <goto next="#next"/> 
+				<else/>
+					<script>unike_play=unike_play+1;</script> 				 				 	
+			                <goto next="#next"/> 
+				</if>
+			</catch>
+			
+		</field>
+			
+	</form>
+		<form id="contentlogin">
+		<block>
+				<script> unike_play=unike_play+1</script>
+				<goto next="#next" />
+		</block>
+	</form>
+	
+	
+	
+	<form id="RECORD">
+	<block>
+		<assign name="DATE_NEW" expr="getcurryyyymmdd()"/>
+		<assign name="TIME_NEW" expr="start_time()"/>
+		
+		<log>	DATE  isssss    <value expr="DATE_NEW"/> 	</log>
+		
+		
+		<assign name="ConfigPath" expr="'LoveGuru'"/>
+		<assign name="day" expr="'LoveGuru'"/>
+		<assign name="month" expr="'LoveGuru'"/>
+		<log>	month isssss    <value expr="month"/> 	</log>
+		<log>	day isssss    <value expr="day"/> 	</log>
+		<script>UploadFileName='LG_'+DATE_NEW+'_'+TIME_NEW+'_'+ANI+'_'+lang+'.wav'</script>
+		<log>RECORD_FILE  ISSS	<value expr="UploadFileName"/>    </log>
+
+	</block>
+	    <record name="recording" beep="true" maxtime="60s" finalsilence="600000ms" dtmfterm="true" type="audio/wav;codec=alaw"/>
+	   
+	   <subdialog name="messageUpload" srcexpr="'http://'+IP+'/hungama/air_recording_bolbabybol'" enctype="multipart/form-data" method="post" namelist="ANI UploadFileName month day recording">	    	    							
+	   </subdialog>
+
+	    <field name="LGRecconfirmopt" type="boolean">
+			 <grammar mode="dtmf" root="start22" version="1.0">
+               <rule id="start22" scope="public">
+                 <one-of>				 
+				  <item>#</item>				  					 			      
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/preview_rec.wav'"/>		
+	   	    </prompt>			
+			<filled>			
+			    <if cond="LGRecconfirmopt=='1'">
+				     <audio expr="recording"/>					 				 			   
+					 <goto nextitem="confirm"/> 				     																																		
+				</if>				
+			</filled>				
+			<noinput>              
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </noinput>					
+			<nomatch>              
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </nomatch>    
+	  </field>
+	  
+	  <field name="confirm">
+			 <grammar mode="dtmf" root="start23" version="1.0">
+               <rule id="start23" scope="public">
+                 <one-of>				 
+				  <item>1</item>
+				  <item>2</item>				  					 			      
+                </one-of>
+              </rule>
+            </grammar>
+			<prompt timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/confirm_rec.wav'"/>		
+	   	    </prompt>			
+			<filled>			
+			    <if cond="confirm=='1'">
+			    	<log>RECORD_FILE  ISSS	<value expr="UploadFileName"/>    </log>
+				<log>	month isssss    <value expr="month"/> 	</log>
+				<log>	day isssss    <value expr="day"/> 	</log>
+
+
+			    	 
+			     <script srcexpr="'http://'+IP+'/hungama/Record_bolbabybol?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;month='+month+'&amp;day='+day+'&amp;MSG='+recording"/> 				
+			   	 
+			    	<!-- <script srcexpr="'http://192.168.100.213:5000/Record?ConfigPath=111&amp;ANI='+RECORD_FILE+'&amp;TOKEN='+TOKEN+'&amp;MSG='+recording"/>				    				 				 			   
+				  <script srcexpr="'http://'+RECORD_IP+'/'+servlet_path+'/record_Savename?RECORDFILENAME=LP_RECORD_'+RECORD_FILE"/> -->
+					 <goto next="Hungama_54646_LoveGuru.vxml"/>
+				<else/>
+					 <goto next="#RECORDPROB"/>
+				</if>				
+			</filled>				
+			<noinput>              
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </noinput>					
+			<nomatch>              
+              		<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+            </nomatch>    
+	  </field>	 
+   </form>
+   
+   <form id="LOVE_SMS">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LOVE_SMS&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS"/>
+			
+	</block>
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start24" version="1.0">
+                   	<rule id="start24" scope="public">
+                     	<one-of>     
+				<item>1</item>
+			                
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             	<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/topup_request.wav'"/>
+	        </prompt>
+		<filled>
+			<goto next="#MAINMENU"/>
+
+		</filled>
+
+		<noinput>
+			<goto next="#MAINMENU"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#MAINMENU"/>
+		</nomatch>
+
+	
+	</field>
+</form>
+
+</vxml>

@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="manchalaRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Subscription.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	
+	
+	<form id ="mainmenu">
+
+			<block>
+					<assign name="C_Start" expr="start_time()"/>
+				
+			 		<script>  
+						realDNIS=session.connection.local.uri;                   
+						ANI=session.connection.remote.uri;	   
+				    	</script>
+	    
+			<script>
+					var length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				</script>
+			
+				  <assign name="DNIS" expr="realDNIS"/>
+
+			<if cond="ANI=='9711711335'">
+					<goto next="Subscription_DC.vxml"></goto>
+				  </if>
+
+				
+		   <if cond="realDNIS=='66291460'">
+				<assign name="DNIS" expr="'5464627'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291427'"/>
+				 <assign name="DNIS" expr="'5464627'"/>
+				 <assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='5464627'"/>
+				 <assign name="DNIS" expr="'5464627'"/>
+				 <assign name="operator" expr="'relm'"/>
+			<elseif cond="realDNIS=='0115464627'"/>
+				 <assign name="DNIS" expr="'5464627'"/>
+				 <assign name="operator" expr="'tatm'"/>		   
+			<elseif cond="realDNIS=='01115464627'"/>
+				 <assign name="DNIS" expr="'5464627'"/>
+				 <assign name="operator" expr="'tatc'"/>
+		   </if>
+		   
+
+
+		<if cond="operator=='relm' || operator=='relc'">
+					<assign name="dbservlet" expr="'tatcriya_dbinteraction'"/>
+					<assign name="operator" expr="'tatc'"/>
+			<elseif cond="operator=='unim'"/>
+					<assign name="dbservlet" expr="'tatcriya_dbinteraction'"/>
+					<assign name="operator" expr="'tatc'"/>
+			<elseif cond="operator=='tatm'"/>
+					<assign name="dbservlet" expr="'tatmriya_dbinteraction'"/>
+ 			<elseif cond="operator=='tatc'"/>
+					<assign name="dbservlet" expr="'tatcriya_dbinteraction'"/>					
+       		        <else/>
+				 <assign name="dbservlet" expr="''tatcriya_dbinteraction'"/>
+				 <assign name="operator" expr="'tatc'"/>
+					
+		</if>
+
+		<if cond="operator=='relm' || operator=='relc'">
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'5'"/>
+			<assign name="service_id" expr="'1202'"/>
+		<elseif cond="operator=='unim'"/>
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'10'"/>
+			<assign name="service_id" expr="'1402'"/>
+		<elseif cond="operator=='tatm'"/>
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'42'"/>
+			<assign name="service_id" expr="'1019'"/>
+		<elseif cond="operator=='tatc'"/>
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'43'"/>
+			<assign name="service_id" expr="'1619'"/>
+		</if>
+
+       	  		  
+                         
+              	  <log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+              	  <log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>  
+              	  
+              	  <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/>   
+		<!--  <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+	    	  <assign name="ciropr" expr="ciropr1.value"/>
+	      	  <log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>
+	      			<script>
+	      					var splitstr=ciropr.split("#");
+	      					operator1=splitstr[1];
+	      					circle=splitstr[2];
+				</script>  -->
+
+			<script srcexpr="'http://192.168.100.226:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+               		<script>
+                       		<![CDATA[
+			   		  for(j=0; j< out_string.length;  j++)
+				  		 {      
+							if(j==0)
+					     		  circle = out_string[j];
+				  		 }
+                       		 ]]>
+             			</script>
+                     
+            			<log> FIRST DB FETCH circle  is   <value expr="circle"/>    </log>
+             			<if cond="circle=='oth'">
+                   			 <script srcexpr="'http://192.168.100.226:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+                  			 <assign name="DNIS" expr="realDNIS"/>
+                   			 <assign name="operator" expr="'und'"/>
+                   			 <goto next="End.vxml"></goto>                    
+               		</if>
+
+	      				       					       
+	      		        <log>circle  is	<value expr="circle"/>    </log>
+				<log>operator is <value expr="operator"/>    </log>
+				<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+                           	<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/> 
+	 
+			<goto next="#SubscriptionCheck"/> 
+					 
+		</block>
+
+	</form>
+
+	
+	<form id="SubscriptionCheck">
+	<block>
+	   <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PREM_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<script>
+				 <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							usr_status = out_string[j];
+						       if(j==1)
+							lang = out_string[j];
+						       if(j==2)
+							balance = out_string[j];
+						       if(j==3)
+							movienumber = out_string[j];									      								       							      
+						  }
+
+					]]>
+				</script>
+				<log>length of outstring  is	<value expr="out_string.length"/></log>
+	         		<log expr="'@@@@@@@New usr_status===>' +usr_status"/>
+		
+		<if cond="usr_status=='1'">
+				<script> 					 
+					 balance=balance*60;
+					 timerflag=1;      
+				</script>							
+				<script>
+					 <![CDATA[
+						if(timerflag==1)
+			                        start_BalenceMinute=starttime();
+					 ]]>	 	
+			        </script>
+				<assign name="wellang" expr="lang"/>
+				<if cond="wellang=='01'">
+						<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+				</if>
+				<log expr="'Lang Desc!!!!!!!!!!!!! =' + LANG_DESCRIPTION"/>
+				<goto next="playcontent_premsub.vxml"/>
+		<elseif cond="usr_status == '-1'"/>
+				<assign name="lang" expr="'01'"/> 		
+				<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+				<goto next="#SubRequestOption"/>
+		<else/>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+			</prompt>
+			 <goto next="End.vxml"/>	
+		</if>
+	</block>
+  </form>
+
+
+  <form id="New_User">
+	<field name="langopt">
+			  <grammar mode="dtmf" root="start3" version="1.0">
+				<rule id="start3" scope="public">
+					<one-of>						
+						<item> 1 </item>
+						<item> 2 </item>
+						<item> 3 </item>
+   						<item> 4 </item>								
+					</one-of>
+				</rule>
+			  </grammar>
+									
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'HIN/lang_option.wav'"/>
+				<audio expr="promptpath+'HIN/lang01.wav'"/>
+				<audio expr="promptpath+'HIN/press_dtmf1.wav'"/>
+				<audio expr="promptpath+'BEN/lang06.wav'"/>										   		
+				<audio expr="promptpath+'BEN/press_dtmf2.wav'"/> 
+				<audio expr="promptpath+'MAL/lang09.wav'"/>
+				<audio expr="promptpath+'MAL/press_dtmf3.wav'"/>
+				<audio expr="promptpath+'BHO/lang04.wav'"/>										   		
+				<audio expr="promptpath+'BHO/press_dtmf4.wav'"/>
+			</prompt>
+										   		
+				
+				<filled>
+				      <if cond="langopt=='1'">
+					     <assign name="lang" expr="'01'"/> 		
+					     <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+					     <prompt bargein="true" timeout="1s">
+							 <audio expr="promptpath+LANG_DESCRIPTION+'/lang_thanks.wav'"/>					
+					     </prompt>   
+				      <elseif cond="langopt=='2'"/>
+						<assign name="lang" expr="'06'"/> 		
+						<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+				     		<prompt bargein="true" timeout="1s">
+							 <audio expr="promptpath+LANG_DESCRIPTION+'/lang_thanks.wav'"/>					
+						</prompt>
+				      <elseif cond="langopt=='3'"/>
+   					     <assign name="lang" expr="'09'"/> 		
+   					     <assign name="LANG_DESCRIPTION" expr="'MAL'"/>
+					     <prompt bargein="true" timeout="1s">
+							 <audio expr="promptpath+LANG_DESCRIPTION+'/lang_thanks.wav'"/>					
+						</prompt>
+   				      <elseif cond="langopt=='4'"/>
+   				          <assign name="lang" expr="'04'"/> 		
+   				          <assign name="LANG_DESCRIPTION" expr="'BHO'"/>	
+					  <prompt bargein="true" timeout="1s">
+							 <audio expr="promptpath+LANG_DESCRIPTION+'/lang_thanks.wav'"/>					
+						</prompt>
+				      </if>
+				      <log expr="'language selected option:'+langopt+' is :'+lang"/>
+				      <goto next="#SubRequestOption"/> 	
+				</filled>
+					
+			    <nomatch>
+					<prompt>						
+						<audio expr="promptpath+'HIN/invalidoption.wav'"/>		 
+			   		</prompt>
+			   		<reprompt></reprompt>
+		   	    </nomatch>		
+		   		
+				
+				<noinput>
+					<prompt>						
+						<audio expr="promptpath+'HIN/waiting_response.wav'"/>		 
+			   		</prompt>
+					<reprompt></reprompt>
+				</noinput>
+				
+					
+		</field>
+</form>
+
+
+  <form id="SubRequestOption">
+		<field name="choice">
+			<grammar mode="dtmf" root="start4" version="1.0">
+						<rule id="start4" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>								 
+							</one-of>
+						</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/subintro.wav'"/>
+				
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#SubRequest"></goto>
+				<elseif cond="choice=='2'"/>
+					<goto next="#ThanksForCalling"></goto>	
+				</if>
+			</filled>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				</prompt>
+				 <goto next="End.vxml"/>	
+			</noinput>
+			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>
+				
+		</field>
+	</form>
+	
+	<form id="SubRequest">
+		<block>
+			<!-- SUB REQUEST -->
+			<assign name="sub_flag" expr="'1'"/>
+        		 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PREM_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+			<prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/charging_wait.wav'"/>
+			</prompt>
+			<goto next="#BillStatusChk"/>	
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PREM_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						       if(j==3)
+						       	movienumber = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+				</prompt>
+				 <goto next="End.vxml"/>	
+			<elseif cond="usr_status=='1'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/thank_sub.wav'"/>
+				</prompt>
+				<goto next="playcontent_premsub.vxml"></goto>	
+			<else/>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+				</prompt>
+				 <goto next="End.vxml"/>	
+			</if>
+		</block>
+	</form>
+
+	<form id="ThanksForCalling">
+		<block>
+	               <prompt bargein="true" timeout="0s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/thank_nosub.wav.wav'"/>
+			</prompt>
+			 <goto next="End.vxml"/>	
+		</block>
+
+	</form>
+</vxml>

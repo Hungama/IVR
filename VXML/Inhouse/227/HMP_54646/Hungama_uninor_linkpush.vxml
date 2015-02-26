@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+<meta name="Hungama_uninor_linkpush.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<var name="length" expr="0"/>
+	
+	<script>
+		var out_string=new Object();
+	</script>
+	
+	<form id="LASTHEARD_PROFILE">
+		<block>
+			<assign name="dbservlet" expr="'unihungama_dbinteraction'"/>
+			<assign name="DNIS" expr="'52010'"/>
+			<assign name="operator" expr="'unim'"/>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=SMS_LINK_PUSH&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+				
+			<goto next="#WelcomeIntroRandom"/>					
+		</block>
+	</form>
+	<form id="WelcomeIntroRandom">
+		<field name="choice">
+		    <grammar mode="dtmf" root="start2" version="1.0">
+					<rule id="start2" scope="public">
+						<one-of>
+							<item>  1  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			
+			<prompt bargein="true" timeout="3s">
+					<audio expr="promptspath_54646+'/welcome_1re.wav'"/>
+			</prompt>
+
+			<filled>
+				 <goto next="Hungama_54646_End.vxml"></goto>
+		 	</filled>
+		</field>
+		<noinput>
+				 <goto next="Hungama_54646_End.vxml"></goto>
+		</noinput>
+		<nomatch>
+				 <goto next="Hungama_54646_End.vxml"></goto>
+		</nomatch>
+	</form>
+	
+</vxml>

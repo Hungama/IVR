@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="devRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="End.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<script>
+		var out_string=new Object();
+	</script>
+
+	<form id="EndLogin">
+		<block>
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+song+hash+cat+hash+cat+hash+compare_time+hash"></assign>
+			</if>			
+			
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=uninor_devo.DEVO_UPDATETIME&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS"/>
+			<if cond="HEARD!='0'">
+				<if cond="HEARD=='0755' || HEARD=='0756' || HEARD=='LOHRI'">
+					<assign name="HEARD" expr="'mainmenu'"/>		
+				</if>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=uninor_devo.DEVO_USERPROFILE&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]='+myth_unlike_play+'&amp;INPARAM[3]='+temple_heard+'&amp;INPARAM[4]=SET'"/>
+			</if>
+			<if cond="operator=='unim'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Inhouse_IVR.UNIM_54646_PRICINGGRID&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+realDNIS"/>
+					<script>
+						var res = out_string[0];
+						var res1 = out_string[1];
+					</script>
+				 <log expr="'@@@@@@ newwwww  '+res"/>
+				 <log expr="'@@@@@@ pricing '+res1"/>
+				<script>
+					DNIS=res;
+					pricepoint=res1;
+				</script>
+			</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+prompt_name+hash+modesub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=54646&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<exit/>
+		</block>	
+	   <catch event="error.badfetch">		 								
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      		  
+		  <exit/>		 								
+       </catch>                       
+       
+      <catch event="telephone.disconnect.hangup">		 								
+	      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 		  
+		  <exit/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">	
+		   <log>Inside Telephonet Disconnected catch  End4444</log>			   
+		   <exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">	
+		   <log>Inside connection.disconnect.hangup catch  End5555</log>			
+		   <exit/>		  
+      </catch>
+	</form>
+</vxml>

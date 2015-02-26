@@ -1,0 +1,792 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="Hungama_54646_UserSub.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<var name="var_wel" expr="''"/>
+<var name="trans_id" expr="''"/>
+<var name="PATH" expr="''"/>
+<var name="call_BalenceMinute" expr="0"/>
+<var name="total_used_balnce" expr="0"/>
+<var name="double_switch" expr="-1"/>
+<var name="skip_level" expr="0"/>
+<var name="MyError" expr="0"/>
+<var name="uninorretry_counter" expr="1"/>
+<var name="MyErrorMsg" expr="0"/>
+<var name="prompt_switch" expr="0"/> 
+<script>
+function getUNIMDT()
+{
+	var currentDT = new Date();
+	var day = currentDT.getDate();
+	var month = currentDT.getMonth() + 1;
+	var year = currentDT.getFullYear();
+	var hours = currentDT.getHours();
+	var minutes = currentDT.getMinutes();
+	var seconds = currentDT.getSeconds();
+	if (!(month > 9)) {month = "0" + month; }
+	if (!(day > 9 )) {day = "0" + day; }
+	if (!(hours > 9)) {hours = "0" + hours; }
+	if (!(minutes > 9 )) {minutes = "0" + minutes ; }
+	if (!(seconds > 9) ) {seconds = "0" + seconds ; }
+	var strDateTime =  year + "-" + month + "-" + day +" "+ hours+":"+minutes+":"+seconds ;    
+	return strDateTime;
+}
+</script>
+<form id="SubIntro">
+<block>
+<if cond="ANI=='8586967046' || ANI=='7696778853'">
+	<goto next="Hungama_54646_UserSub_SS.vxml"></goto>
+	
+</if>		
+<if cond="usr_status=='-1' &amp;&amp; new_flag=='0' &amp;&amp; operator=='unim'">   
+<script>
+	new_flag=new_flag+1;
+</script>
+	<goto next="Hungama_54646_MainMenu.vxml"></goto>
+</if>
+
+	<if cond="circle=='upe' &amp;&amp; lang=='01'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/SOD/SOD.cfg'"/>
+			<script>
+					array1.length=0;
+			</script>
+			<assign name="len" expr="favSongs.length" />
+			<assign name="var_wel" expr="getRandom(1,len)" />
+			<log>previous Array[1]  is	<value expr="favSongs[var_wel]"/>    </log>
+			
+			<script>
+				songcheck=favSongs[var_wel].split("_");
+				contentdir=songcheck[0]; 
+				song = favSongs[var_wel];
+
+			</script>
+			
+			<prompt bargein="true" timeout="1s">
+				 <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+			</prompt>
+		<else/>
+			<goto next="#SubIntro1"></goto>	
+		</if>
+			
+</block>
+<field name="choice">
+				<grammar mode="dtmf" root="start88" version="1.0"> 
+						<rule id="start88" scope="public">	
+							<one-of>
+							   	 
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  0  </item>
+								 <item>  *  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+		<filled>
+			<goto next="#SubIntro1"></goto>	
+		</filled>
+		<noinput>
+			<goto next="#SubIntro1"></goto>	
+		</noinput>
+	</field>
+
+</form>
+
+
+    <form id="SubIntro1">
+	<block>
+ 		<assign name="Section_Name" expr="'SUBSCRIPTION'"/>	
+	  
+		<if cond="operator=='relm' || operator=='relc'">
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'5'"/>
+			<assign name="service_id" expr="'1202'"/>
+					
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Switch_54646&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+				 double_switch=out_string[0];
+				 prompt_switch=out_string[1];
+			</script>				
+			<log>double_switch Sub : <value expr="double_switch"/></log>
+					
+
+			<if cond="double_switch=='1'">
+				<assign name="firstconsent" expr="'YY'"/>
+				<assign name="firstconsenttime" expr="start_time()"/>
+				<assign name="sub_flag" expr="'true'"/>	
+				<assign name="direct_status" expr="'1'" />			
+				<assign name="var_wel" expr="getRandom(1,50)"/>
+				<assign name="LangFirstValue" expr="'01'"/>
+				<prompt bargein="true" timeout="0s" cond="usr_status=='-1'">
+					<audio expr="promptspath_54646+'/'+LangFirstValue+'/welcome_new_'+var_wel+'.wav'"/>
+				</prompt>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+				<goto next="#SubRequest"></goto>
+			</if>			
+			
+		<elseif cond="operator=='unim'"/>
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'10'"/>
+			<assign name="service_id" expr="'1402'"/>
+		<elseif cond="operator=='tatm'"/>
+			<assign name="amt" expr="'35'"/>
+			<assign name="plan_id" expr="'8'"/>
+			<assign name="service_id" expr="'1002'"/>
+		<elseif cond="operator=='tatc'"/>
+			<assign name="amt" expr="'35'"/>
+			<assign name="plan_id" expr="'24'"/>
+			<assign name="service_id" expr="'1602'"/>
+		<elseif cond="operator=='loop'"/>
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'107'"/>
+			<assign name="service_id" expr="'2002'"/>
+
+		</if>
+<!--*******************************UNINOR SWITHC***************************************-->
+	
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Inhouse_IVR.UNINOR_DOUBLECONSENT&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+service_id"/>
+					<script>
+						 double_switch=out_string[0];
+						 skip_level=out_string[1];
+					</script>
+			<log>double_switch Sub : <value expr="double_switch"/></log>
+			<log>skip_level for msisdn : <value expr="skip_level"/></log>
+			
+				<if cond="double_switch=='1'">
+						<if cond="skip_level=='1'">
+							<assign name="firstconsent" expr="'Switchlevel-1'"/>
+							<assign name="firstconsenttime" expr="start_time()"/>
+							<assign name="sub_flag" expr="'true'"/>
+							<goto next="#SubOptionDoubleconfirm_uninor"></goto>
+						<elseif cond="skip_level=='2'"/>
+							
+							<goto next="#SubOption"/>
+						<elseif cond="skip_level=='3'"/>
+							<assign name="firstconsent" expr="'Switchlevel-3'"/>
+							<assign name="firstconsenttime" expr="start_time()"/>
+							<assign name="sub_flag" expr="'true'"/>
+							<goto next="#SubOptionDoubleconfirm_secondskip"></goto>
+						<else/>
+							<goto next="#SubOption"/>
+						</if>
+				</if>
+					
+		
+<!--************************************************************************************-->
+
+		 <assign name="direct_status" expr="'1'" />
+		
+
+		<goto next="#SubOption"/>
+	</block>
+     </form>
+	
+	
+	<form id="SubOption">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start34" version="1.0">
+						<rule id="start34" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+					<prompt bargein="true" timeout="3s" cond="(operator=='tatm' || operator=='virm')"> 
+						<!--<audio expr="promptspath_54646+'/'+lang+'/subintro_tata.wav'"/>-->	
+						<audio expr="promptspath_54646+'/'+lang+'/subintro_546460_chat_35.wav'"/>
+					</prompt>
+					<prompt bargein="true" timeout="3s" cond="(operator=='tatc')">
+						<!--<audio expr="promptspath_54646+'/'+lang+'/subintro_cdma.wav'"/>-->	
+						<audio expr="promptspath_54646+'/'+lang+'/subintro_546460_chat_35.wav'"/>
+					</prompt>
+					<prompt bargein="true" timeout="3s" cond="(operator=='relc' || operator=='relm') &amp;&amp; DNIS=='546460'">
+						<audio expr="promptspath_54646+'/'+lang+'/subintro_546460_chat_30.wav'"/>	
+					</prompt>
+					<prompt bargein="true" timeout="3s" cond="(operator!='tatm' &amp;&amp; operator!='tatc' &amp;&amp; operator!='virm' &amp;&amp; operator!='relc' &amp;&amp; operator!='relm')">	
+						<audio expr="promptspath_54646+'/'+lang+'/subintro.wav'"/>	
+					</prompt>	
+
+					
+
+			<filled>
+				<if cond="choice=='1'">
+					<if cond="(operator=='tatc' || operator=='tatm' || operator=='virm')">
+							 <assign name="firstconsent" expr="'Y'"/>
+                               			 <assign name="firstconsenttime" expr="start_time()"/>
+                               		 	<assign name="sub_flag" expr="'true'"/>
+						 	<goto next="#SubOptionDoubleconfirm"></goto>
+					<elseif cond="operator=='unim'"/>
+							<assign name="firstconsent" expr="'Y'"/>
+							<assign name="firstconsenttime" expr="start_time()"/>
+							<assign name="sub_flag" expr="'true'"/>	
+							
+						<if cond="double_switch=='1' &amp;&amp; skip_level=='2'">
+							<assign name="firstconsent" expr="'Switchlevel-2'"/>
+							<assign name="firstconsenttime" expr="start_time()"/>
+							<assign name="sub_flag" expr="'true'"/>
+							<goto next="#SubOptionDoubleconfirm_secondskip"></goto>
+						<else/>
+							<goto next="#SubOptionDoubleconfirm_uninor"></goto>
+						</if>
+					<else/>
+					     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+					     <goto next="#SubRequest"></goto>
+					</if>
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+				<script> 					 
+					balance=500*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>	
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>
+			</if>
+
+			<if cond="directaccess=='TRUE'">
+				<goto next="../Hungama_Saguni/Hungama_saguni_end.vxml"/>
+			<else/>
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+
+			
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+				<script> 					 
+					balance=500*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>	
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>
+			</if>
+
+			<if cond="directaccess=='TRUE'">
+				<goto next="../Hungama_Saguni/Hungama_saguni_end.vxml"/>
+			<else/>
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+		</nomatch>
+	</form>
+	<form id="SubOptionDoubleconfirm">
+				<block>
+
+						      <if cond="operator=='tatm'">
+								<assign name="productID" expr="'GSMHMP30'"/>
+							<elseif cond="operator=='tatc'"/>
+								<assign name="productID" expr="'CDMAGSMHMP30'"/>
+							<else/>
+								<assign name="productID" expr="'GSMHMP30'"/>
+
+							</if>
+							<assign name="pName" expr="'Entertainment Portal'"/>
+
+							<assign name="CpId" expr="'hug'"/>
+							<assign name="CpPwd" expr="'hug@8910'"/>
+							<assign name="CpName" expr="'Hungama'"/>
+							<assign name="reqMode" expr="'Hungama'"/>	
+							<assign name="Ivr_approach" expr="'VXML'"/>
+							<assign name="NetworkId" expr="'ISDNPRI'"/>
+							<assign name="circleId" expr="circle"/>
+							<assign name="trans_id" expr="gettransidtime()"/>
+
+							<assign name="Lang_A" expr="'F'"/>
+							<assign name="reqType" expr="'Event'"/>
+
+							<assign name="ismID" expr="'16'"/>
+							<assign name="transID" expr="C_Start"/>
+
+							<script>
+								pPrice=amt*100;
+							</script>
+
+							<if cond="amt=='35'">
+								<assign name="pVal" expr="'35'"/>
+							</if>
+
+
+							<if cond="lang=='01'">
+								<assign name="Lang" expr="'Hin'"/>
+							<elseif cond="lang=='02'"/>
+								<assign name="Lang" expr="'Eng'"/>
+							<elseif cond="lang=='11'"/>
+								<assign name="Lang" expr="'Mar'"/>
+							<elseif cond="lang=='10'"/>
+								<assign name="Lang" expr="'Kan'"/>
+							<elseif cond="lang=='08'"/>
+								<assign name="Lang" expr="'Tel'"/>
+							<elseif cond="lang=='09'"/>
+								<assign name="Lang" expr="'Mal'"/>
+							<elseif cond="lang=='07'"/>
+								<assign name="Lang" expr="'Tam'"/>
+							<elseif cond="lang=='13'"/>
+								<assign name="Lang" expr="'Ori'"/>
+							<elseif cond="lang=='06'"/>
+								<assign name="Lang" expr="'Ben'"/>
+							<elseif cond="lang=='12'"/>
+								<assign name="Lang" expr="'Guj'"/>
+							<elseif cond="lang=='17'"/>
+								<assign name="Lang" expr="'Asm'"/>
+							<elseif cond="lang=='18'"/>
+								<assign name="Lang" expr="'Maw'"/>
+							<elseif cond="lang=='03'"/>
+								<assign name="Lang" expr="'Pun'"/>
+							<elseif cond="lang=='05'"/>
+								<assign name="Lang" expr="'Har'"/>
+							<else/>
+								<assign name="Lang" expr="'Hin'"/>
+							</if>       
+
+				
+		</block>
+					<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.80:8091/API/CCG?MSISDN=91'+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;reqMode=IVR&amp;Ivr_approach=VXML&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID=16&amp;transID='+trans_id+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpName='+CpName+'&amp;CpPwd='+CpPwd+'&amp;Songname=abc'">			
+
+						<filled>
+							<assign name="secondconsent" expr="'Y'"/>
+							<assign name="secondconsenttime" expr="start_time()"/>
+							<assign name="ccgresult" expr="confirmUserChoice.CCGResponse"/>
+							<assign name="CPTID" expr="trans_id"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/TATA_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=546460&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+trans_id+'&amp;ccgresult='+confirmUserChoice.CCGResponse"/> 
+
+							<log>Confirmation page</log>
+							<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+							<log>back from the confirmation app, the CCGRESPONSE:<value expr="confirmUserChoice.CCGResponse"/></log>
+							<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userinput"/></log>
+							<log>back from the confirmation app, the user tranId:<value expr="confirmUserChoice.tranId"/></log>
+							<if cond="confirmUserChoice.CCGResponse=='Success'">
+								<goto next="#subscription"/>
+							<else/>
+								<goto next="Hungama_54646_End.vxml"/>
+							</if>			
+						</filled>
+					</subdialog>
+				</form>
+	<form id="SubOptionDoubleconfirm_uninor">
+			<catch event="error">
+				<assign name="MyError" expr="_event"  />
+				<assign name="MyErrorMsg" expr="_message.replace(/\s+/g,'-')"/>
+				<log>MY ERROR VALUES:<value expr="MyError"/></log>
+				<log>MY uninorretry_counter values:<value expr="uninorretry_counter"/></log>
+				 <assign name="MyError" expr="_event"  />
+					 <if cond="uninorretry_counter=='3'">
+						<goto next="Hungama_54646_End.vxml"/>
+					 <else/>
+						<goto next="#SubOptionDoubleconfirm_uninor"/>
+					  </if>
+			</catch>
+			<block>
+			<script>
+				PATH=promptspath_54646+'/'+lang;
+				uninorretry_counter=uninorretry_counter+1;
+			</script>
+				<assign name="PATH" expr="promptspath_54646+'/'+lang"/>
+				<assign name="SCHN" expr="'IVR'"/>
+				<assign name="CP" expr="'HUNGAMA'"/>
+				<assign name="MSISDN" expr="ANI"/>
+				<assign name="CPPID" expr="'HUI0002105'"/>
+				<assign name="PRODTYPE" expr="'Music'"/>	
+				<assign name="PMARKNAME" expr="'Hungama Entertainment Portal'"/>
+				<assign name="PRICE" expr="'30'"/>
+				<assign name="SE" expr="'HUNGAMA'"/>
+				<assign name="CPTID" expr="gettransidtime()"/>
+				<assign name="DT" expr="getUNIMDT()"/>
+				<assign name="PD" expr="'movies new songs and movie reviews'"/>
+				<assign name="SCODE" expr="'songid'"/>
+				<assign name="RSV" expr="'rsv'"/>
+				<assign name="RSV2" expr="'rsv2'"/>
+				<script>
+					PRICE=amt*100;
+				</script>
+				<log expr="'PATH @@@@@@@@@ '+PATH"></log>
+				<log expr="'DT @@@@@@@@@ '+DT"></log>
+				<log expr="'CPTID @@@@@@@@@ '+CPTID"></log>
+				<log expr="'PRICE @@@@@@@@@ '+PRICE"></log>
+				<if cond="lang=='01'">
+					<assign name="LANG" expr="'HIN'"/>
+				<elseif cond="lang=='02'"/>
+					<assign name="LANG" expr="'ENG'"/>
+				<elseif cond="lang=='11'"/>
+					<assign name="LANG" expr="'MAR'"/>
+				<elseif cond="lang=='10'"/>
+					<assign name="LANG" expr="'KAN'"/>
+				<elseif cond="lang=='08'"/>
+					<assign name="LANG" expr="'TEL'"/>
+				<elseif cond="lang=='09'"/>
+					<assign name="LANG" expr="'MAL'"/>
+				<elseif cond="lang=='07'"/>
+					<assign name="LANG" expr="'TAM'"/>
+				<elseif cond="lang=='13'"/>
+					<assign name="LANG" expr="'ORI'"/>
+				<elseif cond="lang=='06'"/>
+					<assign name="LANG" expr="'BEN'"/>
+				<elseif cond="lang=='12'"/>
+					<assign name="LANG" expr="'GUJ'"/>
+				<elseif cond="lang=='17'"/>
+					<assign name="LANG" expr="'ASM'"/>
+				<elseif cond="lang=='18'"/>
+					<assign name="LANG" expr="'MAW'"/>
+				<elseif cond="lang=='03'"/>
+					<assign name="LANG" expr="'PUN'"/>
+				<elseif cond="lang=='05'"/>
+					<assign name="LANG" expr="'HAR'"/>
+				<else/>
+					<assign name="LANG" expr="'HIN'"/>
+				</if> 
+      
+		</block>
+
+			<subdialog name="confirmUserChoice" srcexpr="'http://180.178.28.62:7001/IVR/SecondConsentIVRRequestSyncPS?PATH='+PATH+'&amp;LANG='+LANG+'&amp;SCHN='+SCHN+'&amp;CP='+CP+'&amp;MSISDN='+MSISDN+'&amp;CPPID='+CPPID+'&amp;PRODTYPE='+PRODTYPE+'&amp;PMARKNAME='+PMARKNAME+'&amp;PRICE='+PRICE+'&amp;SE='+SE+'&amp;CPTID='+CPTID+'&amp;DT='+DT+'&amp;PD='+PD+'&amp;SCODE='+SCODE+'&amp;RSV='+RSV+'&amp;RSV2='+RSV2">			
+			<filled>
+					<assign name="secondconsent" expr="'Y'"/>
+					<assign name="secondconsenttime" expr="start_time()"/>
+					<assign name="ccgresult" expr="confirmUserChoice.result"/>
+					<assign name="pressdtmf" expr="confirmUserChoice.PRESSED_DTMF"/>
+
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/Uninor_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=546460&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+CPTID+'&amp;ccgresult='+confirmUserChoice.result+'&amp;ccgdtmf='+confirmUserChoice.PRESSED_DTMF"/> 
+					<log>Confirmation page</log>
+					<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+					<log>back from the confirmation app, the PRESSED_DTMF:<value expr="confirmUserChoice.PRESSED_DTMF"/></log>
+						<log>back from the confirmation app, the response:<value expr="confirmUserChoice.result"/></log>
+					<if cond="confirmUserChoice.result=='success'">
+						  <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+						<script>
+							call_BalenceMinute=starttime();
+						</script>
+					         <goto next="#BillStatus"></goto>
+					<else/>
+						<goto next="Hungama_54646_End.vxml"/>
+
+					</if>			
+			</filled>
+		</subdialog>
+	</form>	
+	
+	<form id="SubOptionDoubleconfirm_secondskip">
+	<catch event="error">
+				<assign name="MyError" expr="_event"  />
+				<assign name="MyErrorMsg" expr="_message.replace(/\s+/g,'-')"/>
+				<log>MY ERROR VALUES:<value expr="MyError"/></log>
+				<log>MY uninorretry_counter values:<value expr="uninorretry_counter"/></log>
+				 <assign name="MyError" expr="_event"  />
+					 <if cond="uninorretry_counter=='3'">
+						<goto next="Hungama_54646_End.vxml"/>
+					 <else/>
+						<goto next="#SubOptionDoubleconfirm_secondskip"/>
+					  </if>
+		</catch>
+				<block>
+				<script>
+					PATH=promptspath_54646+'/'+lang;
+					uninorretry_counter=uninorretry_counter+1;
+				</script>
+					<assign name="PATH" expr="promptspath_54646+'/'+lang"/>
+					<assign name="SCHN" expr="'IVR'"/>
+					<assign name="CP" expr="'HUNGAMA'"/>
+					<assign name="MSISDN" expr="ANI"/>
+					<assign name="CPPID" expr="'HUI0002105'"/>
+					<assign name="PRODTYPE" expr="'Music'"/>	
+					<assign name="PMARKNAME" expr="'Hungama Entertainment Portal'"/>
+					<assign name="PRICE" expr="'30'"/>
+					<assign name="SE" expr="'HUNGAMA'"/>
+					<assign name="CPTID" expr="gettransidtime()"/>
+					<assign name="DT" expr="getUNIMDT()"/>
+					<assign name="PD" expr="'movies new songs and movie reviews'"/>
+					<assign name="SCODE" expr="'songid'"/>
+					<assign name="RSV" expr="'rsv'"/>
+					<assign name="RSV2" expr="'rsv2'"/>
+					<script>
+						PRICE=amt*100;
+					</script>
+					<log expr="'PATH @@@@@@@@@ '+PATH"></log>
+					<log expr="'DT @@@@@@@@@ '+DT"></log>
+					<log expr="'CPTID @@@@@@@@@ '+CPTID"></log>
+					<log expr="'PRICE @@@@@@@@@ '+PRICE"></log>
+					<if cond="lang=='01'">
+						<assign name="LANG" expr="'HIN'"/>
+					<elseif cond="lang=='02'"/>
+						<assign name="LANG" expr="'ENG'"/>
+					<elseif cond="lang=='11'"/>
+						<assign name="LANG" expr="'MAR'"/>
+					<elseif cond="lang=='10'"/>
+						<assign name="LANG" expr="'KAN'"/>
+					<elseif cond="lang=='08'"/>
+						<assign name="LANG" expr="'TEL'"/>
+					<elseif cond="lang=='09'"/>
+						<assign name="LANG" expr="'MAL'"/>
+					<elseif cond="lang=='07'"/>
+						<assign name="LANG" expr="'TAM'"/>
+					<elseif cond="lang=='13'"/>
+						<assign name="LANG" expr="'ORI'"/>
+					<elseif cond="lang=='06'"/>
+						<assign name="LANG" expr="'BEN'"/>
+					<elseif cond="lang=='12'"/>
+						<assign name="LANG" expr="'GUJ'"/>
+					<elseif cond="lang=='17'"/>
+						<assign name="LANG" expr="'ASM'"/>
+					<elseif cond="lang=='18'"/>
+						<assign name="LANG" expr="'MAW'"/>
+					<elseif cond="lang=='03'"/>
+						<assign name="LANG" expr="'PUN'"/>
+					<elseif cond="lang=='05'"/>
+						<assign name="LANG" expr="'HAR'"/>
+					<else/>
+						<assign name="LANG" expr="'HIN'"/>
+					</if>
+					<assign name="secondconsent" expr="'Y'"/>
+					<assign name="secondconsenttime" expr="start_time()"/>
+					<assign name="ccgresult" expr="'success'"/>
+					<assign name="pressdtmf" expr="'9'"/>
+					
+					<script srcexpr="'http://192.168.100.227:8084/hungama/sendconsent?PATH='+PATH+'&amp;LANG='+LANG+'&amp;SCHN='+SCHN+'&amp;CP='+CP+'&amp;MSISDN='+MSISDN+'&amp;CPPID='+CPPID+'&amp;PRODTYPE='+PRODTYPE+'&amp;PMARKNAME='+PMARKNAME+'&amp;PRICE='+PRICE+'&amp;SE='+SE+'&amp;CPTID='+CPTID+'&amp;DT='+DT+'&amp;PD='+PD+'&amp;SCODE='+SCODE+'&amp;RSV='+RSV+'&amp;RSV2='+RSV2"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/Uninor_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=546460&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+CPTID+'&amp;ccgresult=success&amp;ccgdtmf=9'"/> 
+					
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+					<script>
+						call_BalenceMinute=starttime();
+					</script>
+					<goto next="#BillStatus"></goto>
+			</block>
+	
+				
+				
+	</form>	
+<form id="BillStatus">
+
+		<field name="choice1">
+			<grammar mode="dtmf" root="start39" version="1.0">
+						<rule id="start39" scope="public" >
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="1s">	
+				<audio expr="promptspath_54646+'/'+lang+'/charging_wait.wav'"/>
+			</prompt> 
+			<prompt bargein="true" timeout="1s">	
+				<audio expr="promptspath_54646+'/01/54646BGM.wav'"/>
+			</prompt>
+						
+			<filled>
+				 <script>
+					total_used_balnce=rim(call_BalenceMinute);
+				</script>
+						   <log expr="'@@@@@@ total_used_balnce balance is '+total_used_balnce"/>
+							  <if cond="total_used_balnce &gt;= '60'">          
+								 <goto next="#BillStatusChk"/>
+							<else/>
+								<goto next="#BillStatus"/>
+							   </if>   
+									
+				
+			</filled>
+			<noinput>
+				<script>
+					total_used_balnce=rim(call_BalenceMinute);
+				</script>
+						   <log expr="'@@@@@@ total_used_balnce balance is '+total_used_balnce"/>
+							  <if cond="total_used_balnce &gt;= '60'">          
+								 <goto next="#BillStatusChk"/>
+							  <else/>
+								<goto next="#BillStatus"/>
+							   </if>   
+			</noinput>
+			<nomatch>
+				<script>
+					total_used_balnce=rim(call_BalenceMinute);
+				</script>
+						   <log expr="'@@@@@@ total_used_balnce balance is '+total_used_balnce"/>
+						  <if cond="total_used_balnce &gt;= '60'">          
+								 <goto next="#BillStatusChk"/>
+						    <else/>
+								<goto next="#BillStatus"/>
+						   </if>   
+			</nomatch>
+					
+		</field>
+	</form>
+
+	<form id="subscription">
+			<block>			
+				 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id+'&amp;INPARAM[7]='+trans_id"/>
+				<goto next="#SubRequest"/>	
+			</block>
+	</form>
+
+	
+
+		
+	<form id="SubRequest">
+		<block>			
+			<prompt bargein="false" timeout="0s" cond="direct_status=='1'">
+				<audio expr="promptspath_54646+'/'+lang+'/charging_wait.wav'"/>
+			</prompt>
+			<goto next="#BillStatusChk"/>	
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+							if(j==4)
+						        modesub = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'lang @@@@@@@@@ '+lang"></log>
+			<log expr="'balance @@@@@@@@@ '+balance"></log>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s" cond="direct_status=='1'">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+			
+				<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+					<script> 					 
+						balance=500*60;
+					        timerflag=1;      
+				        </script>							
+			                <script>
+						<![CDATA[
+			     				if(timerflag==1)
+							start_BalenceMinute=starttime();
+						]]>	 	
+					</script>
+					<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				</if>
+
+				<goto next="Hungama_54646_End.vxml"/>
+
+			<elseif cond="usr_status=='1'"/>
+				<prompt bargein="true" timeout="0s" cond="direct_status=='1'">
+					<audio expr="promptspath_54646+'/'+lang+'/thank_sub.wav'"/>
+				</prompt>
+
+				<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+					<script> 					 
+						balance=500*60;
+					        timerflag=1;      
+				        </script>							
+			                <script>
+						<![CDATA[
+			     				if(timerflag==1)
+							start_BalenceMinute=starttime();
+						]]>	 	
+					</script>
+					<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				</if>
+
+				<script>
+					timerflag=1;
+					balance=balance*60;
+				</script>
+				<assign name="start_BalenceMinute" expr="starttime()"/>
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>	
+			 <elseif cond="usr_status=='5'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_54646_End.vxml"></goto>
+
+			<else/> 
+				<prompt bargein="true" timeout="0s" cond="direct_status=='1'">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				
+				<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+					<script> 					 
+						balance=500*60;
+					        timerflag=1;      
+				        </script>							
+			                <script>
+						<![CDATA[
+			     				if(timerflag==1)
+							start_BalenceMinute=starttime();
+						]]>	 	
+					</script>
+					<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				</if>
+
+
+				<if cond="directaccess=='TRUE'">
+					<goto next="../Hungama_Saguni/Hungama_saguni_end.vxml"/>
+				<else/>
+					<goto next="Hungama_54646_End.vxml"></goto>
+				</if>
+			</if>
+		</block>
+	</form>
+</vxml>

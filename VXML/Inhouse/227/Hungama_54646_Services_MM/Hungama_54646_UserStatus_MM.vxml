@@ -1,0 +1,679 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_54646_UserStatus_MM.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="blacklist_status" expr="0"/> 
+<var name="ad_compagin" expr="'0'"/>
+
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+		var ciropr=new Object();
+		
+	</script>
+
+	<form id="CIRCLEID">
+		<block>
+		<assign name="Section_Name" expr="'USER_STATUS_CHECK'"/>
+				<assign name="C_Start" expr="start_time()"/>
+				<script>  
+					realDNIS=session.connection.local.uri;                   
+					ANI=session.connection.remote.uri;						   
+                </script>
+                <script>
+					var length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				</script>                             			    		        		                                      		   
+            	<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+            	<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+        		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+				<log> operator-circle identification </log>
+				
+				<!--<script srcexpr="'http://192.168.100.227:8082/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+				
+				<assign name="ciropr" expr="ciropr1.value"/>
+				<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+				<script>
+					var songcheck=ciropr.split("#");
+					operator=songcheck[1];
+					circle=songcheck[2];
+				</script>								      					       
+				<log>circle  is	<value expr="circle"/>    </log>
+				<log>operator is <value expr="operator"/>    </log>
+                		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>-->
+
+<script srcexpr="'http://192.168.100.226:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							circle = out_string[j];
+
+						  }
+
+					]]>
+
+		</script>
+
+	 <log> FIRST DB FETCH circle  is	<value expr="circle"/>    </log>
+	 <if cond="circle=='oth'">
+		<script srcexpr="'http://192.168.100.226:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+		<assign name="DNIS" expr="realDNIS"/>
+		<assign name="operator" expr="'und'"/>
+		<goto next="Hungama_54646_End.vxml"></goto>
+
+	 </if>
+
+				
+				
+
+
+<if cond="ANI=='9167610350'">
+	<assign name="circle" expr="'tnu'"/>
+	<assign name="operator" expr="'tatm'"/>
+	<assign name="DNIS" expr="'546469'"/>
+<assign name="realDNIS" expr="'011546469'"/>
+	
+	<log expr="'callingggggDNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+	<log expr="'callingggggrealDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+</if>
+
+
+								<if cond="realDNIS=='66291342'">
+									<assign name="DNIS" expr="'546462'"/>
+									<assign name="operator" expr="'unim'"/>
+								<elseif cond="realDNIS=='546462'"/>
+									 <assign name="DNIS" expr="'546462'"/>
+									 <assign name="operator" expr="'relm'"/>
+								<elseif cond="realDNIS=='011546462'"/>
+									 <assign name="DNIS" expr="'546462'"/>
+									 <assign name="operator" expr="'tatm'"/>		   
+								<elseif cond="realDNIS=='0111546462'"/>
+									 <assign name="DNIS" expr="'546462'"/>
+									 <assign name="operator" expr="'tatc'"/>
+								<elseif cond="realDNIS=='66291082'"/>
+									<assign name="DNIS" expr="'546462'"/>
+									<assign name="operator" expr="'airc'"/>
+								<elseif cond="realDNIS=='66291343'"/>
+									<assign name="DNIS" expr="'546463'"/>
+									<assign name="operator" expr="'unim'"/>
+								<elseif cond="realDNIS=='546463'"/>
+									 <assign name="DNIS" expr="'546463'"/>
+									 <assign name="operator" expr="'relm'"/>
+								<elseif cond="realDNIS=='011546463'"/>
+									 <assign name="DNIS" expr="'546463'"/>
+									 <assign name="operator" expr="'tatm'"/>		   
+								<elseif cond="realDNIS=='0111546463'"/>
+									 <assign name="DNIS" expr="'546463'"/>
+									 <assign name="operator" expr="'tatc'"/>
+								<elseif cond="realDNIS=='66291083'"/>
+									<assign name="DNIS" expr="'546463'"/>
+									<assign name="operator" expr="'airc'"/>
+									<submit expr="'../Hungama_ganesh_Chaturthi/Hungama_5464637_UserStatus.vxml'"/>
+								<elseif cond="realDNIS=='66291349'"/>
+									<assign name="DNIS" expr="'546469'"/>
+									<assign name="operator" expr="'unim'"/>
+								<elseif cond="realDNIS=='546469'"/>
+									 <assign name="DNIS" expr="'546469'"/>
+									 <assign name="operator" expr="'relm'"/>
+								<elseif cond="realDNIS=='011546469'"/>
+									 <assign name="DNIS" expr="'546469'"/>
+									 <assign name="operator" expr="'tatm'"/>		   
+								<elseif cond="realDNIS=='0111546469'"/>
+									 <assign name="DNIS" expr="'546469'"/>
+									 <assign name="operator" expr="'tatc'"/>
+								<elseif cond="realDNIS=='66291089'"/>
+									<assign name="DNIS" expr="'546469'"/>
+									<assign name="operator" expr="'airc'"/>
+								<elseif cond="realDNIS=='0115464691'"/>
+									<assign name="DNIS" expr="'5464691'"/>
+									<assign name="operator" expr="'tatm'"/>
+								<elseif cond="realDNIS=='0115464692'"/>
+									<assign name="DNIS" expr="'5464692'"/>
+									<assign name="operator" expr="'tatm'"/>
+								<elseif cond="realDNIS=='0115464695'"/>
+									<assign name="DNIS" expr="'5464695'"/>
+									<assign name="operator" expr="'tatm'"/>
+								<elseif cond="realDNIS=='01115464695'"/>
+									 <assign name="DNIS" expr="'5464695'"/>
+									 <assign name="operator" expr="'tatc'"/>
+								<elseif cond="realDNIS=='66291431'"/>
+									<assign name="DNIS" expr="'5464631'"/>
+									<assign name="operator" expr="'unim'"/>
+								<elseif cond="realDNIS=='66291432'"/>
+									<assign name="DNIS" expr="'5464632'"/>
+									<assign name="operator" expr="'unim'"/>
+								<elseif cond="realDNIS=='66291437'"/>
+									<assign name="DNIS" expr="'5464637'"/>
+									<assign name="operator" expr="'unim'"/>
+								<elseif cond="realDNIS=='66291438'"/>
+									<assign name="DNIS" expr="'5464638'"/>
+									<assign name="operator" expr="'unim'"/>
+								<elseif cond="realDNIS=='66291435'"/>
+									<assign name="DNIS" expr="'5464635'"/>
+									<assign name="operator" expr="'unim'"/>
+								<elseif cond="realDNIS=='66291436'"/>
+									<assign name="DNIS" expr="'5464636'"/>
+									<assign name="operator" expr="'unim'"/>
+								<elseif cond="realDNIS=='66291430'"/>
+									<assign name="DNIS" expr="'5464630'"/>
+									<assign name="operator" expr="'unim'"/>
+
+								<!--<elseif cond="realDNIS=='66291492'"/>
+									<assign name="DNIS" expr="'5464692'"/>
+									<assign name="operator" expr="'tatm'"/>-->
+			        				</if>		
+	        				
+
+						
+			       <log expr="'callingggggDNIS ISSSSSSSSSSSSSSSSSSSSSSSS@@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+ 
+				
+				<if cond="operator=='relm' || operator=='relc'">
+					<assign name="dbservlet" expr="'relhungama_dbinteraction'"/>
+				<elseif cond="operator=='unim'"/>
+					<assign name="dbservlet" expr="'unihungama_dbinteraction'"/>
+
+<if cond="operator=='unim'">
+<!-- Check for Black list Start -->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>
+	<script>
+		 blacklist_status = out_string[0];
+	</script>
+	<log>blacklist_status issss:<value expr="blacklist_status"/></log>
+
+	<if cond="blacklist_status == '1'">
+		 <assign name="Section_Name" expr="'Black_list'"/>
+		 <assign name="modesub" expr="'ND'"/>
+		 <goto next="Hungama_54646_End.vxml"/>
+	</if>
+</if>
+<if cond="(operator=='relm' || operator=='relc')">
+<!-- Check for Black list Start -->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=6'"/>
+	<script>
+		 blacklist_status = out_string[0];
+	</script>
+	<log>blacklist_status issss:<value expr="blacklist_status"/></log>
+
+	<if cond="blacklist_status == '1'">
+		 <assign name="Section_Name" expr="'Black_list'"/>
+		 <assign name="modesub" expr="'ND'"/>
+		 <goto next="Hungama_54646_End.vxml"/>
+	</if>
+</if>
+
+
+		
+				<elseif cond="operator=='tatm'"/>
+					<assign name="dbservlet" expr="'tatmhungama_dbinteraction'"/>
+				<elseif cond="operator=='tatc'"/>
+					<assign name="dbservlet" expr="'tatchungama_dbinteraction'"/>
+				<elseif cond="operator=='airc'"/>
+					<assign name="dbservlet" expr="'airchungama_dbinteraction'"/>
+		<if cond="ad_compagin=='1'">
+				<if cond="((DNIS=='546462'  || DNIS=='546463') &amp;&amp; (circle=='upe' || circle=='bih' || circle=='wbl')) || ((DNIS=='546462'  || DNIS=='546463') &amp;&amp; (ANI=='8586967046' || ANI=='9999497837' || ANI=='9999245707' || ANI=='9971108966' || ANI=='9582006226'))">
+					<assign name="Ad_switch" expr="'1'"/>
+					<assign name="add_starttime1" expr="starttime()"/>
+					<log>add_starttime for msisdn : <value expr="add_starttime1"/></log>
+					<assign name="AD_name" expr="'add1'"/>
+					<goto next="#ADDUSERSTAUS"></goto>
+				<else/>
+					<goto next="#USRSTATUS_TOLL"></goto>
+				</if>
+		</if>
+
+					
+				<else/>
+
+					<assign name="dbservlet" expr="'unihungama_dbinteraction'"/>
+<if cond="operator=='unim'">
+<!-- Check for Black list Start -->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>
+	<script>
+		 blacklist_status = out_string[0];
+	</script>
+	<log>blacklist_status issss:<value expr="blacklist_status"/></log>
+
+	<if cond="blacklist_status == '1'">
+		 <assign name="Section_Name" expr="'Black_list'"/>
+		 <assign name="modesub" expr="'ND'"/>
+		 <goto next="Hungama_54646_End.vxml"/>
+	</if>
+</if>
+				</if>
+	<goto next="#USRSTATUS"></goto>
+
+		<if cond="ad_compagin=='1'">	
+				<if cond="((DNIS=='546462'  || DNIS=='546463') &amp;&amp; (circle=='upe' || circle=='bih' || circle=='wbl')) || ((DNIS=='546462'  || DNIS=='546463') &amp;&amp; (ANI=='8586967046' || ANI=='9999497837' || ANI=='9999245707' || ANI=='9971108966' || ANI=='9582006226'))">
+					<assign name="Ad_switch" expr="'1'"/>
+					<assign name="add_starttime1" expr="starttime()"/>
+					<log>add_starttime for msisdn : <value expr="add_starttime1"/></log>
+					<assign name="AD_name" expr="'add1'"/>
+					<goto next="#ADDUSERSTAUS"></goto>
+				<else/>
+					<goto next="#USRSTATUS"></goto>
+				</if>
+		 </if>
+		<goto next="#USRSTATUS"></goto>
+
+		</block>		
+	</form>
+	
+<form id="ADDUSERSTAUS">
+			<field name="choice">
+					<grammar mode="dtmf" root="start36" version="1.0">
+						<rule id="start36" scope="public" >
+							<one-of>
+								 <item>  1  </item>
+		
+							</one-of>
+						</rule>
+					</grammar>
+					
+					<prompt bargein="false" timeout="0s">	
+						<audio expr="ADPrompt_Path+AD_name+'.wav'"/>
+					</prompt> 
+					<filled>
+						<if cond="choice=='1'">
+							<assign name="block_flag" expr="'1'"/>
+							<assign name="add_endtime1" expr="rim(add_starttime1)"/>
+							<log>add_endtime for msisdn : <value expr="add_endtime1"/></log>
+							<if cond="operator=='airc'">
+								<goto next="#USRSTATUS_TOLL"></goto>
+							<else/>
+								<goto next="#USRSTATUS"></goto>
+							</if>
+						</if>
+					</filled>
+					<noinput>
+						<assign name="block_flag" expr="'1'"/>
+						<assign name="add_endtime1" expr="rim(add_starttime1)"/>
+						<log>add_endtime for msisdn : <value expr="add_endtime1"/></log>
+							<if cond="operator=='airc'">
+								<goto next="#USRSTATUS_TOLL"></goto>
+							<else/>
+								<goto next="#USRSTATUS"></goto>
+							</if>
+					</noinput>
+				
+					<nomatch>
+						<assign name="block_flag" expr="'1'"/>
+						<assign name="add_endtime1" expr="rim(add_starttime1)"/>
+						<log>add_endtime for msisdn : <value expr="add_endtime1"/></log>
+							<if cond="operator=='airc'">
+								<goto next="#USRSTATUS_TOLL"></goto>
+							<else/>
+								<goto next="#USRSTATUS"></goto>
+							</if>
+					</nomatch>
+				
+				
+				</field>
+</form>
+
+	<form id="USRSTATUS">
+		<block>
+		
+<if cond="(operator=='tatm' || operator=='tatc' || operator=='virm')">
+
+<if cond="(circle=='apd')">
+	<assign name="lang" expr="'08'"></assign>	
+<elseif cond="(circle=='kan')"/>
+	<assign name="lang" expr="'10'"></assign>
+<elseif cond="(circle=='tnu')"/>
+	<assign name="lang" expr="'07'"></assign>
+<elseif cond="(circle=='kol' || circle=='wbl')"/>
+	<assign name="lang" expr="'06'"></assign>
+<elseif cond="(circle=='ker' || circle=='ori')"/>
+	<assign name="lang" expr="'02'"></assign>
+<else/>
+	<assign name="lang" expr="'01'"></assign>
+</if>
+
+</if>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						       if(j==3)
+						 	      moviectr = out_string[j];
+							 if(j==4)
+						 	      modesub = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'modesub  @@@@@@@@@ '+modesub"></log>
+			<log expr="'servlet_path @@@@@@@@@ '+servlet_path"></log>	
+			<log expr="'dbservlet @@@@@@@@@ '+dbservlet"></log>
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+			<log expr="'contentlog=='+contentlog"></log>
+			<if cond="usr_status=='-1'">
+					<if cond="(circle=='tnu'  || circle=='chn') &amp;&amp; operator=='tatm'">
+					
+						<assign name="lang" expr="'07'"/>
+						<!--<prompt bargein="true" timeout="1s">	
+							<audio expr="promptspath_54646+'/'+lang+'/welcome_546469.wav'"/>
+						</prompt>-->
+							<if cond="lang=='07'">
+								<goto next="Hungama_54646_UserSub_MM_popcorn.vxml"></goto>
+
+							</if>
+
+						<goto next="Hungama_54646_UserSub_MM.vxml"/>
+					<else/>
+						<goto next="Hungama_54646_NewUser_MM.vxml"></goto>
+					</if>
+			<elseif cond="usr_status=='7' &amp;&amp; (operator=='relm' || operator=='relc')"/>
+				<script> 					 
+					balance=balance*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+				<if cond="lang=='99'">
+					
+					<goto next="Hungama_54646_NewUser_MM.vxml"></goto>	
+				<else/>
+					
+						<if cond="lang=='01'">
+							<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+						<elseif cond="lang=='02'" />
+       	                 				<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+						<elseif cond="lang=='06'" />
+                     	   				<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+						<elseif cond="lang=='07'" />
+                        				<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+						<elseif cond="lang=='08'" />
+       	                 				<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+						<elseif cond="lang=='10'" />
+                     	   				<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+						<else/>
+							<assign name="lang" expr="'01'"/>
+						       <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+						</if>
+						
+				
+					<if cond="DNIS=='546462'">
+						 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+					<elseif cond="DNIS=='546463'"/>
+						<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+					<elseif cond="(DNIS=='5464631' || DNIS=='5464632' || DNIS=='5464637' || DNIS=='5464638' || DNIS=='5464635' || DNIS=='5464636' || DNIS=='5464630') &amp;&amp; lang=='01'"/>
+						<goto next="Hungama_MW_PlayContent_546463_MM.vxml"></goto>
+					<elseif cond="DNIS=='546469'"/>
+						<if cond="lang=='07'">
+								<goto next="Audio_Cinema_MainMenu_546469_Popcorn.vxml"></goto>
+						</if>
+
+
+						<if cond="(circle=='tnu'  || circle=='chn') &amp;&amp; operator=='tatm'">
+								<prompt bargein="true" timeout="1s">	
+									<audio expr="promptspath_54646+'/'+lang+'/welcome_546469.wav'"/>
+								</prompt> 
+
+								<!--<prompt bargein="true" timeout="1s">	
+									<audio expr="promptspath_54646+'/'+lang+'/welcome_bosskey.wav'"/>
+								</prompt>-->
+
+
+								<goto next="Audio_Cinema_MainMenu_546469_Bosskey.vxml"></goto>
+						<else/>
+								<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+						</if>
+					<elseif cond="DNIS=='5464695' &amp;&amp; circle=='tnu'"/>
+							<prompt bargein="true" timeout="1s">	
+									<audio expr="promptspath_54646+'/'+lang+'/welcome_546469.wav'"/>
+								</prompt>
+
+							<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+
+					<elseif cond="DNIS=='5464691' || DNIS=='5464692'"/>
+						<if cond="(circle=='tnu'  || circle=='chn') &amp;&amp; operator=='tatm'">
+							<goto next="Audio_Cinema_MainMenu_546469_Bosskey.vxml"></goto>
+						<else/>
+							<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+						</if>
+							
+						
+					</if>
+					
+				</if>
+
+			<elseif cond="usr_status=='1'"/>
+				<script> 					 
+					balance=balance*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+				<if cond="lang=='99'">
+					
+					<goto next="Hungama_54646_NewUser_MM.vxml"></goto>	
+				<else/>
+					
+						<if cond="lang=='01'">
+							<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+						<elseif cond="lang=='02'" />
+       	                 				<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+						<elseif cond="lang=='06'" />
+                     	   				<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+						<elseif cond="lang=='07'" />
+                        				<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+						<elseif cond="lang=='08'" />
+       	                 				<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+						<elseif cond="lang=='10'" />
+                     	   				<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+						<else/>
+							<assign name="lang" expr="'01'"/>
+						       <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+						</if>
+						
+					<if cond="(circle=='tnu'  || circle=='chn') &amp;&amp; operator=='tatm'">
+							<assign name="lang" expr="'07'"/>
+						</if>
+					
+					<if cond="DNIS=='546462'">
+						 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+					<elseif cond="DNIS=='546463'"/>
+						<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+					<elseif cond="(DNIS=='5464631' || DNIS=='5464632' || DNIS=='5464637' || DNIS=='5464638' || DNIS=='5464635' || DNIS=='5464636' || DNIS=='5464630') &amp;&amp; lang=='01'"/>
+						<goto next="Hungama_MW_PlayContent_546463_MM.vxml"></goto>
+					<elseif cond="DNIS=='546469'"/>
+						<if cond="lang=='07'">
+								<goto next="Audio_Cinema_MainMenu_546469_Popcorn.vxml"></goto>
+
+							</if>
+
+						<if cond="(circle=='tnu'  || circle=='chn') &amp;&amp; operator=='tatm'">
+								<prompt bargein="true" timeout="1s">	
+									<audio expr="promptspath_54646+'/'+lang+'/welcome_546469.wav'"/>
+								</prompt> 
+
+								<!--<prompt bargein="true" timeout="1s">	
+									<audio expr="promptspath_54646+'/'+lang+'/welcome_bosskey.wav'"/>
+								</prompt>-->
+
+								<goto next="Audio_Cinema_MainMenu_546469_Bosskey.vxml"></goto>
+						<else/>
+								<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+						</if>
+					
+					<elseif cond="DNIS=='5464691' || DNIS=='5464692'"/>
+						<if cond="(circle=='tnu'  || circle=='chn') &amp;&amp; operator=='tatm'">
+							<goto next="Audio_Cinema_MainMenu_546469_Bosskey.vxml"></goto>
+						<else/>
+							<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+						</if>
+					<elseif cond="DNIS=='5464695' &amp;&amp; circle=='tnu'"/>
+							<prompt bargein="true" timeout="1s">	
+									<audio expr="promptspath_54646+'/'+lang+'/welcome_546469.wav'"/>
+								</prompt>
+
+							<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+		
+						
+					</if>
+					
+				</if>
+			 <elseif cond="usr_status=='5'"/>
+				<goto next="#Play_delay_charging"></goto>
+
+			<else/>
+				<if cond="lang=='99'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/01/charge_req_recd.wav'"/>
+					</prompt>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/charge_req_recd.wav'"/>
+					</prompt>
+				</if>				
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+<form id="Play_delay_charging">
+<block>
+<assign name="Section_Name" expr="'PLAY_DELAY_CHARGING'"/>
+</block>
+	<field name="mnuopt">
+	<grammar mode="dtmf" root="start171" version="1.0">
+	       <rule id="start171" scope="public">
+		 <one-of>				 
+			   <item>1</item>					  			  		      
+		 </one-of>
+	       </rule>
+	</grammar>			
+
+	<prompt bargein="true" timeout="0s" cond="lang!='99'">
+		<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+	</prompt>
+	<prompt bargein="true" timeout="0s" cond="lang=='99'">
+		<audio expr="promptspath_54646+'/01/delay_charging.wav'"/>
+	</prompt>			
+
+	<filled>
+				<goto next="Hungama_54646_End.vxml"></goto>
+	</filled>		
+
+	<noinput>
+				<goto next="Hungama_54646_End.vxml"></goto> 			     
+	</noinput>
+
+	<nomatch>			   
+				<goto next="Hungama_54646_End.vxml"></goto>             
+	</nomatch>
+	</field>
+</form>
+
+	
+	<form id="USRSTATUS_TOLL">
+			<block>
+			<assign name="Section_Name" expr="'USRSTATUS_TOLL'"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CHK_LANG&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       	usr_status = out_string[j];
+							       if(j==1)
+							       	lang = out_string[j];						      
+							  }
+	
+						]]>
+				
+				</script>
+				<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+				<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+				<log expr="'contentlog=='+contentlog"></log>
+				<if cond="usr_status=='-1'">
+					<goto next="Hungama_54646_NewUser_MM.vxml#WELNEW_TOLL"></goto>
+				<elseif cond="usr_status=='1'"/>
+					<script> 					 
+						balance=500*60;
+					        timerflag=1;      
+				        </script>							
+			                <script>
+						<![CDATA[
+			     				if(timerflag==1)
+							start_BalenceMinute=start_time();
+						]]>	 	
+					</script>
+					
+					<log expr="'lang @@@@@@@@@ '+lang"></log>
+					<log expr="'balance @@@@@@@@@ '+balance"></log>				
+					<if cond="lang=='99'">
+						<assign name="lang" expr="'01'"/>
+						<goto next="Hungama_54646_NewUser_MM.vxml#WELNEW_TOLL"></goto>	
+					<else/>
+						<if cond="lang=='01'">
+							<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+						<elseif cond="lang=='02'" />
+	                        			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+						<elseif cond="lang=='06'" />
+	                        			<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+						<elseif cond="lang=='07'" />
+	                        			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+						<elseif cond="lang=='08'" />
+	                        			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+						<elseif cond="lang=='10'" />
+	                        			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+	                        		<else/>
+	                        			<assign name="lang" expr="'01'"/>
+	                        			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+						</if>							    									
+						
+						<if cond="DNIS=='546462'">
+							 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+						<elseif cond="DNIS=='546463'"/>
+							<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+						<elseif cond="DNIS=='546469'"/>
+							<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+						</if>
+					</if>
+				<else/>
+					<goto next="Hungama_54646_NewUser_MM.vxml#WELNEW_TOLL"></goto>
+				</if>
+			</block>
+	</form>
+</vxml>

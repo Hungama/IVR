@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Audio_Cinema_MainMenu.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<var name="k" expr="0"/>
+	
+   <form id="categorymenu">
+        
+        <block>
+        	<assign name="cat" expr="'audiocinema'"/>
+		<assign name="subcat" expr="'audiocinema'"/>
+		<log>circle is:<value exps="circle"/></log>
+		<if cond="circle=='wbl' || circle=='kol'">
+			<assign name="playconfig" expr="'0621'"/>
+		<elseif cond="circle=='upe' || circle=='bih'"/>
+			<assign name="playconfig" expr="'0421'"/>
+		<elseif cond="circle=='guj' || circle=='hay' || circle=='hpd' || circle=='upw' || circle=='pub' || circle=='raj' || circle=='apd' || circle=='del' || circle=='mpd'|| circle=='mum' || circle=='mah'"/>
+			<assign name="playconfig" expr="'0121'"/>
+		<elseif cond="circle=='kar'"/>
+			<assign name="playconfig" expr="'1021'"/>
+		<elseif cond="circle=='ker'"/>
+			<assign name="playconfig" expr="'0721'"/>
+		<elseif cond="circle=='ori'"/>
+			<assign name="playconfig" expr="'1321'"/>
+		<elseif cond="circle=='chn' || circle=='tnu'"/>
+			<assign name="playconfig" expr="'0721'"/>
+		<else/>
+			<assign name="playconfig" expr="'0121'"/>	
+		</if>
+		<goto next="#loadcliptoplay"/>
+	</block>
+    </form> 
+    
+    
+    	 <form id="loadcliptoplay">
+		  <block> 
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/audiosongconfig/'+playconfig+'-clip.cfg'"/> 		  	          
+
+			<script>
+						array.length=0;
+						unike_play=0;
+			</script>
+			<!--<assign name="HEARD" expr="playconfig" />-->
+					<assign name="len" expr="favSongs.length" />
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+			
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#playing_clips"/>  					
+		   </block>
+	</form>
+
+	
+<form id="playing_clips"> 
+	<block>
+		<log>playing clips</log>
+	</block>
+		  
+	 <field name="keypadoption">               
+		    	 
+		<grammar mode="dtmf" root="start8" version="1.0">
+                   	<rule id="start8" scope="public">
+                     	<one-of>
+						<item>1</item>
+					    <item>2</item>
+						 <item>3</item>
+			                    <item>6</item>
+			                    <item>7</item>
+					            <item>8</item>
+                          		<item>9</item>
+                    	</one-of>
+                	</rule>
+               	</grammar>
+               	
+             <prompt bargein="true"  timeout="1s">
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cin_keypad_options.wav'"/>
+		</prompt> 
+				 
+        <filled>              
+            
+
+ 				<if cond="keypadoption=='1'">
+						<assign name="cat" expr="favSongs[unike_play]"/>
+			   			<assign name="playconfig" expr="favSongs[unike_play]"/>
+						<log expr="'selected cat is '+cat"></log>
+						<goto next="playContentaudiocinema.vxml"/>	
+					  	
+				 <elseif cond="keypadoption=='2'"/>
+				 		<script> unike_play=unike_play+1;</script>
+					     <goto next="#StartToPlaysongs"/>		 
+				 <elseif cond="keypadoption=='3'"/>	
+				 		<script> unike_play=unike_play-1</script>
+						<goto next="#StartToPlaysongs"/> 
+				 <elseif cond="keypadoption=='6'"/>
+				 		<goto next="#playoption"/>
+				<elseif cond="keypadoption=='7'"/>
+						<goto next="#categorymenu"/>
+				 <elseif cond="keypadoption=='8'"/>
+				 		 <goto next="Hungama_ModMainMenu.vxml"/>
+				 <elseif cond="keypadoption=='9'"/>
+						<goto next="Hungama_ModMngAccnt.vxml"/>
+				 <else/>		
+				    <goto next="#StartToPlaysongs"/> 		
+				 </if>		
+
+
+
+              </filled>
+			  
+		<noinput>	
+			     	<goto next="#StartToPlaysongs"/>	     
+              </noinput>
+	      
+	      <nomatch>   
+				        <prompt bargein="false">
+	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>          
+			               </prompt>
+				       <reprompt/>
+             </nomatch>
+          </field>		
+		
+	</form>
+	
+	
+	<form id="StartToPlaysongs">
+
+	
+				<block>
+
+						
+					  	<if cond="unike_play &gt; len-1">
+							<assign name="unike_play" expr="0" />
+						<elseif cond="unike_play &lt; 0" />
+							<assign name="unike_play" expr="len-1" />
+						</if>
+						
+						<script>
+							songcheck=array[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = array[unike_play];
+							
+						</script>
+			
+					 <assign name="song_begin" expr="starttime()"/>
+					 <assign name="song_listen" expr="'START'" />
+					
+      </block>
+		   <field name="selectoption">
+
+				    <grammar mode="dtmf" root="start9" version="1.0">
+			   		<rule id="start9" scope="public">
+			   		  <one-of>
+					      <item>1</item>
+					      <item>2</item>	
+					      <item>3</item>
+					      <item>6</item>
+						  <item>7</item>
+				       	  <item>8</item>
+					      <item>9</item>
+					 </one-of>
+			   		</rule>
+		       		    </grammar>
+			 <prompt bargein="true"  timeout="1s">
+	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cin_movie_poora_sunne.wav'"/>
+		 	  </prompt> 
+		 
+		      <prompt bargein="true"  timeout="1s">
+				 <audio expr="'http://192.168.100.212:6666/hungama/106/'+song+'-clippreview.wav'"/>	
+  	   	      </prompt> 	
+ 			
+		  
+		      <filled>
+		          <if cond="selectoption=='1'">
+					<assign name="cat" expr="favSongs[unike_play]"/>
+			   			<assign name="playconfig" expr="favSongs[unike_play]"/>
+						<log expr="'selected cat is '+cat"></log>
+						<goto next="playContentaudiocinema.vxml"/>
+					   
+				 <elseif cond="selectoption=='2'"/>
+				 		 <script> unike_play=unike_play+1;</script>
+					     <goto next="#StartToPlaysongs"/>	
+			 
+				 <elseif cond="selectoption=='3'"/>	
+				 		<script> unike_play=unike_play-1</script>
+						<goto next="#StartToPlaysongs"/> 
+				 <elseif cond="selectoption=='6'"/>
+				 		<goto next="#playoption"/>
+				<elseif cond="selectoption=='7'"/>
+						<goto next="#categorymenu"/>
+				 <elseif cond="selectoption=='8'"/>
+				 		 <goto next="Hungama_ModMainMenu.vxml"/>
+				 <elseif cond="selectoption=='9'"/>
+						<goto next="Hungama_ModMngAccnt.vxml"/>
+				 <else/>	
+				 			 
+				 	<script> unike_play=unike_play+1</script>		
+				    <goto next="#StartToPlaysongs"/> 		
+				 </if>				 
+			  </filled>				  
+		
+			   <noinput>	
+			        <script> 
+			      		unike_play=unike_play+1;
+			      	</script> 		
+				  	<goto next="#StartToPlaysongs"/> 	
+              </noinput>
+			  
+			<nomatch>   
+				        <prompt bargein="false">
+	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>          
+			               </prompt>
+				       <reprompt/>
+             </nomatch>
+			 <catch event="error.badfetch">
+				<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+song+'/54646_version2/'+playconfig+'-clip.cfg'"/>
+				<if cond="selectoption=='3'">
+					<script>unike_play=unike_play-1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				<else/>
+					<script>unike_play=unike_play+1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				</if>
+			</catch>
+					
+	  </field>
+	  	
+	</form>	
+	
+	<form id="playoption">      
+	         
+	        <field name="playclipOptionInfo">
+			<grammar mode="dtmf" root="start10" version="1.0">
+               	<rule id="start10" scope="public">
+                  <one-of>				 
+					  <item>1</item>
+					  <item>2</item>	
+					  <item>3</item>
+					  <item>6</item>
+					  <item>7</item>
+					  <item>8</item>
+					  <item>9</item>
+			  	 </one-of>
+              	</rule>
+            </grammar>
+			
+				<prompt bargein="true">
+	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cin_selectmovieoption.wav'"/>
+	   	        </prompt>
+		   	
+		<filled>
+				
+			    <if cond="playclipOptionInfo=='1'">	
+					<assign name="cat" expr="favSongs[unike_play]"/>
+			   		<assign name="playconfig" expr="favSongs[unike_play]"/>
+					<log expr="'selected cat is '+cat"></log>
+					<goto next="playContentaudiocinema.vxml"/>
+
+					
+			    		
+			   <elseif cond="playclipOptionInfo=='2'"/>
+			   		<script> unike_play=unike_play+1</script> 
+				        <goto next="#StartToPlaysongs"/> 
+			   <elseif cond="playclipOptionInfo=='3'"/>
+			   		<script> unike_play=unike_play-1</script>
+				    	<goto next="#StartToPlaysongs"/> 
+			   <elseif cond="playclipOptionInfo=='6'"/>
+			   		 <goto next="#playoption"/> 	     
+			   <elseif cond="playclipOptionInfo=='7'"/>
+			   		<goto next="#categorymenu"/>
+			   <elseif cond="playclipOptionInfo=='8'"/>
+			   		<goto next="Hungama_ModMainMenu.vxml"/>
+			   <elseif cond="playclipOptionInfo=='9'"/>
+			   		 <goto next="Hungama_ModMngAccnt.vxml"/>
+			    </if>
+
+			    
+
+			    
+		</filled>		
+			
+		<noinput>
+			<goto next="#StartToPlaysongs"/> 
+		</noinput>
+
+		<nomatch>
+			<prompt bargein="true" timeout="0s">
+<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+
+	</field>	
+</form>
+    
+
+</vxml>

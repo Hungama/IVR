@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="FMJRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="followup.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+
+<form id="star_follow">
+	<block>
+			<prompt bargein="true">
+				<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'follow_celeb.wav'"/>
+				<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+followid+'_celeb.wav'"/>
+				<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'kofollow.wav'"/>			
+	   	    </prompt>
+	</block>
+	  
+	
+	    <field name="follow_opt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+               <rule id="start" scope="public">
+                 <one-of>				
+				  <item>1</item>
+				  <item>2</item>	
+                </one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true">
+				<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'follow_option.wav'"/>		
+	   	    </prompt>
+		    			
+			
+			<filled>
+			    <if cond="follow_opt=='1'">
+
+					<if cond="timerflag=='1'">
+					   <assign name="current_balance" expr="start_time()"/>
+						<script>
+				 			total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 				 			curbalance=balance-total_used_bal; 						  
+						</script>
+					  <!-- <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/> -->
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>     
+					 </if>					 				 	
+					 <goto next="#thanks_follow"/>  
+				<elseif cond="follow_opt=='2'"/>
+					<if cond="timerflag=='1'">
+					   <assign name="current_balance" expr="start_time()"/>
+						<script>
+				 			total_used_bal=CheckUserBalance(initial_balance,current_balance);
+ 				 			curbalance=balance-total_used_bal; 						  
+						</script>
+					<!--   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/> -->
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>     
+					 </if>					 				 	
+					 <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>  
+				</if>
+			</filled>		
+			
+			
+			<noinput count="3">	
+					<throw event="connection.disconnect.hangup"/>  	
+            </noinput> 
+          
+            <nomatch>   
+		      <prompt bargein="false">          
+                 <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+			  </prompt>
+              <clear/>
+              <reprompt/>
+            </nomatch>
+			
+			<nomatch count="3"> 		      
+             	<throw event="connection.disconnect.hangup"/>
+          </nomatch>
+						
+	  </field>	
+	
+	</form>
+
+<form id="thanks_follow">
+	<block>
+	<!--	<log expr="'@@@@@@ followid '+followid"/>
+		<log expr="'@@@@@@ ANI '+ANI"/>
+		<log expr="'@@@@@@ used balance is '+total_used_bal"/> -->
+		<script srcexpr="'http://'+IP+'/'+dbservlet+'?PROCEDURE=follow_up.FOLLOWUP_SUB&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;INPARAM[0]='+followid+'&amp;INPARAM[1]='+ANI+'&amp;INPARAM[2]=01&amp;INPARAM[3]=IVR&amp;INPARAM[4]='+DNIS+'&amp;INPARAM[5]=5&amp;INPARAM[6]='+serviceid+'&amp;INPARAM[7]='+f_planid"/>
+		<prompt bargein="false">          
+                 <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'thanks_follow.wav'"/>		
+		</prompt>
+		<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+	</block>
+</form>
+
+</vxml>

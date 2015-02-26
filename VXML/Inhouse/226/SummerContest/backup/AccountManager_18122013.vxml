@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Contest_root.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="AccountManager.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+
+	<var name="BalanceLength" expr="0"/>
+	<var name="balancecounter" expr="0"/>
+	<var name="CurrentBalance" expr="0"/>
+<var name="balancecursor" expr="0"/>
+
+<script>
+		var ciropr1=new Object();
+		var out_string = new Object();
+		var i=1;
+	</script>
+<error>
+<goto next="end.vxml"/>
+</error>
+<var name="Plan_Id" expr="0"/>
+	<form id="AccountManager">
+		<block>
+
+				<goto next="AccountManager_Event.vxml"/>
+			
+			<assign name="comeback" expr="'account'"/>
+			<assign name="drop_point" expr="'Help_Menu'"/>
+		</block>
+		<field name="account" type="digits?length=1">
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/'+'welcome_acmanager.wav'"/>
+			
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								  <item> 4  </item>
+								 <item>  5  </item>
+								 <item>  8 </item>
+
+							</one-of>
+						</rule>
+				</grammar>	
+
+			<filled>
+				<if cond="account == '1'">
+					<goto next="NewUser.vxml#CheckLang"/>
+				<elseif cond="account == '2'"/>
+					<goto next="#topup"/>
+				<elseif cond="account == '3'"/>
+					<goto next="#terms"/>
+				<elseif cond="account == '4'"/>
+					<goto next="#leaderboard"/>
+				<elseif cond="account == '5'"/>
+					<goto next="#unsub"/>
+				<elseif cond="account == '8'"/>
+					<goto next="MainMenu.vxml#MainExist"/>
+
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+
+			<nomatch>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				<reprompt></reprompt>
+			</nomatch>
+
+			<noinput>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				<reprompt></reprompt>
+			</noinput>
+
+		</field>
+	</form>
+
+
+<form id="topup">
+	<block>
+		<assign name="drop_point" expr="'Topup_Menu'"/>
+		
+				<goto next="AccountManager_Event.vxml#topup"/>
+			
+	</block>
+	<field name="pressdtmf" type="digits?length=1">
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/'+'topup1.wav'"/>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/'+'press_dtmf1.wav'"/>
+
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/'+'topup2.wav'"/>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/'+'press_dtmf2.wav'"/>
+
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/'+'topup3.wav'"/>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/'+'press_dtmf3.wav'"/>
+			
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+							</one-of>
+						</rule>
+			</grammar>	
+
+
+			<filled>
+				<if cond="pressdtmf == '1'">
+					<assign name="Plan_Id" expr="181"/>
+					<assign name="Amount" expr="5"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_TOPUP&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+Amount+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+Plan_Id+'&amp;INPARAM[4]=IVR'"/> 					
+					<goto next="#ChkTopUp"/>
+				<elseif cond="pressdtmf=='2'"/>
+					<assign name="Plan_Id" expr="182"/>
+					<assign name="Amount" expr="3"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_TOPUP&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+Amount+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+Plan_Id+'&amp;INPARAM[4]=IVR'"/> 					
+					<goto next="#ChkTopUp"/>
+				<elseif cond="pressdtmf=='3'"/>
+					<assign name="Plan_Id" expr="183"/>
+					<assign name="Amount" expr="2"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_TOPUP&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+Amount+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+Plan_Id+'&amp;INPARAM[4]=IVR'"/> 
+					<goto next="#ChkTopUp"/>
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+
+			<nomatch>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				<reprompt></reprompt>
+			</nomatch>
+
+			<noinput>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/nodtmf.wav'"/>
+				<reprompt></reprompt>
+			</noinput>
+
+	</field>
+
+	</form>
+
+	<form id="ChkTopUp">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CHECK_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+Amount+'&amp;INPARAM[2]='+DNIS"/> 					
+			<assign name="drop_point" expr="'Topup_Check'"/>
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  
+					if(j==0)
+					  TOPUP_Status = out_string[j];				        
+				  }
+			]]>
+		</script>
+
+
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Contest_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  
+					if(j==0)
+					  usr_status = out_string[j];
+				        if(j==1)
+					  lang = out_string[j];
+					if(j==2)
+					  channel = out_string[j];
+					if(j==3)
+					  maxscore = out_string[j];
+					if(j==4)
+					  diff_level = out_string[j];
+					if(j==5)
+					  QuestCount = out_string[j];
+					if(j==6)
+					  Amt = out_string[j];
+					 if(j==7)
+					  TotalQuestion = out_string[j];
+				      
+				  }
+			]]>
+		</script>
+		
+		<assign name="LANG_DESCRIPTION" expr="lang"/>
+				
+		<log> user status is:<value expr="usr_status"/></log>	         	
+		<log> lang status is:<value expr="lang"/></log>
+						
+		<log> channel status is:<value expr="channel"/></log>	         	
+		<log> maxscore status is:<value expr="maxscore"/></log>
+						
+		<log> diff_level status is:<value expr="diff_level"/></log>	         	
+		<log> QuestCount status is:<value expr="QuestCount"/></log>
+		<log> TotalQuestion status is:<value expr="TotalQuestion "/></log>
+
+		<if cond="ANI=='9711071741'">
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/thanks_topup.wav'"/>
+				<goto next="MainMenu.vxml#MainMenu"/>
+
+		</if>
+
+			<if cond="TOPUP_Status=='1'">
+				<!-- <assign name="AskedQuestCount " expr="0"/>-->
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/thanks_topup.wav'"/>
+				<goto next="MainMenu.vxml#MainMenu"/>
+			<else/>
+				<!--<assign name="AskedQuestCount " expr="0"/>-->
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/topup_sorry.wav'"/>
+				<goto next="end.vxml"/>
+			</if>
+		</block>
+	</form>
+
+<form id="leaderboard">
+	<block>
+		<assign name="drop_point" expr="'Leaderboard'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_LEADERBOARD_IVR&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+		<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/welcome_leaderborard.wav'"/>
+		<goto next="MainMenu.vxml#MainExist" fetchhint="prefetch" fetchtimeout="10s"/>
+
+	</block>
+</form>
+
+  <!--	<form id="terms">
+		<block>
+			<log>unsub form</log>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/'+'contest_tnc.wav'"/>
+			<goto next="MainMenu.vxml"/>
+		</block>
+
+	</form> -->
+
+	<form id="terms">
+		<block>
+			<assign name="drop_point" expr="'TnC'"/>
+		</block>
+		<field name="gamerule" type="digits?length=1">
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  8 </item>
+							</one-of>
+						</rule>
+				</grammar>
+				
+			<prompt bargein="true"  timeout="0s">
+	     				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/rule_'+i+'.wav'"/>
+
+	     		</prompt>
+				
+			<filled>
+				<if cond="gamerule == '8'">
+					<goto next="MainMenu.vxml#MainExist"/>
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+
+			<nomatch>
+				<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/invalidoption.wav'"/>
+				<reprompt></reprompt>
+			</nomatch>
+
+			<noinput>
+				<script>
+					if(i>11){
+						i=0;
+					   }
+					i=i+1;
+				</script>
+				<goto nextitem="gamerule"/>
+			</noinput>
+
+		</field>
+	</form>
+
+	<form id="unsub">
+		<block>
+			<assign name="drop_point" expr="'Unsub'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CONTEST_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/'+'thank_nosub.wav'"/>
+			<goto next="end.vxml"/>
+		</block>
+	</form>
+
+</vxml>

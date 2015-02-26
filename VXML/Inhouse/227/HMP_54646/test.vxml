@@ -1,0 +1,102 @@
+<vxml version="2.1"   application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_UserStatus.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+ <var name="Number" expr="0"/> 
+<catch event="error.badfetch">
+	<log> MISSING FILE </log>
+</catch>
+	
+<form id="CIRCLEID">
+
+
+<property name="compatibility.audio.badfetch" value="ocmpbre32"></property>
+
+<catch event="error.badfetch">
+	<log> MISSING FILE </log>
+</catch>
+
+<catch event="error.badfetch.http.404">
+	<log> MISSING FILE </log>
+</catch>
+
+
+	<block>
+			
+
+				<!--<script>  
+					realDNIS=session.connection.local.uri;                   
+					ANI=session.connection.remote.uri;						   
+               	 </script>-->
+
+			<prompt bargein="false" timeout="3s">
+					<audio expr="'http://192.168.100.226:8080/hungama/RecordChat/celeb_record_'+Number+'.wav'"/>		
+												
+			</prompt>
+
+              </block>
+			
+		
+				<field name="choice">
+					<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+
+							</one-of>
+						</rule>
+				</grammar>
+
+
+	<catch event="error.badfetch">
+		<log>File not found------</log>
+		<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG=celeb_record_/RMUSICMANIA/1'"/>
+		
+		<script>Number=Number+1;</script>
+
+	<!--	<goto next="#CIRCLEID"/>-->
+
+		<audio expr="'http://192.168.100.226:8080/hungama/RecordChat/celeb_record_1.wav'"/>
+	</catch>
+				
+				<filled>
+					<script>
+						Number=Number+1;
+					</script>
+					<goto next="#CIRCLEID"/>
+
+				</filled>
+
+
+				<noinput>
+					<script>
+						Number=Number+1;
+					</script>
+					<goto next="#CIRCLEID"/>
+				</noinput>
+				<nomatch>
+					<script>
+						Number=Number+1;
+						</script>
+					<goto next="#CIRCLEID"/>
+				</nomatch>
+
+
+				</field>
+
+</form>
+<catch event="error.badfetch">
+		<log>File not found</log>
+		<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG=celeb_record_/RMUSICMANIA/1'"/>
+		<script>
+		Number=Number+1;
+	</script>
+		<goto next="#CIRCLEID"/>
+	</catch>
+
+</vxml>

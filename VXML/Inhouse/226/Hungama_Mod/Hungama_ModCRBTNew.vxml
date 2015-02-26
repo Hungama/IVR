@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_ModCRBTNew.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	<var name="cRBTStatus" expr="''"/>
+<!--	<var name="cRBTMODE" expr="''"></var>
+	<var name="CLIPID" expr="''"></var>	
+	<var name="len_rng" expr=""></var>	
+	<var name="cRBTSTATUS" expr="''"></var>	
+	
+	<script>
+		var UserStatus1=new Object();
+		var out_string = new Object();
+	</script>-->
+	<script>
+		function getUID()
+                {
+                     var uid = Math.random().toString(36).substr(2, 14);
+                     return uid;
+                }
+	</script>
+	
+	<form id="CRBT">
+		<block>		    
+		    <script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_rngmenu?SONGID='+songID+'&amp;IN_TYPE=CRBT&amp;CIRCLE='+circle+'&amp;OPERATOR='+operator+'&amp;TOKEN=FREE'"/>
+		    <log expr="'CLIPID=='+out_string[0]"></log>
+		    <assign name="len_rng" expr="out_string.length" />
+			<log>previous Array[1]  is	<value expr="CLIPID"/>    </log>
+			<script>
+				 CLIPID = out_string[0];		
+			</script>
+			<log>after Array[1]  is	<value expr="CLIPID"/>    </log>
+
+			
+			<if cond="CLIPID==''">
+				<prompt bargein="true" timeout="0s" cond="operator!='virm'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nocrbt.wav'"/>
+				</prompt>
+				<prompt bargein="true" timeout="0s" cond="operator=='virm'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nocrbt_virm.wav'"/>
+				</prompt>
+				<if cond="directaccess=='kolaveridi'">
+					<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+				<else/>
+					<goto next="Hungama_ModPlayNew.vxml#next"/>
+				</if>
+			</if>    
+
+
+
+
+     	
+         	<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]=crbt'"/>-->
+			<script srcexpr="'http://192.168.100.211:8088/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=USERSTATUS&amp;OPERATOR='+operator"/>
+			<assign name="cRBTSTATUS" expr="UserStatus1.value"/>
+<!--			<assign name="cRBTSTATUS" expr="'status_RBT_ACT_status'"/>-->
+			<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>
+			<script>
+				 <![CDATA[					     	  
+						 if(cRBTSTATUS.indexOf("EAUC")>0)
+							 cRBTMODE = "EAUC";
+						 else if(cRBTSTATUS.indexOf("RBT_ACT")>0)					      
+							cRBTMODE = "RBT";
+						 else
+							cRBTMODE = "NEW";
+
+						if(cRBTSTATUS.indexOf("DEACT")>0)
+							cRBTMODE = "NEW";
+
+				]]>				
+			</script>
+			<log expr="'cRBTSTATUS=='+cRBTSTATUS"></log>
+			<log expr="'cRBTMODE=='+cRBTMODE"></log>
+			<assign name="firstconsent" expr="cRBTMODE"/>
+			<assign name="firstconsenttime" expr="start_time()"/>
+			<if cond="cRBTMODE=='NEW'">
+			    <prompt bargein="true" timeout="0s" cond="operator!='virm'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/crbt_status_nosub.wav'"/>
+				</prompt>
+				<prompt bargein="true" timeout="0s" cond="operator=='virm'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/crbt_status_nosub_virm.wav'"/>
+				</prompt>
+				<goto next="#NEWSUB"></goto>
+			<elseif cond="cRBTMODE=='RBT'"/>
+				<prompt bargein="true" timeout="0s" cond="operator=='tatm'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/crbt_status_3015.wav'"/>
+				</prompt>
+				<prompt bargein="true" timeout="0s" cond="operator=='virm'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/crbt_status_3015_virm.wav'"/>
+				</prompt>
+				<prompt bargein="true" timeout="0s" cond="operator=='tatc'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/crbt_status_3010.wav'"/>
+				</prompt>
+				<goto next="#PLANCHANGE"></goto>
+			<elseif cond="cRBTMODE=='EAUC'"/>
+				<goto next="#DOWNLOAD"></goto>
+			<else/>
+				<if cond="directaccess=='kolaveridi'">
+					<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+				<else/>
+					<goto next="Hungama_ModPlayNew.vxml#next"/>
+				</if>
+			</if>		
+		</block>
+	</form>
+
+	<form id="NEWSUB">
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/crbt_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="CRBT_RING_COMMON" expr="'CRBT'"/>
+					<assign name="END_songID" expr="songID"/>	
+					<assign name="cRBTStatus" expr="'crbtACTIVATE'"/>					
+					<goto next="#cRBTDoubleconfirmActivate"/>
+					
+				    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtACTIVATE&amp;INPARAM[4]='+circle+'@'+operator+'&amp;INPARAM[5]='+DNIS"/>
+					<!--<script srcexpr="'http://192.168.100.211:8088/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;CLIPID='+CLIPID+'&amp;TOKEN=ACTIVATE'"/>
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>
+					<log expr="'cRBTSTATUS=='+cRBTSTATUS"></log>-->
+					<goto next="#THANKS"/>
+				<elseif cond="choice=='2'"/>
+					<goto next="#NOTHANKS"/>
+				</if>
+			</filled>	
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<if cond="directaccess=='kolaveridi'">
+				<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+			<else/>
+				<goto next="Hungama_ModPlayNew.vxml#next"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<if cond="directaccess=='kolaveridi'">
+				<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+			<else/>
+				<goto next="Hungama_ModPlayNew.vxml#next"/>
+			</if>			
+		</nomatch>
+	</form>
+	
+	<form id="PLANCHANGE">
+		<field name="choice">
+			<grammar mode="dtmf" root="start2" version="1.0">
+					<rule id="start2" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/crbt_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="cRBTStatus" expr="'crbtMIGRATE'"/>
+					<goto next="#cRBTDoubleconfirmActivate"/>	
+				    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtMIGRATE&amp;INPARAM[4]='+circle+'@'+operator+'&amp;INPARAM[5]='+DNIS"/>					
+					<goto next="#MIGRATED"/>
+				<elseif cond="choice=='2'"/>
+					<assign name="cRBTStatus" expr="'crbtDOWNLOAD15'"/>
+					<goto next="#cRBTDoubleconfirmActivate"/>
+				    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtDOWNLOAD15&amp;INPARAM[4]='+circle+'@'+operator+'&amp;INPARAM[5]='+DNIS"/>					
+					<goto next="#THANKS"/>
+				<else/>
+					<if cond="directaccess=='kolaveridi'">
+						<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+					<else/>
+						<goto next="Hungama_ModPlayNew.vxml#next"/>
+					</if>
+				</if>
+			</filled>	
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<if cond="directaccess=='kolaveridi'">
+				<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+			<else/>
+				<goto next="Hungama_ModPlayNew.vxml#next"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<if cond="directaccess=='kolaveridi'">
+				<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+			<else/>
+				<goto next="Hungama_ModPlayNew.vxml#next"/>
+			</if>
+		</nomatch>
+	</form>
+	
+	<form id="DOWNLOAD">
+		<field name="choice">
+			<grammar mode="dtmf" root="start3" version="1.0">
+					<rule id="start3" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/crbt_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="cRBTStatus" expr="'crbtDOWNLOAD'"/>
+					<goto next="#cRBTDoubleconfirmActivate"/>
+				    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtDOWNLOAD&amp;INPARAM[4]='+circle+'@'+operator+'&amp;INPARAM[5]='+DNIS"/>					
+					<!--<script srcexpr="'http://192.168.100.211:8088/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;CLIPID='+CLIPID+'&amp;TOKEN=DOWNLOAD'"/>
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>
+					<log expr="'cRBTSTATUS=='+cRBTSTATUS"></log>-->
+					<goto next="#THANKS"/>
+				<else/>
+					<goto next="#NOTHANKS"/>
+				</if>
+			</filled>	
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<if cond="directaccess=='kolaveridi'">
+				<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+			<else/>
+				<goto next="Hungama_ModPlayNew.vxml#next"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<if cond="directaccess=='kolaveridi'">
+				<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+			<else/>
+				<goto next="Hungama_ModPlayNew.vxml#next"/>
+			</if>
+		</nomatch>
+	</form>
+	
+	<form id="MIGRATED">
+		<block>
+			<prompt bargein="true" timeout="0s" cond="operator!='virm'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/thanks_crbt.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="operator=='virm'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/thanks_crbt_virm.wav'"/>
+			</prompt>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CRBTRNGREQS&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtDOWNLOAD&amp;INPARAM[4]='+circle+'@'+operator+'&amp;INPARAM[5]='+DNIS"/>
+			<!--<script srcexpr="'http://192.168.100.211:8088/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;CLIPID='+CLIPID+'&amp;TOKEN=DOWNLOAD'"/>
+			<assign name="cRBTSTATUS" expr="UserStatus1.value"/>
+			<log expr="'cRBTSTATUS=='+cRBTSTATUS"></log>-->
+			<if cond="directaccess=='kolaveridi'">
+				<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+			<else/>
+				<goto next="Hungama_ModPlayNew.vxml#next"/>
+			</if>
+		</block>
+	</form>
+	
+	
+	<form id="THANKS">
+		<block>
+			<prompt bargein="true" timeout="0s" cond="operator!='virm'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/thanks_crbt.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="operator=='virm'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/thanks_crbt_virm.wav'"/>
+			</prompt>
+			<if cond="directaccess=='kolaveridi'">
+				<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+			<else/>
+				<goto next="Hungama_ModPlayNew.vxml#next"/>
+			</if>
+		</block>
+	</form>
+	
+	<form id="NOTHANKS">
+		<block>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nothanks_crbt.wav'"/>
+			</prompt>
+			<if cond="directaccess=='kolaveridi'">
+				<goto next="Hungama_ModExistUser.vxml#kolaveridi"/>
+			<else/>
+				<goto next="Hungama_ModPlayNew.vxml#next"/>
+			</if>
+		</block>
+	</form>
+<form id="cRBTDoubleconfirmActivate">		
+		<block>
+			<assign name="Amt" expr="1"/>
+			<if cond="operator=='tatm'">
+				<assign name="productID" expr="'ENDLESS01'"/>
+			<elseif cond="operator=='tatc'"/>
+				<assign name="productID" expr="'CDMAENDLESS01'"/>
+			<else/>
+				<assign name="productID" expr="'ENDLESS01'"/>
+			</if>
+			<assign name="pName" expr="'Endless music'"/>
+
+			<assign name="CpId" expr="'hug'"/>
+			<assign name="CpPwd" expr="'hug@8910'"/>
+			<assign name="CpName" expr="'Hungama'"/>
+			<assign name="reqMode" expr="'IVR'"/>
+
+			<assign name="Ivr_approach" expr="'VXML'"/>
+			<assign name="NetworkId" expr="'GCMO'"/><!--Not cleared-->
+			<assign name="circleId" expr="circle"/>
+
+			<assign name="Lang_A" expr="'F'"/>
+			<assign name="reqType" expr="'Event'"/><!--Not cleared-->
+
+			<assign name="ismID" expr="'16'"/>
+			<assign name="trans_id" expr="getUID()"/>
+
+			<script>
+				pPrice=Amt*100;
+			</script>
+
+
+			<if cond="Amt=='60'">
+				<assign name="pVal" expr="'30'"/>
+			<elseif cond="Amt=='14'"/>
+				<assign name="pVal" expr="'7'"/>
+			<elseif cond="Amt=='1'"/>
+				<assign name="pVal" expr="'1'"/>
+			<elseif cond="Amt=='10'"/>
+				<assign name="pVal" expr="'10'"/>
+			<elseif cond="Amt=='45'"/>
+				<assign name="pVal" expr="'60'"/>
+			<elseif cond="Amt=='30'"/>
+				<assign name="pVal" expr="'15'"/>
+			<elseif cond="Amt=='2'"/>
+				<assign name="pVal" expr="'1'"/>
+			<else/>
+				assign name="pVal" expr="'1'"/>
+			</if>
+
+
+			<if cond="lang=='01'">
+				<assign name="Lang" expr="'Hin'"/>
+			<elseif cond="lang=='02'"/>
+				<assign name="Lang" expr="'ENG'"/>
+			<elseif cond="lang=='11'"/>
+				<assign name="Lang" expr="'Mar'"/>
+			<elseif cond="lang=='10'"/>
+				<assign name="Lang" expr="'Kan'"/>
+			<elseif cond="lang=='08'"/>
+				<assign name="Lang" expr="'Tel'"/>
+			<elseif cond="lang=='09'"/>
+				<assign name="Lang" expr="'Mal'"/>
+			<elseif cond="lang=='07'"/>
+				<assign name="Lang" expr="'Tam'"/>
+			<elseif cond="lang=='13'"/>
+				<assign name="Lang" expr="'Ori'"/>
+			<elseif cond="lang=='06'"/>
+				<assign name="Lang" expr="'Ben'"/>
+			<elseif cond="lang=='12'"/>
+				<assign name="Lang" expr="'Guj'"/>
+			<elseif cond="lang=='17'"/>
+				<assign name="Lang" expr="'Asm'"/>
+			<elseif cond="lang=='18'"/>
+				<assign name="Lang" expr="'Maw'"/>
+			<elseif cond="lang=='03'"/>
+				<assign name="Lang" expr="'Pun'"/>
+			<elseif cond="lang=='05'"/>
+				<assign name="Lang" expr="'Har'"/>
+			<else/>
+				<assign name="Lang" expr="'Hin'"/>
+			</if>       
+
+
+		</block>
+	
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.79:8091/API/CCG?MSISDN=918602801556&amp;productID='+productID+'&amp;pName='+pName+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpPwd='+CpPwd+'&amp;CpName='+CpName+'&amp;reqMode='+reqMode+'&amp;Ivr_approach='+Ivr_approach+'&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID='+ismID+'&amp;transID='+transID+'&amp;Songname='+CLIPID">-->
+           <subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.80:8091/API/CCG?MSISDN=91'+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;reqMode=IVR&amp;Ivr_approach=VXML&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID=16&amp;transID='+trans_id+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpName='+CpName+'&amp;CpPwd='+CpPwd+'&amp;Songname='+CLIPID">
+		<filled>
+                            <assign name="secondconsent" expr="'HT_Y'"/>
+                            <assign name="secondconsenttime" expr="start_time()"/>
+				<assign name="ccgresult" expr="confirmUserChoice.CCGResponse"/>
+				<script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=MOD&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>		
+				
+				<log>Confirmation page</log>				
+				<log>back from the confirmation app, the CCGRESPONSE:<value expr="confirmUserChoice.CCGResponse"/></log>				
+				<log>back from the confirmation app, the user tranId:<value expr="confirmUserChoice.tranId"/></log>
+				<log>back from the confirmation app, the user tranId:<value expr="confirmUserChoice.TransID"/></log>
+
+				<script srcexpr="'http://192.168.100.226:8082/'+servlet_path+'/TATA_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=MOD&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+trans_id+'&amp;ccgresult='+confirmUserChoice.CCGResponse"/>
+
+
+				<if cond="confirmUserChoice.CCGResponse=='Success'">
+						
+					<log>CRBTRINGREQ URL:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CRBTRNGREQS_DC&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]='+cRBTStatus+'&amp;INPARAM[4]='+circle+'@'+operator+'&amp;INPARAM[5]='+DNIS"/></log>
+					
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CRBTRNGREQS_DC&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]='+cRBTStatus+'&amp;INPARAM[4]='+circle+'@'+operator+'&amp;INPARAM[5]='+DNIS+'&amp;INPARAM[6]='+trans_id"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path_crbt+'/'+opt+'/'+lang+'/mainmenu_option.wav'"/>
+					</prompt>
+					<goto next="Hungama_ModPlayNew.vxml#next"/>
+				<else/>
+					<goto next="Hungama_ModEnd.vxml"/>
+
+				</if>			
+		</filled>
+	</subdialog>
+	</form>
+</vxml>

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<meta name="Topup.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	   
+     
+
+  
+    
+   <var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="true"/>		
+   <var name="names"/> 
+   <var name="tottopup" expr="''"/>	
+   <var name="topup11" expr="''"/>	
+   <var name="topup12" expr="''"/>	
+   <var name="topup13" expr="''"/>	
+   <var name="topupmnu" expr="''"/>	
+   <var name="balupdatestatus" expr="'1'"/>
+   <var name="var_wel" expr="''"/>
+   <var name="trans_id" expr="''"/>
+   <var name="PATH" expr="''"/>
+   <var name="call_BalenceMinute" expr="0"/>
+   <var name="total_used_balnce" expr="0"/>
+   <var name="double_switch" expr="-1"/>
+   <var name="skip_level" expr="0"/>
+   <var name="MyError" expr="0"/>
+   <var name="uninorretry_counter" expr="1"/>
+   <var name="MyErrorMsg" expr="0"/>
+   <var name="prompt_switch" expr="0"/> 
+   <var name="tataswitch_time" expr="0"/> 
+   <script>
+   function getUNIMDT()
+   {
+   	var currentDT = new Date();
+   	var day = currentDT.getDate();
+   	var month = currentDT.getMonth() + 1;
+   	var year = currentDT.getFullYear();
+   	var hours = currentDT.getHours();
+   	var minutes = currentDT.getMinutes();
+   	var seconds = currentDT.getSeconds();
+   	if (!(month > 9)) {month = "0" + month; }
+   	if (!(day > 9 )) {day = "0" + day; }
+   	if (!(hours > 9)) {hours = "0" + hours; }
+   	if (!(minutes > 9 )) {minutes = "0" + minutes ; }
+   	if (!(seconds > 9) ) {seconds = "0" + seconds ; }
+   	var strDateTime =  year + "-" + month + "-" + day +" "+ hours+":"+minutes+":"+seconds ;    
+   	return strDateTime;
+   }
+</script>
+   <script>
+		var out_string=new Object();
+   </script>
+  
+  
+		
+   <form id="hungamatopupmnu">   
+        <block>
+        
+        
+        		
+		  <log expr="'welcome to the hungama topups main menu '"/>    
+		  <script> timerflag=0;</script>   
+	  </block>
+	    <field name="mnuopt">
+			 <grammar mode="dtmf" root="start25" version="1.0">
+               <rule id="start25" scope="public">
+                 <one-of>				 
+				   <item>1</item>		
+				   <item>2</item>		
+				   <item>3</item>				  			  		      
+                </one-of>
+              </rule>
+            </grammar>			
+			
+	<prompt bargein="true" timeout="3s">
+	       <audio expr="promptspath_54646+'/'+lang+'/topup3.wav'"/>
+	       <audio expr="promptspath_54646+'/'+lang+'/press_dtmf1.wav'"/>
+	       <audio expr="promptspath_54646+'/'+lang+'/topup4.wav'"/>
+	       <audio expr="promptspath_54646+'/'+lang+'/press_dtmf2.wav'"/>
+	       
+       </prompt>			
+		    			
+	<filled>
+		
+		<if cond="mnuopt=='1'">
+			<script>
+				PRICE=10*100;
+			</script>
+			<assign name="CPPID" expr="'HUI0003719'"/>
+			<goto next="#SubOptionDoubleconfirm_uninor"/>
+		<elseif cond="mnuopt=='2'"/>
+			<script>
+				PRICE=5*100;
+			</script>
+			<assign name="CPPID" expr="'HUI0003721'"/>
+			<goto next="#SubOptionDoubleconfirm_uninor"/>
+		
+		</if>        
+                
+	</filled>		
+	
+	<noinput>
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+		</prompt>				
+		<reprompt></reprompt>
+	</noinput>			
+	<nomatch>
+		<prompt bargein="true" timeout="0s">
+			<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+		</prompt>				
+		<reprompt></reprompt>
+	</nomatch>		 			            	
+    </field>	 
+</form> 
+
+
+<form id="SubOptionDoubleconfirm_uninor">
+			
+			<block>
+			<script>
+				PATH=promptspath_54646+'/'+lang;
+				uninorretry_counter=uninorretry_counter+1;
+			</script>
+				<assign name="PATH" expr="promptspath_54646+'/'+lang"/>
+				<assign name="SCHN" expr="'IVR_VP'"/>
+				<assign name="CP" expr="'HUNGAMA'"/>
+				<assign name="MSISDN" expr="ANI"/>
+				
+				<assign name="PRODTYPE" expr="'Music'"/>	
+				<assign name="PMARKNAME" expr="'Hungama Entertainment Portal'"/>
+				
+				<assign name="SE" expr="'HUNGAMA_VP'"/>
+				<assign name="CPTID" expr="gettransidtime()"/>
+				<assign name="DT" expr="getUNIMDT()"/>
+				<assign name="PD" expr="'movies new songs and movie reviews'"/>
+				<assign name="SCODE" expr="'songid'"/>
+				<assign name="RSV" expr="'rsv'"/>
+				<assign name="RSV2" expr="'rsv2'"/>
+				
+				<log expr="'PATH @@@@@@@@@ '+PATH"></log>
+				<log expr="'DT @@@@@@@@@ '+DT"></log>
+				<log expr="'CPTID @@@@@@@@@ '+CPTID"></log>
+				<log expr="'PRICE @@@@@@@@@ '+PRICE"></log>
+				<if cond="lang=='01'">
+					<assign name="LANG" expr="'HIN'"/>
+				<elseif cond="lang=='02'"/>
+					<assign name="LANG" expr="'ENG'"/>
+				<elseif cond="lang=='11'"/>
+					<assign name="LANG" expr="'MAR'"/>
+				<elseif cond="lang=='10'"/>
+					<assign name="LANG" expr="'KAN'"/>
+				<elseif cond="lang=='08'"/>
+					<assign name="LANG" expr="'TEL'"/>
+				<elseif cond="lang=='09'"/>
+					<assign name="LANG" expr="'MAL'"/>
+				<elseif cond="lang=='07'"/>
+					<assign name="LANG" expr="'TAM'"/>
+				<elseif cond="lang=='13'"/>
+					<assign name="LANG" expr="'ORI'"/>
+				<elseif cond="lang=='06'"/>
+					<assign name="LANG" expr="'BEN'"/>
+				<elseif cond="lang=='12'"/>
+					<assign name="LANG" expr="'GUJ'"/>
+				<elseif cond="lang=='17'"/>
+					<assign name="LANG" expr="'ASM'"/>
+				<elseif cond="lang=='18'"/>
+					<assign name="LANG" expr="'MAW'"/>
+				<elseif cond="lang=='03'"/>
+					<assign name="LANG" expr="'PUN'"/>
+				<elseif cond="lang=='05'"/>
+					<assign name="LANG" expr="'HAR'"/>
+				<else/>
+					<assign name="LANG" expr="'HIN'"/>
+				</if> 
+      
+		</block>
+
+<subdialog name="confirmUserChoice" srcexpr="'http://180.178.28.62:7001/IVR/SecondConsentIVRRequestSyncPS?PATH='+PATH+'&amp;LANG='+LANG+'&amp;SCHN='+SCHN+'&amp;CP='+CP+'&amp;MSISDN='+MSISDN+'&amp;CPPID='+CPPID+'&amp;PRODTYPE='+PRODTYPE+'&amp;PMARKNAME='+PMARKNAME+'&amp;PRICE='+PRICE+'&amp;SE='+SE+'&amp;CPTID='+CPTID+'&amp;DT='+DT+'&amp;PD='+PD+'&amp;SCODE='+SCODE+'&amp;RSV='+RSV+'&amp;REQ_TYPE=VALUE_PACK&amp;RSV2='+RSV2">		
+		
+<!--<subdialog name="confirmUserChoice" srcexpr="'http://180.178.28.62:7001/ContentPartner/ContentPartnerSynchPS?SCHN='+SCHN+'&amp;CP='+CP+'&amp;MSISDN='+MSISDN+'&amp;CPPID='+CPPID+'&amp;PRODTYPE='+PRODTYPE+'&amp;PMARKNAME='+PMARKNAME+'&amp;PRICE='+PRICE+'&amp;SE='+SE+'&amp;CPTID='+CPTID+'&amp;DT='+DT+'&amp;PD='+PD+'&amp;SCODE='+SCODE+'&amp;RSV='+RSV+'&amp;RSV2='+RSV2+'&amp;END=1'">			-->
+
+			<filled>
+					<log>Confirmation page</log>
+					<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+					<log>back from the confirmation app, the PRESSED_DTMF:<value expr="confirmUserChoice.PRESSED_DTMF"/></log>
+					<log>back from the confirmation app, the response:<value expr="confirmUserChoice.result"/></log>
+
+					
+					<if cond="confirmUserChoice.result=='success'">
+					<prompt bargein="true" timeout="3s">
+						<audio expr="promptspath_54646+'/'+lang+'/topup_request.wav'"/>
+					</prompt>
+					        <exit/>
+					<else/>
+						<goto next="Hungama_54646_End.vxml"/>
+
+					</if>			
+			</filled>
+		</subdialog>
+	</form>	
+
+
+
+</vxml>
+
+
+
+   

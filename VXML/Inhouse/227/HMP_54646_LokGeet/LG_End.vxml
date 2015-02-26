@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="LG_Root.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="LG_End.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<script>
+			var C_End=0;
+			var service_id=0;
+	
+	</script>
+
+    <form id="EndLogin">
+		<block>
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<!--<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>-->
+			</if>
+			
+			<if cond="timerflag=='1'">
+				<script>
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;  						  
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+balance"/>
+
+
+					<script>balance=Math.floor(balance/60);</script>
+					<if cond="balance &lt; 0">
+						<script> balance=0;</script> 
+					</if>
+				
+			</if>
+ <script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=LokGeet&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<exit/>
+		</block>
+
+<catch event="error.badfetch">		 								
+    	 	 <exit/>
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 	<exit/>
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+		  	<exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+			<exit/>
+      </catch>
+      
+<!--      <catch event=" error.* "> 
+  			<exit/>
+	   </catch> -->
+	</form>
+	 
+
+
+
+</vxml>

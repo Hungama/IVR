@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="LRADIO_main.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+     	
+	<var name="mode_sub" expr="''" />
+	<var name="eusr_status" expr="0"/>
+	<var name="Time_Left" expr=""></var>	
+	<var name="cmp_time" expr=""></var>
+	<var name="validity_left" expr=""></var>	
+	<var name="FilePlay" expr="''"/>
+	<var name="FilePlay2" expr="''"/>
+	<var name="var_wel" expr="''"/>
+	<var name="subtype" expr="''"/>
+	<script>		  
+		  var UserStatus1=new Object();
+		  var balance1=new Object();
+		  var lang1=new Object();
+		  var mode_sub1=new Object();
+		  var PreviewToPlay1 = new Object();
+		  var daysleft1=new Object();
+		  var time_rem=new Object();
+		  var out_string=new Object();
+		  var j=new Object();
+	</script>
+	<form id="Main">
+		<block>
+		   <if cond="ANI=='9582802919' || ANI=='7838091548'">
+				<assign name="circle" expr="'guj'"/>
+		</if>
+		    <assign name="start_BalenceMinute" expr="start_time()"/>						
+		    <if cond="circle=='mum'">
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='kol'"/>
+		    	<assign name="lang" expr="'06'"/>
+		    <elseif cond="circle=='apd'"/>
+		    	<assign name="lang" expr="'08'"/>
+		    <elseif cond="circle=='upw'"/>
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='upe'"/>
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='guj'"/>
+		    	<assign name="lang" expr="'12'"/>
+		    <elseif cond="circle=='mah'"/>
+		    	<assign name="lang" expr="'13'"/>
+		    <elseif cond="circle=='chn'"/>
+		    	<assign name="lang" expr="'07'"/>
+		    <elseif cond="circle=='ker'"/>
+		    	<assign name="lang" expr="'09'"/>
+		    <elseif cond="circle=='ori'"/>
+		    	<assign name="lang" expr="'13'"/>
+		    <elseif cond="circle=='bih'"/>
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='tnu'"/>
+		    	<assign name="lang" expr="'07'"/>
+		    <elseif cond="circle=='wbl'"/>
+		    	<assign name="lang" expr="'06'"/>
+		    <elseif cond="circle=='kar'"/>
+		    	<assign name="lang" expr="'10'"/>
+		    <else/>
+		    	<assign name="lang" expr="'01'"/>
+		    </if>	
+		    
+		  
+		<if cond="operator=='unim' &amp;&amp; circle=='upe' &amp;&amp; lang=='01'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3'"/>
+			<script>
+			 <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+								if(j==3)
+						       	modeofsub = out_string[j];		
+						  }
+
+				]]>
+			
+			</script>
+			<log>Live Radio usr_status is	<value expr="usr_status"/>  </log>
+		<elseif cond="circle=='upw' || circle=='bih' || circle=='guj' || circle=='mah'"/>
+			<!-- THIS IS FOR REDFM TRY AND BUY -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>
+			<script>
+			 <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						       if(j==3)
+						       	un_pl = out_string[j];		
+						  }
+
+				]]>
+			
+			</script>
+			<log>Live Radio usr_status is	<value expr="usr_status"/>  </log>
+				
+		<else/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];						      							       							      
+						  }
+
+					]]>
+			
+			</script>
+		</if>		
+			<log>Live Radio usr_status is	<value expr="usr_status"/>  </log>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=6'"/>
+			<script>
+			 <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	modeofsub = out_string[j];		
+						  }
+				]]>
+			
+			</script>
+
+			
+			<if cond="usr_status=='1'">	
+				<assign name="drop_point" expr="'Old_User'" />							
+				<if cond="operator=='unim' &amp;&amp; circle=='upe' &amp;&amp; modeofsub=='TOBD' &amp;&amp; lang=='01'">
+					<script>balance=balance*60</script>
+					<script>timerflag=1;</script>	
+					<log>"OBD TRY N BUY" </log>
+					<log>	balance is	<value expr="balance"/>  </log>
+					<prompt bargein="true" timeout="0s">
+				    	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/trynbuy.wav'" />
+					</prompt>
+					<if cond="balance &lt;= '0'">          
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>		    				    		
+						<goto next="Hungama_RedFMEnd.vxml"/>
+					</if>
+					<goto next="Hungama_RedFMexisting.vxml"/>
+				<elseif cond="circle=='upw' &amp;&amp; (modeofsub=='TOBD' || modeofsub=='TIVR' || modeofsub=='TUSSD' || modeofsub=='TWAP')"/>	
+					<script>balance=balance*60</script>
+					<script>timerflag=1;</script>				
+					<log>	lang is	<value expr="lang"/>  </log>
+					<log>	balance is	<value expr="balance"/>  </log>
+					<if cond="circle=='tnu' || circle=='chn'">
+						<prompt bargein="true" timeout="0s">
+				    		<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/common/sweeper_10_sec_tnu.wav'" />
+						</prompt>
+					<else/>
+						<prompt bargein="true" timeout="0s">
+					    	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/common/sweeper_10_sec.wav'" />
+						</prompt>
+					</if>
+				<else/>
+					<script>balance=balance*60</script>
+					<script>timerflag=1;</script>				
+					<log>	lang is	<value expr="lang"/>  </log>
+					<log>	balance is	<value expr="balance"/>  </log>
+					<if cond="circle=='tnu' || circle=='chn'">
+						<prompt bargein="true" timeout="0s">
+				    		<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/common/sweeper_10_sec_tnu.wav'" />
+						</prompt>
+					<else/>
+						<prompt bargein="true" timeout="0s">
+					    	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/common/sweeper_10_sec.wav'" />
+						</prompt>
+					</if>
+				</if>
+				
+				<!-- TNB FOR REFM 559356 AND ENT REDFM FOR UNIM  CHECK START   -->
+				<!--	<if cond="operator=='unim' &amp;&amp; (circle!='upe' &amp;&amp; circle!='upw')">	
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REDFM_TNB_QUERY_559356&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2'"/>	
+						<script>
+							 sub_type_redfm_559356 = out_string[0];						       
+						</script>
+
+						<if cond="sub_type_redfm_559356=='UNIMHUNGAMA'">
+							<assign name="REDFM_559356_TNB" expr="'TRUE'"/>
+						<elseif cond="sub_type_redfm_559356=='CROSSENT'"/>
+							<assign name="REDFM_ENT_TNB" expr="'TRUE'"/>
+						<elseif cond="sub_type_redfm_559356=='CROSSRR'"/>
+							<assign name="REDFM_RR_TNB" expr="'TRUE'"/>
+						</if>			
+					</if> -->
+				<!-- TNB FOR REFM 559356 AND ENT REDFM FOR UNIM  CHECK END   -->
+
+					<if cond="lang=='99'">
+						<assign name="new_lang" expr="1"/>
+						<goto next="Hungama_RedFMselectlang.vxml"/>
+					</if>
+				<if cond="balance &lt; 0   || balance == 0">
+					<if cond="circle=='upw' &amp;&amp; (modeofsub=='TIVR' || modeofsub=='TOBD' || modeofsub=='TUSSD' || modeofsub=='TWAP')">
+						
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+						<goto next="Hungama_RedFMNewuser.vxml"/>
+					</if>
+					<if cond="modeofsub=='TIVR5'">
+						
+							<goto next="Hungama_RedFMNewuser.vxml"/>
+						
+					</if>
+
+					<goto next="Hungama_RedFMTopUpFinish.vxml"/>				
+				<else/>
+					<goto next="Hungama_RedFMexisting.vxml"/>
+				</if>
+	        				
+	    	<elseif cond="usr_status == '-1'"/>	    	
+	    				<assign name="drop_point" expr="'New_User'" />	  					
+					<log>	lang is	<value expr="lang"/>  </log>
+					<assign name="var_wel" expr="'1'" />
+				 <!-- TNB FOR REFM 559356 FOR UNIM  CHECK START   -->
+				<!--	<if cond="operator=='unim' &amp;&amp; DNIS=='559356' &amp;&amp; (circle=='apd' || circle=='mum' || circle=='guj' || circle=='mah')">	
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REDFM_TNB_QUERY_559356&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>	
+						<script>
+							var TRYNBUYSTATUS = out_string[0];						       
+						</script>
+
+						<if cond="TRYNBUYSTATUS=='-1'">
+							<goto next="#TNB_559356_REDFM"/>
+						</if>
+					</if> -->
+				<!-- TNB FOR REFM 559356 FOR UNIM  CHECK END   -->
+			
+				<if cond="circle=='tnu' || circle=='chn'">
+						<prompt bargein="true" timeout="0s">
+						    	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/common/sweeper_10_sec_tnu.wav'" />
+						</prompt>
+				<else/>
+						<prompt bargein="true" timeout="0s">
+						    	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/common/sweeper_10_sec.wav'" />
+						</prompt>
+				</if>
+				
+				
+					<goto next="Hungama_RedFMselectlang.vxml"/>	        	
+		<elseif cond="usr_status == '0'"/>
+				<assign name="drop_point" expr="'Delay_charging'" />
+				<prompt bargein="true">
+				    <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/delay_charging.wav'" />
+				</prompt>
+				<log expr="'call ended due to user status =' + usr_status"/>
+				<throw event="connection.disconnect.hangup"/>				
+		<elseif cond="usr_status == '11'"/>
+				<assign name="drop_point" expr="'Delay_charging'" />
+				<prompt bargein="true">
+				     <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/delay_charging.wav'" />
+				</prompt>
+				<log expr="'call ended due to user status =' + usr_status"/>
+				<throw event="connection.disconnect.hangup"/>	
+		<elseif cond="usr_status == '5'"/>
+				<assign name="drop_point" expr="'Delay_charging'" />
+				<prompt bargein="true">
+				     <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/delay_charging.wav'" />
+				</prompt>
+				<log expr="'call ended due to user status =' + usr_status"/>
+				<throw event="connection.disconnect.hangup"/>			
+		<else/>
+		    		<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/delay_charging.wav'" />
+				</prompt>
+				<log expr="'call ended due to user status =' + usr_status"/>
+				<throw event="connection.disconnect.hangup"/>
+		</if>	
+		</block>
+	</form>	
+	
+<form id="TNB_559356_REDFM">
+	<block>
+		<assign name="amt" expr="'10'"/>
+		<assign name="plan_id" expr="'35'"/>
+		<assign name="service_id" expr="'1410'"/>
+	</block>
+	<field name="mnuopt">
+	<grammar mode="dtmf" root="start172" version="1.0">
+	       <rule id="start172" scope="public">
+		 <one-of>				 
+			   <item>1</item>					  			  		      
+		 </one-of>
+	       </rule>
+	</grammar>			
+
+	<prompt bargein="true" timeout="1s">
+		<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_tnb.wav'" />
+	</prompt>			
+
+	<filled>
+	     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REDFM_TNB_SUB_559356&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=TIVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+	     <goto next="Hungama_RedFMmain.vxml"/>
+	</filled>		
+
+	<noinput>
+	    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REDFM_TNB_SUB_559356&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=TIVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+	     <goto next="Hungama_RedFMmain.vxml"/>
+	</noinput>
+
+	<nomatch>			   
+	    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REDFM_TNB_SUB_559356&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=TIVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+	   <goto next="Hungama_RedFMmain.vxml"/>
+	</nomatch>
+	</field>
+</form>
+
+
+ </vxml>

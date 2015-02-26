@@ -1,0 +1,1063 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+	xmlns:lang="en-US"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	
+	<meta name="Hungama_ModMainMenu.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	
+	
+<!--	<var name="main_circle" expr="''"/>
+	<var name="sp_option" expr="'0'"/>
+	<var name="vlu" expr="''"/>
+
+	<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+		var spzone=new Object();
+	</script>-->
+	<script>
+		var out_string=new Object();
+	</script>
+
+	<var name="maxlang" expr="0"/>	
+	<form id="MAINMENU">
+			<block>
+	
+				<if cond="DNIS=='59090' || DNIS=='590907' || DNIS=='590906'">
+					<if cond="circle=='mah' || circle=='kol' || circle=='guj' || circle=='del' || circle=='upw' || circle=='wbl' || circle=='mpd' || circle=='bih' || circle=='mum' || circle=='raj' || circle=='upe' || circle=='hay' || circle=='pub' || circle=='ori' || circle=='kar' || circle=='hpd' || circle=='nes' || circle=='asm' || circle=='jnk'">
+						<if cond="lang=='06' || lang=='04' || lang=='12' || lang=='05' || lang=='15' || lang=='01' || lang=='11' || lang=='13' || lang=='03' || lang=='18'">
+							<assign name="Contest_mod" expr="'true'"/>
+						<else/>	
+							<assign name="Contest_mod" expr="'false'"/>
+						</if>
+					</if>	
+				</if>	
+				<if cond="circle=='guj' &amp;&amp; DNIS=='590907'">
+							<assign name="Contest_mod" expr="'false'"/>				
+				</if>	
+		
+					
+				<if cond="directaccess=='FKS' &amp;&amp; MM_Value=='0'">
+						<goto next="#SMM_MENU"/>		
+				</if>
+				<assign name="movie_idx" expr="'1'" />
+				<assign name="nomtch" expr="0"></assign>
+				<log> cat order servlet </log>	
+									
+				<if cond="operator=='virm' &amp;&amp; circle=='hay'">
+					<assign name="main_circle" expr="'bih'"></assign>
+					<assign name="sp_option" expr="'1'"></assign>
+				<elseif cond="circle=='mpd' &amp;&amp; DNIS=='59090'"/>
+					<assign name="main_circle" expr="'mpd'"></assign>				
+					<assign name="sp_option" expr="'1'"></assign>
+				<else/>
+					<assign name="main_circle" expr="circle"></assign>
+				</if>							   
+				
+				<if cond="directaccess=='BAL45'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/'+circle+'/45_mainmenuorder.cfg'"/>
+				<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/'+circle+'/mainmenuorder.cfg'"/>
+				</if> 
+				
+				<script>
+						    	array1.length=0;
+				</script>
+				<assign name="len" expr="favSongs.length" />
+				<assign name="i" expr="0" />
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+					 <![CDATA[
+						   for(j=0; j<len ;  j++)
+						   {  	  
+									array1[j] = favSongs[j];						   
+						   }
+				]]>		
+				</script> 	       					       
+				<log>Length  is	<value expr="len"/>    </log>
+				
+				<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+
+				<assign name="var_wel" expr="getRandom(1,300)" />
+
+				<if cond="var_wel &lt; 100">
+					<assign name="var_wel" expr="1" />	
+	         		<elseif cond="var_wel &lt; 200 &amp;&amp; var_wel &gt; 100"/>
+						<assign name="var_wel" expr="2" />	 
+				<else/>
+					<assign name="var_wel" expr="3" />
+				</if>  
+
+				<assign name="free_time" expr="time_duration(F_Start)"/>
+				<log expr="'@@@@@free_time=='+free_time"></log>
+				<log expr="'@@@@rcv_time=='+rcv_time"></log>
+
+
+				<if cond="free_time &gt; rcv_time &amp;&amp; FreeBaseFLAG=='TRUE'">
+					<assign name="RESUME_SERVICE" expr="'CAT_SELECT'"/>
+					<goto next="Hungama_ModSub.vxml"/>
+				</if> 		   		
+				
+
+				
+
+				<!-- spzone check -->
+				<if cond="circle=='mpd'">
+					<assign name="sp_event" expr="'spzone_mpd'"/>
+				<else/>
+					<assign name="sp_event" expr="lang"/>
+				</if>
+				
+				<log expr="'LANG=='+lang"></log>
+				<log expr="'sp_event=='+sp_event"></log>
+
+
+
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_spzone_check?events='+sp_event+'&amp;TOKEN=FREE'"/>
+				<assign name="sp_zone" expr="spzone.value"/>
+
+
+				<log expr="'sp_zone @@@@@@@@@@@@@@@@@@@@ =' +sp_zone"/>	
+				<log expr="'sp_zone @@@@@@@@@@@@@@@@@@@@ =' +sp_zone"/>
+
+
+				<if cond="sp_zone==undefined">
+						<assign name="sp_zone" expr="'00'" />					
+				<else/>		
+					<assign name="sp_length" expr="'0'"/>		
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/check_MOD_Promptfile?lang='+lang+'&amp;pname=spzone_'+circle+'_'+sp_zone+'.wav&amp;TOKEN=FREE'"/>
+					
+					<assign name="sp_length" expr="favSongs.length"/>
+						<log expr="'sp_length @@@@@@@@@@@@@@@@@@@@ =' +sp_length"/>	 
+					<if cond="sp_length=='0'">
+							<assign name="sp_zone" expr="'00'" />					
+					</if>
+				</if>	
+				
+			</block>
+
+			<field name="choice">
+				
+				<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  9  </item>
+							 	 <item>  0  </item>
+							</one-of>
+						</rule>
+				</grammar>				
+				<prompt bargein="true" timeout="2s" cond="directaccess=='DEVO'">					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/catname_dev.wav'"/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/press_dtmf1.wav'"/>			
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/root_'+main_circle+'_000.wav'"/>															
+				</prompt>
+				<prompt bargein="true" timeout="2s" cond="directaccess=='FKS'">					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/select_catnameCTL.wav'"/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf1.wav'"/>			
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/root_'+main_circle+'_000.wav'"/>															
+				</prompt>
+				<prompt bargein="true" timeout="2s" cond="directaccess=='MM'">					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/select_catname'+DNIS+'.wav'"/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf1.wav'"/>			
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/root_'+main_circle+'_000.wav'"/>															
+				</prompt>
+				<prompt bargein="true" timeout="2s" cond="Contest_mod=='true'">					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/hungama/promptFiles/mod/01/contest.wav'"/>	
+				</prompt>
+				
+				<prompt bargein="true" timeout="2s" cond="directaccess!='FKS'&amp;&amp;directaccess!='BAL45' &amp;&amp; directaccess!='DEVO' &amp;&amp; directaccess!='MM' &amp;&amp; sp_option!='1' &amp;&amp; sp_zone!='00'">					
+
+					<audio expr="'http://'+PROMPTS_CONTENT+'/hungama/promptFiles/mod/spzone/'+lang+'/spzone_'+circle+'_'+sp_zone+'.wav'"/>	
+				</prompt>
+				<prompt bargein="true" timeout="2s" cond="directaccess!='FKS'&amp;&amp;directaccess!='BAL45' &amp;&amp; directaccess!='DEVO' &amp;&amp; directaccess!='MM' &amp;&amp; sp_option!='1' &amp;&amp; sp_zone=='00'">					
+
+					<audio expr="'http://'+PROMPTS_CONTENT+'/hungama/promptFiles/mod/spzone/'+lang+'/spzone_00.wav'"/>	
+				</prompt>
+				
+				<prompt bargein="true" timeout="2s" cond="directaccess!='FKS' &amp;&amp;directaccess!='BAL45' &amp;&amp; directaccess!='DEVO' &amp;&amp; directaccess!='MM'">					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/root_'+main_circle+'_000.wav'"/>															
+				</prompt>
+
+				<prompt bargein="true" timeout="2s" cond="directaccess=='BAL45'">					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/root_45.wav'"/>															
+				</prompt>
+
+				<filled>
+					<log>Start filled</log>
+					<if cond="choice=='1' &amp;&amp; operator=='virm' &amp;&amp; circle=='hay'">
+						<throw event="nomatch"/>
+					<elseif cond="choice=='1' &amp;&amp; DNIS=='59090' &amp;&amp; circle=='mpd'"/>	
+						<throw event="nomatch"/>					
+					</if>
+
+
+					<if cond="choice=='0'">
+						<if cond="Contest_mod=='true'">
+								<log expr="'choice is =='+choice"></log>
+								<goto next="Endless_Contest_UserStatus.vxml"/>	
+						<else/>		
+								<prompt bargein="true" timeout="0s">
+									<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+								</prompt>
+								<goto next="#MAINMENU"/>
+						</if>		
+					</if>
+					
+					<if cond="choice &lt; len+1">
+						<assign name="cat" expr="array1[--choice]"/>
+
+						<log expr="'selected cat is '+cat"></log>
+						
+						<if cond="cat=='18'">
+							<assign name="playconfig" expr="''"></assign>
+							<goto next="#CATMENU1"/>	
+						<else/>
+							<assign name="playconfig" expr="cat"></assign>
+							<script>
+								length = cat.length;
+								if(length==4)
+								{
+									subcat = cat.substring(2,4);
+									cat = cat.substring(0,2);
+								}
+								if(length==2)
+								{
+									cat = cat.substring(0,2);
+									subcat = 00;
+								}
+							</script>
+							<assign name="subcat1" expr="subcat"/>
+							<if cond="directaccess=='DEVO' &amp;&amp; cat=='00'">
+								    <assign name="playconfig" expr="play_day"></assign>
+									<assign name="vlu" expr="'dev'"></assign>
+									<goto next="#FETCHSONGS_MM"/>				
+							<elseif cond="directaccess=='FKS' &amp;&amp; cat=='00'"/>
+								    <assign name="playconfig" expr="'cocktail'"></assign>
+									<assign name="vlu" expr="'CTL'"></assign>
+									<goto next="#FETCHSONGS_MM"/>		
+							<elseif cond="directaccess=='MM' &amp;&amp; cat=='00'"/>
+								    <assign name="playconfig" expr="DNIS"></assign>
+									<goto next="Hungama_MM_MENU.vxml#FETCHSONGS_MM"/>				
+							</if>
+							
+							<goto next="#FETCHSONGS"/>
+						</if>
+					</if>					
+					<if cond="choice=='9'">
+						<goto next="Hungama_ModMngAccnt.vxml"/>	
+					</if>
+				</filled>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="1"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="1"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<assign name="cat" expr="array1[0]"/>
+				<assign name="playconfig" expr="cat"></assign>
+				<goto next="#FETCHSONGS"/>
+			</noinput>
+			<nomatch>
+				<!--<if cond="choice=='1' &amp;&amp; operator=='virm' &amp;&amp; circle=='hay'">-->
+				<if cond="choice=='1' &amp;&amp; sp_option=='1'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<goto next="#MAINMENU"/>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="1"/>
+					<reprompt></reprompt>
+				</if>
+			</nomatch>
+			<nomatch count="1">
+				<!--<if cond="choice=='1' &amp;&amp; operator=='virm' &amp;&amp; circle=='hay'">-->
+				<if cond="choice=='1' &amp;&amp; sp_option=='1'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<goto next="#MAINMENU"/>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="1"/>
+					<reprompt></reprompt>
+				</if>
+			</nomatch>
+			<nomatch count="2">
+				<!--<if cond="choice=='1' &amp;&amp; operator=='virm' &amp;&amp; circle=='hay'">-->
+				<if cond="choice=='1' &amp;&amp; sp_option=='1'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<goto next="#MAINMENU"/>
+				<else/>
+					<assign name="cat" expr="array1[0]"/>
+					<assign name="playconfig" expr="cat"></assign>
+					<goto next="#FETCHSONGS"/>
+					</if>
+			</nomatch>
+
+			</field>
+			
+			
+	</form>
+
+	<form id="CATMENU1">
+			<block>
+				<log expr="'CAT MENU 1 order ==================> ' +ANI"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/'+circle+'/catorder.cfg'"/>
+				<script>
+							array1.length=0;
+				</script>
+				<assign name="len" expr="6" />
+				<assign name="maxlang" expr="6" />
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+					 <![CDATA[
+						   for(j=0; j< 6 ;  j++)
+						   {  	  
+									array1[i++] = favSongs[j];						   
+						   }
+
+					]]>		
+				</script> 	       					       
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+				<assign name="free_time" expr="time_duration(F_Start)"/>
+				<log expr="'@@@@@free_time=='+free_time"></log>
+				<log expr="'@@@@rcv_time=='+rcv_time"></log>
+				<if cond="free_time &gt; rcv_time &amp;&amp; FreeBaseFLAG=='TRUE'">
+					<assign name="RESUME_SERVICE" expr="'CAT_SELECT1'"/>
+					<goto next="Hungama_ModSub.vxml"/>
+				</if>
+			</block>
+		<field name="choice">
+
+			
+				<grammar mode="dtmf" root="start2" version="1.0">
+						<rule id="start2" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				
+
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array1">
+<!--						<mark nameexpr="movie_idx++"/>-->
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cat'+names+'.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf'+ ++movie_idx+'.wav'"/>			
+					</foreach>	
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/lang_other_option.wav'"/>							
+				</prompt>
+				
+<!--				<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cat'+array1[movie_idx-1]+'.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf'+movie_idx+'.wav'"/>			
+				</prompt>-->
+				<filled>
+					<if cond="choice=='8'">
+						<goto next="#MAINMENU"/>	
+					</if>
+					<if cond="choice=='9'">
+						<goto next="#CATMENU2"/>	
+					</if>
+					<if cond="choice &lt; len+1">
+						<assign name="cat" expr="array1[--choice]"/>
+						<log expr="'selected sub cat is '+cat"></log>
+						<goto next="#SUBMENU"/>
+					</if>
+				</filled>
+
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<assign name="cat" expr="array1[0]"/>
+				<assign name="playconfig" expr="cat"></assign>
+				<goto next="#SUBMENU"/>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<assign name="cat" expr="array1[0]"/>
+				<assign name="playconfig" expr="cat"></assign>
+				<goto next="#SUBMENU"/>
+			</nomatch>
+<!--		<noinput>
+				<script>movie_idx=movie_idx+1;</script>
+				<log expr="'MOVIE_IDX ISSSS'+movie_idx"></log>
+				 <if cond="movie_idx &gt; maxlang">		   
+					<script>	
+					     movie_idx=1; 
+					</script>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/lang_other_option.wav'"/>							
+			        </if>		
+				  <goto nextitem="choice"/>
+		</noinput>
+		<nomatch>				    
+			<script>movie_idx=1;</script>          		     
+			<prompt>						
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>		 
+			</prompt>
+			<goto nextitem="choice"/>	
+		</nomatch>-->
+
+		</field>
+			
+	</form>
+	
+	<form id="CATMENU2">
+			<block>
+				<log expr="'CAT MENU 2 order ==================> ' +ANI"/>
+				<script>
+							array1.length=0;
+				</script>
+				<assign name="len" expr="6" />
+				<assign name="maxlang" expr="6" />
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+					 <![CDATA[
+						   for(j=6; j<12 ;  j++)
+						   {  	  
+									array1[i++] = favSongs[j];						   
+						   }
+
+					]]>		
+				</script> 	       					       
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+				<assign name="free_time" expr="time_duration(F_Start)"/>
+				<log expr="'@@@@@free_time=='+free_time"></log>
+				<log expr="'@@@@rcv_time=='+rcv_time"></log>
+				<if cond="free_time &gt; rcv_time &amp;&amp; FreeBaseFLAG=='TRUE'">
+					<assign name="RESUME_SERVICE" expr="'CAT_SELECT2'"/>
+					<goto next="Hungama_ModSub.vxml"/>
+				</if>
+			</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start3" version="1.0">
+						<rule id="start3" scope="public">
+							<one-of>
+								 <item>  0  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array1">
+<!--						<mark nameexpr="movie_idx++"/>-->
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cat'+names+'.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf'+ ++movie_idx+'.wav'"/>			
+					</foreach>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/lang_other_option.wav'"/>	
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/lang_prev_option.wav'"/>							
+				</prompt>
+<!--				<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cat'+array1[movie_idx-1]+'.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf'+movie_idx+'.wav'"/>
+				</prompt>-->
+
+				<filled>
+					<log expr="'CAT MENU 2 order choice==================> ' +choice+ANI"/>
+					<if cond="choice=='8'">
+						<goto next="#MAINMENU"/>	
+					</if>
+					<if cond="choice=='9'">
+						<goto next="#CATMENU3"/>	
+					</if>
+					<if cond="choice=='7'">
+						<log expr="'CAT MENU 2 order option 7==================> ' +ANI"/>
+						<goto next="#CATMENU1"/>	
+					</if>
+					<if cond="choice &lt; len+1">
+						<assign name="cat" expr="array1[--choice]"/>
+						<log expr="'selected sub cat is '+cat"></log>
+						<goto next="#SUBMENU"/>
+					</if>
+				</filled>
+
+				<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<assign name="cat" expr="array1[0]"/>
+				<assign name="playconfig" expr="cat"></assign>
+				<goto next="#SUBMENU"/>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<assign name="cat" expr="array1[0]"/>
+				<assign name="playconfig" expr="cat"></assign>
+				<goto next="#SUBMENU"/>
+			</nomatch>
+<!--		<noinput>
+				<script>movie_idx=movie_idx+1;</script>
+				 <if cond="movie_idx &gt; maxlang">		   
+					<script>	
+					     movie_idx=1; 
+					</script>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/lang_other_option.wav'"/>	
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/lang_prev_option.wav'"/>		
+			        </if>		
+				  <goto nextitem="choice"/>
+		</noinput>
+		<nomatch>				    
+			<script>movie_idx=1;</script>          		     
+			<prompt>						
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>		 
+			</prompt>
+			<goto nextitem="choice"/>	
+		</nomatch>-->
+
+			</field>
+			
+	</form>
+	
+	<form id="CATMENU3">
+			<block>
+				<script>
+							array1.length=0;
+				</script>
+				<assign name="len" expr="2" />
+				<assign name="maxlang" expr="2" />
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+					 <![CDATA[
+						   for(j=12; j< 14 ;  j++)
+						   {  	  
+									array1[i++] = favSongs[j];						   
+						   }
+
+					]]>		
+				</script> 	       					       
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+				<assign name="free_time" expr="time_duration(F_Start)"/>
+				<log expr="'@@@@@free_time=='+free_time"></log>
+				<log expr="'@@@@rcv_time=='+rcv_time"></log>
+				<if cond="free_time &gt; rcv_time &amp;&amp; FreeBaseFLAG=='TRUE'">
+					<assign name="RESUME_SERVICE" expr="'CAT_SELECT3'"/>
+					<goto next="Hungama_ModSub.vxml"/>
+				</if>
+			</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start4" version="1.0">
+						<rule id="start4" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>								 
+								 <item>  8  </item>
+								 <item>  7  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array1">
+<!--						<mark nameexpr="movie_idx++"/>-->
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cat'+names+'.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf'+ ++movie_idx+'.wav'"/>			
+					</foreach>	
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/lang_prev_option.wav'"/>						
+				</prompt>
+<!--					<prompt bargein="true" timeout="0s">
+							<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cat'+array1[movie_idx-1]+'.wav'"/>
+							<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf'+movie_idx+'.wav'"/>
+					</prompt>-->
+				<filled>
+					<if cond="choice=='8'">
+						<goto next="#MAINMENU"/>	
+					</if>
+					<if cond="choice=='7'">
+						<goto next="#CATMENU2"/>	
+					</if>
+					<if cond="choice &lt; len+1">
+						<assign name="cat" expr="array1[--choice]"/>
+						<log expr="'selected sub cat is '+cat"></log>
+						<goto next="#SUBMENU"/>
+					</if>
+				</filled>
+			
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<assign name="cat" expr="array1[0]"/>
+				<assign name="playconfig" expr="cat"></assign>
+				<goto next="#SUBMENU"/>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<assign name="cat" expr="array1[0]"/>
+				<assign name="playconfig" expr="cat"></assign>
+				<goto next="#SUBMENU"/>
+			</nomatch>
+<!--		<noinput>
+				<script>movie_idx=movie_idx+1;</script>
+				 <if cond="movie_idx &gt; maxlang">		   
+					<script>	
+					     movie_idx=1; 
+					</script>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/lang_prev_option.wav'"/>						
+			        </if>		
+				  <goto nextitem="choice"/>
+		</noinput>
+		<nomatch>				    
+			<script>movie_idx=1;</script>          		     
+			<prompt>						
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>		 
+			</prompt>
+			<goto nextitem="choice"/>	
+		</nomatch>-->
+
+			</field>
+	</form>
+	
+	
+	<form id="SUBMENU">
+			<block>
+				<log> subcat order servlet </log>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/'+circle+'/'+cat+'_suborder.cfg'"/>
+				<script>
+							array1.length=0;
+				</script>
+				<assign name="len" expr="favSongs.length" />
+				<assign name="maxlang" expr="favSongs.length" />
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+					 <![CDATA[
+						   for(j=0; j<len ;  j++)
+						   {  	  
+									array1[j] = favSongs[j];						   
+						   }
+
+					]]>		
+				</script> 	       					       
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[1]  is	<value expr="array1[0]"/>    </log>
+				<assign name="free_time" expr="time_duration(F_Start)"/>
+				<log expr="'@@@@@free_time=='+free_time"></log>
+				<log expr="'@@@@rcv_time=='+rcv_time"></log>
+				<if cond="free_time &gt; rcv_time &amp;&amp; FreeBaseFLAG=='TRUE'">
+					<assign name="RESUME_SERVICE" expr="'SUB_MENU'"/>
+					<goto next="Hungama_ModSub.vxml"/>
+				</if>
+				<if cond="len==0">
+					<assign name="subcat" expr="'00'"></assign>
+					<goto next="#FETCHSONGS"/>	
+				</if>
+			</block>
+			<field name="choice">
+
+				<grammar mode="dtmf" root="start5" version="1.0">
+						<rule id="start5" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 <item>  *  </item>
+								 <item>  #  </item> 
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<foreach item="names" array="array1">
+<!--						<mark nameexpr="movie_idx++"/>-->
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/selectcat'+names+'.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf'+ ++movie_idx+'.wav'"/>			
+					</foreach>							
+				</prompt>
+<!--				<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cat'+array1[movie_idx-1]+'.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf'+movie_idx+'.wav'"/>			
+				</prompt>-->
+				<filled>
+					<if cond="choice=='8'">
+						<goto next="#MAINMENU"/>	
+					</if>
+					<if cond="choice=='9'">
+						<goto next="Hungama_ModMngAccnt.vxml"/>	
+					</if>
+					<if cond="choice &lt; len+1">
+						<assign name="subcat" expr="array1[--choice]"/>
+						<log expr="'selected sub cat is '+subcat"></log>
+						<assign name="playconfig" expr="subcat"></assign>
+						<goto next="#FETCHSONGS"/>
+					<else/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>
+						<assign name="movie_idx" expr="0"/>
+						<goto next="#SUBMENU"/>		
+					</if>
+				</filled>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<assign name="subcat" expr="array1[0]"/>
+				<assign name="playconfig" expr="cat+subcat"></assign>
+				<goto next="#FETCHSONGS"/>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<assign name="subcat" expr="array1[0]"/>
+				<assign name="playconfig" expr="cat+subcat"></assign>
+				<goto next="#FETCHSONGS"/>
+			</nomatch>
+
+<!--		<noinput>
+				<script>movie_idx=movie_idx+1;</script>
+				 <if cond="movie_idx &gt; maxlang">		   
+					<script>	
+					     movie_idx=1; 
+					</script>
+			        </if>		
+				  <goto nextitem="choice"/>
+		</noinput>
+		<nomatch>				    
+			<script>movie_idx=1;</script>          		     
+			<prompt>						
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>		 
+			</prompt>
+			<goto nextitem="choice"/>	
+		</nomatch>-->
+
+			</field>
+			
+	</form>
+	
+	<form id="FETCHSONGS">
+				<block>												
+					<log> fetching songs </log>
+					<log expr="'subcat==========================='+playconfig"></log>
+					<log>calling url:<value expr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/spconf/'+lang+playconfig+'_'+sp_zone+'.cfg&amp;TOKEN=FREE'"/></log>
+					<if cond="playconfig=='00'">
+						<if cond="circle=='mpd'">
+					    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/spconf/'+lang+playconfig+'_'+sp_zone+'_mpd.cfg&amp;TOKEN=FREE'"/>
+						<else/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/spconf/'+lang+playconfig+'_'+sp_zone+'.cfg&amp;TOKEN=FREE'"/>
+						</if>
+						<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/songconfig/'+lang+playconfig+'.cfg&amp;TOKEN=SHUFFLE'"/> -->
+					<else/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/songconfig/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+					</if>
+					<script>
+								array1.length=0;
+								unike_play=0;
+					</script>
+					<assign name="HEARD" expr="playconfig" />
+					<assign name="len" expr="favSongs.length" />
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+					<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+					<script>
+						 <![CDATA[
+							   for(j=0; j<len ;  j++)
+							   {  	  
+										array1[j] = favSongs[j];						   
+							   }
+
+						]]>		
+					</script> 	       					       
+					<log>Length  is	<value expr="len"/>    </log>
+					<log>Array[1]  is	<value expr="array1[0]"/>    </log>					
+				</block>
+				<field name="choice">
+					<grammar mode="dtmf" root="start6" version="1.0">
+						<rule id="start6" scope="public">
+							<one-of>
+								 <item>  8  </item>
+								 <item>  9  </item>									
+							</one-of>
+						</rule>
+					</grammar>
+					<prompt bargein="true" timeout="1s" cond="playconfig=='00' &amp;&amp; operator!='virm' &amp;&amp; circle!='mpd'">
+<!--						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/spzone/'+lang+'/welcome_cat'+sp_zone+'.wav'"/>-->
+						<audio expr="'http://'+PROMPTS_CONTENT+'/hungama/promptFiles/mod/spzone/'+lang+'/welcome_cat'+sp_zone+'.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/keypad.wav'"/>						
+					</prompt>
+					<prompt bargein="true" timeout="1s" cond="playconfig=='00' &amp;&amp; operator!='virm' &amp;&amp; circle=='mpd'">
+<!--						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/spzone/'+lang+'/welcome_cat'+sp_zone+'.wav'"/>-->
+						<audio expr="'http://'+PROMPTS_CONTENT+'/hungama/promptFiles/mod/spzone/'+lang+'/welcome_mpd_cat'+sp_zone+'.wav'"/>
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/keypad.wav'"/>						
+					</prompt>
+                    			<prompt bargein="true" timeout="1s" cond="playconfig!='00' &amp;&amp; operator!='virm'">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_cat'+playconfig+'.wav'"/>							
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/keypad.wav'"/>						
+					</prompt>	
+					<prompt bargein="true" timeout="1s" cond="operator=='virm'">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_cat'+playconfig+'.wav'"/>							
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/keypad_virm.wav'"/>						
+					</prompt>				
+					<filled>
+						<if cond="choice=='8'">
+							<goto next="#MAINMENU"/>
+						<elseif cond="choice=='9'"/>
+							<goto next="Hungama_ModMngAccnt.vxml"/>	
+						<else/>
+							<goto next="Hungama_ModPlay.vxml#next"/>
+						</if>						
+					</filled>
+					<noinput>
+						<goto next="Hungama_ModPlay.vxml#next"/>
+					</noinput>
+					<nomatch>
+						<goto next="Hungama_ModPlay.vxml#next"/>
+					</nomatch>
+				</field>
+	</form>
+	
+	<form id="FETCHSONGS_MM">
+			<block>												
+				<log> fetching MM songs </log>
+				<log>Length  is	<value expr="lang"/>    </log>
+				<log>Length  is	<value expr="playconfig"/>    </log>
+				<if cond="directaccess=='SMM'">
+			    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/songconfig/'+lang+playconfig+'.cfg'"/>
+			    <else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/songconfig/'+playconfig+'.cfg'"/>
+			    </if>	
+				<script>
+							array1.length=0;
+							unike_play=0;
+				</script>				<assign name="HEARD" expr="playconfig"/>
+				<assign name="len" expr="favSongs.length"/>
+				<assign name="movie_idx" expr="0" />
+				<assign name="i" expr="0" />
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+					 <![CDATA[
+						   for(j=0; j<len ;  j++)
+						   {  	  
+									array1[j] = favSongs[j];						   
+						   }
+
+					]]>		
+				</script> 	       					       
+				<log>Length  is	<value expr="len"/>    </log>
+				<log>Array[1]  is	<value expr="array1[0]"/>    </log>					
+			</block>
+			<field name="choice">
+
+				<noinput>
+					<goto next="Hungama_ModPlay.vxml#next"/>
+				</noinput>
+				<nomatch>
+					<goto next="Hungama_ModPlay.vxml#next"/>
+				</nomatch>
+				<grammar mode="dtmf" root="start8" version="1.0">
+					<rule id="start8" scope="public">
+						<one-of>
+							 <item>  8  </item>
+							 <item>  9  </item>									
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s" cond="directaccess!='DEVO'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/Welcome_catname'+vlu+'.wav'"/>							
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/keypad.wav'"/>					
+				</prompt>	
+				<prompt bargein="true" timeout="1s" cond="directaccess=='DEVO'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/keypad.wav'"/>					
+				</prompt>	
+				<filled>
+					<if cond="choice=='8'">
+						<goto next="#MAINMENU"/>
+					<elseif cond="choice=='9'"/>
+						<goto next="Hungama_ModMngAccnt.vxml"/>	
+					<else/>
+						<goto next="Hungama_ModPlay.vxml#next"/>
+					</if>						
+				</filled>
+				
+			</field>
+	</form>
+	<form id="SMM_MENU">
+	<block>
+				<assign name="nomtch" expr="0"></assign>
+				<assign name="MM_Value" expr="'1'"/>
+					<log> IN MM_MENU </log>	
+
+	</block>			
+			
+			<field name="choice">
+				<grammar mode="dtmf" root="start9" version="1.0">
+						<rule id="start9" scope="public">
+							<one-of>
+							 <item> 1 </item>
+							</one-of>
+						</rule>
+				</grammar>				
+				<prompt bargein="true" timeout="2s" cond="directaccess=='FKS'">					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_SPZoneCTL.wav'"/>
+				</prompt>
+				<filled>
+							<assign name="playconfig" expr="'cocktail'"></assign>
+							<assign name="vlu" expr="'CTL'"></assign>
+							<goto next="#FETCHSONGS_MM"/>
+				</filled>
+				<noinput>
+						<assign name="playconfig" expr="'cocktail'"></assign>
+						<assign name="vlu" expr="'CTL'"></assign>
+						<goto next="#FETCHSONGS_MM"/>
+				</noinput>
+				<nomatch>
+						<assign name="playconfig" expr="'cocktail'"></assign>
+						<assign name="vlu" expr="'CTL'"></assign>
+						<goto next="#FETCHSONGS_MM"/>
+				</nomatch>
+			</field>
+	</form>
+</vxml>

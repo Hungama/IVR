@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="CricketRoot.vxml"
+ xmlns="http://www.w3.org/2001/vxml"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="NewUser.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+<property name="documentmaxstale" value="0s"></property>
+<property name="documentmaxage" value="0s"></property>
+	<script>
+		var favSongs=new Object();
+	</script>
+<form id="LANGSEL1">
+		<block>
+			<assign name="Usage_time" expr="time_duration(section_begin)"/>
+			<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+			<assign name="SECTION" expr="'NEWUSER'"/>
+			<assign name="Section_Name" expr="'NEWUSER'"/>
+			<assign name="section_begin" expr="start_time()"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=cricketconfig/'+operator+'/'+circle+'/langorder_WC.cfg'"/> 
+			
+			<script>
+				array1.length=0;
+			</script>
+			
+			<var name="movie_idx" expr="0"/>
+			<assign name="len" expr="favSongs.length" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+			 <![CDATA[
+				   for(j=0; j<len ;  j++)
+				   {  	  	
+							array1[j] = favSongs[j];						   
+				   }
+
+			]]>		
+			</script> 	
+			<!-- <assign name="lang" expr="array1[0]"/>-->	
+			<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/language_option.wav'"/>					
+			</prompt>       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+			<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+			<log expr="'circle @@@@@@@@@@@@@@@@@@@@ =' + movie_idx"/>
+		</block>
+			<field name="choice">
+					<grammar mode="dtmf" root="start25" version="1.0">
+							<rule id="start25" scope="public">
+								<one-of>
+									 <item>  1  </item>
+									 <item>  2  </item>
+									 <item>  3  </item>
+									 <item>  4  </item>
+									 <item>  5  </item>
+									 <item>  6  </item>
+									 <item>  7  </item>
+									 <item>  8  </item>
+									 <item>  9  </item>
+								</one-of>
+							</rule>
+					</grammar>
+					
+			<prompt bargein="true" timeout="1s">
+						<foreach item="names" array="array1">
+							<log>	song is is    	<value expr="movie_idx"/>  	</log>
+							<log>	names is is    	<value expr="names"/>  	</log>
+							<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+names+'/lang'+names+'.wav'"/>
+							<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+names+'/press_dtmf'+ ++movie_idx+'.wav'"/>		
+						</foreach>						
+			</prompt>
+
+				<filled>
+					<if cond="choice &lt; len+1">
+						<assign name="lang" expr="array1[--choice]"/>
+						<log expr="'selected language is '+lang"/>
+						<if cond="usr_status=='-1'">
+							   <prompt bargein="true" timeout="0s">
+								<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+							</prompt>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=WC_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>
+							<goto next="UserStatus_WC.vxml#USRSTATUS"/>
+						<else/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=WC_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>
+							<goto next="MainMenu.vxml"/>
+						</if>
+					</if>
+				</filled>
+			
+				<noinput count="1">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<reprompt></reprompt>
+				</noinput>
+				<noinput count="2">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<reprompt></reprompt>
+				</noinput>
+
+			
+			<noinput count="3">
+				<if cond="usr_status=='-1'">
+					 <assign name="lang" expr="array1[0]"/>
+					   <prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+					</prompt>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=WC_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>
+					<goto next="UserStatus_WC.vxml#USRSTATUS"/>
+				<else/>
+					<goto next="MainMenu.vxml"/>
+				</if>
+				
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+
+			<nomatch count="3">
+				<if cond="usr_status=='-1'">
+					 <assign name="lang" expr="array1[0]"/>
+					   <prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+					</prompt>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=WC_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>
+					<goto next="UserStatus_WC.vxml#USRSTATUS"/>
+				<else/>
+					<goto next="MainMenu.vxml"/>
+				</if>
+			</nomatch>
+			</field>
+		
+		</form>
+	
+</vxml>

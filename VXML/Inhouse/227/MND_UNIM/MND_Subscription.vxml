@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MND_Subscription.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="random" expr="'1'"/>
+	
+	<var name="sub_count" expr="0"/>
+
+	<var name="DirectSub" expr="0"/>
+
+ <script>
+		var out_string=new Object();
+ </script>
+
+
+<form id="DirectSub1">
+	<block>
+			<if cond="usr_status=='-1' &amp;&amp; playch=='0' &amp;&amp; circle=='upe'">
+	 				<script>
+	 					playch=playch+1;
+	 				</script>
+	 				<goto next="MND_mainmenu.vxml"/>
+			</if>
+
+		<assign name="prompt_name" expr="'SUB_MENU'"/>
+
+		<assign name="MSISDN" expr="ANI"/>
+				
+		
+    	      <goto next="#SubMainmenu"></goto>
+	</block>
+
+</form>
+
+
+<form id="SubMainmenu">
+	 <block>
+			<assign name="doc_menu" expr="doc_menu+'@'+'Submenu'"></assign>		
+			
+			<!--<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'47'"/>
+			<assign name="service_id" expr="'1409'"/>-->
+			<assign name="amt" expr="'30'"/>
+			<assign name="plan_id" expr="'256'"/>
+			<assign name="service_id" expr="'1413'"/>
+
+		
+		
+			<assign name="random" expr="getRandom(0,10)" />
+			<if cond="random=='1' || random=='3' || random=='5' || random=='7'">
+				<assign name="random" expr="'1'" />
+			<else/>
+				<assign name="random" expr="'2'" />
+			</if>
+			<log>Random Value  isss  <value expr="random"/>    </log>
+	 </block>
+	 <field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+				</one-of>
+			</rule>
+		</grammar>
+			
+				<prompt bargein="true" timeout="1s">
+			   		<audio expr="promptpath+'/'+lang+'/common/subintro_'+random+'.wav'"/>
+				</prompt>
+			      			      
+		  <filled>
+
+			         <if cond="choice=='1'">
+					<assign name="dtmfsub" expr="'First_level_input'"/>
+					<assign name="dtmf_input" expr="dtmf_input+'@'+choice"></assign>
+					<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+choice"></assign>
+
+					<assign name="firstconsent" expr="'Y'"/>
+                               		<assign name="firstconsenttime" expr="start_time()"/>
+                               		<assign name="sub_flag_d" expr="'true'"/>
+
+				  	<goto next="#Doublecheck"></goto>
+			        </if>
+		 </filled>				    
+			
+			<noinput count="1">
+				<assign name="input_check" expr="'noinput'"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/nodtmf.wav'"/>
+				<goto next="#SubMainmenu"/>
+			</noinput>  
+
+			<noinput count="2">
+				<assign name="input_check" expr="'noinput'"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/nodtmf.wav'"/>
+				<goto next="#SubMainmenu"/>
+			</noinput>  
+			<noinput count="3">
+				<goto next="MND_end.vxml"></goto>
+			</noinput>  
+		    
+          
+			<nomatch count="1">
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/invalidoption.wav'"/>
+				<goto next="#SubMainmenu"/>
+		      </nomatch> 
+			<nomatch count="2">
+				<assign name="input_check" expr="'nomatch'"/>
+				<assign name="dtmfsub" expr="'First_level_input'"/>			        
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign> 
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/invalidoption.wav'"/>
+				<goto next="#SubMainmenu"/>
+		      </nomatch> 
+			<nomatch count="3">
+				<goto next="MND_end.vxml"></goto>
+		      </nomatch> 
+
+		      
+
+		</field>
+</form>
+
+<form id="Doublecheck">
+		<block>
+				<assign name="prompt_name" expr="'doubleconsent'"/>
+				<assign name="PATH" expr="promptpath+'/'+lang+'/common/'"/>
+				<assign name="SCHN" expr="'IVR'"/>
+				<assign name="CP" expr="'HUNGAMA'"/>
+				<assign name="MSISDN" expr="ANI"/>
+				<assign name="CPPID" expr="'HUI0002110'"/>
+				<assign name="PRODTYPE" expr="'SUB'"/>     
+				<!--<assign name="PMARKNAME" expr="'Miss Riya'"/>-->
+				<assign name="PMARKNAME" expr="'Pyaar Ke Panne'"/>
+				<assign name="PRICE" expr="'30'"/>
+				<assign name="SE" expr="'HUNGAMA'"/>
+				<assign name="CPTID" expr="gettransidtime()"/>
+				<assign name="DT" expr="getUNIMDT()"/>
+				<!--<assign name="PD" expr="'Sensous stories of Riya'"/>-->
+				<assign name="PD" expr="'Pyaar Ke Panne'"/>
+				<assign name="SCODE" expr="'songid'"/>
+				<assign name="RSV" expr="'rsv'"/>
+				<assign name="RSV2" expr="'rsv2'"/>
+				<if cond="circle=='guj'">
+					<assign name="CPPID" expr="'HUI0042312'"/>
+					<assign name="amt" expr="3"/>
+					<assign name="plan_id" expr="'257'"/>
+
+				</if>
+				<if cond="ANI=='9059675134' || ANI=='8546048758'">
+					<assign name="CPPID" expr="'HUI0036092'"/>
+					<assign name="amt" expr="10"/>
+					<assign name="plan_id" expr="'260'"/>
+					<assign name="SCHN" expr="'IVR_EVT'"/>
+					<assign name="PRODTYPE" expr="'Voice'"/> 
+					<assign name="SE" expr="'HUNGAMA_EVT'"/>
+
+				</if>
+
+			
+				<script>
+						PRICE=amt*100;
+				</script>
+				<log expr="'PATH @@@@@@@@@ '+PATH"></log>
+				<log expr="'DT @@@@@@@@@ '+DT"></log>
+				<log expr="'CPTID @@@@@@@@@ '+CPTID"></log>
+				<log expr="'PRICE @@@@@@@@@ '+PRICE"></log>
+
+
+				<if cond="lang=='01'">
+					<assign name="LANG" expr="'HIN'"/>
+				<elseif cond="lang=='08'"/>
+					<assign name="LANG" expr="'TEL'"/>
+				<else/>
+					<assign name="LANG" expr="'HIN'"/>
+				</if> 
+
+</block>
+		<subdialog name="confirmUserChoice" srcexpr="'http://180.178.28.62:7001/IVR/SecondConsentIVRRequestSyncPS?PATH='+PATH+'&amp;LANG='+LANG+'&amp;SCHN='+SCHN+'&amp;CP='+CP+'&amp;MSISDN='+MSISDN+'&amp;CPPID='+CPPID+'&amp;PRODTYPE='+PRODTYPE+'&amp;PMARKNAME='+PMARKNAME+'&amp;PRICE='+PRICE+'&amp;SE='+SE+'&amp;CPTID='+CPTID+'&amp;DT='+DT+'&amp;PD='+PD+'&amp;SCODE='+SCODE+'&amp;RSV='+RSV+'&amp;RSV2='+RSV2">                                      
+									
+		<filled>
+			<assign name="secondconsent" expr="'Y'"/>
+			<assign name="secondconsenttime" expr="start_time()"/>
+			<assign name="ccgresult" expr="confirmUserChoice.result"/>
+			<assign name="pressdtmf" expr="confirmUserChoice.PRESSED_DTMF"/>
+			<assign name="trans_id" expr="CPTID"/>
+
+			<log>Confirmation page</log>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+			<log>back from the confirmation app, the PRESSED_DTMF:<value expr="confirmUserChoice.PRESSED_DTMF"/></log>
+			<log>back from the confirmation app, the response:<value expr="confirmUserChoice.result"/></log>
+
+			<script srcexpr="'http://192.168.100.226:8082/hungama/Uninor_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=RIYA&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+CPTID+'&amp;ccgresult='+confirmUserChoice.result+'&amp;ccgdtmf='+confirmUserChoice.PRESSED_DTMF"/> 
+			<if cond="confirmUserChoice.result=='success'">
+					<goto next="#BillStatusChk"/>
+			<else/>
+					 <goto next="MND_end.vxml"/>
+			</if>                                      
+		</filled>
+</subdialog>
+</form>
+
+
+<form id="BillStatusChk">
+	<block>
+		<assign name="prompt_name" expr="'BILLING_CHECK'"/>
+		<assign name="dtmfsub" expr="'Second_level_input'"/>
+		<assign name="dtmf_input" expr="dtmf_input+'@'+choice"></assign>
+		<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+choice"></assign>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+		
+	</block>
+	<field name="choice">
+		<grammar mode="dtmf" root="start11" version="1.0">
+			<rule id="start11" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+				</one-of>
+			</rule>
+		</grammar>
+		<prompt bargein="true" timeout="2s">
+			<audio expr="promptpath+'/'+lang+'/common/delay_charge.wav'"/>
+			<audio expr="promptpath+'/'+lang+'/common/delay_charge.wav'"/>
+		</prompt>
+				
+		<filled>
+			<goto next="#BillStatusChkAgain"></goto>					
+		</filled>
+				
+		<nomatch>
+		   <goto next="#BillStatusChkAgain"></goto>	
+		</nomatch>
+		
+		<noinput>
+		   <goto next="#BillStatusChkAgain"></goto>	
+		</noinput>
+	</field>
+</form>
+
+<form id="BillStatusChkAgain">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							 	usr_status = out_string[j];
+						       if(j==1)
+						       		lang = out_string[j];
+						       if(j==2)
+							       	balance = out_string[j];							      
+						  }
+					]]>
+			</script>
+			<log>	usr_status isssss    <value expr="usr_status"/> 	</log>
+			<if cond="usr_status=='-1'">
+				<goto next="#BillStatusChkDouble"></goto>
+			<elseif cond="usr_status=='1'"/>
+				<assign name="dtmfsub" expr="'Billing_status'"/>
+			        <assign name="input_check" expr="'SUCCESS'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/'+playconfig+'/thanks_sub.wav'"/>
+				</prompt>
+				<goto next="MND_mainmenu.vxml"/>	
+			<else/> 
+				
+				<goto next="#BillStatusChkDouble"></goto>
+			</if>
+		</block>
+	</form>
+
+
+<form id="BillStatusChkDouble">
+	<block>
+		<assign name="prompt_name" expr="'BILLING_CHECK'"/>
+		
+	</block>
+	<field name="choice">
+		<grammar mode="dtmf" root="start12" version="1.0">
+			<rule id="start12" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+				</one-of>
+			</rule>
+		</grammar>
+		
+		<prompt bargein="true" timeout="2s">
+			<audio expr="promptpath+'/'+lang+'/common/delay_charge.wav'"/>
+			<audio expr="promptpath+'/'+lang+'/common/delay_charge.wav'"/>
+		</prompt>
+				
+		<filled>
+			<goto next="#BillStatusChkAgainDouble"></goto>					
+		</filled>
+				
+		<nomatch>
+		   <goto next="#BillStatusChkAgainDouble"></goto>	
+		</nomatch>
+		
+		<noinput>
+		   <goto next="#BillStatusChkAgainDouble"></goto>	
+		</noinput>
+	</field>
+</form>
+
+<form id="BillStatusChkAgainDouble">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+			<log>	usr_status isssss    <value expr="usr_status"/> 	</log>
+			<if cond="usr_status=='-1'">
+				<assign name="dtmfsub" expr="'Billing_status'"/>
+			        <assign name="input_check" expr="'WAIT'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/delay_charge.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/'+playconfig+'/thanks_nosub.wav'"/>
+				</prompt>
+				<goto next="MND_end.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<assign name="dtmfsub" expr="'Billing_status'"/>
+			        <assign name="input_check" expr="'SUCCESS'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/'+playconfig+'/thanks_sub.wav'"/>
+				</prompt>
+				<goto next="MND_mainmenu.vxml"/>	
+			<else/> 
+				<assign name="dtmfsub" expr="'Billing_status'"/>
+			        <assign name="input_check" expr="'WAIT'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+input_check"></assign>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/delay_charge.wav'"/>
+				</prompt>
+				<goto next="MND_end.vxml"></goto>
+			</if>
+		</block>
+	</form>
+
+
+
+</vxml>

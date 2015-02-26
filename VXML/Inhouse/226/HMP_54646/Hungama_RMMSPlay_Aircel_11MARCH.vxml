@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_BNB_Play.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+		
+	
+	<form id="Welcome">
+			<block>
+				<assign name="promptpath" expr="'http://'+IP+'/promptFiles/RaginiMMS_prompts_Aircel'"/>
+				<assign name="callcharge" expr="'3'"/>
+				<assign name="cat" expr="'0'"/>
+				<assign name="subcat" expr="'0'"/>
+				<assign name="C_Start" expr="start_time()"/>
+				<assign name="C_Game" expr="starttime()"/>
+				
+				<script>  
+						realDNIS=session.connection.local.uri;                   
+						ANI=session.connection.remote.uri;
+				</script>
+                <script>
+						var length = ANI.length;
+						ANI = ANI.substring(length-10,length);
+				</script> 
+
+				
+				
+				
+	  <if cond="realDNIS=='5464646'">
+		 <assign name="DNIS" expr="'5464646'"/>
+		 <assign name="operator" expr="'relm'"/>
+	
+	     <elseif cond="realDNIS=='0115464646'"/>
+		 <assign name="DNIS" expr="'5464646'"/>
+		 <assign name="operator" expr="'tatm'"/>
+	
+	     <elseif cond="realDNIS=='01115464646'"/>
+		 <assign name="DNIS" expr="'5464646'"/>
+		 <assign name="operator" expr="'tatc'"/>
+		 
+	     <elseif cond="realDNIS=='01105464646'"/>
+		 <assign name="DNIS" expr="'5464646'"/>
+		 <assign name="operator" expr="'virm'"/>
+		 
+	     <elseif cond="realDNIS=='66291446'"/>
+		 <assign name="DNIS" expr="'5464646'"/>
+		 <assign name="operator" expr="'unim'"/>
+		 
+	     <elseif cond="realDNIS=='66291076'"/>
+	     	 <assign name="DNIS" expr="'5464646'"/>
+		 <assign name="operator" expr="'airc'"/>
+	<else/>
+		 <assign name="DNIS" expr="'5464646'"/>
+		 <assign name="operator" expr="'unim'"/>
+	     </if>
+<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/>  
+<script srcexpr="'http://192.168.100.226:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       	circle = out_string[j];
+							      							      
+							  }
+	
+						]]>
+				
+			</script>
+			
+		 <log> FIRST DB FETCH circle  is	<value expr="circle"/>    </log>
+		<!-- CELEB CHAT CHECK THE STATUS  START -->
+					
+						
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					<script>
+						 <![CDATA[
+							 for(j=0; j< out_string.length;  j++)
+								  {  	  
+								   if(j==0)
+									celeb_date = out_string[j];
+								  }
+		
+						]]>
+					</script>
+					<log expr="'celeb_date issssss =' + celeb_date"/>
+		
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=1'"/>
+					<script>
+						 <![CDATA[
+							 for(j=0; j< out_string.length;  j++)
+								  {  	  
+								   if(j==0)
+									celeb_on = out_string[j];
+								  }
+		
+						]]>
+					</script>
+					<log expr="'celeb_on issssss =' + celeb_on"/>
+		
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.CHAT_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+						 <![CDATA[
+							for(j=0; j< out_string.length;  j++)
+								 {  	  
+								  if(j==0)
+									usr_status_chat = out_string[j];
+								 }
+		
+						]]>
+					</script>
+						<log expr="'usr_status_chat issssss =' + usr_status_chat"/>
+						<if cond="usr_status_chat=='1'">
+									<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.CHAT_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=2'"/>
+									<script>
+										 <![CDATA[
+											for(j=0; j< out_string.length;  j++)
+												 {  	  
+												  if(j==0)
+													chat_subtype = out_string[j];
+												 }
+										]]>
+									</script>
+									<log expr="'chat_subtype  issssss =' +chat_subtype"/>
+						</if>
+		
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.CHAT_SERVERIP_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					<script>
+						 <![CDATA[
+							for(j=0; j< out_string.length;  j++)
+								 {  	  
+								  if(j==0)
+									usr_status_deffered = out_string[j];
+								 }
+		
+						]]>
+					</script>
+						<log expr="'usr_status_deffered  issssss =' +usr_status_deffered"/>
+						
+						
+		<!--*******************************ON CHAT DAY****************************************************************************************-->
+		
+		<!--<if cond="celeb_on=='1' &amp;&amp; (operator=='airc' || operator=='relc' || operator=='relm')">
+			<goto next="#CelebTimeCheck"/>
+		<else/>
+			<prompt bargein="true" timeout="1s" cond="celeb_date=='-1'">
+				<audio expr="promptpath+'/'+lang+'/info_chat.wav'" />
+			</prompt>
+				<goto next="#userstatus"/>
+		</if>-->
+		<!--***********************************************************************************************************************************-->
+			
+			 		<prompt bargein="true" timeout="1s">
+			 			<audio expr="promptpath+'/'+lang+'/welcome_old_chat.wav'" />
+			 		</prompt>
+			 		<goto next="#userstatus"/>
+			
+		   </block>
+		</form>
+		
+		
+		<form id="CelebTimeCheck">
+			   <block>
+				<if cond="celeb_on=='1'" >
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=2'"/>
+				        	<script>
+				    			<![CDATA[
+					  			 for(j=0; j< out_string.length;  j++)
+								 {  	  
+						    		 	if(j==0)
+										celeb_on_time = out_string[j];
+						  		 }
+							]]>
+				        	</script>
+							<if cond="celeb_on_time=='2'">
+									<prompt bargein="true">	
+										<audio expr="promptpath+'/'+lang+'/chat_today.wav'"/>
+									</prompt>
+									<goto next="#userstatus"/>
+							<elseif cond="celeb_on_time=='3'"/>
+								<!--<prompt bargein="true">	
+									<audio expr="promptpath+'/'+lang+'/pre_event_engagement_tollfree.wav'"/>
+								</prompt>-->
+								<goto next="#userstatus"/>
+		
+							<elseif cond="celeb_on_time=='4'"/>
+								<!--<prompt bargein="true">	
+									<audio expr="promptpath+'/'+lang+'/call_postevent.wav'"/>
+								</prompt>-->
+								<goto next="#userstatus"/>
+							<else/>
+								<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.CHATUSER_TRANSFAR&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+usr_status_deffered+'&amp;INPARAM[2]='+DNIS"/>
+								   <goto next="#CALL_CONNECTED"/>
+							</if>
+							 
+					</if>
+			 </block>
+			  
+		</form>
+		<form id="CALL_CONNECTED">
+			<block>
+				<if cond="usr_status_deffered=='217'">
+						<goto next="ChatDeffered.vxml"/>
+				<else/>
+							<assign name="C_End" expr="start_time()"/>
+							<if cond="song_listen=='START'">
+								<assign name="song_listen" expr="'END'" />
+								<assign name="compare_time" expr="rim(song_begin)"/>
+								<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+							</if>
+							<if cond="operator=='tatc' || operator=='tatm' || operator=='virm'">
+								<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.MMS_LINK_TATA&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+							<else/>
+								<script srcexpr="'http://192.168.100.226:8082/'+servlet_path+'/Ragini_MMSAPI?ANI='+ANI+'&amp;operator='+operator+'&amp;circle='+circle+'&amp;continous_counter='+continous_counter"/>
+							</if>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+'NA'+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=54646&amp;subflag=-1&amp;contentlog='+contentlog"/>
+					<submit expr="'http://192.168.100.226:8080/hungama/Newseleb/starclub-SelectLang.vxml'"/>
+				</if>
+				
+			</block>
+		
+				
+		</form>
+
+
+		<form id="userstatus">
+			<block>			     
+				 <assign name="Section_Name" expr="'Lang_check'"/>
+				 <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.RMMS_USERSTATUS&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					 <script>
+						  <![CDATA[
+							for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+										reapet_status = out_string[j];
+							     
+							  }
+						  ]]>
+							 reapet_status=parseInt(reapet_status);
+							
+					 </script>
+								<log expr="'ANI @@@@@@@@@@@@@@@@@@@@ =' + ANI"/>
+								<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+								<log expr="'operator @@@@@@@@@@@@@@@@@@@@ =' + operator"/>
+								<log expr="'reapet_status @@@@@@@@@@@@@@@@@@@@ =' + reapet_status"/>
+				
+				
+
+			    <if cond="reapet_status=='1'">
+			    		<goto next="#ExistingUser"/>
+			    <else/>
+			    		<goto next="#Welcome_Game"/>
+			    </if>
+			</block>
+	</form>
+	
+		<form id="ExistingUser">
+			<block>
+					<assign name="Section_Name" expr="'EXISTING'"/>
+					<assign name="index" expr="getRandom(1,4)" />
+			</block>
+			<field name="choice">
+					<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								<item>  1  </item>
+							</one-of>
+						</rule>
+					</grammar>
+					
+					<prompt bargein="true" timeout="1s">
+						<!--<audio expr="promptpath+'/'+lang+'/Welcome_old'+index+'.wav'" />-->
+						<audio expr="promptpath+'/'+lang+'/Welcome.wav'" />
+
+					</prompt>
+
+					<prompt bargein="true" timeout="1s" cond="(operator!='tatc' &amp;&amp; operator!='tatm')">
+							<audio expr="promptpath+'/'+lang+'/welcome_game.wav'"/>
+					</prompt>	
+					<prompt bargein="true" timeout="1s" cond="(operator=='tatc' || operator=='tatm')">
+							<audio expr="promptpath+'/'+lang+'/welcome_game_tata.wav'"/>
+					</prompt>
+					
+					<filled>
+						<goto next="#PlayGame"/>	
+					</filled>
+			
+					<noinput>
+						<goto next="#PlayGame"/>
+					</noinput>
+					<nomatch>
+			           		<goto next="#PlayGame"/>
+					</nomatch>
+			</field>
+	</form>
+	
+	
+	<form id="Welcome_Game">
+			<block>
+					<assign name="Section_Name" expr="'NewUser'"/>
+					<assign name="index" expr="getRandom(1,4)" />
+			</block>
+			<field name="choice">
+					<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								<item>  1  </item>
+							</one-of>
+						</rule>
+					</grammar>
+					
+					<prompt bargein="true" timeout="1s">
+						<!--<audio expr="promptpath+'/'+lang+'/welcome_new'+index+'.wav'" />-->
+						<audio expr="promptpath+'/'+lang+'/Welcome.wav'" />
+
+					</prompt>
+					<prompt bargein="true" timeout="1s" cond="(operator!='tatc' &amp;&amp; operator!='tatm')">
+							<audio expr="promptpath+'/'+lang+'/welcome_game.wav'"/>
+					</prompt>	
+					<prompt bargein="true" timeout="1s" cond="(operator=='tatc' || operator=='tatm')">
+							<audio expr="promptpath+'/'+lang+'/welcome_game_tata.wav'"/>
+					</prompt>
+					
+					<filled>
+						<goto next="#PlayGame"/>	
+					</filled>
+			
+					<noinput>
+						<goto next="#PlayGame"/>
+					</noinput>
+					<nomatch>
+			           		<goto next="#PlayGame"/>
+					</nomatch>
+			</field>
+	</form>
+	
+	<form id="PlayGame">
+			<block>
+					<assign name="Section_Name" expr="'gamestart'"/>
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.AIRCEL_RMMS_GET&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					 <script>
+						  <![CDATA[
+							for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+									qno = out_string[j];
+							       if(j==1)
+									question = out_string[j];
+							       if(j==2)
+									discription = out_string[j];
+							       if(j==3)
+									answerkey = out_string[j];
+							       if(j==4)
+									score = out_string[j];
+							       if(j==5)
+									ques_available = out_string[j];
+							       if(j==6)
+									cir = out_string[j];
+							       if(j==7)
+									question_counter = out_string[j];
+							  }
+						  ]]> 
+							 score=parseInt(score);
+							 qno=parseInt(qno);
+							 ques_available=parseInt(ques_available);
+							 question_counter=parseInt(question_counter);
+					 </script>
+					 
+				<log expr="'score @@@@@@@@@@@@@@@@@@@@ =' + score"/>
+				<log expr="'qno @@@@@@@@@@@@@@@@@@@@ =' + qno"/>
+				<log expr="'ques_available @@@@@@@@@@@@@@@@@@@@ =' + ques_available"/>
+				<log expr="'question_counter @@@@@@@@@@@@@@@@@@@@ =' + question_counter"/>
+					 
+					<if cond="question_counter=='30' || question_counter &gt; 30">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.AIRCEL_RMMS_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]=0&amp;INPARAM[3]=4&amp;INPARAM[4]=10&amp;INPARAM[5]='+operator"/>
+							
+						 <goto next="#mainmenu"></goto>
+					
+					</if>
+						<assign name="Game_play" expr="'START'"/>
+						<assign name="song_begin" expr="starttime()"/>
+					<assign name="song_listen" expr="'START'" />
+					<assign name="song" expr="question" />
+			</block>
+			<field name="choice">
+					<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								<item>  1  </item>
+								<item>  2  </item>
+							
+							</one-of>
+						</rule>
+					</grammar>
+					
+					<prompt bargein="true" timeout="5s">
+						<!--<audio expr="contentpath+'/RaginiMMS_contest/'+lang+'/'+question+'.wav'" />-->
+						<audio expr="promptpath+'/'+lang+'/'+song+'.wav'" />
+					</prompt>
+					
+					<filled>
+								<assign name="song_listen" expr="'END'" />
+								<assign name="compare_time" expr="rim(song_begin)"/>
+								<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+								<assign name="index" expr="getRandom(1,4)" />
+								<script>
+									continous_counter=continous_counter+1;
+								</script>
+							<if cond="choice==answerkey">
+									<assign name="index" expr="getRandom(1,5)" />
+									<script>score='VG';</script>
+									<prompt bargein="true" timeout="1s">
+										<audio expr="promptpath+'/'+lang+'/correct_ans'+index+'.wav'" />
+									</prompt>
+
+									 <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.AIRCEL_RMMS_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+choice+'&amp;INPARAM[3]=1&amp;INPARAM[4]=10&amp;INPARAM[5]='+operator"/>
+									<goto next="#PlayGame"/>
+							
+							<else/>
+									<assign name="index" expr="getRandom(1,6)" />
+									<script>score='G';</script>
+									<prompt bargein="true" timeout="1s">
+										<audio expr="promptpath+'/'+lang+'/wrong_ans'+index+'.wav'" />
+									</prompt>
+									 <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.AIRCEL_RMMS_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+choice+'&amp;INPARAM[3]=2&amp;INPARAM[4]=10&amp;INPARAM[5]='+operator"/>
+									<goto next="#PlayGame"/>
+							</if>
+					</filled>
+			
+					<noinput count="1">
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+							<!--<prompt bargein="true" timeout="1s">
+									<audio expr="promptpath+'/'+lang+'/nodtmf.wav'" />
+							</prompt>-->
+							<reprompt/>
+					</noinput>
+					<noinput count="2">
+							<assign name="song_listen" expr="'END'" />
+							<assign name="compare_time" expr="rim(song_begin)"/>
+							<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+							<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+							<script>score='0';</script>
+
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.AIRCEL_RMMS_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]=0&amp;INPARAM[3]=3&amp;INPARAM[4]=10&amp;INPARAM[5]='+operator"/>
+							<goto next="#PlayGame"/>
+					</noinput>
+					<nomatch count="1">
+							<assign name="song_listen" expr="'END'" />
+							<assign name="compare_time" expr="rim(song_begin)"/>
+							<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+							<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+							<prompt bargein="true" timeout="1s">
+									<audio expr="promptpath+'/'+lang+'/invalidoption.wav'" />
+							</prompt>
+			           			<reprompt/>
+					</nomatch>
+						<nomatch count="2">
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+						<script>score='0';</script>
+
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.AIRCEL_RMMS_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]=0&amp;INPARAM[3]=3&amp;INPARAM[4]=10&amp;INPARAM[5]='+operator"/>
+						<goto next="#PlayGame"/>
+					</nomatch>
+			</field>
+	</form>
+	
+<form id="mainmenu">
+			<block>
+					<assign name="Section_Name" expr="'mainmenu'"/>
+			</block>
+			<field name="choice">
+					<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								<item>  8  </item>
+							</one-of>
+						</rule>
+					</grammar>
+						<prompt bargein="true" timeout="3s">
+							<audio expr="promptpath+'/'+lang+'/mainmenu_press8.wav'" />
+						</prompt>
+					<filled>
+						<assign name="dbservlet" expr="'airchungama_dbinteraction'"/>
+						<goto next="Hungama_54646_MainMenu.vxml"/>	
+					</filled>
+			
+					<noinput count="1">
+						
+						<reprompt/>
+					</noinput>
+					<noinput count="2">
+						
+						<goto next="#ExistingUser"></goto>	
+					</noinput>
+					<nomatch count="1">
+			           		<reprompt/>
+					</nomatch>
+					<nomatch count="2">
+						<goto next="#ExistingUser"></goto>
+					</nomatch>
+			</field>
+	</form>	
+
+</vxml>

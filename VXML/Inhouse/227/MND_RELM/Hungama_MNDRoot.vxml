@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_MNDRoot.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="Root file for the MND project" />
+
+	<meta name="Support" content="" />
+	
+	<var name="lang" expr="'01'"/>
+
+
+	
+	<var name="FLOW_FLAG" expr="'CATEGORY'"/>
+	<var name="CALCULATE_TIME" expr="'RESET'"/>
+	<var name="HeardCat" expr="0"/>
+	<var name="nextchoice" expr="'1'"/>
+	<var name="loop_counter" expr="1"/>
+	<var name="servlet_path" expr="'hungama'"/>
+	<var name="C_Start" expr=""/>
+	<var name="C_End" expr=""/>	
+	<var name="ANI" expr="'9911718483'"/>       
+	<var name="DNIS" expr="'546464'"/>
+	<var name="realDNIS" expr="'546464'"/>
+	<var name="Flag" expr="''"/>
+
+	<var name="type" expr="'E'"/>
+	<var name="service_token" expr="'5006'"/>
+	<var name="sub_type" expr="'NA'"/>
+	<var name="mood_cnt" expr="0"/>
+	<var name="usr_status" expr="-1"/>
+	<var name="ch1" expr="-1"/>
+	<var name="ch2" expr="-1"/>
+	<var name="ch3" expr="-1"/>
+	<var name="ch4" expr="-1"/>
+	<var name="ch5" expr="-1"/>
+	<var name="flag" expr="1"/>
+	<var name="songID" expr="''"/>
+	<var name="song" expr="''"/>	
+	<var name="circle" expr="''"/>
+	<var name="operator" expr="''"/>		
+	<var name="pref_counter" expr="1"/>
+	<var name="IP" expr="'192.168.100.227:8083'"/>
+	
+	<var name="dbservlet" expr="'tatm_mnd_dbinteraction'"/>
+	
+	<var name="lang_change_st" expr="'true'"/>
+	<var name="timerflag" expr="'0'"/>
+	<var name="start_BalenceMinute" expr="'0'"/>
+	<var name="total_used_bal" expr="'0'"/>
+	<var name="forcastyyyyddmm" expr="''"/>
+	<var name="forcastdd" expr="''"/>
+	<var name="contentdir" expr=""/>
+	<var name="Song_Path" expr=""/>
+	<var name="contentdir1" expr=""/>
+	<var name="CATEGORY" expr="''"/>
+	<var name="CATEGORYINTRO" expr="''"/>
+	<var name="song_begin" expr="'END'"/>
+        <var name="song_listen" expr="''" />
+        <var name="compare_time" expr="0"/>
+	<var name="ContentTime" expr="0"/>					 
+	<var name="contentlog" expr="''"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="starting_time" expr="0"/>
+	<var name="names" expr="'ch1'"/>
+	<var name="index" expr="'0'"/>
+	<var name="playch" expr="'0'"/>
+
+	<var name="drop_point" expr="'NA'"/>
+
+	<var name="promptpath" expr="'http://192.168.100.227:8083/promptFiles/MNDprompts/relm/'"/>
+	
+	<var name="moviesetflag" expr="'false'"/>
+	<var name="clipflag" expr="1"/>
+	<var name="movieflag" expr="1"/>
+	<var name="firstmovie" expr="1"/>	
+	<var name="firstclip" expr="1"/>
+	<var name="moviename" expr="'@'"/>
+	<var name="bal" expr="0"/>
+	<var name="listen_character" expr="'FALSE'"/>
+	<var name="MND_SONG" expr="0"/>
+	<var name="mnd_length" expr="0"/>
+	<var name="day" expr="'0'"/>
+	<var name="lastcat" expr="'0'"/>
+	
+	<var name="contentpath" expr="'http://192.168.100.212:6666/hungama/'"/>
+	
+	<var name="dtmf_check" expr="0"/>
+	<var name="dtmf_log" expr="''"/>
+	<var name="dtmf_input" expr="''"/>
+	<var name="doc_menu" expr="''"/>
+	<var name="input_check" expr="''"/>
+	<var name="dtmfsub" expr="''"/>
+	
+	<var name="listioncat" expr="1"/>
+	<var name="playconfig" expr="'ch1'"/>
+	<var name="amt" expr="'0'"/>
+	<var name="service_id" expr="'0'"/>
+	<var name="plan_id" expr="'0'"/>
+	<var name="balance" expr="0"/>
+	<var name="curbalance" expr="0"/>
+	<var name="movie_idx" expr="'0'"/>
+	<var name="cat" expr="'ch1'"/>
+	<var name="subcat" expr="'ch1'"/>
+	<var name="lastcharcter" expr="'ch1'"/>
+	
+	<var name="TOPUP" expr="'FALSE'"/>
+	<var name="DATE" expr="''"/>
+
+	<script src="../ECMAScripts/common_files.es"/>	
+   	<script>	
+		var len=0;    
+		var i=0; 
+		var j=0;
+		var k=0;
+		var unike_play=0;	                  
+		var array=new Array();
+		var charcter=new Array();
+		var array1=new Array();
+		var array2=new Array();
+		var array3=new Array();
+		var songarray=new Array();
+		var score=new Array();
+		var favSongs=new Object();
+		var songcheck=new Array();
+		var songcheck1=new Array();
+		var favLangs=new Object();
+		var sub_val=new Object();
+		var AllSongs=new Object();		   
+		var songs_details=new Object();	
+		var lang_status=new Object();
+		var usrlang=new Object();
+		var sub_status=new Object();
+		var usrbalance=new Object();
+		var totaltopup=new Object();
+		var out_string=new Object();
+     </script>
+
+	<form id="main">
+		     <block>
+				<goto next="MND_SelectLang.vxml"/>
+		     </block>
+	</form>
+     
+
+      <catch event="error.badfetch">
+		 								
+    	  <log>Inside Error BadCatch catch  2222</log>  	      		  
+		   <goto next="MND_end.vxml"></goto>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  3333</log> 		     
+		   <goto next="MND_end.vxml"></goto>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  4444</log>			   				
+		   <goto next="MND_end.vxml"></goto>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  5555</log>			   		
+		   <goto next="MND_end.vxml"></goto>
+		  
+      </catch>
+
+
+</vxml>

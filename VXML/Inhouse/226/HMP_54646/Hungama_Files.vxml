@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_Files.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	
+	
+<form id="bjp">
+	<field name="mobilenumber" type="digits?length=10">
+
+	<grammar mode="dtmf" root="start" version="1.0">
+		<rule id="start" scope="public">
+			<one-of>
+				 <item>  1  </item>
+				 <item>  2  </item>
+				 <item>  3  </item>
+				 <item>  4  </item>
+				 <item>  5  </item>
+				 <item>  6  </item>
+				  <item>  7  </item>
+				    <item>  8  </item>
+				      <item>  9 </item>
+				        <item>  0  </item>
+
+			</one-of>
+		</rule>
+	</grammar>
+		<prompt bargein="false" timeout="3s">
+				<audio expr="'http://192.168.100.226:8081/promptFiles/Voice/1.wav'" />
+				<audio expr="'http://192.168.100.226:8081/promptFiles/Voice/2.wav'" />
+				<audio expr="'http://192.168.100.226:8081/promptFiles/Voice/3.wav'" />
+				<audio expr="'http://192.168.100.226:8081/promptFiles/Voice/4.wav'" />
+			</prompt>
+
+		<filled>
+			<goto next="Hungama_54646_End.vxml"/>	
+			
+		</filled>
+		<noinput>
+			<goto next="Hungama_54646_End.vxml"/>
+		</noinput>
+		<nomatch>
+			<goto next="Hungama_54646_End.vxml"/>
+		</nomatch>
+	</field>
+	
+	
+</form>
+</vxml>

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModMngAccnt.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+	<var name="cRBTSTATUS" expr="''"/>	
+	<var name="MM_Value" expr="0"/>
+	
+	<script>
+		var UserStatus1=new Object();		
+	</script>
+	<form id="AcntOption">
+		<block>
+			<script>
+				<![CDATA[
+				if(timerflag==1)
+					start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+			<assign name="Section_Name" expr="'ACCOUNT_MANAGER'"/>			
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  8  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/welcome_acmanager.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/acmanager_option.wav'"/>
+			</prompt>
+			<filled>			
+				<if cond="timerflag=='1'">
+					<script> 
+						total_used_bal=rim(start_BalenceMinute);
+						bal=bal-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="Hungama_Topup.vxml"/>
+					</if> 
+				</if>
+				<if cond="choice=='1'">
+					<goto next="#AcntBalance"></goto>
+				<elseif cond="choice=='2'"/>					
+					<goto next="#AcntLanguage"></goto>
+				<elseif cond="choice=='3'"/>
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='8'"/>
+					<if cond="directaccess=='false'">
+						<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+					<else/>
+						<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+					</if>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+				<if cond="timerflag=='1'">
+					<script> 
+						total_used_bal=rim(start_BalenceMinute);
+						bal=bal-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="Hungama_Topup.vxml"/>
+					</if> 
+				</if>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+				<if cond="timerflag=='1'">
+					<script> 
+						total_used_bal=rim(start_BalenceMinute);
+						bal=bal-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="Hungama_Topup.vxml"/>
+					</if> 
+				</if>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+				<if cond="timerflag=='1'">
+					<script> 
+						total_used_bal=rim(start_BalenceMinute);
+						bal=bal-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="Hungama_Topup.vxml"/>
+					</if> 
+				</if>
+			<if cond="directaccess=='false'">
+				<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+			<else/>
+				<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+			</if>
+		</noinput>
+		<nomatch count="1">
+				<if cond="timerflag=='1'">
+					<script> 
+						total_used_bal=rim(start_BalenceMinute);
+						bal=bal-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="Hungama_Topup.vxml"/>
+					</if> 
+				</if>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+				<if cond="timerflag=='1'">
+					<script> 
+						total_used_bal=rim(start_BalenceMinute);
+						bal=bal-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="Hungama_Topup.vxml"/>
+					</if> 
+				</if>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+				<if cond="timerflag=='1'">
+					<script> 
+						total_used_bal=rim(start_BalenceMinute);
+						bal=bal-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+bal"/>
+					<if cond="bal &lt;= '0'">          
+						<goto next="Hungama_Topup.vxml"/>
+					</if> 
+				</if>
+			<if cond="directaccess=='false'">
+				<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+			<else/>
+				<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+			</if>
+		</nomatch>
+	</form>
+	
+	<form id="AcntBalance">
+		<block>
+			<assign name="Section_Name" expr="'BALANCE_MINUTES'"/>
+			<!-- GET BALANCE -->
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/Acmanager_balanceis.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/g_29.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/minutes.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/g_30.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/seconds.wav'"/>
+			</prompt>
+			<goto next="Hungama_ModMainMenu.vxml"></goto>
+		</block>
+	</form>
+
+	<form id="AcntLanguage">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT_MANAGER_LANGUAGE_CHANGE'"/>
+			<goto next="Hungama_ModNewUser.vxml#EXISITNGLANGSEL1"/>			
+		</block>
+	</form>
+	
+	<form id="AcntUnsubscription">
+		<block>
+			<assign name="Section_Name" expr="'ACCOUNT MANAGER_UNSUB'"/>
+		</block>
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/Acmanager_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<!-- UNSUB REQUEST -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_unsub&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				<else/>
+					<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+				</if>
+			</filled>
+		</field>	
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+		</nomatch>		
+	</form>
+</vxml>

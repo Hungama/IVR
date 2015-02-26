@@ -1,0 +1,1236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_PKPRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Chat_Operation.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="chat_whitlist_flag" expr="0"/>
+<var name="chatlang" expr="'01'"/>
+<var name="chatlang" expr="'01'"/>
+<var name="TXFLAG" expr="'1'"/>
+	<var name="trans_status" expr="'1'"/>
+<script>
+	var favSongs=new Object();
+	var favLangs=new Object();
+	var out_string=new Object();
+	var spzone=new Object();
+	var len=0;
+</script>
+<form id="MAINMENU">
+<block>
+<if cond="ANI=='85869670461'">
+	<assign name="operator" expr="'tatm'"/>
+</if>
+	<prompt bargein="true" timeout="2s">
+		<audio expr="promptpath+'/CHAT/'+lang+'/welcome_old_chat.wav'"/>
+	</prompt>
+	<!--******************CELEB DATE ***********************************************-->
+		<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=1'"/>-->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.USERCHATDATE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=1&amp;INPARAM[1]=PKP'"/>
+
+		<script>
+		 <![CDATA[
+			 for(j=0; j< out_string.length;  j++)
+				  {  	  
+				   if(j==0)
+					celeb_date = out_string[j];
+				  }
+
+		]]>
+		</script>
+		<log expr="'celeb_date issssss =' + celeb_date"/>	
+	<!--***************************ticket infor users *******************************-->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.CHAT_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		<script>
+			 <![CDATA[
+				for(j=0; j< out_string.length;  j++)
+					 {  	  
+					  if(j==0)
+						usr_status_chat = out_string[j];
+					 }
+
+			]]>
+		</script>
+		<log expr="'usr_status_chat issssss =' + usr_status_chat"/>
+		<!--***************************GTO infor users *******************************-->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.CHAT_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3'"/>
+				<script>
+					 <![CDATA[
+						for(j=0; j< out_string.length;  j++)
+							 {  	  
+							  if(j==0)
+								trans_status = out_string[j];
+							 }
+		
+					]]>
+				</script>
+		<log expr="'trans_status issssss =' + trans_status"/>
+			<if cond="trans_status=='1'">
+				<assign name="TXFLAG" expr="'2'" />
+			<else/>
+				<assign name="TXFLAG" expr="'1'" />
+			</if>
+<if cond="realDNIS=='3078196111'">
+		<assign name="usr_status_chat" expr="'1'" />
+</if>		
+	
+	<goto next="#SubServices"></goto>
+</block>
+</form>
+<form id="SubServices">
+   <script>
+	  	i=0;
+  		charcter.length=0;
+   </script>
+  <block>
+  
+	 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LISTEN_STORY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>
+
+         <script>
+		 <![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+				  {  	
+				       if (out_string[j]!=0)
+				        {
+					     	charcter[i] = out_string[j];
+						    i++;
+						}
+				  }
+			]]>
+	</script>
+			<script>
+				len=charcter.length;
+			</script>
+			<log expr="'charcter len iss ' +len"></log>
+			<goto next="#Mainmenu"/>		
+  </block>
+</form>
+
+
+
+<form id="Mainmenu">
+	 <block>
+		<assign name="index" expr="'0'" />
+		<assign name="drop_point" expr="'Main_Menu'"/>
+	 </block>
+     <field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  0 </item>
+					 <item>  1  </item>
+					 <item>  2  </item>
+					 <item>  3  </item>
+					 <item>  4  </item>
+					 <item>  5  </item>
+					  <item> 6  </item>
+					 <item>  8  </item>
+					 <item>  9  </item>			
+				</one-of>
+			</rule>
+		</grammar>
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptpath+'/CHAT/'+lang+'/select_rootcat_00.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/common/press_dtmf0.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="2s">
+					<foreach item="names" array="charcter">
+					     <mark nameexpr="index++"/>
+						 <log>	index isss    	<value expr="index"/>  	</log>
+						 <log>	names is is    	<value expr="names"/>  	</log>
+						 <audio expr="promptpath+'/'+lang+'/'+names+'/sub_'+names+'.wav'"/>
+						 <audio expr="promptpath+'/'+lang+'/common/press_dtmf'+index+'.wav'"/>
+					</foreach>													
+				</prompt>
+				
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptpath+'/'+lang+'/common/select_acmanager.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/common/press_dtmf9.wav'"/>
+				</prompt>
+		  <filled>
+		  		<if cond="choice=='0'">
+		  			<goto next="#whitlsit"/>
+				</if>
+		  		
+				<if cond="choice &lt; len+1">	
+					<if cond="choice=='1'">
+						<goto next="Hungama_Riya.vxml"/>
+					</if>
+					<assign name="playconfig" expr="charcter[--choice]" />
+					<assign name="cat" expr="charcter[choice]" />
+					<assign name="subcat" expr="charcter[choice]" />			
+					<goto next="#loadcliptoplay"/>
+				<elseif cond="choice=='8'"/>
+					<goto next="#SubServices"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="Hungama_PKP_Acntmngr.vxml"/>
+				<else/>
+					<assign name="index" expr="'0'" />
+					<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+					<goto next="#Mainmenu"/>
+				</if>		
+	     </filled>				    
+			
+			<noinput>
+				<assign name="index" expr="'0'" />
+				<audio expr="promptpath+'/'+lang+'/common/nodtmf.wav'"/>
+				<reprompt/> 
+			</noinput>  
+
+			<noinput count="3">
+				<assign name="playconfig" expr="charcter[0]" />
+				<assign name="cat" expr="charcter[0]" />
+				<assign name="subcat" expr="charcter[0]" />			
+				<goto next="#loadcliptoplay"/>
+			</noinput> 
+			<nomatch>
+				<assign name="index" expr="'0'" />
+				<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+				<reprompt/>
+			</nomatch> 
+			<nomatch count="3">
+				<assign name="playconfig" expr="charcter[0]" />
+				<assign name="cat" expr="charcter[0]" />
+				<assign name="subcat" expr="charcter[0]" />			
+				<goto next="#loadcliptoplay"/>
+			</nomatch> 
+	    </field>
+</form>
+<form id="whitlsit">
+	<block>
+		<!--***************************whitlsited *******************************-->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.CHAT_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=4'"/>
+				<script>
+					 <![CDATA[
+						for(j=0; j< out_string.length;  j++)
+							 {  	  
+							  if(j==0)
+								chat_whitlist_flag = out_string[j];
+							 }
+
+					]]>
+				</script>
+		<log expr="'chat_whitlist_flag issssss =' + chat_whitlist_flag"/>
+			<if cond="chat_whitlist_flag=='1'">
+				<assign name="celeb_date" expr="'1'"/>
+				<goto next="#CelebTimeCheck"/>
+			<else/>
+				<if cond="DNIS=='550011'">
+					<goto next="#CelebTimeCheck"/>
+				</if>
+				<if cond="usr_status_chat=='1'">
+					<goto next="#CelebTimeCheck"/>
+				<else/>
+					<goto next="#riya_chat"/>
+				</if>
+			</if>
+	</block>
+</form>
+<form id="riya_chat">
+		<field name="choice13">
+		<grammar mode="dtmf" root="start13" version="1.0">
+				<rule id="start13" scope="public">
+					<one-of>	
+						 <item>  1  </item>
+						 
+
+					</one-of>
+				</rule>
+		</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/CHAT/'+lang+'/event_charge.wav'"/>
+			</prompt>	
+				<filled>
+					<if cond="choice13=='1'">
+						<goto next="Hungama_TATATicket.vxml"/>
+					</if>
+					</filled>
+				</field>
+				<noinput>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/common/nodtmf.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+				</noinput>			
+				<nomatch>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+				</nomatch>			
+		</form>
+
+<form id="riya_chat_menu">
+		<field name="choice12">
+		<grammar mode="dtmf" root="start12" version="1.0">
+				<rule id="start12" scope="public">
+					<one-of>	
+						 <item>  1  </item>
+						  <item>  2  </item>
+
+					</one-of>
+				</rule>
+		</grammar>
+		
+
+		<prompt bargein="true" timeout="3s" cond="usr_status_chat=='-1'">
+			<audio expr="promptpath+'/CHAT/'+lang+'/ticket.wav'"/>
+
+		</prompt>
+
+
+					<filled>
+					<if cond="choice12=='1'">
+						<goto next="Hungama_TATATicket.vxml"/>
+						
+					<elseif cond="choice12=='2'"/>	
+						<goto next="Hungama_Riya.vxml"/>
+					</if>
+
+					</filled>
+				</field>
+				<noinput>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/common/nodtmf.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+				</noinput>			
+				<nomatch>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+					</prompt>				
+					<reprompt></reprompt>
+				</nomatch>			
+		</form>
+
+
+<form id="CelebTimeCheck">
+	   <block>
+	   		<if cond="celeb_date=='1'" >
+		<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=2'"/>-->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.USERCHATDATE_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=2&amp;INPARAM[1]=PKP'"/>
+						<script>
+					<![CDATA[
+						 for(j=0; j< out_string.length;  j++)
+						 {  	  
+							if(j==0)
+								celeb_on_time = out_string[j];
+						 }
+					]]>
+				</script>
+					<if cond="chat_whitlist_flag=='1'">
+						<assign name="celeb_on_time" expr="'1'"/>
+					</if>
+					<if cond="celeb_on_time=='2' || celeb_on_time=='3'">
+							<prompt bargein="true">	
+								<audio expr="promptpath+'/CHAT/'+lang+'/chat_today.wav'"/>
+							</prompt>
+							<goto next="Hungama_PKP_mainmenu.vxml#SubServices"/>
+					<elseif cond="celeb_on_time=='4'"/>
+						<goto next="Hungama_PKP_mainmenu.vxml#SubServices"/>
+					<else/>
+						  <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.CHATUSER_TRANSFAR&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+TXFLAG+'&amp;INPARAM[2]='+realDNIS+'&amp;INPARAM[3]='+operator"/>
+						  <goto next="#CALL_CONNECTED"/>
+					</if>
+			<else/>
+				<prompt bargein="true">	
+					<audio expr="promptpath+'/CHAT/'+lang+'/chat_info.wav'"/>
+				</prompt>	
+					
+			<goto next="Hungama_PKP_mainmenu.vxml#SubServices"/>
+			</if>
+	 </block>
+	  
+</form>
+<form id="CALL_CONNECTED">
+	<block>
+		
+ <assign name="C_End" expr="start_time()"/>
+
+	   <if cond="song_listen=='START'">
+		<assign name="song_listen" expr="'END'" />
+		<assign name="compare_time" expr="rim(song_begin)"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+		<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+	  </if>	
+			<if cond="lastheard_content!='0'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_RIYA&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+song_cfg+'&amp;INPARAM[2]='+lastplay_index+'&amp;INPARAM[3]=SET'"/>
+					<script>var res = out_string[0];</script>
+			</if>
+
+
+		<if cond="timerflag=='1'">
+		    <script>
+			total_used_bal=rim(start_BalenceMinute);
+			balance=balance-total_used_bal; 						  
+		    </script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+balance"/>	
+			<script>balance=Math.floor(balance/60);</script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+balance"/>
+			<if cond="balance &lt; 0">
+				<script> balance=0;</script> 
+			</if>
+		</if>
+
+		<log expr="'Balance isss'+balance"/>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LISTEN_STORY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3'"/>	
+
+		<if cond="TOPUP=='FALSE'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/>
+		</if> 
+
+		<if cond="sub_flag=='true'">
+			<script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service='+service_id+'&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>  		
+		</if>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_CT_MESSAGE&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+drop_point+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=MND&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			
+			<submit expr="'http://192.168.100.226:8080/hungama/Hungama_ChatRoom/Chat_Room.vxml'"/>
+			<!--<submit expr="'..../Hungama_ChatRoom/Chat_Room.vxml'"/>-->
+		
+	</block>
+			
+</form>
+<form id="loadcliptoplay">
+	<block> 
+		<assign name="drop_point" expr="'load_story'"/>
+		<log expr="'playconfig isss'+playconfig"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LAST_HEARD&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=GET&amp;INPARAM[2]='+playconfig+'&amp;INPARAM[3]=0&amp;INPARAM[4]=0'"/>
+		<script>
+			 	lastcat = out_string[0];
+				day = out_string[1];
+				lastcat=parseInt(lastcat);
+		</script>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=MNDconfig/PKP/'+lang+'/'+playconfig+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+				array.length=0;
+				unike_play=0;
+			</script>
+				<assign name="len" expr="favSongs.length" />
+				<assign name="movie_idx" expr="'0'" />
+				<assign name="i" expr="'0'" />   
+			<script>
+				<![CDATA[
+				   for(k=0; k<len ;  k++)
+					  {  	  
+						array[k] = favSongs[k];						   
+					  }
+				]]>		
+			</script> 
+				<assign name="DATE" expr="getcurryyyymmdd()"/>
+				<log>	Today DATE  isssss    <value expr="DATE"/> 	</log>
+				
+				<log>	Today DAY isssss    <value expr="day"/> 	</log>	
+				
+				<assign name="unike_play" expr="lastcat+1" />
+				<assign name="previousvalue" expr="unike_play" />				
+				
+				<log>	unike_play  isssss    <value expr="unike_play"/> 	</log>
+				<log>	lastcat  isssss    <value expr="lastcat"/> 	</log>
+				<log>	previousvalue  isssss    <value expr="previousvalue"/> 	</log>
+				
+							
+				
+				
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/keypad_option.wav'"/>
+				</prompt>
+						       
+				<goto next="#Playclipsstart"/>  					
+	   </block>
+	</form>
+
+
+<form id="Playclipsstart">
+		<block>
+			<assign name="drop_point" expr="'play_story'"/> 
+			<log>	unike_play  isssss    <value expr="unike_play"/> 	</log>
+    	            	<log>	array  isssss    <value expr="array[0]"/> 	</log>
+				
+			<script>
+				<![CDATA[
+					 if(timerflag==1)
+						 start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+			
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<!-- <assign name="unike_play" expr="len-1" /> -->
+				<assign name="unike_play" expr="previousvalue" />
+			</if>
+			
+			
+			<script>
+					songcheck=array[unike_play].split("_");
+					contentdir=songcheck[0]; 
+					song = array[unike_play];
+			</script>
+			
+			 <log>	contentdir isssss    <value expr="contentdir"/> </log>	
+			 <log>	song isssss    <value expr="song"/> 	</log>		
+			 <assign name="song_begin" expr="starttime()"/>
+			 <assign name="song_listen" expr="'START'" />
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_LAST_HEARD&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SET&amp;INPARAM[2]='+playconfig+'&amp;INPARAM[3]='+unike_play+'&amp;INPARAM[4]='+song"/>
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LASTCAT_ALLCHARACTER&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]=1'"/>
+		</block>
+		<field name="selectoption">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+				  <one-of>
+					<item>1</item>
+					<item>2</item>
+					<item>3</item>
+					<item>4</item>
+					<!-- <item>5</item> -->
+					<item>6</item>
+					<item>8</item>
+					<item>9</item>
+				  </one-of>
+				</rule>
+			 </grammar>
+			
+			   <prompt bargein="true"  timeout="1s">
+			       <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		       </prompt> 			 
+		      
+		      <filled>
+						  <if cond="timerflag=='1'">
+							   <script>
+							       total_used_bal=rim(start_BalenceMinute);
+							       balance=balance-total_used_bal;  						  
+							   </script>
+							           <log>	used balance isssss    <value expr="total_used_bal"/> </log>
+							           <log>	left balance isssss    <value expr="balance"/> </log>
+								   
+								  <if cond="balance &lt;= '0'">          
+									   <goto next="Hungama_PKP_TopUp.vxml"/>
+								  </if>     
+							</if> 
+                               
+		                    <assign name="song_listen" expr="'END'" />
+			          		<assign name="compare_time" expr="rim(song_begin)"/>
+					        <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				       	    <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+              			  
+				 <if cond="selectoption=='1'">
+				 		<script>
+							unike_play=unike_play+1; 
+							previousvalue=previousvalue+1;
+						</script>	
+						<goto next="#Playclipsstart"/>
+				 <elseif cond="selectoption=='2'"/>
+				 		<script>
+							unike_play=unike_play; 
+							previousvalue=previousvalue;
+						</script>	
+						<goto next="#Playclipsstart"/>
+				 <elseif cond="selectoption=='3'"/>
+				 		<script>
+							unike_play=unike_play-1; 
+						</script>	
+						<goto next="#Playclipsstart"/>
+				 <elseif cond="selectoption=='4'"/>
+				 		 <goto next="#Recording"/>
+		<!--	 <elseif cond="selectoption=='5'"/>			
+				 		 <goto next="#BookmarkSave"/>   -->
+				 <elseif cond="selectoption=='6'"/>
+				 		 <goto next="#Keypad_option"/>
+				 <elseif cond="selectoption=='8'"/>				 
+					     <goto next="#SubServices"/>
+				 <elseif cond="selectoption=='9'"/>
+						<goto next="Hungama_PKP_Acntmngr.vxml"/>
+				 </if>				 
+			  </filled>				  
+				     
+			<noinput>
+				<if cond="timerflag=='1'">
+				   <script>
+				       total_used_bal=rim(start_BalenceMinute);
+				       balance=balance-total_used_bal;  						  
+				   </script>
+					   <log>	used balance isssss    <value expr="total_used_bal"/> </log>
+					   <log>	left balance isssss    <value expr="balance"/> </log>
+
+					  <if cond="balance &lt;= '0'">          
+						   <goto next="Hungama_PKP_TopUp.vxml"/>
+					  </if>     
+				</if>   
+				 
+				  <assign name="song_listen" expr="'END'" />
+				  <assign name="compare_time" expr="rim(song_begin)"/>
+				  <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				  <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+				  
+			   	   <script>
+			   	   			unike_play=unike_play+1; 
+			   	   			previousvalue=previousvalue+1;	
+			   	   </script>
+				   <goto next="#Playclipsstart"/>
+	
+			</noinput>
+			<nomatch>
+				<if cond="timerflag=='1'">
+				   <script>
+				       total_used_bal=rim(start_BalenceMinute);
+				       balance=balance-total_used_bal;  						  
+				   </script>
+					   <log>	used balance isssss    <value expr="total_used_bal"/> </log>
+					   <log>	left balance isssss    <value expr="balance"/> </log>
+
+					  <if cond="balance &lt;= '0'">          
+						   <goto next="Hungama_PKP_TopUp.vxml"/>
+					  </if>     
+				</if> 
+				  <assign name="song_listen" expr="'END'" />
+				  <assign name="compare_time" expr="rim(song_begin)"/>
+				  <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				  <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+				 
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+				</prompt>
+				<goto next="#Playclipsstart"/>
+			</nomatch>	
+			<catch event="error.badfetch.http.404">
+	   				<script>
+						unike_play=0;
+					</script>
+				<goto next="#Playclipsstart"/>
+			</catch>
+	  </field>
+	  	
+	</form>
+	
+	
+<form id="Keypad_option">
+ 		<field name="choice">
+				<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">	
+						<one-of>
+							<item>1</item>
+							<item>2</item>
+							<item>3</item>
+							<item>4</item>
+							<!-- <item>5</item> -->
+							<item>6</item>
+							<item>8</item>
+							<item>9</item>
+						</one-of>
+					</rule>
+				</grammar>
+				
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/keypad_option.wav'"/>
+				</prompt>
+				
+			<filled>
+				<if cond="choice=='1'">
+				 		<script>
+							unike_play=unike_play+1; 
+							previousvalue=previousvalue+1;
+						</script>	
+						<goto next="#Playclipsstart"/>
+				 <elseif cond="choice=='2'"/>
+				 		<script>
+							unike_play=unike_play; 
+							previousvalue=previousvalue;
+						</script>	
+						<goto next="#Playclipsstart"/>
+				 <elseif cond="choice=='3'"/>
+				 		<script>
+							unike_play=unike_play-1; 
+						</script>	
+						<goto next="#Playclipsstart"/>
+				 <elseif cond="choice=='4'"/>
+				 		 <goto next="#Recording"/>
+			<!-- <elseif cond="choice=='5'"/>			
+				 		 <goto next="#BookmarkSave"/> -->
+				 <elseif cond="choice=='6'"/>
+				 		 <goto next="#Keypad_option"/>
+				 <elseif cond="choice=='8'"/>				 
+					     <goto next="#SubServices"/>
+				 <elseif cond="choice=='9'"/>
+						<goto next="Hungama_PKP_Acntmngr.vxml"/>
+				 </if>					
+		    </filled>				    
+			
+			<noinput>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/common/nodtmf.wav'"/>
+					</prompt>
+					<goto next="#Keypad_option"/>
+			</noinput>  
+			
+			<noinput count="3">
+					<goto next="#Playclipsstart"/>
+			</noinput>
+			
+			<nomatch>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+					</prompt>
+					<goto next="#Keypad_option"/>					
+		    </nomatch> 
+		    <nomatch count="3">
+					
+					<goto next="#Playclipsstart"/>
+		    </nomatch> 
+		</field>
+</form>
+
+<form id="BookmarkSave">
+ 	<block>
+	 		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_BOOKMARK_ADD&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]='+song+'&amp;INPARAM[3]=1'"/>
+	 		<script>
+	 				bookmarksave_status=out_string[0];
+	 		</script>
+	 		<log expr="'bookmarksave_status issssss   ' +bookmarksave_status "/>
+ 	</block>	
+	<field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+				</one-of>
+			</rule>
+		</grammar>
+		
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/thanks_topstories.wav'"/>
+				</prompt>
+				
+			<filled>
+					<goto next="#Playclipsstart"/>					
+		    </filled>				    
+			
+			<noinput>
+					<goto next="#Playclipsstart"/>
+			</noinput>  
+			     
+			<nomatch>
+					<goto next="#Playclipsstart"/>
+		    </nomatch> 
+		</field>
+</form>
+
+ <form id="BookmarkTopStories">
+ 	<block>
+	 		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=9'"/>
+	 		<script>
+	 				bookmarksave_status=out_string[0];
+	 		</script>
+	 		<log expr="'bookmarksave_status issssss   ' +bookmarksave_status "/>
+	 		
+	 		<if cond="bookmarksave_status=='-1'">
+		 			<prompt bargein="true" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/common/no_topstories.wav'"/>
+					</prompt>
+					<goto next="#SubServices"/>
+			<else/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_BOOKMARK_SONG&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					
+					 <assign name="bookmarkstory_length" expr="out_string.length" />
+					 <script>bkunike_play=0;</script>
+			 		 <script>
+						<![CDATA[
+						   for(k=0; k<bookmarkstory_length ;  k++)
+							  {  	  
+								bookmarkstory[k] = out_string[k];						   
+							  }
+						]]>		
+					 </script> 
+					 <log expr="'bookmarkstory_length issssss   ' +bookmarkstory_length "/>
+			 		 <log expr="'first bookmarkstory issssss   ' +bookmarkstory[0] "/>
+	 		</if>
+	 		
+ 	</block>	
+	<field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  4  </item>
+					 <item>  8  </item>
+					 <item>  9  </item>
+				</one-of>
+			</rule>
+		</grammar>
+		
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/keypad_topstories.wav'"/>
+				</prompt>
+				
+			<filled>
+				 <if cond="choice=='4'">
+				 		 <goto next="#Recording"/>
+				 <elseif cond="choice=='8'"/>				 
+					     <goto next="#SubServices"/>
+				 <elseif cond="choice=='9'"/>
+						<goto next="Hungama_PKP_Acntmngr.vxml"/>
+				 <else/>
+				 		<goto next="#BookmarkTopStories_play"/>
+				 </if>		
+										
+		    </filled>				    
+			
+			<noinput>
+					<goto next="#BookmarkTopStories_play"/>
+			</noinput>  
+			     
+			<nomatch>
+					<goto next="#BookmarkTopStories_play"/>
+		    </nomatch> 
+		</field>
+</form>
+
+<form id="BookmarkTopStories_play">
+	<block>
+			<if cond="bkunike_play &gt; bookmarkstory_length-1">
+				<assign name="bkunike_play" expr="0" />
+			<elseif cond="bkunike_play &lt; 0" />
+				<assign name="bkunike_play" expr="bookmarkstory_length-1" /> 
+			</if>
+			
+			<script>
+					songcheck=bookmarkstory[bkunike_play].split("_");
+					contentdir=songcheck[0]; 
+					song = bookmarkstory[bkunike_play];
+			</script>
+			
+			 <log>	contentdir isssss    <value expr="contentdir"/> </log>
+			 <log>	bkunike_play isssss    <value expr="bkunike_play"/> </log>	
+			 <log>	song isssss    <value expr="song"/> 	</log>		
+			 <assign name="song_begin" expr="starttime()"/>
+			 <assign name="song_listen" expr="'START'" />
+			 
+	</block>
+	<field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+					 <item>  2  </item>
+					 <item>  3  </item>
+					 <item>  4  </item>
+					 <item>  5  </item>					 
+					 <item>  8  </item>
+					 <item>  9  </item>
+				</one-of>
+			</rule>
+		</grammar>
+		
+			<prompt bargein="true"  timeout="1s">
+			      	 <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		    </prompt> 
+				
+			<filled>
+					<if cond="timerflag=='1'">
+					   <script>
+					       total_used_bal=rim(start_BalenceMinute);
+					       balance=balance-total_used_bal;  						  
+					   </script>
+						   <log>	used balance isssss    <value expr="total_used_bal"/> </log>
+						   <log>	left balance isssss    <value expr="balance"/> </log>
+	
+						  <if cond="balance &lt;= '0'">          
+							   <goto next="Hungama_PKP_TopUp.vxml"/>
+						  </if>     
+					</if> 
+   				    <assign name="song_listen" expr="'END'" />
+				    <assign name="compare_time" expr="rim(song_begin)"/>
+				    <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				    <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+				 <if cond="choice=='1'">
+				 		<script>bkunike_play=bkunike_play+1</script>
+				 		<goto next="#BookmarkTopStories_play"/>
+				 <elseif cond="choice=='2'"/>
+				 		<script>bkunike_play=bkunike_play</script>				 
+				 		<goto next="#BookmarkTopStories_play"/>
+				 <elseif cond="choice=='3'"/>
+				 		<script>bkunike_play=bkunike_play-1</script>				 
+				 		<goto next="#BookmarkTopStories_play"/>
+				 <elseif cond="choice=='4'"/>
+				 		 <goto next="#Recording"/>
+				 <elseif cond="choice=='5'"/>
+				 		 <goto next="#BookMarkDelete"/>
+				 <elseif cond="choice=='8'"/>				 
+					     <goto next="#SubServices"/>
+				 <elseif cond="choice=='9'"/>
+						<goto next="Hungama_PKP_Acntmngr.vxml"/>
+				 </if>		
+										
+		    </filled>				    
+			
+			<noinput>
+				<if cond="timerflag=='1'">
+				   <script>
+				       total_used_bal=rim(start_BalenceMinute);
+				       balance=balance-total_used_bal;  						  
+				   </script>
+					   <log>	used balance isssss    <value expr="total_used_bal"/> </log>
+					   <log>	left balance isssss    <value expr="balance"/> </log>
+
+					  <if cond="balance &lt;= '0'">          
+						   <goto next="Hungama_PKP_TopUp.vxml"/>
+					  </if>     
+				</if> 
+					  <assign name="song_listen" expr="'END'" />
+					  <assign name="compare_time" expr="rim(song_begin)"/>
+					  <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+					  <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+					  <script>bkunike_play=bkunike_play+1</script>
+					  <goto next="#BookmarkTopStories_play"/>
+			</noinput>  
+			     
+			<nomatch>
+				<if cond="timerflag=='1'">
+				   <script>
+				       total_used_bal=rim(start_BalenceMinute);
+				       balance=balance-total_used_bal;  						  
+				   </script>
+					   <log>	used balance isssss    <value expr="total_used_bal"/> </log>
+					   <log>	left balance isssss    <value expr="balance"/> </log>
+
+					  <if cond="balance &lt;= '0'">          
+						   <goto next="Hungama_PKP_TopUp.vxml"/>
+					  </if>     
+				</if> 
+				  <assign name="song_listen" expr="'END'" />
+				  <assign name="compare_time" expr="rim(song_begin)"/>
+				  <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				  <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+					<prompt bargein="true" timeout="0s">
+							<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+					</prompt>
+					<goto next="#BookmarkTopStories_play"/>
+		    </nomatch> 
+		</field>
+</form>
+
+<form id="BookMarkDelete">
+ 	<block>
+	 		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_BOOKMARK_ADD&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]='+song+'&amp;INPARAM[3]=2'"/>
+	 		<script>
+	 				bookmarksave_status=out_string[0];
+	 		</script>
+	 		<log expr="'bookmarksave_status issssss   ' +bookmarksave_status "/>
+ 	</block>	
+	<field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+				</one-of>
+			</rule>
+		</grammar>
+		
+			<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/delete_topstories.wav'"/>
+			</prompt>
+				
+			<filled>
+					<if cond="bookmarksave_status=='-1'">
+						<goto next="#SubServices"/>
+					<else/>
+						<goto next="#BookmarkTopStories_play"/>					
+					</if>
+		    </filled>				    
+			
+			<noinput>
+					<if cond="bookmarksave_status=='-1'">
+						<goto next="#SubServices"/>
+					<else/>
+						<goto next="#BookmarkTopStories_play"/>					
+					</if>
+			</noinput>  
+			     
+			<nomatch>
+					<if cond="bookmarksave_status=='-1'">
+						<goto next="#SubServices"/>
+					<else/>
+						<goto next="#BookmarkTopStories_play"/>					
+					</if>
+		    </nomatch> 
+		</field>
+</form>
+
+
+<form id="Recording">
+	    <field name="selectoption">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+				  <one-of>
+				      <item>1</item>
+				  </one-of>
+				</rule>
+			 </grammar>
+
+			 <prompt bargein="true" timeout="0s">
+				   <audio expr="promptpath+'/'+lang+'/common/welcome_recording.wav'"/>
+			 </prompt>
+				<filled>
+					<goto next="#RECORD"/>
+				</filled>
+		        <noinput>
+				<goto next="#RECORD"/>
+			</noinput>  
+			          
+			<nomatch>
+				<goto next="#RECORD"/>
+            </nomatch> 
+	    </field>
+</form>
+
+<form id="RECORD">
+	<block>
+		<assign name="drop_point" expr="'RECORDING_START'"/>
+		<assign name="DATE" expr="getcurryyyymmdd()"/>
+		<assign name="TIME" expr="start_time()"/>
+	<!--	<script>
+			month=DATE.substring(4,6);
+			day=DATE.substring(6,8);
+			month=month+'-pkp';
+		</script> -->
+		
+		<script>
+			month='PKP';
+			day='PKP';
+		</script>
+		
+		<assign name="month" expr="month"/>
+		<assign name="day" expr="day"/>
+		
+		<log>	DATE  isssss    <value expr="DATE"/> 	</log>
+		<log>	month isssss    <value expr="month"/> 	</log>
+		<log>	day isssss    <value expr="day"/> 	</log>
+		
+		
+		<script>UploadFileName=ANI+'_'+DATE+'_'+TIME+'.wav';</script>
+		
+		<log>	UploadFileName isssss    <value expr="UploadFileName"/> 	</log>
+		
+	</block>
+     
+       	<record name="recording" beep="true" maxtime="240s" finalsilence="10s" dtmfterm="true" type="audio/wav;codec=alaw"/>
+
+		<subdialog name="messageUpload" srcexpr="'http://'+RECORDIP+'/hungama/air_recording_bolbabybol'" enctype="multipart/form-data" method="post" namelist="ANI UploadFileName month day recording">	    	    							
+		</subdialog> 
+		
+        <field name="LGRecconfirmopt" type="boolean">
+			 <grammar mode="dtmf" root="start3" version="1.0">
+	        	   <rule id="start3" scope="public">
+			    	   <one-of>				 
+							  <item>4</item>				  					 			      
+							  <item>#</item>
+			    	   </one-of>
+		           </rule>
+             </grammar>
+             
+             <prompt bargein="true" timeout="3s">
+				   <audio expr="promptpath+'/'+lang+'/common/rerecord_stories.wav'"/>
+				   <audio expr="promptpath+'/'+lang+'/common/save_recording.wav'"/>				   
+			 </prompt>
+					
+		<filled>
+		      <if cond="LGRecconfirmopt=='#'">
+			    	 <script srcexpr="'http://'+RECORDIP+'/hungama/Record_bolbabybol?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;month='+month+'&amp;day='+day+'&amp;MSG='+recording"/> 
+			         <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PKP_RECORDING_SAVE&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator+'&amp;INPARAM[2]='+circle+'&amp;INPARAM[3]='+UploadFileName+'&amp;INPARAM[4]=1'"/>
+ 			      	 <goto next="#RecordComplete"/>
+ 			  <elseif cond="LGRecconfirmopt=='4'"/>
+ 			  		 <goto next="#Recording"/>
+ 			  </if>
+		</filled>				
+		<noinput>
+				  <script srcexpr="'http://'+RECORDIP+'/hungama/Record_bolbabybol?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;month='+month+'&amp;day='+day+'&amp;MSG='+recording"/> 
+			      <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PKP_RECORDING_SAVE&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator+'&amp;INPARAM[2]='+circle+'&amp;INPARAM[3]='+UploadFileName+'&amp;INPARAM[4]=1'"/>
+ 			      <goto next="#RecordComplete"/>
+    		</noinput>
+		
+		<nomatch>
+				  <script srcexpr="'http://'+RECORDIP+'/hungama/Record_bolbabybol?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;month='+month+'&amp;day='+day+'&amp;MSG='+recording"/>  
+			      <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PKP_RECORDING_SAVE&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator+'&amp;INPARAM[2]='+circle+'&amp;INPARAM[3]='+UploadFileName+'&amp;INPARAM[4]=1'"/>
+ 			      <goto next="#RecordComplete"/>
+		</nomatch>
+	  </field>
+  
+   </form>
+
+<form id="RecordComplete">
+	    <field name="selectoption">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+				  <one-of>
+				      <item>1</item>
+				  </one-of>
+				</rule>
+			 </grammar>
+
+			 <prompt bargein="true" timeout="0s">
+				   <audio expr="promptpath+'/'+lang+'/common/thanks_recording.wav'"/>
+			 </prompt>
+		<filled>
+			<goto next="#loadcliptoplay"/>
+		</filled>
+		    <noinput>
+				<goto next="#loadcliptoplay"/>
+			</noinput>  
+			          
+			<nomatch>
+				<goto next="#loadcliptoplay"/>
+		    </nomatch> 
+	    </field>
+</form>
+
+<form id="previousstory">
+		<block>
+			<assign name="drop_point" expr="'previous_story'"/>
+			<if cond="unike_play &gt; lastcat-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="lastcat-1" />
+			</if>
+			<if cond="lastcat=='0'">
+				<assign name="unike_play" expr="0" />
+			</if>
+			<log>	unike_play  isssss    <value expr="unike_play"/> 	</log>
+    	            	<log>	array  isssss    <value expr="array[0]"/> 	</log>
+
+			<script>
+				<![CDATA[
+				 if(timerflag==1)
+				 start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+				
+			<script>
+				songcheck=array[unike_play].split("_");
+				contentdir=songcheck[0]; 
+				song = array[unike_play];
+			</script>
+			
+			 <log>	contentdir isssss    <value expr="contentdir"/> </log>	
+			 <log>	song isssss    <value expr="song"/> 	</log>		
+			 <assign name="song_begin" expr="starttime()"/>
+			 <assign name="song_listen" expr="'START'" />
+		</block>
+		<field name="selectoption">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+				  <one-of>
+				      <item>1</item>
+				      <item>2</item>
+				      <item>3</item>
+				      <item>8</item>
+				      <item>9</item>
+				  </one-of>
+				</rule>
+			 </grammar>
+			
+				
+		      <prompt bargein="true"  timeout="1s">
+			      <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		      </prompt> 			 
+		      
+		      <filled>
+			  <if cond="timerflag=='1'">
+				   <script>
+				       total_used_bal=rim(start_BalenceMinute);
+				       balance=balance-total_used_bal;  						  
+				   </script>
+				           <log>	used balance isssss    <value expr="total_used_bal"/> </log>
+				           <log>	left balance isssss    <value expr="balance"/> </log>
+					   
+					  <if cond="balance &lt;= '0'">          
+						   <goto next="Hungama_PKP_TopUp.vxml"/>
+					  </if>     
+				</if> 
+                                  <assign name="song_listen" expr="'END'" />
+			          <assign name="compare_time" expr="rim(song_begin)"/>
+			       	  <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+			       	  <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+              			  
+				 <if cond="selectoption=='1'">
+					<script>unike_play=unike_play-1;</script>
+				        <goto next="#previousstory"/>
+				 <elseif cond="selectoption=='2'"/>
+					<script>unike_play=unike_play;</script>
+				        <goto next="#previousstory"/>
+				 <elseif cond="selectoption=='3'"/>
+					<script>unike_play=unike_play+1;</script>
+				        <goto next="#previousstory"/>
+				 <elseif cond="selectoption=='8'"/>
+					<goto next="#SubServices"/>
+				 <elseif cond="selectoption=='9'"/>
+					<goto next="Hungama_PKP_Acntmngr.vxml"/>
+				 </if>				 
+			  </filled>				  
+				     
+			<noinput>
+				<if cond="timerflag=='1'">
+				   <script>
+				       total_used_bal=rim(start_BalenceMinute);
+				       balance=balance-total_used_bal;  						  
+				   </script>
+					   <log>	used balance isssss    <value expr="total_used_bal"/> </log>
+					   <log>	left balance isssss    <value expr="balance"/> </log>
+
+					  <if cond="balance &lt;= '0'">          
+						   <goto next="Hungama_PKP_TopUp.vxml"/>
+					  </if>     
+				</if>   
+				 
+				   <assign name="song_listen" expr="'END'" />
+				  <assign name="compare_time" expr="rim(song_begin)"/>
+				  <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				  <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+				  
+			   	  <script>unike_play=unike_play+1;</script>
+				  <goto next="#previousstory"/>
+	
+			</noinput>
+			<nomatch>
+				<if cond="timerflag=='1'">
+				   <script>
+				       total_used_bal=rim(start_BalenceMinute);
+				       balance=balance-total_used_bal;  						  
+				   </script>
+					   <log>	used balance isssss    <value expr="total_used_bal"/> </log>
+					   <log>	left balance isssss    <value expr="balance"/> </log>
+
+					  <if cond="balance &lt;= '0'">          
+						   <goto next="Hungama_PKP_TopUp.vxml"/>
+					  </if>     
+				</if> 
+				  <assign name="song_listen" expr="'END'" />
+				  <assign name="compare_time" expr="rim(song_begin)"/>
+				  <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				  <assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+				 
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>	
+			<catch event="error.badfetch.http.404">
+	   				<script>
+						unike_play=0;
+					</script>
+				<goto next="#previousstory"/>
+			</catch>
+	  </field>
+	  	
+	</form>
+ </vxml>
+
+ 

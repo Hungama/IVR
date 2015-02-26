@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="ExistingUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="content_time" expr="0"/>
+	<var name="realDNIS" expr="0"/>
+
+<error>
+<goto next="end.vxml"/>
+</error>
+
+	<form id="ExistingUser">
+		<block>
+			<audio expr="promptpath1+'/01/Welcome_old.wav'"/>
+			<if cond="sunsign != '' &amp;&amp;  sunsign != '0'">
+				<prompt>
+					<audio expr="promptpath1+'/01/listening_cat.wav'"/>
+					<audio expr="promptpath1+'/01/'+sunsign+'.wav'"/>
+				
+					
+				</prompt>
+			<else/>
+				
+				
+				<goto next="PlaySunSign.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+			</if>
+		</block>
+
+		<field name="existuser" type="digits?length=1">
+
+			<audio expr="promptpath1+'/01/return_option.wav'"/>
+			<audio expr="promptpath1+'/01/Keypad_1.wav'"/>
+
+
+			<grammar src="all.grxml" mode="dtmf"/>
+			<catch event="noinput nomatch">
+				<goto next="#LastHeard"/>
+			</catch>
+
+			<filled>
+				<if cond="existuser == '8'">
+					<goto next="PlaySunSign.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+				<elseif cond="existuser == '#'"/>
+					<audio expr="promptpath1+'/01/thanks_alarm.wav'"/>
+					<assign name="songID" expr="sunsign"/>
+					<assign name="content_time" expr="start_time()"/>
+
+					<!--<assign name="contentlog" expr="CurrentDate()+hash+ANI+hash+alertCircle+hash+songID+hash+CurrentDate()"></assign>-->
+
+					<assign name="contentlog" expr="CurrentDateChngFrmt().toString()+':'+C_Start+hash+'91'+ANI+hash+alertCircle+hash+songID+hash+'09:00:00'+hash+'14:00:00'+hash"></assign>
+
+					
+					<log>Curent Date is:<value expr="CurrentDate()"/></log>					
+
+					<log><value expr="'http://192.168.100.227:8080/hungama/alert_log?starttime='+C_Start+'&amp;endtime='+content_time+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime=1&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=JYOTISHAlARMALERT&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/></log>
+					
+					<script srcexpr="'http://192.168.100.227:8080/hungama/alert_log?starttime='+C_Start+'&amp;endtime='+content_time+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime=1&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=JYOTISHAlARMALERT&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+					<goto next="#LastHeard"/>
+
+				<else/>
+					<goto next="#LastHeard"/>
+				</if>
+			</filled>
+		</field>
+	</form>
+
+	
+
+	<form id="LastHeard">
+		<block>
+			<log>Last Heard Page</log>
+			<assign name="backmovepage" expr="'PlaySunSign.vxml'"/>
+			<assign name="filetoplay" expr="CurrentDate()"/>
+
+			<log>current date is <value expr="filetoplay"/></log>
+
+			<if cond="sunsign == '' &amp;&amp;  sunsign == '0'">
+				<goto next="PlaySunSign.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+			</if>
+		</block>
+		<field name="LastHeardPlay" type="digits?length=1">
+			<grammar src="all.grxml" mode="dtmf"/>
+
+			<catch event="noinput">
+				<goto next="PlaySunSign.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+
+			</catch>
+			<prompt cond="sunsign != '' &amp;&amp;  sunsign != '0'">
+				<audio expr="'http://192.168.100.212:6666/hungama/jyotish/01/'+sunsignname+'_'+filetoplay+'.wav'"/>
+				<!--<audio expr="'http://192.168.100.212:6666/hungama/jyotish/01/'+sunsign+'.wav'"/>-->
+			</prompt>
+		
+			<filled>
+				<if cond="LastHeardPlay== '8'">
+					<goto next="PlaySunSign.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+				<elseif cond="LastHeardPlay== '#'"/>
+					<audio expr="promptpath1+'/01/thanks_alarm.wav'"/>
+					<assign name="songID" expr="sunsign"/>
+					<assign name="content_time" expr="start_time()"/>
+
+					<assign name="contentlog" expr="CurrentDateChngFrmt().toString()+':'+C_Start+hash+'91'+ANI+hash+alertCircle+hash+songID+hash+'09:00:00'+hash+'14:00:00'+hash"></assign>
+					
+					<log><value expr="'http://192.168.100.227:8084/hungama/alert_log?starttime='+C_Start+'&amp;endtime='+content_time+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime='+ContentTime+'&amp;circle='+alertCircle+'&amp;operator='+operator+'&amp;service=JYOTISHAlARMALERT&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/></log>
+					
+					<script srcexpr="'http://192.168.100.227:8084/hungama/alert_log?starttime='+C_Start+'&amp;endtime='+content_time+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime=1&amp;circle='+alertCircle+'&amp;operator='+operator+'&amp;service=JYOTISHAlARMALERT&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+					<log>calling lasteheard</log>
+					<goto nextitem="LastHeardPlay"/>
+
+				<else/>
+					<goto next="#LastHeard"/>
+				</if>
+			</filled>
+		</field>
+
+		
+	</form>
+	<form id="checkbalance">
+		<block>
+			
+			<script>
+		    		total_used_bal=chkBalenceMinute(start_BalenceMinute);
+             			curbalance=balance-total_used_bal;  						  
+		    	</script>
+			<if cond="curbalance &lt;= '0'">
+				<assign name="backmovepage" expr="'PlaySunSign.vxml'"/>
+				<!--<goto next="TopUp.vxml"/>-->
+				<goto next="#LastHeard"/>
+
+			<else/>
+				<goto next="#LastHeard"/>
+			</if>
+
+
+
+		</block>
+	</form>
+</vxml>

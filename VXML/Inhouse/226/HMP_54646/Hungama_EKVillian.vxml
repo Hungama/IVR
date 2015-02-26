@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_EKVillian.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<form id="Welcome">
+			<block>
+				<assign name="promptpath" expr="'http://192.168.100.226:8082/promptFiles/EK_prompts'"/>
+				<assign name="callcharge" expr="'3'"/>
+				<assign name="cat" expr="'0'"/>
+				<assign name="subcat" expr="'0'"/>
+				<assign name="C_Start" expr="start_time()"/>
+				<assign name="C_Game" expr="starttime()"/>
+				
+				<script>  
+						realDNIS=session.connection.local.uri;                   
+						ANI=session.connection.remote.uri;
+				</script>
+                <script>
+						var length = ANI.length;
+						ANI = ANI.substring(length-10,length);
+				</script> 
+
+	   	 <if cond="realDNIS=='5464646'">
+	   		 <assign name="DNIS" expr="'5464646'"/>
+	   		 <assign name="operator" expr="'relm'"/>
+	   	    <elseif cond="realDNIS=='0115464646'"/>
+	   		 <assign name="DNIS" expr="'5464646'"/>
+	   		 <assign name="operator" expr="'tatm'"/>
+	   	   <elseif cond="realDNIS=='01115464646'"/>
+	   		 <assign name="DNIS" expr="'5464646'"/>
+	   		 <assign name="operator" expr="'tatc'"/>
+	   		 
+	   	     <elseif cond="realDNIS=='01105464646'"/>
+	   		 <assign name="DNIS" expr="'5464646'"/>
+	   		 <assign name="operator" expr="'virm'"/>
+	   		 
+	   	     <elseif cond="realDNIS=='66291446'"/>
+	   		 <assign name="DNIS" expr="'5464646'"/>
+	   		 <assign name="operator" expr="'unim'"/>
+	   		 
+	   	     <elseif cond="realDNIS=='66291076'"/>
+	   	     	 <assign name="DNIS" expr="'5464646'"/>
+	   		 <assign name="operator" expr="'airc'"/>
+	   	    <elseif cond="realDNIS=='66291004'"/>
+	   	     	 <assign name="DNIS" expr="'5464646'"/>
+	   		 <assign name="operator" expr="'vodm'"/>
+	   	     <elseif cond="realDNIS=='66291428'"/>
+	   	   	 <assign name="DNIS" expr="'5464646'"/>
+	   		 <assign name="operator" expr="'mtsm'"/>
+		 <elseif cond="realDNIS=='66291354'"/>
+	   	   	 <assign name="DNIS" expr="'5464646'"/>
+	   		 <assign name="operator" expr="'mtsm'"/>
+
+	   	    <else/>
+	   		 <assign name="DNIS" expr="'5464646'"/>
+	   		 <assign name="operator" expr="'unim'"/>
+	     </if>
+<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/>  
+<script srcexpr="'http://192.168.100.226:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       	circle = out_string[j];
+							      							      
+							  }
+	
+						]]>
+				
+			</script>
+	 <log> FIRST DB FETCH circle  is	<value expr="circle"/>    </log>
+<assign name="dbservlet" expr="'unihungama_dbinteraction'"/>
+
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_RaginiMMS.CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=2'"/>
+		<script>
+			<![CDATA[
+					 for(j=0; j< out_string.length;  j++)
+					 {  	  
+						if(j==0)
+						celeb_on_time = out_string[j];
+					 }
+				]]>
+			</script>
+		<log expr="'celeb_on_time issssss =' + celeb_on_time"/> 
+<!--<if cond="ANI=='8459506442' || ANI=='8586967046' || ANI=='8587900178' || ANI=='8546048758' || ANI=='9716378180' || ANI=='8546048758' || ANI=='9017836900' || ANI=='9210643979' || ANI=='9711300416'">
+	<assign name="celeb_on_time" expr="'1'"/>
+</if>-->
+
+		<if cond="celeb_on_time=='1'">
+			<submit expr="'../celebcontest/checkuserstatus.vxml'"/>
+		<else/>
+			<if cond="realDNIS=='66291354'">
+				<goto next="Hungama_54646_UserStatus.vxml#USRSTATUS"/>
+			<else/>	
+				<goto next="Hungama_54646_UserStatus.vxml#USRSTATUS_TOLL"/>
+				<goto next="MainMenu.vxml"/>
+			</if>
+		</if>
+
+		<goto next="Hungama_54646_UserStatus.vxml#USRSTATUS_TOLL"/>
+
+ <goto next="Hungama_54646_End.vxml"></goto>
+
+	<goto next="#userstatus"/>
+</block>
+</form>
+ 
+<form id="userstatus">
+	<block>
+				<assign name="Section_Name" expr="'Lang_check'"/>
+				 <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.EK_USERSTATUS&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					 <script>
+						  <![CDATA[
+							for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+										reapet_status = out_string[j];
+							     
+							  }
+						  ]]>
+							 reapet_status=parseInt(reapet_status);
+							
+					 </script>
+					<log expr="'ANI @@@@@@@@@@@@@@@@@@@@ =' + ANI"/>
+					<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+					<log expr="'operator @@@@@@@@@@@@@@@@@@@@ =' + operator"/>
+					<log expr="'reapet_status @@@@@@@@@@@@@@@@@@@@ =' + reapet_status"/>
+			   <if cond="reapet_status=='1'">
+			    		<goto next="#ExistingUser"/>
+			    <else/>
+			    		<goto next="#Welcome_Game"/>
+			    </if>
+			</block>
+	</form>
+	
+		<form id="ExistingUser">
+			<block>
+					<assign name="Section_Name" expr="'EXISTING'"/>
+					<assign name="index" expr="getRandom(1,4)" />
+			</block>
+			<field name="choice">
+					<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								<item>  1  </item>
+							</one-of>
+						</rule>
+					</grammar>
+					
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/welcome.wav'" />
+
+						<audio expr="promptpath+'/'+lang+'/welcome_game.wav'" />
+
+					</prompt>
+					<filled>
+						<goto next="#PlayGame"/>	
+					</filled>
+			
+					<noinput>
+						<goto next="#PlayGame"/>
+					</noinput>
+					<nomatch>
+			           		<goto next="#PlayGame"/>
+					</nomatch>
+			</field>
+	</form>
+	
+	
+	<form id="Welcome_Game">
+			<block>
+					<assign name="Section_Name" expr="'NewUser'"/>
+					<assign name="index" expr="getRandom(1,4)" />
+			</block>
+			<field name="choice">
+					<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								<item>  1  </item>
+							</one-of>
+						</rule>
+					</grammar>
+					
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/welcome.wav'" />
+						<audio expr="promptpath+'/'+lang+'/welcome_game.wav'" />
+
+					</prompt>
+					
+					<filled>
+						<goto next="#PlayGame"/>	
+					</filled>
+			
+					<noinput>
+						<goto next="#PlayGame"/>
+					</noinput>
+					<nomatch>
+			           		<goto next="#PlayGame"/>
+					</nomatch>
+			</field>
+	</form>
+	
+	<form id="PlayGame">
+			<block>
+					<assign name="Section_Name" expr="'gamestart'"/>
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.EK_CONTEST_GET&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					 <script>
+						  <![CDATA[
+							for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+									qno = out_string[j];
+							       if(j==1)
+									question = out_string[j];
+							       if(j==2)
+									discription = out_string[j];
+							       if(j==3)
+									answerkey = out_string[j];
+							       if(j==4)
+									score = out_string[j];
+							       if(j==5)
+									ques_available = out_string[j];
+							       if(j==6)
+									cir = out_string[j];
+							       if(j==7)
+									question_counter = out_string[j];
+							  }
+						  ]]> 
+							 score=parseInt(score);
+							 qno=parseInt(qno);
+							 ques_available=parseInt(ques_available);
+							 question_counter=parseInt(question_counter);
+					 </script>
+					 
+				<log expr="'score @@@@@@@@@@@@@@@@@@@@ =' + score"/>
+				<log expr="'qno @@@@@@@@@@@@@@@@@@@@ =' + qno"/>
+				<log expr="'ques_available @@@@@@@@@@@@@@@@@@@@ =' + ques_available"/>
+				<log expr="'question_counter @@@@@@@@@@@@@@@@@@@@ =' + question_counter"/>
+					 
+					<if cond="question_counter=='10' || question_counter &gt; 10">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.EK_CONTEST_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]=0&amp;INPARAM[3]=4&amp;INPARAM[4]=10&amp;INPARAM[5]='+operator"/>
+						<if cond="score &gt; 5">
+						 	<prompt bargein="true" timeout="1s">
+								<audio expr="promptpath+'/'+lang+'/thanx_correct.wav'" />
+							</prompt>
+						<else/>
+							<prompt bargein="true" timeout="1s">
+								<audio expr="promptpath+'/'+lang+'/thanx_wrong.wav'" />
+							</prompt>
+						</if>
+							
+							  <goto next="#ExistingUser"></goto>
+					
+					</if>
+					<assign name="Game_play" expr="'START'"/>
+					<assign name="song_begin" expr="starttime()"/>
+					<assign name="song_listen" expr="'START'" />
+					<assign name="song" expr="question" />
+					
+			</block>
+			<field name="choice">
+					<grammar mode="dtmf" root="start" version="1.0">
+						<rule id="start" scope="public">
+							<one-of>
+								<item>  1  </item>
+								<item>  2  </item>
+							
+							</one-of>
+						</rule>
+					</grammar>
+					
+					<prompt bargein="true" timeout="5s">
+						<!--<audio expr="contentpath+'/RaginiMMS_contest/'+lang+'/'+question+'.wav'" />-->
+						<audio expr="promptpath+'/'+lang+'/'+song+'.wav'" />
+					</prompt>
+					
+					<filled>
+								<assign name="song_listen" expr="'END'" />
+								<assign name="compare_time" expr="rim(song_begin)"/>
+								<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+								<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+								<assign name="index" expr="getRandom(1,4)" />
+								<script>
+									continous_counter=continous_counter+1;
+								</script>
+							<if cond="choice==answerkey">
+									<assign name="index" expr="getRandom(1,5)" />
+									<script>score='VG';</script>
+									<prompt bargein="true" timeout="1s">
+										<audio expr="promptpath+'/'+lang+'/correct_ans'+index+'.wav'" />
+									</prompt>
+
+									 <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.EK_CONTEST_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+choice+'&amp;INPARAM[3]=1&amp;INPARAM[4]=10&amp;INPARAM[5]='+operator"/>
+									<goto next="#PlayGame"/>
+							
+							<else/>
+									<assign name="index" expr="getRandom(1,6)" />
+									<script>score='G';</script>
+									<prompt bargein="true" timeout="1s">
+										<audio expr="promptpath+'/'+lang+'/wrong_ans'+index+'.wav'" />
+									</prompt>
+									 <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.EK_CONTEST_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+choice+'&amp;INPARAM[3]=2&amp;INPARAM[4]=10&amp;INPARAM[5]='+operator"/>
+									<goto next="#PlayGame"/>
+							</if>
+					</filled>
+			
+					<noinput count="1">
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+							<!--<prompt bargein="true" timeout="1s">
+									<audio expr="promptpath+'/'+lang+'/nodtmf.wav'" />
+							</prompt>-->
+							<reprompt/>
+					</noinput>
+					<noinput count="2">
+							<assign name="song_listen" expr="'END'" />
+							<assign name="compare_time" expr="rim(song_begin)"/>
+							<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+							<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+							<script>score='0';</script>
+
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.EK_CONTEST_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]=0&amp;INPARAM[3]=3&amp;INPARAM[4]=10&amp;INPARAM[5]='+operator"/>
+							<goto next="#PlayGame"/>
+					</noinput>
+					<nomatch count="1">
+							<assign name="song_listen" expr="'END'" />
+							<assign name="compare_time" expr="rim(song_begin)"/>
+							<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+							<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+							<prompt bargein="true" timeout="1s">
+									<audio expr="promptpath+'/'+lang+'/invalidoption.wav'" />
+							</prompt>
+			           			<reprompt/>
+					</nomatch>
+						<nomatch count="2">
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"/>
+						<script>score='0';</script>
+
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.EK_CONTEST_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]=0&amp;INPARAM[3]=3&amp;INPARAM[4]=10&amp;INPARAM[5]='+operator"/>
+						<goto next="#PlayGame"/>
+					</nomatch>
+			</field>
+	</form>
+	
+	
+
+</vxml>

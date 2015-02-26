@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_54646SUB_Event.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+<var name="var_wel" expr="''"/>
+<var name="trans_id" expr="''"/>
+<var name="PATH" expr="''"/>
+<var name="call_BalenceMinute" expr="0"/>
+<var name="total_used_balnce" expr="0"/>
+<var name="double_switch" expr="-1"/>
+<var name="skip_level" expr="0"/>
+<var name="MyError" expr="0"/>
+<var name="uninorretry_counter" expr="1"/>
+<var name="MyErrorMsg" expr="0"/>
+<var name="prompt_switch" expr="0"/> 
+<var name="tataswitch_time" expr="0"/> 
+
+<var name="prompt_switch" expr="0"/> 
+<var name="switch_type" expr="0"/>	
+<var name="random" expr="''"/>
+<var name="random_play" expr="6"/>
+<var name="flag_random" expr="'false'"/>
+<var name="uniq_id" expr="0"/>
+<script>
+function getUNIMDT()
+{
+	var currentDT = new Date();
+	var day = currentDT.getDate();
+	var month = currentDT.getMonth() + 1;
+	var year = currentDT.getFullYear();
+	var hours = currentDT.getHours();
+	var minutes = currentDT.getMinutes();
+	var seconds = currentDT.getSeconds();
+	if (!(month > 9)) {month = "0" + month; }
+	if (!(day > 9 )) {day = "0" + day; }
+	if (!(hours > 9)) {hours = "0" + hours; }
+	if (!(minutes > 9 )) {minutes = "0" + minutes ; }
+	if (!(seconds > 9) ) {seconds = "0" + seconds ; }
+	var strDateTime =  year + "-" + month + "-" + day +" "+ hours+":"+minutes+":"+seconds ;    
+	return strDateTime;
+}
+function getUID()
+{
+	var uid = Math.random().toString(36).substr(2, 14);
+	 return uid;
+}
+</script>
+
+    <form id="SubIntro1">
+	<block>
+ 		<assign name="Section_Name" expr="'SUBSCRIPTION'"/>	
+	  
+		<if cond="operator=='relm' || operator=='relc'">
+			<assign name="amt" expr="'20'"/>
+			<assign name="plan_id" expr="'193'"/>
+			<assign name="service_id" expr="'1202'"/>
+		</if>			
+		<goto next="#SubOption"/>
+	</block>
+     </form>
+	
+	
+	<form id="SubOption">
+	
+		<field name="choice">			
+			<grammar mode="dtmf" root="start34" version="1.0">
+						<rule id="start34" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+					<prompt bargein="true" timeout="2s"> 
+						<audio expr="promptspath_54646+'/'+lang+'/Hungama_Event.wav'"/>	
+						
+					</prompt>
+					
+					
+
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="firstconsent" expr="'Y'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="sub_flag" expr="'true'"/>
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_EVENT_ACT_BULK&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id+'&amp;INPARAM[7]=0'"/>         
+					   <goto next="#SubRequest"></goto>
+					
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_54646_End.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_54646_End.vxml"></goto>
+		</nomatch>
+	</form>
+	
+		
+
+		
+	<form id="SubRequest">
+		<block>			
+			<prompt bargein="false" timeout="2s">
+				<audio expr="promptspath_54646+'/'+lang+'/charging_wait.wav'"/>
+			</prompt>
+			<goto next="#BillStatusChk"/>	
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+							if(j==4)
+						        modesub = out_string[j];							      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'lang @@@@@@@@@ '+lang"></log>
+			<log expr="'balance @@@@@@@@@ '+balance"></log>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s" cond="direct_status=='1'">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+			
+				
+				<goto next="Hungama_54646_End.vxml"/>
+
+			<elseif cond="usr_status=='1'"/>
+				<prompt bargein="true" timeout="0s" cond="direct_status=='1'">
+					<audio expr="promptspath_54646+'/'+lang+'/thank_sub.wav'"/>
+				</prompt>
+
+				
+
+				<script>
+					timerflag=1;
+					balance=balance*60;
+				</script>
+				<assign name="start_BalenceMinute" expr="starttime()"/>
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>	
+			 <elseif cond="usr_status=='5'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_54646_End.vxml"></goto>
+
+			<else/> 
+				<prompt bargein="true" timeout="0s" cond="direct_status=='1'">
+					<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_54646_End.vxml"></goto>
+				
+			</if>
+		</block>
+	</form>
+</vxml>

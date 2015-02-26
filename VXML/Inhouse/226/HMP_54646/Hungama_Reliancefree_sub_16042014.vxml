@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Hungama_Reliancefree_sub.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+     	
+     	<var name="contentfilepath" expr="''"/>
+		<var name="cfgFile" expr="''"/>
+	<var name="contentfile" expr="''"/>
+	<var name="countersong" expr="0"/>
+     <script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var spzone=new Object();
+		var len=0;
+	</script>
+						  
+ <form id="loadcliptoplay">
+		  <block> 
+		  <assign name="scorepartfirst" expr="'FREE'"/>
+		  <assign name="playconfig" expr="'freecontent'" />
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/relc/FREECONTENT/'+playconfig+'_'+circle+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+						array.length=0;
+						unike_play=0;
+			</script>
+		
+					<assign name="len" expr="favSongs.length" />
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+					
+					
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+						array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#PlayFullSongs"/>  					
+		   </block>
+	</form>
+
+	
+<form id="PlayFullSongs"> 
+  	<block>
+  	<assign name="Section_Name" expr="'FREECONTENT_KEYPAD'"/>
+		<script>
+				 <![CDATA[
+				if(timerflag==1)
+				 start_BalenceMinute=starttime();
+			   ]]>	 	
+		  </script>
+	
+  	</block>
+  	
+	 <field name="keypadoption">               
+		    	 
+		<grammar mode="dtmf" root="start31" version="1.0">
+                   	<rule id="start31" scope="public">
+                     	<one-of>     
+				<item>6</item>
+				<item>8</item>
+			 </one-of>
+                	</rule>
+               	</grammar>
+              <prompt bargein="true"  timeout="1s">
+		 <audio expr="promptspath_54646+'/'+lang+'/keypad.wav'"/>
+	     </prompt> 
+				 
+        <filled>              
+            	<if cond="keypadoption=='6'">	
+				 <goto next="#playoption"/>
+		<elseif cond="keypadoption=='8'"/>
+			<goto next="Hungama_Reliancefree_menu.vxml"/>
+			<goto next="#"/>
+    		<else/>          
+				<goto next="#StartToPlaysongs"/>
+		</if>	
+         </filled>
+			  
+		<noinput>		  
+			
+	             	<goto next="#StartToPlaysongs"/>	     
+              </noinput>
+              
+              <nomatch>
+			<goto next="#StartToPlaysongs"/>	
+			</nomatch>		
+          </field>		
+		
+	</form>
+	
+	<form id="StartToPlaysongs">
+
+
+				<block>
+				<assign name="Section_Name" expr="'reliancefree_CONTENT'"/>
+					<script>
+							 <![CDATA[
+							if(timerflag==1)
+							 start_BalenceMinute=starttime();
+						   ]]>	 	
+					  </script>
+					  <assign name="unike_play" expr="getRandom(1,len)" />
+
+					  <log expr="'@@@@@@ unike_play isssssssssssssssssssssss '+unike_play"/>
+					  
+						  <if cond="TotalTV=='3' &amp;&amp; (operator=='relc' || operator=='relm') &amp;&amp; usr_status=='-1'">
+						 		<goto next="#subscription"/>
+						   </if>
+						   
+					  	<if cond="unike_play &gt; len-1">
+							<assign name="unike_play" expr="0" />
+						<elseif cond="unike_play &lt; 0" />
+							<assign name="unike_play" expr="len-1" />
+						</if>
+					
+						<script>
+							songcheck=array[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = array[unike_play];
+							
+						</script>
+			
+					 <assign name="song_begin" expr="starttime()"/>
+					 <assign name="song_listen" expr="'START'" />
+					 <assign name="CALCULATE_TIME" expr="'SET'" />
+					 
+					 
+					 <script>
+						contentfilepath="54646config_V2/"+operator+"/mwconfig/songconfig/";
+	 				 </script>
+					 <script>
+					 	cfgFile=playconfig+".cfg";
+					 </script>
+					 <assign name="contentfile" expr="song+hash+contentfilepath+hash+cfgFile+hash+compare_time"></assign>
+ 
+      </block>
+		   <field name="selectoption">
+
+				    <grammar mode="dtmf" root="start32" version="1.0">
+			   		<rule id="start32" scope="public">
+			   		  <one-of>
+					      <item>1</item>
+						<item>8</item> 
+					      <item>2</item>	
+					      <item>3</item>
+					      <item>6</item>
+					     
+					 </one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			  <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		      </prompt> 			 
+		  
+		      <filled>
+		      <script>
+		     		 TotalTV=TotalTV+1;
+		      </script>
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>	
+				<if cond="selectoption=='1'">
+					<script> unike_play=unike_play+1;</script>
+					<goto next="#StartToPlaysongs"/>	
+				<elseif cond="selectoption=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="#StartToPlaysongs"/> 				 
+				<elseif cond="selectoption=='3'"/>	
+					<script> unike_play=unike_play-1</script>
+					<goto next="#StartToPlaysongs"/> 
+				<elseif cond="selectoption=='6'"/>
+					<goto next="#playoption"/>
+				<elseif cond="selectoption=='8'"/>
+					<goto next="Hungama_Reliancefree_menu.vxml"/>
+				
+				<else/>	
+					<script> unike_play=unike_play+1</script>		
+					<goto next="#StartToPlaysongs"/> 		
+				</if>				 
+			  </filled>				  
+		
+		     
+			   <noinput>	
+			        <script> 
+			      		unike_play=unike_play+1;
+			      		TotalTV=TotalTV+1;
+			      	</script> 
+			      	<goto next="#StartToPlaysongs"/> 	
+			</noinput>
+			
+			<nomatch>
+				<script>
+					 TotalTV=TotalTV+1;
+				</script>
+				<goto next="#StartToPlaysongs"/> 
+			</nomatch>	
+			 
+			<catch event="error.badfetch">
+				<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+song+'/54646_version2/'+playconfig+'.cfg'"/>
+				<if cond="selectoption=='3'">
+					<script>unike_play=unike_play-1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				<else/>
+					<script>unike_play=unike_play+1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				</if>
+			</catch>
+			
+	  </field>
+	  	
+	</form>	
+	
+	<form id="playoption">
+	<block>
+	<assign name="Section_Name" expr="'reliancefree_PLAYOPTION'"/>
+			<script>
+					 <![CDATA[
+					if(timerflag==1)
+					 start_BalenceMinute=starttime();
+				   ]]>	 	
+			  </script>
+
+	</block>
+	
+	        <field name="playclipOptionInfo">
+			<grammar mode="dtmf" root="start33" version="1.0">
+               		<rule id="start33" scope="public">
+			 <one-of>				 
+					  <item>1</item>
+					  <item>2</item>	
+					  <item>3</item>
+					 <item>6</item>
+					  <item>7</item>
+					  <item>8</item>
+					 
+					 
+			  	 </one-of>
+              	</rule>
+            </grammar>
+			
+				<prompt bargein="true">
+			     <audio expr="promptspath_54646+'/'+lang+'/keypad_option_mw.wav'"/>     
+	   	        </prompt>
+		   	
+		<filled>
+				
+			    <if cond="playclipOptionInfo=='1'">
+			    	    <script> unike_play=unike_play+1</script> 
+				     <goto next="#StartToPlaysongs"/> 
+			    <elseif cond="playclipOptionInfo=='2'"/>
+			            <script> unike_play=unike_play</script>
+				      <goto next="#StartToPlaysongs"/> 
+			   <elseif cond="playclipOptionInfo=='3'"/>
+			   	    <script> unike_play=unike_play-1</script>
+				    <goto next="#StartToPlaysongs"/> 
+			   <elseif cond="playclipOptionInfo=='6'"/>
+			   	  <goto next="#playoption"/> 
+			    <elseif cond="playclipOptionInfo=='7'"/>
+			    	<goto next="#loadcliptoplay"/> 
+			  <elseif cond="playclipOptionInfo=='8'"/>
+				<goto next="Hungama_Reliancefree_menu.vxml"/>     
+			  
+			    </if>
+			    
+		</filled>		
+			
+		<noinput>
+			
+			<goto next="#StartToPlaysongs"/> 	
+		</noinput>
+
+		  <nomatch>
+			
+			<goto next="#StartToPlaysongs"/> 
+		</nomatch>
+
+	</field>	
+	  	 
+  </form>
+  <form id="subscription">
+  	
+		  <field name="choice">
+
+  				<grammar mode="dtmf" root="start13" version="1.0">
+  						<rule id="start13" scope="public">
+  							<one-of>	
+  														 
+  								 <item>  1 </item>
+  								 
+  							</one-of>
+  						</rule>
+  				</grammar>
+  				
+  				<prompt bargein="true" timeout="0s">			
+  					<audio expr="promptspath_54646+'/'+lang+'/subintro.wav'"/>
+  				</prompt> 
+  				
+  				
+  				<filled>					
+  					<if cond="choice=='1'">
+						<assign name="amt" expr="'30'"/>
+						<assign name="plan_id" expr="'5'"/>
+						<assign name="service_id" expr="'1202'"/>
+						<assign name="lang" expr="'01'"/>
+						<assign name="firstconsent" expr="'YY'"/>
+						<assign name="firstconsenttime" expr="start_time()"/>
+						<assign name="sub_flag" expr="'true'"/>	
+						<assign name="direct_status" expr="'1'" />			
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/relhungama_dbinteraction?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+						<goto next="Hungama_54646_UserSub.vxml#BillStatusChk"/> 
+  					</if>					
+  				</filled>
+  			</field>
+  			<noinput count="1">
+  				<prompt bargein="true" timeout="0s">
+  					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+  				</prompt>				
+  				<reprompt></reprompt>
+  			</noinput>
+  			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+  			</noinput>
+  			<noinput count="3">
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</noinput>
+  			<nomatch count="1">
+  				<prompt bargein="true" timeout="0s">
+  					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+  				</prompt>				
+  				<reprompt></reprompt>
+  			</nomatch>
+  			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+  			</nomatch>
+  			<nomatch count="3">
+			  	<goto next="Hungama_54646_End.vxml"></goto>
+  			</nomatch>
+	</form>
+
+</vxml>

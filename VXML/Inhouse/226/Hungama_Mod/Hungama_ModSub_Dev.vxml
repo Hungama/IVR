@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_ModSub_Dev.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+<!--	<var name="doubleconfirm" expr="'1'"/>
+    <var name="trybuy" expr="'1'"/>
+    <var name="MOS" expr="'IVR'"/>
+    <var name="serviceid" expr="'0'"/>
+    <var name="planid" expr="'0'"/>
+    <var name="Amt" expr="'0'"/>      
+	<script>
+		var out_string=new Object();
+	</script>-->
+
+	<form id="WELNEW">
+		<block>			
+				<assign name="program_name" expr="'Hungama_ModSub_Dev_WELNEW'"/>
+				<assign name="lang" expr="'01'"/>
+				<if cond="operator=='tatm'">			
+					<if cond="DNIS=='590903'">
+						<assign name="planid" expr="'1'"/>
+						<assign name="Amt" expr="'2'"/>
+        	            			<assign name="serviceid" expr="'1001'"/>                     								                            
+					<elseif cond="DNIS=='590908'"/>
+						<!--<assign name="planid" expr="'3'"/>
+						<assign name="Amt" expr="'60'"/>
+						<assign name="serviceid" expr="'1001'"/> -->
+					
+						<assign name="planid" expr="'2'"/>
+						<assign name="Amt" expr="'14'"/>
+						<assign name="serviceid" expr="'1001'"/>  
+		
+					
+					<elseif cond="DNIS=='590909'"/>
+
+						<assign name="planid" expr="'2'"/>
+						<assign name="Amt" expr="'14'"/>
+						<assign name="serviceid" expr="'1001'"/>  
+					</if>	
+				<else/>	
+					<if cond="DNIS=='590903'">
+						<assign name="planid" expr="'25'"/>
+						<assign name="Amt" expr="'2'"/>
+        	        			<assign name="serviceid" expr="'1601'"/>                    								                            
+					<elseif cond="DNIS=='590908'"/>
+						<!--<assign name="planid" expr="'27'"/>
+						<assign name="Amt" expr="'60'"/>
+						<assign name="serviceid" expr="'1601'"/>-->
+						
+						<assign name="planid" expr="'26'"/>
+						<assign name="Amt" expr="'14'"/>
+    	            				<assign name="serviceid" expr="'1601'"/> 
+
+						
+					<elseif cond="DNIS=='590909'"/>
+						<assign name="planid" expr="'26'"/>
+						<assign name="Amt" expr="'14'"/>
+    	            				<assign name="serviceid" expr="'1601'"/> 
+					</if>	
+                </if>	
+				<goto next="#SubOption"></goto>
+		</block>
+	</form>
+	
+	<form id="SubOption">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590903' &amp;&amp; circle!='hay'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_devmm.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590908' &amp;&amp; circle!='hay' &amp;&amp; circle!='bih'">
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_devmm_mt.wav'"/>-->
+
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_devmm_wk.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590909' &amp;&amp; circle!='hay'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_devmm_wk.wav'"/>
+			</prompt>
+				
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590903' &amp;&amp; circle=='hay'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_haydevo.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590908' &amp;&amp; circle=='hay' &amp;&amp; circle!='bih'">
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_mt_haydevo.wav'"/>-->
+
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_devmm_wk.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590909' &amp;&amp; circle=='hay'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_wk_haydevo.wav'"/>
+			</prompt>
+				
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590908' &amp;&amp; circle=='bih'">
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_devmm_mt.wav'"/>-->
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_DEV_Nav_bih.wav'"/>
+			</prompt>	
+		
+         	
+			<filled>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=dtmf_logging&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+choice+'&amp;INPARAM[2]=sub&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+circle"/>
+
+				<if cond="choice=='1'">
+				    <goto next="#Doubleconfirm"></goto>
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<exit/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<exit/>
+		</nomatch>
+	</form>
+	
+	<form id="Doubleconfirm">		
+		<block>
+
+			<!--http://10.124.168.27:8091/API/TPCG? MSISDN=<10digit number>&productID=<pid>&pName=<name of product>&pPrice=1000&pVal=30&CpId=45&CpPwd=245&CpName=Hungama&reqMode=IVR&Ivr_approach=VXML&NetworkId=CDMA&circleId=MH&Lang=Hindi&Lang_A=F&reqType=Event&ismID=10&transID=24525-->
+			<assign name="productID" expr="'GSMENDLESSMONTHLY60'"/>
+			<assign name="pName" expr="'Endless music'"/>
+			<assign name="CpId" expr="'hug'"/>
+			<assign name="CpPwd" expr="'hug@8910'"/>
+			<assign name="CpName" expr="'Hungama'"/>
+			<assign name="reqMode" expr="'IVR'"/>
+
+			<assign name="Ivr_approach" expr="'VXML'"/>
+			<assign name="NetworkId" expr="'GCMO'"/><!--Not cleared-->
+			<assign name="circleId" expr="circle"/>
+
+			<assign name="Lang_A" expr="'F'"/>
+			<assign name="reqType" expr="'Event'"/><!--Not cleared-->
+
+			<assign name="ismID" expr="'16'"/>
+			<assign name="trans_id" expr="gettransidtime()"/>	
+			<if cond="operator=='tatm'">
+				<if cond="Amt=='60'">
+					<assign name="pVal" expr="'30'"/>
+					<assign name="productID" expr="'GSMENDLESSMONTHLY60'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='14'"/>
+					<assign name="pVal" expr="'7'"/>
+					<assign name="productID" expr="'GSMENDLESSWEEKLY14'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='1'"/>
+					<assign name="pVal" expr="'1'"/>
+					<assign name="productID" expr="'ENDLESS01'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='10'"/>
+					<assign name="pVal" expr="'10'"/>
+					<assign name="productID" expr="'GSMENDLESS10'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='45'"/>
+					<assign name="pVal" expr="'60'"/>
+					<assign name="productID" expr="'GSMENDLESS45'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='75'"/>
+					<assign name="pVal" expr="'90'"/>
+					<assign name="productID" expr="'GSMENDLESS75'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='30'"/>
+					<assign name="pVal" expr="'15'"/>
+					<assign name="productID" expr="'ENDLESS30'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='2'"/>
+					<assign name="pVal" expr="'1'"/>
+					<assign name="productID" expr="'GSMENDLESSDAILY2'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<else/>
+					<assign name="pVal" expr="'1'"/>
+					<assign name="Amt" expr="'2'"/>	
+					<assign name="productID" expr="'ENDLESS01'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				</if>
+			<elseif cond="operator=='tatc'"/>
+				<if cond="Amt=='60'">
+					<assign name="pVal" expr="'30'"/>
+					<assign name="productID" expr="'CDMAGSMENDLESS60'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='14'"/>
+					<assign name="pVal" expr="'7'"/>
+					<assign name="productID" expr="'CDMAGSMENDLESSWEEKLY14'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='2'"/>
+					<assign name="pVal" expr="'1'"/>
+					<assign name="productID" expr="'CDMAGSMENDLESSDAILY2'"/>
+					<assign name="pName" expr="'Endless music'"/>					
+				<elseif cond="Amt=='10'"/>
+					<assign name="pVal" expr="'10'"/>
+					<assign name="productID" expr="'CDMAGSMENDLESS10'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='30'"/>
+					<assign name="pVal" expr="'30'"/>
+					<assign name="productID" expr="'CDMAGSMENDLESS30'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='1'"/>
+					<assign name="pVal" expr="'1'"/>
+					<assign name="productID" expr="'CDMAENDLESS01'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				</if>
+			<elseif cond="operator=='virm'"/>		
+					<assign name="pVal" expr="'1'"/>
+					<assign name="Amt" expr="'2'"/>	
+					<assign name="productID" expr="'VMIENDLESSDAILY2'"/>
+					<assign name="pName" expr="'Endless music'"/>
+			</if>	
+			<script>
+				pPrice=Amt*100;
+			</script>
+			<if cond="lang=='01'">
+				<assign name="Lang" expr="'Hin'"/>
+			<elseif cond="lang=='02'"/>
+				<assign name="Lang" expr="'ENG'"/>
+			<elseif cond="lang=='11'"/>
+				<assign name="Lang" expr="'Mar'"/>
+			<elseif cond="lang=='10'"/>
+				<assign name="Lang" expr="'Kan'"/>
+			<elseif cond="lang=='08'"/>
+				<assign name="Lang" expr="'Tel'"/>
+			<elseif cond="lang=='09'"/>
+				<assign name="Lang" expr="'Mal'"/>
+			<elseif cond="lang=='07'"/>
+				<assign name="Lang" expr="'Tam'"/>
+			<elseif cond="lang=='13'"/>
+				<assign name="Lang" expr="'Ori'"/>
+			<elseif cond="lang=='06'"/>
+				<assign name="Lang" expr="'Ben'"/>
+			<elseif cond="lang=='12'"/>
+				<assign name="Lang" expr="'Guj'"/>
+			<elseif cond="lang=='17'"/>
+				<assign name="Lang" expr="'Asm'"/>
+			<elseif cond="lang=='18'"/>
+				<assign name="Lang" expr="'Maw'"/>
+			<elseif cond="lang=='03'"/>
+				<assign name="Lang" expr="'Pun'"/>
+			<elseif cond="lang=='05'"/>
+				<assign name="Lang" expr="'Har'"/>
+			<else/>
+				<assign name="Lang" expr="'Hin'"/>
+			</if>       
+
+
+		</block>
+	<!--http://182.156.191.79:8091/API/TPCG?MSISDN=9711071741&productID=23&pName=Endless&pPrice=30000&pVal=30&CpId=23&CpPwd=1234&CpName=hungama&reqMode=27&Ivr_approach=VXML&NetworkId=27&circleId=16&Lang=Hindi&Lang_A=M&reqType=EVENT&ismID=16&transID=12345-->
+
+
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.79:8091/API/CCG?MSISDN=919654608739&amp;productID=111&amp;pName=CMTB_TestNew&amp;reqMode=IVR&amp;Ivr_approach=VXML&amp;NetworkId=GCMO&amp;circleId=WBC&amp;Lang=EN&amp;Lang_A=F&amp;reqType=SUBSCRIPTION&amp;ismID=15&amp;transID=1369836465550&amp;pPrice=3000&amp;pVal=30&amp;CpId=123&amp;CpName=mcarbon&amp;CpPwd=123&amp;Songname=abc'">-->
+
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.79:8091/API/TPCG?MSISDN='+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpPwd='+CpPwd+'&amp;CpName='+CpName+'&amp;reqMode='+reqMode+'&amp;Ivr_approach='+Ivr_approach+'&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID='+ismID+'&amp;transID='+transID">-->
+
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.79:8091/API/CCG?MSISDN=919031952983&amp;productID='+productID+'&amp;pName='+pName+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpPwd='+CpPwd+'&amp;CpName='+CpName+'&amp;reqMode='+reqMode+'&amp;Ivr_approach='+Ivr_approach+'&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID='+ismID+'&amp;transID='+transID">-->
+	    <subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.80:8091/API/CCG?MSISDN='+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;pPrice=200&amp;pVal=1&amp;CpId='+CpId+'&amp;CpPwd='+CpPwd+'&amp;CpName='+CpName+'&amp;reqMode='+reqMode+'&amp;Ivr_approach='+Ivr_approach+'&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID='+ismID+'&amp;transID='+trans_id">
+
+
+		<filled>
+				<log>Confirmation page</log>
+				<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+				<log>back from the confirmation app, the CCGRESPONSE:<value expr="confirmUserChoice.CCGResponse"/></log>
+				<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userinput"/></log>
+				<log>back from the confirmation app, the user tranId:<value expr="confirmUserChoice.tranId"/></log>
+				<log>back from the confirmation app, the user tranId:<value expr="confirmUserChoice.TransID"/></log>
+
+
+
+
+				<if cond="confirmUserChoice.CCGResponse=='Success'">
+					<goto next="#SubRequest"/>
+				<else/>
+					<goto next="Hungama_ModEnd.vxml"/>
+				</if>			
+		</filled>
+	</subdialog>
+	</form>
+
+	<form id="SubRequest">
+		<block>
+			<assign name="program_name" expr="'Hungama_ModSub_Dev_SubRequest'"/>
+		    <assign name="backendsub" expr="'false'"/>
+			<!-- SUB REQUEST -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid+'&amp;INPARAM[7]='+trans_id"/>
+			<prompt bargein="false" timeout="0s"  cond="directaccess!='DEVOHAY'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/charging_wait.wav'"/>
+			</prompt>
+			<prompt bargein="false" timeout="0s" cond="directaccess=='DEVOHAY'">			
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/charging_waitdevo.wav'"/>
+			</prompt>
+
+
+			<goto next="#BillStatusChk"/>	
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<assign name="program_name" expr="'Hungama_ModSub_Dev_BillStatusChk'"/>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s" cond="directaccess=='DEVOHAY'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/delay_charging.wav'"/>
+				</prompt>
+
+			<prompt bargein="false" timeout="0s" cond="directaccess=='DEVOHAY'">			
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/delay_chargingdevo.wav'"/>
+			</prompt>
+
+
+
+				<goto next="Hungama_ModEnd.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<script>bal=bal*60;</script>
+
+				<prompt bargein="true" timeout="0s"  cond="directaccess!='DEVOHAY'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/thanks_submm.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="0s" cond="directaccess=='DEVOHAY'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/thanks_nosubdevo.wav'"/>
+				</prompt>
+
+
+				
+				<goto next="#welcome"></goto>	
+			<else/>
+				<exit/>
+			</if>
+		</block>
+	</form>
+	<form id="welcome">
+	<block>
+		<log> Welcome new after subscription</log>
+		 <assign name="playconfig" expr="play_day"/>
+			<prompt bargein="false" timeout="0s"  cond="directaccess!='DEVOHAY'">			
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_newmm_'+play_day+'.wav'"/>
+			</prompt>
+			
+			<prompt bargein="false" timeout="0s" cond="directaccess=='DEVOHAY'">			
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_new_04devo.wav'"/>
+			</prompt>
+
+
+			<log> callingmain menu</log>
+			<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS_MM"></goto>		
+	</block>	
+	
+	</form>
+</vxml>

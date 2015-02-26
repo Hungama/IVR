@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_54646_ServicesRoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="SelectLangforVoda.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<var name="wellang" expr="''"/>
+	<var name="c_test" expr="''"/>
+	<var name="c_test_day" expr="1"/>
+	<script>
+		var ciropr1 = new Object();
+	</script>
+	<form id="Main">
+		<block>
+			<assign name="Section_Name" expr="'USER_STATUS_CHECK'"/>
+			<assign name="C_Start" expr="start_time()"/>
+
+			<script>
+				realDNIS=session.connection.local.uri;                   
+				ANI=session.connection.remote.uri;
+			</script>
+			<script>
+				<![CDATA[
+							 c_test=new Date();
+					]]>
+			</script>
+			<log>Hello  $$$$$$$$$$$$$$$$$$$$$$$$ c_test  is$$$$$$$$$$$$$$$$$$$$$ <value expr="c_test"/>	$$$$$$$$$$$$$$$$$$$$$$$$$$ </log>
+			<script>
+				var length = ANI.length;
+				if(length == 15)
+					ANI = ANI.substring(5,15);
+				if(length == 14)
+					ANI = ANI.substring(4,14);
+				if(length == 13)
+					ANI = ANI.substring(3,13);
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+			</script>
+			<!--<assign name="DNIS" expr="'5464671'"/>-->
+			<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+			<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+		 	<script srcexpr="'http://192.168.100.226:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+       	        	<script>
+                	       <![CDATA[
+				     for(j=0; j< out_string.length;  j++)
+				   {      
+					if(j==0)
+					       circle = out_string[j];
+				   }
+                	        ]]>
+              		</script>                     
+	              	<log> FIRST DB FETCH circle  is   <value expr="circle"/>    </log>
+			<if cond="circle=='oth'">
+				<script srcexpr="'http://192.168.100.226:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+				<assign name="DNIS" expr="realDNIS"/>
+				<assign name="operator" expr="'und'"/>
+				<goto next="End.vxml"></goto>                    
+			</if>
+			<prompt>
+				<audio expr="promptspath_54646+'/'+lang+'/thank_sub.wav'"/>
+			</prompt>
+			<log> circle  is <value expr="circle"/></log>
+			<log> operator is <value expr="operator"/></log>
+			<assign name="dbservlet" expr="'tatm_mnd_dbinteraction'"/>
+			<assign name="operator" expr="'vodm'"/>
+			
+			<assign name="C_End" expr="start_time()"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=VODA54646TEST&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<exit/>
+		</block>
+	</form>
+</vxml>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_ModUserStatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<script>
+		var ciropr1 = new Object();
+		var out_string=new Object();
+		var ciropr = new Object();
+		var blacklist_status=0;
+	</script>
+
+	<form id="CIRCLEID">
+		<block>
+				<assign name="contentpath" expr="'http://192.168.100.212:6666/hungama/'"/>
+
+				<assign name="C_Start" expr="start_time()"/>
+				<assign name="RT_Start" expr="start_time()"/>
+				<assign name="callendstatus" expr="0"/>
+				<script>  
+					realDNIS=session.connection.local.uri;                   
+					ANI=session.connection.remote.uri;
+					
+                </script>
+                <script>
+					length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				</script>                 
+                    <script>
+		    		length = realDNIS.length;
+		    		
+		    </script>
+		<if cond="realDNIS=='66291500'">
+			<assign name="DNIS" expr="'52888'"/>
+			<elseif cond="realDNIS=='66291501'"/>
+			<assign name="DNIS" expr="'528881'"/>
+			<elseif cond="realDNIS=='66291502'"/>
+			<assign name="DNIS" expr="'528882'"/>
+			<elseif cond="realDNIS=='66291503'"/>
+			<assign name="DNIS" expr="'528883'"/>
+			<elseif cond="realDNIS=='66291504'"/>
+			<assign name="DNIS" expr="'528884'"/>
+			<elseif cond="realDNIS=='66291505'"/>
+			<assign name="DNIS" expr="'528885'"/>
+			<elseif cond="realDNIS=='66291506'"/>
+			<assign name="DNIS" expr="'528886'"/>
+			<elseif cond="realDNIS=='66291507'"/>
+			<assign name="DNIS" expr="'528887'"/>
+			<elseif cond="realDNIS=='66291508'"/>
+			<assign name="DNIS" expr="'528888'"/>
+			<elseif cond="realDNIS=='66291509'"/>
+			<assign name="DNIS" expr="'528889'"/>
+			<elseif cond="realDNIS=='66291510'"/>
+			<assign name="DNIS" expr="'528880'"/>
+			<else/>
+			<assign name="DNIS" expr="'52888'"></assign>
+		</if>
+
+
+	  	        		                                      		   
+            	<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+            	<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+        		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+				<log> operator-circle identification </log>
+
+		<if cond="ANI=='1711083131' || ANI=='4791102081'">		
+			<assign name="operator" expr="'unim'"/>
+			<assign name="circle" expr="'upw'"/>
+			<goto next="#USRSTATUS"></goto>
+		</if>
+
+				
+		<script srcexpr="'http://192.168.100.227:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+              	 <script>
+                      	 <![CDATA[
+			     		for(j=0; j< out_string.length;  j++)
+				 	  {      
+						if(j==0)
+					          circle = out_string[j];
+				  	  }
+                      	  ]]>
+              	 </script>
+			
+                     
+            		  <log> FIRST DB FETCH circle  is   <value expr="circle"/>    </log>
+            		  <if cond="circle=='oth'">
+                		    <script srcexpr="'http://192.168.100.227:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+                  		    <assign name="DNIS" expr="realDNIS"/>
+                  		    <assign name="operator" expr="'und'"/>
+                  		    <goto next="Hungama_ModEnd.vxml"></goto>                    
+              	  </if>
+
+			<assign name="operator" expr="'unim'"/>	
+
+			<!-- Check for Black list Start -->
+		
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=11'"/>
+					<script>
+					 	 blacklist_status = out_string[0];			
+					</script>
+					<log>blacklist_status issss:<value expr="blacklist_status"/></log>
+		
+					<if cond="blacklist_status == '1'">
+						 <assign name="drop_point" expr="'Black_list'"/>
+				       		 <goto next="Hungama_ModEnd.vxml"></goto>                    
+					</if>
+		<!-- Check for Black list End -->
+
+
+			<!--<script srcexpr="'http://192.168.100.227:8080/hungama/removetmpfile?ani='+ANI"/>-->
+			<if cond="ANI=='9999130777' || ANI=='9582220337'">
+					<assign name="circle" expr="'upe'"></assign>
+				</if>				
+	    					       
+				<log>circle  is	<value expr="circle"/>    </log>
+				<log>operator is <value expr="operator"/>    </log>
+				
+				<if cond="ANI=='9711711335'">
+					<assign name="circle" expr="'upw'"></assign>
+				</if>
+
+				<goto next="#USRSTATUS"></goto>
+		</block>		
+	</form>
+	
+	<form id="USRSTATUS">
+		<block>
+			
+			<assign name="drop_point" expr="'status_check'"/>
+			<assign name="dtmf_check" expr="1"/>
+			<assign name="dtmf_log" expr="ANI+hash+circle"/>
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>-->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CHK_LANG&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  
+						  	   if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];  
+						       
+						       
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'lang @@@@@@@@@ '+lang"></log>
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+			<log expr="'contentlog=='+contentlog"></log>
+			<if cond="usr_status=='-1'">
+				<assign name="drop_point" expr="'NEW_USER'"/>
+				<goto next="Hungama_ModNewUser.vxml"></goto>
+			<elseif cond="usr_status=='1'"/>
+				<assign name="drop_point" expr="'OLD_USER'"/>
+				<if cond="lang=='99'">
+					<goto next="Hungama_ModNewUser.vxml"></goto>	
+				<else/>
+					<goto next="Hungama_ModExistUser.vxml"></goto>
+				</if>
+			<else/>
+				<goto next="Hungama_ModEnd.vxml"></goto>
+			</if>
+		</block>
+	</form>
+	
+</vxml>

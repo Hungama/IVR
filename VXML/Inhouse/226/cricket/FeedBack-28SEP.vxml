@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="CricketRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="FeedBack.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+	
+	<script>
+		var out_string=new Object();
+		
+	
+	</script>
+
+	<form id="feedback">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_FEEDBACK&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=CHK'"/>
+			<script>
+			 <![CDATA[
+					      feedback_status = out_string[0];
+					
+
+					]]>
+			
+			</script>
+			
+			<if cond="feedback_status=='0'">
+				<goto next="#record_feedback_inst"></goto>
+			<elseif cond="feedback_status=='1'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/feedback_sorry.wav'"/>
+				</prompt>
+				<goto next="MainMenu.vxml"></goto>	
+			
+			</if>
+		</block>
+	</form>
+	
+	<form id="record_feedback_inst">	
+		<block>
+			<assign name="feedtime" expr="start_time()"/>
+			<assign name="currtime" expr="getcurryyyymmdd()+feedtime"></assign>
+		</block>	
+		<field name="feedbackinst">              
+		    	 
+		<grammar mode="dtmf" root="start5" version="1.0">
+                   <rule id="start5" scope="public">
+                     <one-of>
+			  <item>1</item>
+			  <item>2</item>	
+                          <item>3</item>	
+                          <item>4</item>	
+                          <item>5</item>	
+                          <item>6</item>	
+                          <item>7</item>	
+                          <item>8</item>	
+                          <item>9</item>	
+                          <item>0</item>	               			 
+			  <item>#</item>
+			  <item>*</item>			      
+                        </one-of>
+                     </rule>
+                 </grammar> 
+			 
+                        <prompt bargein="true" >
+			  <audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_feedback.wav'"/>
+			</prompt> 
+				 
+                         <filled>                            
+                  	           <goto next="#record_feedback"/>
+                         </filled>
+			  
+			  <noinput>		  
+	                           <goto next="#record_feedback"/>
+                          </noinput>	
+            </field>			
+	</form>
+
+	<form id="record_feedback">
+		
+             <record name="recording" beep="true" maxtime="20s" finalsilence="600000ms" dtmfterm="true"/>			   
+	     
+	     
+	     <field name="feedbackthanks">              
+		    	 
+				<grammar mode="dtmf" root="start6" version="1.0">
+                   <rule id="start6" scope="public">
+                     <one-of>
+			 			  <item>1</item>
+			  			  <item>2</item>	
+                          <item>3</item>	
+                          <item>4</item>	
+                          <item>5</item>	
+                          <item>6</item>	
+                          <item>7</item>	
+                          <item>8</item>	
+                          <item>9</item>	
+                          <item>0</item>	               			 
+			             <item>#</item>
+			             <item>*</item>			      
+                       </one-of>
+                     </rule>
+                 </grammar> 
+			 
+                        <prompt bargein="true" timeout="1s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/feedback_thanks.wav'"/>
+			</prompt>
+				 
+                         <filled> 
+		           			
+   		            
+   		            		<!--<script srcexpr="'http://119.82.69.213:8080/hungama/RecordFile?rq=fed&amp;ani='+ANI+'&amp;dni='+DNIS+'&amp;lang='+LANG_DESCRIPTION+'&amp;datetime='+currtime+'&amp;lgrecmsg='+recording"/>-->
+   		            			<!--<script srcexpr="'http://'+S_IP+'/'+servlet_path_1+'/RecordFile?rq=fed&amp;ani='+ANI+'&amp;dni='+DNIS+'&amp;lang='+LANG_DESCRIPTION+'&amp;datetime='+currtime+'&amp;lgrecmsg='+recording"/>-->
+   		           			 <log>Feed Back Recording DOne===========/>    </log>
+			   
+	                    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_FEEDBACK&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SET'"/>         	        
+			    			<goto next="MainMenu.vxml"></goto>
+                  	    
+                         </filled>
+			  
+			  <noinput>		  
+	                  <!--  <script srcexpr="'http://119.82.69.213:8080/hungama/RecordFile?rq=fed&amp;ani='+ANI+'&amp;dni='+DNIS+'&amp;lang='+LANG_DESCRIPTION+'&amp;datetime='+currtime+'&amp;lgrecmsg='+recording"/>-->
+	                    <log>Feed Back Recording DOne/>    </log>
+      	                    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_FEEDBACK&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SET'"/>         	        
+			    <goto next="MainMenu.vxml"></goto>
+                          </noinput>	
+            </field>			
+	     
+		     
+	</form>
+</vxml>

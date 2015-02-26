@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="End.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="rem_time" expr="0"/>	
+	<var name="C_End" expr="''"/>
+	<script>
+			var out_string=new Object();
+	</script>
+
+	<form id="EndLogin">
+		<block>
+		    <assign name="C_End" expr="start_time()"/>
+		    <if cond="song_listen=='START'">
+			<if cond="HeardCat=='01'">
+				<assign name="station" expr="'Delhi'"/>
+			<elseif cond="HeardCat=='02'"/>
+				<assign name="station" expr="'Mumbai'"/>
+			<elseif cond="HeardCat=='03'"/>
+				<assign name="station" expr="'Chennai'"/>
+			<elseif cond="HeardCat=='04'"/>
+				<assign name="station" expr="'Kolka'"/>
+			<elseif cond="HeardCat=='05'"/>
+				<assign name="station" expr="'Kochi'"/>
+			<elseif cond="HeardCat=='08'"/>
+				<assign name="station" expr="'Pune'"/>
+			<elseif cond="HeardCat=='07'"/>
+				<assign name="station" expr="'Banglore'"/>
+			<elseif cond="HeardCat=='10'"/>
+				<assign name="station" expr="'Ahmedabad'"/>
+			<elseif cond="HeardCat=='11'"/>
+				<assign name="station" expr="'Jamshedpur'"/>			
+			<else/>
+				<assign name="station" expr="'Delhi'"/>	
+			</if>
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<log expr="'compare_time=='+compare_time"></log>
+				<log expr="'ContentTime=='+ContentTime"></log>
+				<log expr="'hash=='+hash"></log>
+				<log expr="'FilePlay=='+FilePlay"></log>
+				<log expr="'station=='+station"></log>			
+				<log expr="'contentlog=='+contentlog"></log>
+				<if cond="(FilePlay!='undefined' &amp;&amp; FilePlay!='' &amp;&amp; FilePlay!='null')">
+					<assign name="contentlog" expr="contentlog+station+hash+FilePlay+hash+compare_time+hash"></assign>
+				</if>
+			</if>
+			<script>
+			  	total_used_bal=chkBalenceMinute(start_BalenceMinute);
+			  	balance=balance-total_used_bal;  						  
+		 	</script>
+
+			<log expr="'station=='+station"></log>
+			<log expr="'HeardCat=='+HeardCat"></log>
+			<log expr="'lnag=='+lang"></log>
+			<log expr="'circle=='+circle"></log>
+
+		 	<if cond="HeardCat!='0'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HeardCat+'&amp;INPARAM[2]=SET'"/>
+			</if>		 	
+			<script> balance=Math.floor(balance/60); </script>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/>                 	           		  						
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REDFM_CT_MESSAGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+station"/>
+
+			<if cond="(operator=='unim') &amp;&amp; sub_flag=='true'">
+                                <script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1410&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>  
+			</if>
+
+			<script srcexpr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+drop_point+hash+modeofsub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=REDFM&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<exit/>
+		</block>
+		
+		<!--<catch event="error.*">
+		 								
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      
+		  
+		  <exit/>
+		 								
+      </catch> -->
+	    <catch event="error.badfetch">
+		 								
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      
+		  
+		  <exit/>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 
+		  
+		  <exit/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  End4444</log>	
+		   
+		   <exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  End5555</log>	
+		
+		   <exit/>
+		  
+      </catch>
+      
+      <catch event="error.semantic">
+           <log> $$$$$$$$$$$$$$$$ error.semantic $$$$$$$$$$$$$$$$ </log>
+           <exit/>
+    </catch>
+
+	</form>
+</vxml>

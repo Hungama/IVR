@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_Movies.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+ <var name="contentfilepath" expr="''"/>
+ <var name="cfgFile" expr="''"/>
+<var name="contentfile" expr="''"/>
+<var name="moviescounter" expr="0"/>
+
+<var name="move_counter" expr="0"/>
+	<script>
+		var favSongs=new Object();
+		var favSongs1=new Object();
+		var len=0;
+		var len1=0;
+	</script>
+	<form id="MAINMENU">
+		<block>
+			<assign name="cat" expr="'0'"/>
+			<assign name="subcat" expr="'0'"/>
+			<assign name="Usage_time" expr="rim(section_begin)"/>
+			<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+		        <assign name="Section_Name" expr="'Welcome_movie'"/>
+		        <assign name="section_begin" expr="starttime()"/>
+			<assign name="CATEGORY" expr="'GLC_MOVIES_MENU'"/>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/welcome_movies.wav'"/>
+				<audio expr="promptpath+'/'+lang+'/mainmenu.wav'"/>
+			</prompt>
+			<goto next="#Movies_Menu"/>
+		</block>
+	</form>
+	<form id="Movies_Menu">
+			  <block> 
+			  	<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=HUL_GLC/audiosongconfig/movies.cfg'"/> 		  	          
+				<script>
+							array.length=0;
+							unike_play=0;
+				</script>
+						<assign name="len" expr="favSongs.length" />
+						<assign name="movie_idx" expr="0" />
+						<assign name="i" expr="0" />
+				
+				<script>
+					<![CDATA[
+						   for(k=0; k<len ;  k++)
+						   {  	  
+									array[k] = favSongs[k];						   
+						   }
+	
+					]]>		
+				</script> 
+					<log expr="'@@@@@@ array[k]'+array[0]"/>
+				<!--<goto next="#playing_clips"/>  -->
+				
+					<assign name="cat" expr="array[unike_play]"/>
+					<assign name="playconfig" expr="array[unike_play]"/>
+					<goto next="#StartToPlaysongs"/>
+
+			   </block>
+	</form>
+	<form id="playing_clips"> 
+		<block>
+			<assign name="Usage_time" expr="rim(section_begin)"/>
+			<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+			<assign name="Section_Name" expr="'Keypad_movie'"/>
+			<assign name="section_begin" expr="starttime()"/>
+					<script>
+						<![CDATA[
+						if(timerflag==1)
+							start_BalenceMinute=starttime();
+						]]>	 	
+					</script>
+					<if cond="unike_play &gt; len-1">
+						<assign name="unike_play" expr="0" />
+					<elseif cond="unike_play &lt; 0" />
+						<assign name="unike_play" expr="len-1" />
+					</if>
+	
+				
+		</block>	  
+		 <field name="keypadoption">               
+			    	 
+			<grammar mode="dtmf" root="start8" version="1.0">
+	                   	<rule id="start8" scope="public">
+	                     	<one-of>
+						<item>1</item>
+						<item>2</item>
+						<item>3</item>
+						<item>5</item>
+						<item>7</item>
+						<item>8</item>
+						<item>9</item>
+	                    	</one-of>
+	                	</rule>
+	               	</grammar>
+	               	
+	            		 <prompt bargein="true"  timeout="1s">
+	                 	        <audio expr="promptpath+'/'+lang+'/cin_browsingoption.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/cin_browsing_skip.wav'"/>
+					
+				</prompt> 
+					 
+	        <filled>  
+			<if cond="timerflag=='1'">
+				<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;  						  
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+balance"/>
+				<if cond="balance &lt;= '0'">          
+					   <goto next="Topup.vxml"/>
+				  </if>     
+			</if>
+			
+			<if cond="keypadoption=='8'">
+				<goto next="Hungama_GLC_RootMenu.vxml"/>
+			<elseif cond="keypadoption=='1'"/>
+				 <script> unike_play=unike_play+1;</script>
+				 <assign name="cat" expr="array[unike_play]"/>
+				<assign name="playconfig" expr="array[unike_play]"/>
+				<goto next="#StartToPlaysongs"/>
+			<elseif cond="keypadoption=='2'"/>
+				<script> unike_play=unike_play;</script>
+				<assign name="cat" expr="array[unike_play]"/>
+				<assign name="playconfig" expr="array[unike_play]"/>
+				<goto next="#StartToPlaysongs"/>
+			<elseif cond="keypadoption=='3'"/>
+				<script> unike_play=unike_play-1;</script>
+				<assign name="cat" expr="array[unike_play]"/>
+				<assign name="playconfig" expr="array[unike_play]"/>
+				<log expr="'selected cat is '+cat"></log>
+				<goto next="#StartToPlaysongs"/>
+			<elseif cond="keypadoption=='5'"/>
+					<!--<script> unike_play1=unike_play1+1;</script>
+					<assign name="cat" expr="favSongs1[unike_play1]"/>
+					<assign name="playconfig" expr="favSongs1[unike_play1]"/>
+					<log expr="'selected cat is '+cat"></log>-->
+					<assign name="cat" expr="array[unike_play]"/>
+					<assign name="playconfig" expr="array[unike_play]"/>
+					<goto next="#StartToPlaysongs"/>
+			<else/>      
+				<assign name="cat" expr="array[unike_play]"/>
+				<assign name="playconfig" expr="array[unike_play]"/>
+				<goto next="#StartToPlaysongs"/>
+			</if>	
+	              </filled>
+				  
+			<noinput>	
+					<assign name="cat" expr="array[unike_play]"/>
+					<assign name="playconfig" expr="array[unike_play]"/>
+					<goto next="#StartToPlaysongs"/>	     
+	              </noinput>
+		      
+		      <nomatch> 
+					<assign name="cat" expr="array[unike_play]"/>
+					<assign name="playconfig" expr="array[unike_play]"/>
+					<goto next="#StartToPlaysongs"/>	     
+	             </nomatch>
+	          </field>		
+			
+		</form>
+		<form id="StartToPlaysongs">
+		<block>
+		<log expr="'@@@@@@ catis '+cat"/>
+		<log expr="'@@@@@@ playconfig is '+playconfig"/>
+		
+		<if cond="move_counter!= '1'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_LHD_MOVIE&amp;INTOKEN=6&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]=0&amp;INPARAM[3]=0&amp;INPARAM[4]=0&amp;INPARAM[5]=GET'"/>
+			<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						MVE_name = out_string[j];
+						if(j==1)
+						MVE_name_part=out_string[j];
+						if(j==2)
+						MVE_counter=out_string[j];
+						if(j==3)
+						MVE_counter_part=out_string[j];
+
+
+					  }
+				  ]]>
+			</script>
+				<log expr="'@@@@@@ MVE_name is  '+MVE_name"/>
+				<log expr="'@@@@@@ MVE_name_part is '+MVE_name_part"/>
+				<log expr="'@@@@@@ MVE_counter is '+MVE_counter"/>
+				<log expr="'@@@@@@ MVE_counter_part is '+MVE_counter_part"/>
+				<if cond="MVE_name!= 'new'">
+					<script>
+						MVE_counter=parseInt(MVE_counter);
+						MVE_counter_part=parseInt(MVE_counter_part);
+					</script>
+					<assign name="unike_play" expr="MVE_counter" />
+					<assign name="unike_play1" expr="MVE_counter_part" />
+					<assign name="playconfig" expr="MVE_name" />
+						<log>unike_playunike_playunike_playunike_play of usr_status is <value expr="unike_play"/>    </log>
+						<log>unike_playunike_playunike_playunike_play1 of usr_status is <value expr="unike_play1"/>    </log>
+						<log>playconfig of usr_status is <value expr="playconfig"/>    </log>
+					<assign name="LASTHEARD_FLAG" expr="'1'" />
+
+				</if>
+		</if>
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=HUL_GLC/audiosongconfig/FullAudioClip/'+playconfig+'.cfg'"/>
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_MOSTHEARD_CONTENT&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]=movie'"/>-->
+			<script>
+						array2.length=0;
+						unike_play1=0;
+			</script>
+
+					<assign name="len1" expr="favSongs.length" />
+					<assign name="movie_idx1" expr="0" />
+					<assign name="i" expr="0" />
+
+			<script>
+				<![CDATA[
+					   for(k=0; k<len1 ;  k++)
+					   {  	  
+						array2[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 
+			<log expr="'@@@@@@ array2[m] balance is '+array2[0]"/>
+			
+		    <goto next="#StartToPlaysongs1"/>
+							
+		</block>
+		</form>
+			
+			
+			<form id="StartToPlaysongs1">
+						<block>
+				<log expr="'@@@@@@ used unike_play1 is '+unike_play1"/>
+				<log expr="'@@@@@@ used len1 is '+len1"/>
+						
+				<script>
+				   		 <![CDATA[
+		  		       		if(timerflag==1)
+		               				  start_BalenceMinute=starttime();
+				   			 ]]>	 	
+		 		  </script>
+		
+							  	<if cond="unike_play &gt; len-1">
+									<assign name="unike_play" expr="0" />
+									<assign name="move_counter" expr="1"/>
+									<goto next="#Movies_Menu"/>
+									
+								<elseif cond="unike_play &lt; 0" />
+									<assign name="unike_play" expr="len-1" />
+									<assign name="move_counter" expr="1"/>
+									<goto next="#Movies_Menu"/>
+								</if>
+								<if cond="unike_play1 &gt; len1-1">
+									<assign name="unike_play1" expr="0" />
+									<script> unike_play=unike_play+1;</script>
+									<assign name="cat" expr="array[unike_play]"/>
+									<assign name="playconfig" expr="array[unike_play]"/>
+									<assign name="move_counter" expr="1"/>
+									<goto next="#StartToPlaysongs"/>
+								<elseif cond="unike_play1 &lt; 0" />
+									<assign name="unike_play1" expr="len1-1" />
+									<script> unike_play=unike_play+1;</script>
+									<assign name="cat" expr="array[unike_play]"/>
+									<assign name="playconfig" expr="array[unike_play]"/>
+									<assign name="move_counter" expr="1"/>
+									<goto next="#StartToPlaysongs"/>
+								</if>
+						 <if cond="LASTHEARD_FLAG=='1'">
+						 	<assign name="unike_play" expr="MVE_counter" />
+							<assign name="unike_play1" expr="MVE_counter_part" />
+						 </if>
+						
+								<script>
+									
+									songcheck=array2[unike_play1].split("_");
+									contentdir=songcheck[0]; 
+									song = array2[unike_play1];
+								</script>
+					
+							 <assign name="song_begin" expr="starttime()"/>
+							 <assign name="song_listen" expr="'START'" />
+							<assign name="CALCULATE_TIME" expr="'SET'" />
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_LHD_MOVIE&amp;INTOKEN=6&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play+'&amp;INPARAM[2]='+playconfig+'&amp;INPARAM[3]='+song+'&amp;INPARAM[4]='+unike_play1+'&amp;INPARAM[5]=SET'"/>
+				<script>
+					moviescounter=moviescounter+1;
+				</script>
+					<assign name="Usage_time" expr="rim(section_begin)"/>
+					<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+					 <assign name="Section_Name" expr="'Movie_'+moviescounter+'_play'"/>
+					 <assign name="section_begin" expr="starttime()"/>
+		
+		      </block>
+				   <field name="selectoption">
+		
+						    <grammar mode="dtmf" root="start28" version="1.0">
+					   		<rule id="start28" scope="public">
+					   		  <one-of>
+								
+								<item>5</item>
+								<item>7</item>
+								<item>8</item>
+							</one-of>
+					   		</rule>
+				       		    </grammar>
+					
+				      <prompt bargein="true"  timeout="1s">
+					    <audio expr="'http://192.168.100.212:6666/hungama/106/'+song+'.wav'"/> 
+		  	   	      </prompt> 			 
+				  
+				      <filled>
+				      <assign name="LASTHEARD_FLAG" expr="'0'"/>
+						<if cond="timerflag=='1'">
+								<script> 
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								<log expr="'@@@@@@ left balance is '+balance"/>
+								<if cond="balance &lt;= '0'">          
+									   <goto next="Topup.vxml"/>
+								  </if>     
+						</if>
+							<assign name="song_listen" expr="'END'" />
+							<assign name="compare_time" expr="rim(song_begin)"/>
+							<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+							<assign name="contentlog" expr="contentlog+hash+'106_'+song+hash+cat+hash+subcat+hash+compare_time"></assign>
+ 						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MOSTHEARD_CONTENT&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]=movie&amp;INPARAM[1]='+compare_time"/>
+					 				 						 
+							 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_MOVIE_SAVE&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]='+song+'&amp;INPARAM[3]='+compare_time"/>
+				         	 <!--<if cond="selectoption=='1'">
+							<script> unike_play=unike_play+1;</script>
+							<assign name="cat" expr="array[unike_play]"/>
+							<assign name="playconfig" expr="array[unike_play]"/>
+								<goto next="#StartToPlaysongs"/>
+						 <elseif cond="selectoption=='2'"/>
+							<script> unike_play=unike_play;</script>
+							<assign name="cat" expr="array[unike_play]"/>
+							<assign name="playconfig" expr="array[unike_play]"/>
+							<goto next="#StartToPlaysongs"/>				 
+						 
+						 <elseif cond="selectoption=='3'"/>	
+							<script> unike_play=unike_play-1;</script>
+							<assign name="cat" expr="array[unike_play]"/>
+							<assign name="playconfig" expr="array[unike_play]"/>
+							<goto next="#StartToPlaysongs"/>
+						<elseif cond="selectoption=='6'"/>
+						  		<goto next="#playoption"/>-->
+							
+						<if cond="selectoption=='5'">
+							
+							<script> unike_play1=unike_play1+1;</script>
+							<goto next="#StartToPlaysongs1"/>
+						<elseif cond="selectoption=='7'"/>
+							<goto next="#Movies_Menu"/>
+						<elseif cond="selectoption=='8'"/>
+							<assign name="CALCULATE_TIME" expr="'RESET'" />
+							<goto next="Hungama_GLC_RootMenu.vxml"/>
+						<else/>
+							<script> unike_play1=unike_play1+1</script>		
+							<goto next="#StartToPlaysongs1"/> 		
+						</if>				 
+					  </filled>				  
+				
+				     
+					   <noinput>
+					   <assign name="LASTHEARD_FLAG" expr="'0'"/>
+					        <script> 
+					      		unike_play1=unike_play1+1;
+					      	</script> 		
+					  	<if cond="timerflag=='1'">
+								   <script>
+							     total_used_bal=rim(start_BalenceMinute);
+							     balance=balance-total_used_bal;  						  
+							   </script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+									     <if cond="balance &lt;= '0'">          
+									           <goto next="Topup.vxml"/>
+							          </if>     
+							 </if>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+'106_'+song+hash+cat+hash+subcat+hash+compare_time"></assign>	
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_MOVIE_SAVE&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]='+song+'&amp;INPARAM[3]='+compare_time"/>
+ 						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MOSTHEARD_CONTENT&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]=movie&amp;INPARAM[1]='+compare_time"/>
+					  	<goto next="#StartToPlaysongs1"/>	
+		              </noinput>
+		
+			       <nomatch>
+			       <assign name="LASTHEARD_FLAG" expr="'0'"/>
+						<script> 
+							unike_play1=unike_play1+1;
+						</script> 
+							<if cond="timerflag=='1'">
+								   <script>
+							    total_used_bal=rim(start_BalenceMinute);
+							     balance=balance-total_used_bal;  						  
+							   </script>
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+									     <if cond="balance &lt;= '0'">          
+									           <goto next="Topup.vxml"/>
+							          </if>     
+							 </if>
+						<assign name="song_listen" expr="'END'" />
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+						<assign name="contentlog" expr="contentlog+hash+'106_'+song+hash+cat+hash+subcat+hash+compare_time"></assign>	
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_MOVIE_SAVE&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]='+song+'&amp;INPARAM[3]='+compare_time"/>
+ 						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MOSTHEARD_CONTENT&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]=movie&amp;INPARAM[1]='+compare_time"/>
+						<goto next="#StartToPlaysongs1"/>	
+				</nomatch>
+				
+				<catch event="error.badfetch">
+					
+						<if cond="selectoption=='3'">
+							<script>unike_play=unike_play-1;</script> 				 				 	
+					                <goto next="#StartToPlaysongs"/> 
+						<else/>
+							<script>unike_play=unike_play+1;</script> 				 				 	
+					                <goto next="#StartToPlaysongs"/> 
+						</if>
+				</catch>
+				
+			 </field>
+			  	
+			</form>	
+			
+			<form id="playoption">
+		     		<block>
+				<assign name="Usage_time" expr="rim(section_begin)"/>
+				<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+		     		<assign name="Section_Name" expr="'Keypad_movie'"/>
+		     		<assign name="section_begin" expr="starttime()"/>
+					<script>
+							<![CDATA[
+							if(timerflag==1)
+								start_BalenceMinute=starttime();
+							]]>	 	
+						</script>
+		
+				</block>
+			         
+			        <field name="playclipOptionInfo">
+					<grammar mode="dtmf" root="start29" version="1.0">
+		               	<rule id="start29" scope="public">
+		                  <one-of>				 
+							  <item>1</item>
+							  <item>2</item>	
+							  <item>3</item>
+							  <item>5</item>
+							  <item>7</item>
+							  <item>8</item>
+					  	 </one-of>
+		              	</rule>
+		            </grammar>
+					
+						<prompt bargein="true">
+					     <audio expr="promptpath+'/'+lang+'/cin_browsingoption.wav'"/>
+			   	        </prompt>
+				   	
+				<filled>
+						<if cond="timerflag=='1'">
+								<script> 
+									total_used_bal=rim(start_BalenceMinute);
+									balance=balance-total_used_bal;  						  
+								</script>
+								<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								<log expr="'@@@@@@ left balance is '+balance"/>
+								<if cond="balance &lt;= '0'">          
+									   <goto next="Topup.vxml"/>
+								  </if>     
+						</if>
+					<if cond="playclipOptionInfo=='1'">
+						 <script> unike_play=unike_play+1</script> 
+					     	<goto next="#StartToPlaysongs"/> 
+					<elseif cond="playclipOptionInfo=='2'"/>
+					      <script> unike_play=unike_play</script>
+					      <goto next="#StartToPlaysongs"/> 
+					<elseif cond="playclipOptionInfo=='3'"/>
+					 	  <script> unike_play=unike_play-1</script>
+					  	  <goto next="#StartToPlaysongs"/> 
+					<elseif cond="playclipOptionInfo=='5'"/>
+					 	 <script> unike_play1=unike_play1+1</script>
+					 	   <goto next="#StartToPlaysongs1"/> 
+					<elseif cond="playclipOptionInfo=='8'"/>
+						<goto next="Hungama_GLC_RootMenu.vxml"/>
+					<elseif cond="playclipOptionInfo=='7'"/>
+						   <goto next="#Movies_Menu"/>
+					  </if>
+					    
+				</filled>		
+				<noinput>
+					<goto next="#StartToPlaysongs1"/> 	
+				</noinput>
+		
+				  <nomatch>
+					<goto next="#StartToPlaysongs1"/> 	
+				</nomatch>
+		
+		     </field>	
+			  	 
+		</form>
+		
+</vxml>

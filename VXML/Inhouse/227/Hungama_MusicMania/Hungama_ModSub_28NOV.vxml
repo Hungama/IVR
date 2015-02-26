@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ModRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModSub.vxml" content=""/>
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+	<var name="lang_dc" expr="0" />		
+	<var name="charging_flag" expr="0" />		
+	<!--<var name="amt" expr="0" />
+	<var name="service_id" expr="1201"/>
+	<var name="plan_id" expr="0"/>-->
+	
+	<script>
+		var out_string=new Object();
+		var var_wel=0;
+		charging_flag=0;
+	</script>
+
+	<form id="WelcomeIntroRandom">
+		<block>
+			<assign name="Section_Name" expr="'NEWUSER'"/>		
+			<goto next="#SubOption"></goto>
+		</block>
+	</form>
+	<form id="SubOption">
+		<block>
+			<if cond="DNIS=='5432199'">
+				<assign name="amt" expr="'10'"/>
+				<assign name="plan_id" expr="'238'"/>
+				<assign name="service_id" expr="'1201'"/>
+				
+			<elseif cond="DNIS=='54321999'"/>	
+				<assign name="amt" expr="'20'"/>
+				<assign name="plan_id" expr="'237'"/>
+				<assign name="service_id" expr="'1201'"/>
+			<else/>	
+				<assign name="amt" expr="'30'"/>
+				<assign name="plan_id" expr="'234'"/>
+				<assign name="service_id" expr="'1201'"/>
+			</if>	
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						<item>  1  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='5432199'">
+				<audio expr="Prompt_Path+'/01/Rs10.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='54321999'">
+				<audio expr="Prompt_Path+'/01/Rs20.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS!='5432199' &amp;&amp; DNIS!='54321999'">
+				<audio expr="Prompt_Path+'/'+lang+'/sub_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<assign name="firstconsent" expr="'Y'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="consent_flag" expr="'true'"/>
+					<goto next="#SubRequest"></goto>			
+				</if>
+			</filled>
+			
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>
+				
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<goto next="#NotToSubs"/>
+			</noinput>
+			
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<goto next="#NotToSubs"/>
+			</nomatch>			
+		</field>
+	</form>
+	
+	<form id="NotToSubs">
+		<block>
+			<prompt bargein="false" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/thanks_unsub.wav'"/>
+			</prompt>
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</block>
+	</form>	
+	<form id="SubRequest">
+		<block>			
+			<!-- SUB REQUEST -->			
+	       		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_sub&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+			<prompt bargein="false" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/charging_wait.wav'"/>
+			</prompt>
+			<if cond="DNIS=='5432199' || DNIS=='54321999'">
+				<goto next="#BillStatusChk"/>
+			<else/>	
+				<goto next="#BillStatusChkNormal"/>
+			</if>
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script>charging_flag=charging_flag+1;</script>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_query&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+						       	if(j==3)
+						       	modesub = out_string[j];
+						  }
+					]]>			
+			</script>
+		</block>	
+		<field name="billingcheck"> 	
+				<grammar mode="dtmf" root="start" version="1.0">
+				       <rule id="start" scope="public">
+						 <one-of>				 
+							 <item>1</item>
+						 </one-of>
+				      </rule>
+			          </grammar>
+				<prompt bargein="false" cond="usr_status != '1'">
+					<audio expr="Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+			   	</prompt>
+			   	
+				<prompt bargein="true" cond="usr_status == '1'">
+					<audio expr="Prompt_Path+'/'+lang+'/thank_sub.wav'"/>
+				</prompt>
+				<filled>
+					<if cond="usr_status=='1'">						
+						<script>
+							balance=bal*60;
+							bal=bal*60;
+							timerflag=1;
+						</script>
+						<script>
+							<![CDATA[
+								if(timerflag==1)
+								start_BalenceMinute=starttime();
+							]]>								   
+					       </script>
+						<log expr="'ballance at the time of call start '+balance"/>
+						<goto next="Hungama_ModMainMenu.vxml"/>
+					<else/>
+						<if cond="charging_flag &lt; 3">
+							<goto next="#BillStatusChk"/>
+						<else/>
+							<prompt bargein="false" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+						   	</prompt>
+							<goto next="Hungama_ModEnd.vxml"></goto>
+						</if>
+						
+					</if>		
+				</filled>	
+				<noinput>
+					<if cond="usr_status=='1'">						
+						<script>
+							balance=bal*60;
+							bal=bal*60;
+							timerflag=1;
+						</script>
+						<script>
+							<![CDATA[
+								if(timerflag==1)
+								start_BalenceMinute=starttime();
+							]]>								   
+					       </script>
+						<log expr="'ballance at the time of call start '+balance"/>
+						<goto next="Hungama_ModMainMenu.vxml"/>
+					<else/>
+						<if cond="charging_flag &lt; 3">
+							<goto next="#BillStatusChk"/>
+						<else/>
+							<prompt bargein="false" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+						   	</prompt>
+							<goto next="Hungama_ModEnd.vxml"></goto>
+						</if>
+						
+					</if>				
+				</noinput>
+				<nomatch>
+					<if cond="usr_status=='1'">						
+						<script>
+							balance=bal*60;
+							bal=bal*60;
+							timerflag=1;
+						</script>
+						<script>
+							<![CDATA[
+								if(timerflag==1)
+								start_BalenceMinute=starttime();
+							]]>								   
+					       </script>
+						<log expr="'ballance at the time of call start '+balance"/>
+						<goto next="Hungama_ModMainMenu.vxml"/>
+					<else/>
+						<if cond="charging_flag &lt; 3">
+							<goto next="#BillStatusChk"/>
+						<else/>
+							<prompt bargein="false" timeout="0s">
+								<audio expr="Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+						   	</prompt>
+							<goto next="Hungama_ModEnd.vxml"></goto>
+						</if>
+						
+					</if>				
+				</nomatch>
+		</field>		
+	</form>
+	<form id="BillStatusChkNormal">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_query&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+						       	if(j==3)
+						       	modesub = out_string[j];
+						  }
+					]]>			
+			</script>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>	
+				<goto next="Hungama_ModEnd.vxml"></goto>
+				
+			<elseif cond="usr_status=='1'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/thank_sub.wav'"/>
+				</prompt>				
+				<script>
+					balance=bal*60;
+					bal=bal*60;
+					timerflag=1;
+				</script>
+				<script>
+					<![CDATA[
+				       		if(timerflag==1)
+				 		start_BalenceMinute=starttime();
+				   	]]>								   
+			       </script>
+				<log expr="'ballance at the time of call start '+balance"/>
+				<goto next="Hungama_ModMainMenu.vxml"/>
+			<else/>
+				<prompt bargein="true" timeout="3s">
+					<audio expr="Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_ModEnd.vxml"></goto>
+			</if>
+		</block>
+	</form>	
+</vxml>

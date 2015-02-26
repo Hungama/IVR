@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_RedFMHELP.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+    <var name="Main_Page" expr="''"/>
+    <var name="Time_Left" expr=""></var>
+   	<var name="FilePlay" expr="'minutes-expired-'"/>
+  <var name="names" expr="''"/>
+	<var name="movie_idx" expr="0"/>
+	<var name="NM_count" expr="1"/>
+	<var name="NI_count" expr="1"/>
+	<var name="j" expr="0"/>
+
+		<script>
+		aNavHistory.push("Hungama_RedFMHELP.vxml");
+	    var favSongs=new Object();
+	    var Lang_Array = new Array();
+	    var curbalance = new Object();
+	    var min_balance = new Object();
+	    var out_string = new Object();
+	</script>
+	<form id="Help">
+		<block>
+			<assign name="drop_point" expr="'Help_Menu'" />
+			<script>
+		    	total_used_bal=chkBalenceMinute(start_BalenceMinute);
+             	curbalance=balance-total_used_bal;  						  
+		    </script>
+		   	<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+		   	<log expr="'@@@@@@ left balance is '+balance"/>
+            <if cond="curbalance &lt;= '0'">          
+                 <if cond="operator=='unim' &amp;&amp; circle=='upe' &amp;&amp; modeofsub=='TOBD' &amp;&amp; lang=='01'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>		    				    		
+					 <goto next="End.vxml"/>
+				<else/>
+					<if cond="usr_status==2 &amp;&amp; (modeofsub=='TIVR' || modeofsub=='TOBD' || modeofsub=='TUSSD')  &amp;&amp; (operator=='tatm' || operator=='virm')">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=TIVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=10&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+						<goto next="Hungama_RedFMEnd.vxml"/>
+					<elseif cond="modeofsub=='TIVR5'"/>
+					<goto next="Hungama_RedFMNewuser.vxml"/>
+
+					</if>
+				 <goto next="Hungama_RedFMTopUpFinish.vxml"/>
+				</if> 
+            </if>
+			<prompt bargein="true" timeout="0s">	            
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_acmanager.wav'"/>
+	     	</prompt>
+	     	<goto next="#Menu"></goto>
+		</block>
+	</form>
+
+	<form id="Menu">
+		<field name = "option" > 
+			<grammar mode="dtmf" root="only12348" version="1.0">
+					<rule id="only12348" scope="public">
+						<one-of>
+							<item>  1  </item>
+						    <item>  2  </item>
+						   	<item>  3  </item>
+						    <item>  4  </item>
+						    <item>  8  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			
+			<prompt bargein="true" timeout="3s">	            
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/acmanager_option.wav'"/>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/return_option.wav'"/>
+				 <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf8.wav'" />	
+	     	</prompt>
+
+			<filled> 
+
+				<if cond="option=='1'">
+					<goto next="#BalMin"/>
+					
+				<elseif cond="option=='2'" />
+					<goto next="Hungama_RedFMselectlang.vxml"/>
+
+				<elseif cond="option=='3'" />
+					<goto next="#BalMin_TopUp"/>
+					
+				<elseif cond="option=='4'" />	
+		            <goto next="#UNSUB"/>
+		            
+		        <elseif cond="option=='8'" />	
+		            <goto next="Hungama_RedFMexisting.vxml#list"/>
+		            
+		        <elseif cond="option=='9'" />	
+		            <goto next="#Help"/>
+		        </if>		        
+			</filled> 
+
+			<noinput count="1">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="3">
+				<goto next="Hungama_RedFMexisting.vxml#list"/>
+			</noinput>   
+
+			<nomatch count="1">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>					
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="Hungama_RedFMexisting.vxml#list"/>
+			</nomatch> 
+		</field> 
+	</form>
+	
+ 
+ 	<form id="BalMin_TopUp">
+ 	<block>
+			<assign name="drop_point" expr="'Topup'" />
+ 			<script>
+			  	total_used_bal=chkBalenceMinute(start_BalenceMinute);
+			  	balance=balance-total_used_bal;  						  
+		 	</script>
+ 			<script>
+ 			 min_balance=Math.floor(balance/60); 
+ 			</script>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+min_balance+'&amp;INPARAM[2]='+DNIS"/>                 	           		  						
+ 			<assign name="timerflag" expr="'0'"/>
+ 	</block>
+ 		<field name="opt">	
+ 			<grammar mode="dtmf" root="only1238" version="1.0">
+		     <rule id="only1238" scope="public">
+			   <one-of>
+				<item>1</item>
+				<item>2</item>
+				<item>3</item>
+				<item>8</item>				
+			   </one-of>
+		    </rule>
+	      </grammar>    		
+		    <prompt bargein="true" timeout="3s">
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/topup1.wav'" />
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf1.wav'" />
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/topup2.wav'" />
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf2.wav'" />
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/topup3.wav'" />
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf3.wav'" />
+		    </prompt>
+		    <filled>
+		    	<if cond="opt=='1'">				     
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/> 					
+					<goto next="#top_up_check"/>
+				<elseif cond="opt=='2'"/>				    
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/> 
+					<goto next="#top_up_check"/>
+				<elseif cond="opt=='3'"/>				     
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/> 
+					<goto next="#top_up_check"/>
+		    	<elseif cond="opt == '8'"/>		    	
+		    		<goto next="Hungama_RedFMexisting.vxml#list"/>		    	
+		    	</if>
+		    </filled>
+ 			<noinput count="1">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="3">
+				<goto next="#Menu" />
+			</noinput>   
+
+			<nomatch count="1">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>					
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>					
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="#Menu" />
+			</nomatch> 
+ 		</field>
+ 	</form>
+ 	
+ 	<form id="top_up_check">
+ 	<field name="opt_top">	
+ 			<grammar mode="dtmf" root="only1to38" version="1.0">
+		     <rule id="only1to38" scope="public">
+			   <one-of>
+				<item>1</item>
+				<item>2</item>
+				<item>3</item>
+				<item>8</item>				
+			   </one-of>
+		    </rule>
+	      </grammar>    		
+		    <prompt bargein="true" timeout="3s">
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/charging_wait.wav'"/>
+		    </prompt>
+		    <filled>
+				<throw event="noinput"/>
+		    </filled>
+			<noinput>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];						      							       							      
+						  }
+
+					]]>
+			balance=balance*60;
+			</script>
+			<if cond="balance &gt; min_balance">
+			<assign name="timerflag" expr="'1'"/>
+			<goto next="Hungama_RedFMexisting.vxml#list"/>
+			<else/>
+				<reprompt/>
+			</if>
+			</noinput>
+
+			<noinput count="3">
+				<goto next="#Menu" />
+			</noinput>   
+
+			<nomatch>
+				<reprompt/>
+			</nomatch>
+			
+			<nomatch count="3">
+				<goto next="#Menu" />
+			</nomatch> 
+ 		</field> 	
+ 	</form>
+ 	
+ 	<form id="BalMin">
+ 		<block>
+			<assign name="drop_point" expr="'Balance_Minites'" />
+ 		<script> 
+			var ac_balance=Math.floor(curbalance/60); 
+			var totalbalminute=ac_balance;	
+			var temp_totalbalminute=Math.floor(totalbalminute/100);
+			var temp1_totalbalminute=totalbalminute-temp_totalbalminute*100;
+
+		</script>
+			<if cond="totalbalminute &gt; 100">
+				<prompt bargein="true" timeout="0s">
+	        	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/acmanager_balanceis.wav'"></audio>
+	        	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/g_'+temp_totalbalminute+'.wav'"/>
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/g_100.wav'"/>
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/g_'+temp1_totalbalminute+'.wav'"/>
+	        	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/minutes.wav'"></audio>
+	     		</prompt>
+			<else/>
+			<prompt bargein="true" timeout="0s">
+	        	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/acmanager_balanceis.wav'"></audio>
+	        	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/g_'+ac_balance+'.wav'"></audio>
+	        	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/minutes.wav'"></audio>
+	     		</prompt>
+			</if>
+
+
+
+		 
+
+	     	<goto next="#Menu"/>
+		</block>  		
+ 	</form>
+ 	
+ 	<form id="UNSUB">
+ 		<block>
+ 			
+ 		</block>
+ 		<field name="opt">	
+ 			<grammar mode="dtmf" root="only128" version="1.0">
+		     <rule id="only128" scope="public">
+			   <one-of>
+				<item>1</item>
+				<item>2</item>
+				<item>8</item>				
+			   </one-of>
+		    </rule>
+	      </grammar>    		
+		    <prompt bargein="true" timeout="3s">
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/acmanager_unsub_confirm.wav'" />
+				   <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/return_option.wav'" />
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf8.wav'" />				  
+		    </prompt>
+		    <filled>
+		    	<if cond="opt == '1'"> 
+		    		<goto next="Hungama_RedFMexisting.vxml#list"/>	
+		    	<elseif cond="opt == '2'"/>
+		    		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>		    				    		
+					<prompt bargein="true" timeout="0s">
+						  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/thanks_unsub.wav'" />				  
+				    </prompt>	
+				    <goto next="Hungama_RedFMEnd.vxml"/>
+		    	<elseif cond="opt == '8'"/>		    	
+		    		<goto next="Hungama_RedFMexisting.vxml#list"/>		    	
+		    	</if>
+		    </filled>
+ 			<noinput count="1">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="3">
+				<goto next="#Menu" />
+			</noinput>   
+
+			<nomatch count="1">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>					
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>					
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="#Menu" />
+			</nomatch> 
+ 		</field>
+ 	</form>
+ 
+</vxml>

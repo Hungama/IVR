@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<meta name="Hungama_ModNewYear.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+
+<var name="movie_idx" expr="0"/>
+<var name="catlang" expr="0"/>
+<var name="specialzonedate" expr="0"/>
+<var name="vlu" expr="0"/>
+
+<script>
+	var favSongs=new Object();
+	var out_string=new Object();
+	var spzone=new Object();
+</script>	
+	<form id="MAINMENU">
+		<block>	
+			<assign name="movie_idx" expr="0" />
+			<assign name="Section_Name" expr="'MAIN_MENU'"/>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Prompt_Path+'/'+lang+'/welcome_cat_newyr.wav'"/>
+			</prompt>
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>								
+						 <item>  2  </item>
+						 <item>  8  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="Prompt_Path+'/'+lang+'/root_newyr.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice =='1'">
+					<assign name="cat" expr="'BEST2014'"/>
+					<assign name="playconfig" expr="cat"></assign>
+					<assign name="subcat" expr="cat"></assign>	
+					<log expr="'selected cat is '+cat"></log>
+					<goto next="#FETCHSONGS"/>
+
+				<elseif cond="choice =='2'"/>	
+					<assign name="cat" expr="'PARTYSONG'"/>
+					<assign name="playconfig" expr="cat"></assign>
+					<assign name="subcat" expr="cat"></assign>	
+					<log expr="'selected cat is '+cat"></log>
+					<goto next="#FETCHSONGS"/>
+
+				<elseif cond="choice =='8'"/>					
+					<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+				</if>
+			</filled>				
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+
+		<noinput count="3">
+			<assign name="cat" expr="'BEST2014'"/>
+			<assign name="playconfig" expr="cat"></assign>
+			<goto next="#FETCHSONGS"/>
+		</noinput>
+
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<assign name="cat" expr="'BEST2014'"/>
+			<assign name="playconfig" expr="cat"></assign>
+			<goto next="#FETCHSONGS"/>
+		</nomatch>
+	</form>
+	<form id="FETCHSONGS">
+		<block>
+			<assign name="Section_Name" expr="'FETCHSONGS'"/>													
+			<log> fetching songs </log>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=RelMusicMania/'+operator+'/songconfig/'+playconfig+'.cfg'"/>
+			<script>
+				array1.length=0;
+				unike_play=0;
+			</script>
+
+			<assign name="HEARD" expr="playconfig" />
+
+			<assign name="len" expr="favSongs.length" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<if cond="len &lt; 0 || len == 0 || len =='undefined'">
+				<log expr="'@config unavailble or empty configgggggggg isssssssssssssssssss '+len"/>
+				<goto next="Hungama_ModEnd.vxml"></goto>
+			</if>
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  
+								array1[j] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>					
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  8  </item>
+						 <item>  9  </item>									
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s" cond="playconfig=='00'">
+				<audio expr="Prompt_Path+'/spzone/'+lang+'/welcome_cat'+sp_zone+'.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='8'">
+					<goto next="#MAINMENU"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="Hungama_ModMngAccnt.vxml"/>	
+				<else/>
+					<goto next="Hungama_ModPlay.vxml#next"/>
+				</if>
+			</filled>
+			<noinput>
+				<goto next="Hungama_ModPlay.vxml#next"/>
+			</noinput>
+			<nomatch>
+				<goto next="Hungama_ModPlay.vxml#next"/>
+			</nomatch>
+		</field>
+	</form>
+</vxml>

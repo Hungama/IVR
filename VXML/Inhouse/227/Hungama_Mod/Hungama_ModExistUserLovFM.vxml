@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModExistUserLovFM.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	<var name="specialzonedate" expr="0"/>
+	<var name="ContestPrompt" expr="'0'"/> 
+	<script>
+		function GetDate()
+		{
+		var currentDT = new Date();
+		var day = currentDT.getDate();
+		var month = currentDT.getMonth() + 1;
+	 	var year = currentDT.getFullYear();
+		var hours = currentDT.getHours();
+	  	var minutes = currentDT.getMinutes();
+	  	var seconds = currentDT.getSeconds();
+	
+		if (month.length == 1) {month = "0" + month; }
+		if (day.length == 1) {day = "0" + day; }
+		
+		var strDateTime =  year + "-" + month + "-" + day;
+		return strDateTime;
+		}
+
+		function GetCurrentHour()
+		{
+			var currentDT = new Date();
+			var hours = currentDT.getHours();
+			return hours;
+		}
+	</script>	
+
+	<form>
+		<block>
+			<assign name = "specialzonedate" expr = "GetDate()" />
+			<assign name="program_name" expr="'Hungama_ModExistUser'"/>
+		<if cond="ANI=='8376903442'">
+			<assign name="circle" expr="'kar'"/>
+			<assign name="lang" expr="'02'"/>
+		</if>			
+
+	         	<if cond="directaccess=='MM'">
+                        <goto next="Hungama_MM_MENU.vxml"></goto>
+	         	</if>
+		
+
+		
+
+<!--
+		<if cond="circle!='mpd' &amp;&amp; circle!='bih' &amp;&amp; (realDNIS=='59090' || realDNIS=='590906' || realDNIS=='590907' || realDNIS=='59090123' || realDNIS=='01159090' || realDNIS=='011590906' || realDNIS=='011590907' || realDNIS=='01159090123' )">
+				<assign name="directaccess" expr="'SangamContest'"></assign>
+			<if cond="(circle=='mum' || circle=='mah' || circle=='guj' || circle=='bih' ||circle=='mpd' ||circle=='upe' ||circle=='upw' ||circle=='pub' || circle=='hay' ||circle=='hpd' ||circle=='kol'||circle=='kar'||circle=='wbl')">
+				<assign name="lang" expr="'01'"></assign>
+				<assign name="ContestPrompt" expr="'yes'"></assign>
+			<else/>
+				<assign name="ContestPrompt" expr="'no'"></assign>
+			</if>
+		</if>
+-->
+		<log>Direct Access:<value expr="directaccess"/></log>
+		<log>circle:<value expr="circle"/></log>
+		<log>DNIS:<value expr="DNIS"/></log>
+
+
+			<!-- Endless Contest -->
+			<!--<if cond="ANI=='9999130777' || ANI=='8527000779' || ANI=='9654415676'">			-->
+				<if cond="DNIS=='59090' || DNIS=='590907' || DNIS=='590906'">
+					<if cond="circle=='kol' || circle=='wbl' || circle=='ori'">
+						<if cond="lang=='06' || lang=='04' || lang=='12' || lang=='05' || lang=='15' || lang=='01' || lang=='11' || lang=='13' || lang=='03' || lang=='18'">
+							<!--<assign name="Contest_mod" expr="'true'"/>-->
+							<assign name="Contest_mod" expr="'false'"/>
+
+						<else/>	
+							<assign name="Contest_mod" expr="'false'"/>
+						</if>
+					</if>	
+				</if>		
+				
+			<!--</if>-->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=GET'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	HEARD = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+
+		<log>Chk Last User Cat</log>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_lastusercat&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	LastUserCat= out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			<log>LastUserCat is:<value expr="LastUserCat"/></log>
+			<!--<if cond="ANI=='8376903442' || ANI=='9999195002'">-->
+
+			<if cond="LastUserCat=='AUDIOCINEMA1'">
+				<assign name="directaccess" expr="'AUDIOCINEMA'"></assign>	
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cin_welcome_old_14.wav'"/>
+
+				<goto next="Hungama_ModMainMenu.vxml"/>
+			</if>
+			<if cond="directaccess=='DEVO'">
+				<prompt bargein="true" timeout="0s" cond="circle!='hay'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/welcome_oldmm_'+play_day+'.wav'"/>
+				</prompt>
+
+				 <assign name="playconfig" expr="play_day"></assign>				
+				<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS_MM"></goto>	
+			</if>	
+			
+			<if cond="directaccess=='DEVOHAY'">
+				<prompt bargein="false" timeout="0s" cond="circle=='hay'">			
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_new_03devo.wav'"/>
+				</prompt>
+				<goto next="Hungama_MODDevoMenu.vxml"/>
+
+			</if>
+	
+			<assign name="var_wel" expr="getRandom(1,50)" />			
+			<log expr="'HEARD @@@@@@@@@%%%%55 '+HEARD"></log>	
+			<!--<if cond="circle=='tnu' || circle=='chn'">
+				<prompt bargein="true" timeout="0s" cond="operator!='virm'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_old_'+var_wel+'.wav'"/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/select_crbt.wav'"/>				
+				</prompt>
+				<prompt bargein="true" timeout="0s" cond="operator=='virm'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_old_virm_'+var_wel+'.wav'"/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/select_crbt.wav'"/>				
+				</prompt>
+				<assign name="songID" expr="'88061468'"/>
+				<assign name="directaccess" expr="'kolaveridi'"></assign>    		    	   		    	
+				<goto next="#kolaveridi"></goto>		
+			</if>-->				
+		</block>
+		<field name="choice">
+
+
+		<noinput>
+			 <if cond="directaccess=='FKS'">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			 </if>
+         		<if cond="directaccess=='MM'">
+				<log>Multimodal</log>
+				 <goto next="Hungama_MM_MENU.vxml"></goto>
+			</if>
+
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD.substring(0,2);
+					subcat = HEARD.substring(2,4);
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>	
+		</noinput>
+		<nomatch>
+			<if cond="directaccess=='BAISHAKH' || directaccess=='SMM' || directaccess=='FKS' || directaccess=='FDAY' || directaccess=='KJS'">
+				 <goto next="Hungama_ModMainMenu.vxml"></goto>
+			</if>
+  	         	<if cond="directaccess=='MM'">
+                        <goto next="Hungama_MM_MENU.vxml"></goto>
+	         	</if>
+
+		
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD.substring(0,2);
+					subcat = HEARD.substring(2,4);
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>
+		</nomatch>
+
+
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="0s" cond="operator!='virm' &amp;&amp; directaccess!='BAISHAKH' &amp;&amp; DNIS!='5909013' &amp;&amp; directaccess!='SangamContest' &amp;&amp; circle!='kar'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/wel_old_'+specialzonedate+'.wav'"/>
+			</prompt>			
+			
+			<prompt bargein="true" timeout="0s" cond="circle=='kar' &amp;&amp; (lang=='02' || lang=='10')">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_kk_spl.wav'"/>                      	
+			</prompt>					
+			<filled>
+			<if cond="directaccess=='BAISHAKH' || directaccess=='SMM' || directaccess=='FKS' || directaccess=='FDAY' || directaccess=='KJS'">
+		        	<goto next="Hungama_ModMainMenu.vxml"></goto>
+	         	</if>
+	         	<if cond="directaccess=='MM'">
+                        <goto next="Hungama_MM_MENU.vxml"></goto>
+	         	</if>
+
+
+				<if cond="HEARD=='0' || HEARD=='00'">
+					<goto next="Hungama_ModMainMenu.vxml"></goto>
+				<else/>
+					<script>
+						length = HEARD.length;
+						cat = HEARD.substring(0,2);
+						subcat = HEARD.substring(2,4);
+					</script>
+					<assign name="playconfig" expr="HEARD"></assign>					
+					<goto next="#LASTHEARD"></goto>												
+				</if>									
+			</filled>
+		</field>
+		
+	</form>
+	
+<form id="kolaveridi">
+		<field name="choice">
+
+
+		<noinput>
+			<assign name="directaccess" expr="''"></assign>    		    	   		    	
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD.substring(0,2);
+					subcat = HEARD.substring(2,4);
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>	
+		</noinput>
+		<nomatch>
+			<assign name="directaccess" expr="''"></assign>    		    	   		    	
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD.substring(0,2);
+
+					subcat = HEARD.substring(2,4);
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>
+		</nomatch>
+
+		    <grammar mode="dtmf" root="start1" version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>
+							 <item>  *  </item>							 
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">				
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/common/88061468.wav'"/>
+			</prompt>			
+			<filled>
+				<goto next="Hungama_ModCRBT.vxml"></goto>									
+			</filled>
+		</field>
+		
+	</form>	
+	
+	<form id="LASTHEARD">	
+		<block>
+			<assign name="program_name" expr="'Hungama_ModExistUser_LASTHEARD'"/>
+			<if cond="directaccess=='BAISHAKH' || directaccess=='SMM' || directaccess=='FKS' || directaccess=='FDAY' || directaccess=='KJS'">
+				<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS_MM"></goto>	
+			</if>
+			<if cond="directaccess=='MM'">
+				  <goto next="Hungama_MM_MENU.vxml"></goto>
+			 </if>
+		</block>
+		<field name="choice">
+
+			<noinput>
+				<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>	
+			</noinput>
+			<nomatch>
+				<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>
+			</nomatch>
+
+		    <grammar mode="dtmf" root="start2" version="1.0">
+					<rule id="start2" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			
+			<prompt bargein="true" timeout="1s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/listining_cat.wav'"/>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/cat'+HEARD+'.wav'"/>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/return_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='8'">
+					<goto next="Hungama_ModMainMenu.vxml"></goto>
+				<else/>					
+					<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>												
+				</if>									
+			</filled>
+		</field>
+		
+	</form>
+
+</vxml>

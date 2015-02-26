@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="CricketRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Refer.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	<script>		var len_no=0; 
+</script>
+
+<form id="main"><block>
+	<assign name="Usage_time" expr="time_duration(section_begin)"/>
+	<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+	<assign name="SECTION" expr="'REFER'"/>
+	<assign name="Section_Name" expr="'REFER'" />
+	<assign name="section_begin" expr="start_time()"/>
+
+
+</block>
+
+ <field name="friend_no" type="digits?length=10">  		  		          			                        <prompt bargein="true" timeout="10s">                            <audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/enter_number.wav'"/>                     </prompt>  		   		            <filled>			<script>				len_no=friend_no.length;			</script>			<log>Length  is	<value expr="len_no"/>    </log>			<log>number  is	<value expr="friend_no"/>    </log>						<if cond="len_no &lt; '10'">					<throw event="nomatch"/>						<elseif cond="len_no=='10'"/>			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_REFER&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+friend_no"/>					<prompt bargein="true" timeout="0s">						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/thanks_refer.wav'"/>					</prompt>					<goto next="MainMenu.vxml"/>			<else/>					<throw event="nomatch"/>						</if>		  </filled>		<noinput>					<prompt bargein="true" timeout="0s">						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>					</prompt>			<goto next="#main"/>		</noinput>				<nomatch>					<prompt bargein="true" timeout="0s">						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>					</prompt>			<goto next="#main"/>				</nomatch>				</field></form></vxml>

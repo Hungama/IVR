@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="SIVR_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+<form id="EndLogin">
+<block>
+	<assign name="C_End" expr="start_time()"/>
+	<if cond="song_listen=='START'">
+		<assign name="song_listen" expr="'END'" />
+		<assign name="compare_time" expr="rim(song_begin)"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+		
+		<if cond="CALCULATE_TIME=='SET'">
+			<script>
+			  total_used_bal=rim(start_BalenceMinute);
+			  balance=balance-total_used_bal;					  
+			</script>
+		</if>
+		 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+		 <log expr="'@@@@@@ left balance is '+balance"/>
+	</if>	
+	
+	<if cond="timerflag=='1'">
+		<script>balance=Math.floor(balance/60);</script> 
+		<if cond="balance &lt; 0">
+			<script> balance=0;</script> 
+		</if>
+	</if>
+<if cond="sub_flag=='true'">
+	<script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service='+service_id+'&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+CPTID+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>  
+</if>
+
+<if cond="CATEGORY=='BA'">
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=SIVR_BA&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+<elseif cond="CATEGORY=='FW'"/>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=SIVR_FW&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+<elseif cond="CATEGORY=='BM'"/>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=SIVR_BM&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+<elseif cond="CATEGORY=='FH'"/>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=SIVR_FH&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+<elseif cond="CATEGORY=='CF'"/>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=SIVR_CF&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+<else/>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=SIVR&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+</if>
+<exit/>
+
+</block>
+<catch event="error.badfetch">		 								
+ <exit/>
+</catch>      
+
+<catch event="telephone.disconnect.hangup">
+	<exit/>
+</catch>
+
+<catch event="telephone.disconnect">
+	<exit/>
+</catch>   
+
+<catch event="connection.disconnect.hangup">
+	<exit/>
+</catch>
+      
+    
+</form>
+	
+</vxml>

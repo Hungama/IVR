@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ccxml version="1.0" xmlns="http://www.w3.org/2002/09/ccxml">
+
+<script>
+
+function GetCurrentDate()
+{
+	var currentDT = new Date();
+
+	var day = currentDT.getDate();
+	var month = currentDT.getMonth() + 1;
+ 	var year = currentDT.getFullYear();
+	var hours = currentDT.getHours();
+  	var minutes = currentDT.getMinutes();
+  	var seconds = currentDT.getSeconds();
+
+	if (month.length == 1) {month = "0" + month; }
+	if (day.length == 1) {day = "0" + day; }
+	
+	var strDateTime =  year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds ;
+	return strDateTime;
+}
+
+
+
+function CheckANI(strANI)
+ {
+   return "91" + strANI.substr((strANI.length)-10,10);
+}
+
+</script>
+
+<var name="state0" expr="'init'"/>  
+<var name="callid" expr="'0'"/>
+<var name="mnumber" expr="'0'"/>
+<var name="callstart" expr="'0'"/>
+<var name="callend" expr="'0'"/>
+
+<eventprocessor statevariable="state0">
+    <transition state="init" event="connection.alerting">
+	<accept/>      
+    </transition>
+    <transition state="init" event="connection.connected" name="evt">	
+	<log expr="'Call is connected.'"/>
+	<assign name="mnumber" expr="event$.connection.remote"/>
+	<assign name="callid" expr=" mnumber + '-' + GetFileMS() "/>
+	<assign name="callstart" expr="GetCurrentDate()"/>
+      	<dialogstart src="'checkuserstatus.vxml'" parameters = "callid"/>
+      	<assign name="state0" expr="'dialogActive'" />   
+    </transition>
+    <!-- Process the incoming call -->  
+    <transition state="dialogActive" event="dialog.exit">
+      	<log expr="' Returned from '" />
+	<assign name="callend" expr="GetCurrentDate()"/>
+	<dialogstart src="'end.vxml'" parameters = "mnumber callid callstart callend" />
+      	<exit /> 
+    </transition>
+    <transition state="dialogActive" event="dialog.disconnect">
+	<assign name="callend" expr="GetCurrentDate()"/>
+	<dialogstart src="'end.vxml'" parameters = "mnumber callid callstart callend" />
+      	<exit /> 
+    </transition>
+    <transition event="connection.disconnected">	
+	<assign name="callend" expr="GetCurrentDate()"/>
+	<dialogstart src="'end.vxml'" parameters = "mnumber callid callstart callend" />
+	<exit/>
+    </transition>
+    <transition event="error.*" >
+      <log expr="'Error : (' + event$.reason + ')'"/>
+      <dialogstart src="'end.vxml'"/>		
+      <exit/>
+    </transition>
+  </eventprocessor>    
+</ccxml>

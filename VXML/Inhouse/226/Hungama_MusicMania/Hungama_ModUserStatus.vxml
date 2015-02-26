@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<meta name="Hungama_ModUserStatus.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+
+<var name="DirectSCAVAIL" expr="'false'"/> 
+<var name="crbtdnis" expr="'false'"/> 
+<var name="daccrbtflag" expr="'0'"/> 
+<var name="DirectSC" expr="'false'"/>
+<var name="guj_usr_status" expr="0"/> 
+<var name="caller_cnt" expr="0"/>
+<var name="dnislen" expr="0"/>
+	
+	<script>
+		var ciropr1 = new Object();
+		var out_string=new Object();
+		var ciropr = new Object();
+	</script>
+
+	<form id="CIRCLEID">
+		<block>
+			<assign name="Section_Name" expr="'USER_STATUS_CHECK'"/>
+			<log>Section Name isssssss  <value expr="Section_Name"/>  </log>
+			<assign name="C_Start" expr="start_time()"/>
+			<script>  
+				realDNIS=session.connection.local.uri;                   
+				ANI=session.connection.remote.uri;						   
+               		</script>
+                	<script>
+					length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				</script>                 
+                    	<script>
+		    		length = realDNIS.length;		    		
+		    	</script>
+			<assign name="DNIS" expr="realDNIS"></assign>	  	        		                                      		   
+            		<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+            		<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+        		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+				<script>
+				  <![CDATA[
+					c_test=new Date();		
+					]]>
+				 </script>
+				<script>
+      					c_test_day=c_test.getDay();
+      				</script>
+      				
+				  <log expr="'c_test_day @@@@@@@@@@@@@@@@@@@@ =' + c_test_day"/>	
+				 
+				  <if cond="c_test_day==1">
+				  	<assign name="play_day" expr="'mon'"/>
+				  
+				  <elseif cond="c_test_day==2"/>
+				  	<assign name="play_day" expr="'tue'"/>
+				  
+				  <elseif cond="c_test_day==3"/>
+				  	<assign name="play_day" expr="'wed'"/>				  	
+				  
+				  <elseif cond="c_test_day==4"/>
+				  	<assign name="play_day" expr="'thu'"/>				  	
+				  
+				  <elseif cond="c_test_day==5"/>
+				  	<assign name="play_day" expr="'fri'"/>				  	
+				  
+				  <elseif cond="c_test_day==6"/>
+				  	<assign name="play_day" expr="'sat'"/>				  	
+				  
+				  <elseif cond="c_test_day==0"/>
+				  	<assign name="play_day" expr="'sun'"/>				  	
+				  </if>      			
+				 <log expr="'play_day @@@@@@@@@@@@@@@@@@@@ =' + play_day"/>
+			<log> operator-circle identification </log>
+
+			<script srcexpr="'http://'+IP+'/hungama/radio_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+	                        	<![CDATA[
+						for(j=0; j< out_string.length;  j++)
+						   {      
+							if(j==0)
+							       circle = out_string[j];                                                                                                        
+						   }
+				  	]]>
+                     		</script>			
+			      	<log> FIRST DB FETCH circle  is   <value expr="circle"/>    </log>
+			      	<if cond="circle=='oth'">
+				    <script srcexpr="'http://192.168.100.227:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+				    <assign name="DNIS" expr="realDNIS"/>
+				    <assign name="operator" expr="'und'"/>
+				    <goto next="Hungama_ModEnd.vxml"></goto>                    
+			       	</if>
+	    			<assign name="operator" expr="'relm'"/>
+				<log>circle  is	<value expr="circle"/></log>
+				<log>operator is <value expr="operator"/>    </log>
+
+				<!--<if cond="ANI=='8376903442'">
+					<assign name="DNIS" expr="'543219252'"/>
+				</if>-->
+			<!--**********************************************************************DynamicMUltimodal******************************************************-->
+				<assign name="dnislen" expr="DNIS.length"/>
+				<log expr="'dnislen @@@@@@@@@@@@@@@@@@@  =' + dnislen"/>
+				<if cond="dnislen &gt; '6'"> 
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_mm&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+DNIS"/>
+					<script>
+					<![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+								multimodaldnis = out_string[j];
+								}
+
+						]]>
+					</script>
+					<assign name="directaccess" expr="multimodaldnis"></assign>
+					<log expr="'multimodaldnis @@@@@@@@@@@@@@@@@@@  =' + multimodaldnis"/>
+					<log expr="'directaccess @@@@@@@@@@@@@@@@@@@  =' + directaccess"/>
+				</if>
+		
+			<!--***********************************************************Pre call prompt**************************************************************************************************-->
+			<!--<if cond="circle=='chn' || circle=='tnu'">
+				<prompt>
+					<audio expr="Prompt_Path+'/07/start_07.wav'" />
+				</prompt>
+			<elseif cond="circle=='kar'"/>
+				<prompt>
+					<audio expr="Prompt_Path+'/10/start_10.wav'" />
+				</prompt>
+			<elseif cond="circle=='ker'"/>
+				<prompt>
+					<audio expr="Prompt_Path+'/09/start_09.wav'" />
+				</prompt>
+			<elseif cond="circle=='kol' || circle=='wbl'"/>
+				<prompt>
+					<audio expr="Prompt_Path+'/06/start_06.wav'" />
+				</prompt>
+			<else/>
+				<prompt>
+					<audio expr="Prompt_Path+'/01/start_01.wav'" />
+				</prompt>
+			</if>-->		
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/01/precall.wav'"/>
+			</prompt>	
+
+			<log>circle  newwww	<value expr="circle"/>    </log>
+			<goto next="#USRSTATUS"></goto>
+		</block>		
+	</form>	
+<!--***************************************************USER STATUS CHECK API BLOCK**********************************-->	
+	<form id="USRSTATUS">
+		<block>	
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_query&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+						       if(j==3)
+						       	mod_of_sub = out_string[j];						       
+						  }
+					]]>		
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<log expr="'lang @@@@@@@@@ '+lang"></log>
+			<log expr="'Balance @@@@@@@@@ '+bal"></log>
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+			<log expr="'contentlog=='+contentlog"></log>
+			
+			<if cond="lang=='null' || lang==''">
+				<assign name="lang" expr="'01'"/>
+			</if>
+			
+			<if cond="usr_status=='-1'">
+				<assign name="Section_Name" expr="'USER_STATUS_CHECK_NON_LIVE'"/>
+				<assign name="DirectSC" expr="'false'"/>
+				<goto next="Hungama_ModNewUser.vxml"></goto>
+				
+			<elseif cond="usr_status=='1'"/>
+				<assign name="Section_Name" expr="'USER_STATUS_CHECK_LIVE'"/>
+				<script>bal=bal*60;</script>
+				<log expr="'Balance @@@@@@@@@ '+bal"></log>
+					<script>					 
+						timerflag=1;
+				        </script>
+					<script>
+						<![CDATA[
+							start_BalenceMinute=starttime();
+						]]>	 	
+					</script>
+	         		<if cond="directaccess=='MM'">
+					 <goto next="Hungama_Mm_Menu.vxml"></goto>
+				</if>			
+				<goto next="Hungama_ModExistUser.vxml"></goto>					
+			<elseif cond="usr_status=='11'"/>	
+				<assign name="Section_Name" expr="'REQUEST_UNDER_PROCESS_GRACE'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/charging_wait.wav'"/>
+				</prompt>
+				<goto next="Hungama_ModEnd.vxml"></goto>
+
+			<else/>
+				<assign name="Section_Name" expr="'USER_STATUS_CHECK_NON_LIVE_RUP'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/charging_wait.wav'"/>
+				</prompt>
+				<goto next="Hungama_ModEnd.vxml"></goto>
+			</if>
+		</block>
+	</form>
+</vxml>

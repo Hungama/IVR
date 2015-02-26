@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModNew_SMSPACK.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+
+<form id="SMSPACK">
+	<block>
+			<assign name="program_name" expr="'Hungama_ModNew_SMSPACK_SUBSCRIPTION'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+				  		{  	  
+				       		if(j==0)
+				       			sms_usr_status = out_string[j];						       
+				 		}
+					]]>
+			</script>
+			<log expr="'sms_usr_status @@@@@@@@@ '+sms_usr_status"></log>
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+			<assign name="bal" expr="15000"/>
+			<if cond="sms_usr_status=='-1'">
+					<goto next="#subscription"></goto>
+			<elseif cond="sms_usr_status=='1'"/>
+					<goto next="#existing"></goto>
+			<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/charge_req_recd.wav'"/>
+					</prompt>
+					<exit/>
+			</if>	
+		</block>
+	</form>
+	<form id="subscription">
+		<block>
+			<assign name="planid" expr="'92'"/>
+			<assign name="Amt" expr="'1'"/>
+                	<assign name="serviceid" expr="'1001'"/>  			
+		</block>
+		<field name="choice">			
+			<grammar mode="dtmf" root="start10" version="1.0">
+						<rule id="start10" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+				
+			<prompt bargein="true" timeout="3s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_smspack.wav'"/>			
+			</prompt>
+						
+			<filled>
+				<if cond="choice=='1'">
+				    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SMS_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=SMS&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+				    	<goto next="#SubRequest"></goto>
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/nodtmf.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>
+
+	<form id="SubRequest">
+		<block>
+			<prompt bargein="false" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/charging_wait.wav'"/>
+			</prompt>
+			<goto next="#BillStatusChk"/>	
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						  }
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_ModEnd.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<script>bal=bal*60;</script>
+			   	<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/thanks_smspack.wav'"/>
+				</prompt>
+				<goto next="Hungama_ModEnd.vxml"/>
+			<else/>
+				<goto next="Hungama_ModEnd.vxml"/>
+			</if>
+		</block>
+	</form>
+	<form id="existing">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start11" version="1.0">
+						<rule id="start11" scope="public">
+							<one-of>
+								 <item>  9  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+				
+			<prompt bargein="true" timeout="3s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/welcome_old_smspack.wav'"/>			
+			</prompt>
+						
+			<filled>
+				<if cond="choice=='9'">
+				    	<goto next="#actmanager"></goto>
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/nodtmf.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>
+	
+	<form id="actmanager">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+				
+			<prompt bargein="true" timeout="3s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/deactivate_SMSpack.wav'"/>			
+			</prompt>
+						
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#AcntUnsubscription"></goto>
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/nodtmf.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>
+	<form id="AcntUnsubscription">
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="start2" version="1.0">
+						<rule id="start2" scope="public">
+							<one-of>
+								 <item>  *  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/acmanager_unsub_confirm.wav'"/>
+			</prompt>
+
+			<filled>	
+				<if cond="choice=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SMS_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/thanks_unsub_SMSpack.wav'"/>
+					</prompt>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				<else/>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				</if>
+			</filled>
+		</field>	
+	</form>
+</vxml>

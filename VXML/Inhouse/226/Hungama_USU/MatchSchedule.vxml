@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="CricketRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="MatchSchedule.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="songcheck" expr=""/>
+<script>
+	var favSongs=new Object();
+</script>
+
+	<form id="match_schedule">
+		<block>
+		
+			<if cond="timerflag=='1'">
+			<script> 
+				total_used_bal=rim(start_BalenceMinute);
+				balance=balance-total_used_bal;  						  
+			</script>
+			<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			<log expr="'@@@@@@ left balance is '+balance"/>
+			<if cond="balance &lt;= '0'">          
+				   <goto next="Subscription.vxml"/>
+			  </if>     
+			</if>
+
+									
+			<script>
+				<![CDATA[
+					if(timerflag==1)
+					start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+
+		<assign name="Usage_time" expr="time_duration(section_begin)"/>
+		<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+		<assign name="SECTION" expr="'MATCHSCHEDULE'"/>
+		<assign name="Section_Name" expr="'MATCHSCHEDULE'"/>
+		<assign name="section_begin" expr="start_time()"/>
+			<assign name="cat" expr="'ms'"/>
+			<assign name="subcat" expr="'ms'"/>
+			<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_schedule.wav'"/>
+			</prompt>
+			<script>today=getcurryyyymmdd()</script>
+			<script srcexpr="'http://'+S_IP+'/'+servlet_path_1+'/ar_ReadConfigSong?ConfigPath=sch/schd-'+today+'.cfg&amp;TOKEN=FREE'"/>
+				<script>
+								array1.length=0;
+								unike_play=0;
+				</script>
+				<assign name="len" expr="favSongs.length" />
+				<log>Length Match Center  is	<value expr="len"/>    </log>
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+						 <![CDATA[
+							   for(j=0; j<len ;  j++)
+							   {  	  
+										array1[j] = favSongs[j];						   
+							   }
+
+						]]>		
+				</script>
+				
+				<log>	unike_play  is ==<value expr="unike_play"/>    </log>
+				<log>	array == <value expr="array1[unike_play]"/>    </log>
+			
+			<goto next="#play_schedule"/>
+		</block>
+	</form>
+	
+	<form id="play_schedule">
+		<block>
+			<script>
+				songcheck=array1[unike_play];
+			</script>
+			<log>	songcheck == <value expr="songcheck"/>    </log>
+			<assign name="song" expr="songcheck"></assign>
+			<log expr="'@@@@@@@@@@@@@@@@@@@@@@@@@@@@@song=='+song"></log>
+				
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+				<log>	Smita Match Schedule Counter== <value expr="unike_play"/>    </log>
+				<goto next="#play_option"/>
+			</if>
+	    		<assign name="song_begin" expr="start_time()"/>
+     	 	        <assign name="song_listen" expr="'START'" />
+		</block>
+	<field name="choice">
+		<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+S_IP+'/'+CONTENT_PATH+'/'+lang+'/sch/'+songcheck+'.wav'"/>
+		</prompt>
+			<grammar mode="dtmf" root="start23" version="1.0">
+						<rule id="start23" scope="public">
+							<one-of>
+								 
+								 <item> 4 </item>
+								 <item> 9  </item>
+								 <item> 0  </item>
+							</one-of>
+						</rule>
+			</grammar>
+			<filled>
+				<assign name="nextchoice" expr="choice"></assign>
+				<assign name="song" expr="songcheck"></assign>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!song=='+song"></log>
+				<goto next="#contentlogin" />
+			</filled>
+				
+			<noinput>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+
+				<script> unike_play=unike_play+1</script>
+				<log>	Match Schedule Counter== <value expr="unike_play"/>    </log>
+				<goto next="#play_schedule"/>
+			</noinput>
+				
+			<nomatch>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+
+				<script> unike_play=unike_play+1</script>
+				<log>	Match Schedule Counter== <value expr="unike_play"/>    </log>
+				<goto next="#play_schedule"/>
+			</nomatch>
+			
+			
+		</field>
+	</form>
+	
+	
+	<form id="contentlogin">
+	<block>
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!compare_time=='+compare_time"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!ContentTime=='+ContentTime"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!hash=='+hash"></log>
+
+				<log expr="'!!!!!!!!!!!!!!!!!!!!cat=='+cat"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!subcat=='+subcat"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!contentlog=='+contentlog"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!contentfileg=='+song"></log>
+				<!--<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign> -->
+				<assign name="contentlog" expr="contentlog+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			<if cond="nextchoice=='4'">
+					<script> unike_play=unike_play</script>
+					<goto next="#play_schedule"/>
+				<elseif cond="nextchoice=='9'"/>
+					<goto next="MainMenu.vxml"/>
+				<elseif cond="nextchoice=='0'"/>
+					<goto next="AccountManager.vxml"/>
+				</if>
+				
+	</block>
+</form>
+	
+	<form id="play_option">
+		<field name="option">
+		
+			<prompt bargein="true" timeout="3s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/schedule_options.wav'"/>
+			</prompt>
+			
+			<grammar mode="dtmf" root="start24" version="1.0">
+						<rule id="start24" scope="public">
+							<one-of>
+								 
+								 <item> 4 </item>
+								 <item> 9  </item>
+								 <item> 0  </item>
+							</one-of>
+						</rule>
+			</grammar>
+				
+			<filled>
+				<if cond="option=='4'">
+					<goto next="#play_schedule"/>
+				<elseif cond="option=='9'"/>
+					<goto next="MainMenu.vxml"/>
+				<elseif cond="option=='0'"/>
+					<goto next="AccountManager.vxml"/>
+				<else/>
+					<goto next="#play_schedule"/>
+
+				</if>
+			</filled>
+				
+			<noinput>
+				<goto next="#play_schedule"/>
+
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+
+			</noinput>
+			
+			<noinput count="2">
+				<goto next="#play_schedule"/>
+			</noinput>
+				
+			<nomatch>
+				<goto next="#play_schedule"/>
+
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+
+			</nomatch>
+			
+			<nomatch count="2">
+				<goto next="#play_schedule"/>
+			</nomatch>
+		</field>
+	</form>
+</vxml>

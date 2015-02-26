@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_Contest.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+ <var name="contentfilepath" expr="''"/>
+ <var name="cfgFile" expr="''"/>
+<var name="contentfile" expr="''"/>
+<var name="questioncounter" expr="0"/>
+	<script>
+		var k=0;
+		var out_string=new Object();
+		var spzone=new Object();
+		var len=0;
+	</script>
+	<form id="MAINMENU">
+		<block>
+		      
+			<assign name="CATEGORY" expr="'GLC_CONTEST_MENU'"/>
+			
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/welcome_contest.wav'"/>
+			</prompt>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+						<script>
+							<![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+									contest_status = out_string[j];
+									
+								  }
+							  ]]>
+			</script>
+			<log expr="'contest_status @@@@@@@@@@@@@@@@@@@  =' + contest_status"/>
+				<if cond="contest_status=='YES'">
+					<prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/'+lang+'/contest_rules.wav'"/>
+						
+					</prompt>
+					<goto next="#Contest_Menu"/>
+				<else/>
+				<assign name="Usage_time" expr="rim(section_begin)"/>
+				<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+				<assign name="Section_Name" expr="'errorprompt_contest'"/>
+				<assign name="section_begin" expr="starttime()"/>
+					<prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/'+lang+'/no_contest.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/next_contest.wav'"/>
+						
+					</prompt>
+					<goto next="Hungama_GLC_RootMenu.vxml"/>
+				
+				</if>
+		</block>
+		
+	</form>
+	<form id="Contest_Menu">
+			<block>
+			 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CONTEST_QUERY&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=01&amp;INPARAM[2]=1&amp;INPARAM[3]='+operator"/>
+						 <script>
+							  <![CDATA[
+								for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+											reapet_status = out_string[j];
+								       if(j==1)
+											lang = out_string[j];
+									if(j==2)
+											circle = out_string[j];
+									if(j==3)
+											score = out_string[j];
+								  }
+							  ]]>
+								 reapet_status=parseInt(reapet_status);
+								 score=parseInt(score);
+						 </script>
+				 <if cond="reapet_status=='1'">
+				    		<goto next="#ExistingUser"/>
+				    <else/>
+				    		<goto next="#Welcome_Game"/>
+				    </if>
+				</block>
+	</form>
+	<form id="ExistingUser">
+				<block>
+						
+						
+						<assign name="usrscore" expr="getPromptCtr(score)"/>
+						<log>UserScore iss <value expr="usrscore"/></log>
+				</block>
+				<field name="choice">
+						<grammar mode="dtmf" root="start" version="1.0">
+							<rule id="start" scope="public">
+								<one-of>
+									<item>  1  </item>
+									<item>  6  </item>
+									<item>  8  </item>
+								</one-of>
+							</rule>
+						</grammar>
+						<prompt bargein="true" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/keypad_contest.wav'" />
+						</prompt>
+
+						<prompt bargein="true" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/score_is.wav'"/>
+						</prompt>
+						
+						<prompt bargein="true" timeout="1s">
+							<foreach item="singledigit" array="num2play_Array">
+									<audio expr="promptpath+'/'+lang+'/'+parseInt(singledigit)+'.wav'"/>
+									<log>	--------	<value expr="singledigit"/>	</log>
+							</foreach>
+					       </prompt>
+						
+						<filled>
+							<if cond="choice=='6'">
+								<goto next="#keypadoption"/>	
+							<elseif cond="choice=='8'"/>
+								<goto next="Hungama_GLC_RootMenu.vxml"/>
+							<else/>
+								<prompt bargein="true" timeout="1s">
+									<audio expr="promptpath+'/'+lang+'/begin_contest.wav'"/>
+								</prompt>
+								<goto next="#PlayGame"/>	
+							</if>	
+						</filled>
+				
+						<noinput>
+							<prompt bargein="true" timeout="1s">
+								<audio expr="promptpath+'/'+lang+'/begin_contest.wav'"/>
+							</prompt>
+							
+							<goto next="#PlayGame"/>
+						</noinput>
+						<nomatch>
+						<prompt bargein="true" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/begin_contest.wav'"/>
+						</prompt>
+							
+				           		<goto next="#PlayGame"/>
+						</nomatch>
+				</field>
+	</form>
+	<form id="Welcome_Game">
+				
+				<field name="choice">
+						<grammar mode="dtmf" root="start" version="1.0">
+							<rule id="start" scope="public">
+								<one-of>
+									<item>  1  </item>
+									<item>  6  </item>
+									<item>  8  </item>
+								</one-of>
+							</rule>
+						</grammar>
+						
+						<prompt bargein="true" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/welcome_owncontent.wav'" />
+							
+						</prompt>
+						<prompt bargein="true" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/keypad_contest.wav'" />
+						</prompt>
+						
+						<filled>
+							<if cond="choice=='6'">
+								<goto next="#keypadoption"/>	
+							<elseif cond="choice=='8'"/>
+								<goto next="Hungama_GLC_RootMenu.vxml"/>
+							<else/>
+								<prompt bargein="true" timeout="1s">
+									<audio expr="promptpath+'/'+lang+'/begin_contest.wav'"/>
+								</prompt>
+								<goto next="#PlayGame"/>	
+							</if>
+						</filled>
+				
+						<noinput>
+						<prompt bargein="true" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/begin_contest.wav'"/>
+						</prompt>
+							
+							<goto next="#PlayGame"/>
+						</noinput>
+						<nomatch>
+							<prompt bargein="true" timeout="1s">
+								<audio expr="promptpath+'/'+lang+'/begin_contest.wav'"/>
+							</prompt>
+
+				           		<goto next="#PlayGame"/>
+						</nomatch>
+				</field>
+		</form>
+		<form id="keypadoption">
+						<block>
+							<assign name="Usage_time" expr="rim(section_begin)"/>
+							<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+							<assign name="Section_Name" expr="'Keypad_contest'"/>
+							<assign name="section_begin" expr="starttime()"/>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CONTEST_GET&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR&amp;INPARAM[2]='+operator"/>
+								 <script>
+									  <![CDATA[
+										for(j=0; j< out_string.length;  j++)
+										  {  	  
+										       if(j==0)
+												qno = out_string[j];
+										       if(j==1)
+												question = out_string[j];
+										       if(j==2)
+												discription = out_string[j];
+										       if(j==3)
+												answerkey = out_string[j];
+										       if(j==4)
+												score = out_string[j];
+										       if(j==5)
+												ques_available = out_string[j];
+										       if(j==6)
+												cir = out_string[j];
+										       if(j==7)
+												diff_level = out_string[j];
+										  }
+									  ]]>
+								 score=parseInt(score);
+								 qno=parseInt(qno);
+								 ques_available=parseInt(ques_available);
+								 diff_level=parseInt(diff_level);
+						</script>
+						</block>
+						<field name="choice">
+								<grammar mode="dtmf" root="start" version="1.0">
+									<rule id="start" scope="public">
+										<one-of>
+											<item>  5  </item>
+											<item>  8  </item>
+										</one-of>
+									</rule>
+								</grammar>
+								
+								<prompt bargein="true" timeout="1s">
+									<audio expr="promptpath+'/'+lang+'/keypad_options_contest.wav'" />
+									
+								</prompt>
+								
+								
+								<filled>
+									<if cond="choice=='5'">
+										<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CONTEST_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+operator+'&amp;INPARAM[3]=skip&amp;INPARAM[4]=3&amp;INPARAM[5]=10'"/>
+										<goto next="#PlayGame"/>
+									<elseif cond="choice=='8'"/>
+										<goto next="Hungama_GLC_RootMenu.vxml"/>
+									<else/>
+										<goto next="#PlayGame"/>	
+									</if>
+								</filled>
+						
+								<noinput>
+									<goto next="#PlayGame"/>
+								</noinput>
+								<nomatch>
+						           		<goto next="#PlayGame"/>
+								</nomatch>
+						</field>
+		</form>
+	
+	<form id="PlayGame">
+				<block>
+						
+						
+						 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CONTEST_GET&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR&amp;INPARAM[2]='+operator"/>
+						 <script>
+							  <![CDATA[
+								for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+										qno = out_string[j];
+								       if(j==1)
+										question = out_string[j];
+								       if(j==2)
+										discription = out_string[j];
+								       if(j==3)
+										answerkey = out_string[j];
+								       if(j==4)
+										score = out_string[j];
+								       if(j==5)
+										ques_available = out_string[j];
+								       if(j==6)
+										cir = out_string[j];
+								       if(j==7)
+										diff_level = out_string[j];
+								  }
+							  ]]>
+								 score=parseInt(score);
+								 qno=parseInt(qno);
+								 ques_available=parseInt(ques_available);
+								 diff_level=parseInt(diff_level);
+								 questioncounter=questioncounter+1;
+						 </script>
+							<assign name="Game_play" expr="'START'"/>
+							<assign name="Usage_time" expr="rim(section_begin)"/>
+							<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+							 <assign name="Section_Name" expr="'Contest_ques'+questioncounter"/>
+							 <assign name="section_begin" expr="starttime()"/>
+				</block>
+				<field name="choice">
+						<grammar mode="dtmf" root="start" version="1.0">
+							<rule id="start" scope="public">
+								<one-of>
+									<item>  1  </item>
+									<item>  2  </item>
+									<item>  3  </item>
+									<item>  4  </item>
+									<item>  5  </item>
+									<item>  6  </item>
+									<item>  8  </item>
+								</one-of>
+							</rule>
+						</grammar>
+						
+						<prompt bargein="true" timeout="5s">
+							<audio expr="contentpath+'/GLC_contest/'+lang+'/'+question+'.wav'" />
+						</prompt>
+						
+						<filled>
+								<assign name="k" expr="getRandom(1,4)" />
+								<if cond="choice==answerkey">
+										<script>score=score+10;</script>
+										<prompt bargein="true" timeout="1s">
+											<audio expr="promptpath+'/'+lang+'/correct_ans'+k+'.wav'" />
+										</prompt>
+									 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CONTEST_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+operator+'&amp;INPARAM[3]='+choice+'&amp;INPARAM[4]=1&amp;INPARAM[5]=10'"/>
+									<goto next="#PlayScore"/>
+								<elseif cond="choice=='5'"/>
+									
+									<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CONTEST_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+operator+'&amp;INPARAM[3]=skip&amp;INPARAM[4]=3&amp;INPARAM[5]=10'"/>
+									<goto next="#keypadoption"/>
+								<elseif cond="choice=='8'"/>
+									<goto next="Hungama_GLC_RootMenu.vxml"/>
+								<else/>
+										<script>score=score+0;</script>
+										<prompt bargein="true" timeout="1s">
+											<audio expr="promptpath+'/'+lang+'/wrong_ans'+k+'.wav'" />
+										</prompt>
+										 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CONTEST_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+operator+'&amp;INPARAM[3]='+choice+'&amp;INPARAM[4]=2&amp;INPARAM[5]=10'"/>
+										  
+										<goto next="#PlayScore"/>
+								</if>
+						</filled>
+				
+						<noinput>
+								<prompt bargein="true" timeout="1s">
+										<audio expr="promptpath+'/'+lang+'/nodtmf.wav'" />
+								</prompt>
+								<reprompt/>
+						</noinput>
+						<noinput count='3'>
+								<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CONTEST_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+operator+'&amp;INPARAM[3]=noinput&amp;INPARAM[4]=3&amp;INPARAM[5]=10'"/>
+								
+								<goto next="#PlayGame"/>
+						</noinput>
+						<nomatch>
+								<prompt bargein="true" timeout="1s">
+										<audio expr="promptpath+'/'+lang+'/invalidoption.wav'" />
+								</prompt>
+				           			<reprompt/>
+						</nomatch>
+						<nomatch count='3'>
+								<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CONTEST_SET&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+operator+'&amp;INPARAM[3]=nomatch&amp;INPARAM[4]=3&amp;INPARAM[5]=10'"/>
+								<goto next="#PlayGame"/>
+						</nomatch>
+				</field>
+		</form>
+		
+		<form id="PlayScore">
+			<block>
+				
+				<assign name="usrscore" expr="getPromptCtr(score)"/>
+				<log>UserScore iss <value expr="usrscore"/></log>
+				
+				</block>
+				
+				<field name="choice">
+					<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								<item> 1 </item>
+								
+							</one-of>
+						</rule>
+					</grammar>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/score_is.wav'"/>
+					</prompt>	
+					<prompt bargein="true" timeout="1s">
+						<foreach item="singledigit" array="num2play_Array">
+								<audio expr="promptpath+'/'+lang+'/'+parseInt(singledigit)+'.wav'"/>
+								<log>	--------<value expr="singledigit"/>	</log>
+						</foreach>
+					</prompt>
+					<filled>
+							<goto next="#PlayGame"/>
+					</filled>
+					<noinput>
+							<goto next="#PlayGame"/>
+					</noinput>
+					<nomatch>
+							<goto next="#PlayGame"/>
+					</nomatch>
+			</field>
+		</form>	
+	
+	
+	
+	
+	</vxml>

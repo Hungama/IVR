@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="CricketRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="NewUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<property name="documentmaxstale" value="0s"></property>
+		<property name="documentmaxage" value="0s"></property>
+
+		
+	
+	<script>
+		var favSongs=new Object();
+		
+	</script>
+
+	<form id="direct_sub">
+		<block>
+		 <assign name="Usage_time" expr="time_duration(section_begin)"/>
+		 <assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+		 <assign name="SECTION" expr="'NEWUSER'"/>
+		 <assign name="Section_Name" expr="'NEWUSER'" />
+		 <assign name="section_begin" expr="start_time()"/>
+
+			<if cond="DNIS=='5443322' || DNIS=='5443333' || DNIS=='5443311'">
+				<log expr="'!!!!!!!!!Direct Activation (First Sub Request)!!!!!!!!!!!!!!! '"></log>
+				<goto next="Subscription.vxml#SubRequest"></goto>
+			
+			<else/>
+				<log expr="'!!!!!!!!!Normal Subscription(First Lang Subs) !!!!!!!!!!!!!!! '"></log>
+				
+				<if cond="usr_status=='-1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Cricket_Switch&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					<script>
+						 double_switch=out_string[0];
+						 prompt_switch=out_string[1];
+					</script>				
+					<log>double_switch Sub : <value expr="double_switch"/></log>
+					<if cond="double_switch=='1'">
+						<assign name="firstconsent" expr="'YY'"/>
+						<assign name="firstconsenttime" expr="start_time()"/>
+						<assign name="sub_flag" expr="'true'"/>				
+						<assign name="amount" expr="49"/>
+						<assign name="planid" expr="'21'"/>		
+					
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=01&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amount+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+						<goto next="#LANGSEL1"></goto>
+					</if>			
+				</if>
+
+				<goto next="#LANGSEL1"></goto>
+			</if>
+		</block>
+	</form>
+
+
+	<form id="LANGSEL1">
+		<block>
+		
+		<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/language_option.wav'"/>					
+			</prompt>
+		
+		<if cond="(circle=='tnu' || circle=='kar' || circle=='ker' || circle=='apd')">
+						<assign name="CIRCLE_LANG" expr="circle"/> 
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=cricketconfig/'+operator+'/'+circle+'/langorder.cfg'"/> 
+					<else/>
+						<assign name="CIRCLE_LANG" expr="'otherlang'"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=cricketconfig/'+operator+'/langorder.cfg'"/>
+				</if>
+
+			
+			
+				
+			
+
+			<script>
+					    	array1.length=0;
+			</script>
+			
+			<assign name="len" expr="favSongs.length" />
+			<assign name="i" expr="0" />
+			<assign name="movie_idx" expr="1" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j< len ;  j++)
+					   {  	  	
+								array1[i++] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 
+		 <assign name="lang" expr="array1[0]"/>	
+			       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+			<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+			<log expr="'circle @@@@@@@@@@@@@@@@@@@@ =' + movie_idx"/>
+		</block>
+<field name="choice">
+					<grammar mode="dtmf" root="start25" version="1.0">
+							<rule id="start25" scope="public">
+								<one-of>
+									 <item>  1  </item>
+									 <item>  2  </item>
+									 <item>  3  </item>
+									 <item>  4  </item>
+									 <item>  5  </item>
+									 <item>  6  </item>
+									 <item>  7  </item>
+									 <item>  8  </item>
+									 <item>  9  </item>
+								</one-of>
+							</rule>
+					</grammar>
+					
+<prompt bargein="true" timeout="0s">	
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+array1[movie_idx-1]+'/lang'+array1[movie_idx-1]+'.wav'"/>
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+array1[movie_idx-1]+'/press_dtmf'+movie_idx+'.wav'"/>		
+			</prompt>
+
+				<filled>
+					<if cond="choice &lt; len+1">
+							<assign name="lang" expr="array1[--choice]"/>
+							<!--<if cond="lang=='01'">
+								<assign name="lang" expr="'HIN'"/>
+							<elseif cond="lang=='02'"/>
+								<assign name="lang" expr="'ENG'"/>
+							<elseif cond="lang=='06'"/>
+								<assign name="lang" expr="'BEN'"/>
+							<elseif cond="lang=='09'"/>
+								<assign name="lang" expr="'MAL'"/>
+							<elseif cond="lang=='10'"/>
+								<assign name="lang" expr="'KAN'"/>
+							<elseif cond="lang=='07'"/>
+								<assign name="lang" expr="'TAM'"/>
+							<elseif cond="lang=='08'"/>
+								<assign name="lang" expr="'TEL'"/>
+							<else/>
+								<assign name="lang" expr="'HIN'"/>
+							</if> -->
+							<log expr="'selected language is '+lang"/>
+							<if cond="DNIS=='544334' || DNIS=='5443344'">     
+								<goto next="MainMenu.vxml"/>
+							<elseif cond="DNIS=='544337'"/>        
+								<goto next="PredictionContest.vxml"/>
+							<!--<elseif cond="DNIS=='5443344'"/>        
+								<goto next="MatchCenter.vxml"/>-->
+							<else/>
+								<if cond="usr_status=='-1'|| usr_status=='5'">
+							    	<prompt bargein="true" timeout="0s">
+										<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+									</prompt>
+									
+									<prompt bargein="true" timeout="0s" cond="usr_status=='-1'">			
+										<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_new.wav'"/>
+									</prompt>
+									<prompt bargein="true" timeout="0s" cond="usr_status=='5'">			
+										<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_new_frc1.wav'"/>
+									</prompt>
+									<if cond="DNIS=='5443322' || DNIS=='5443333' || DNIS=='5443311'">
+										<goto next="Subscription.vxml#BillStatusChk"/>
+									<else/>
+										<goto next="Subscription.vxml"/>
+									</if>
+								<else/>
+							    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_UPDATELANG&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>
+									<prompt bargein="true" timeout="0s">
+										<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/lang_thanks.wav'"/>
+									</prompt>							
+									<goto next="MainMenu.vxml"/>
+								</if>
+							</if>
+						</if>
+				</filled>
+			
+			<noinput>
+				
+				<script>
+						movie_idx=movie_idx+1;
+				</script>
+				<goto nextitem="choice"/>
+
+			</noinput>
+			
+			<noinput count="9">
+				<if cond="usr_status=='-1'">
+				    <assign name="lang" expr="array1[0]"/>
+					<log expr="'selected language is '+lang"></log>			    
+					<goto next="Subscription.vxml"/>
+				<else/>
+					<goto next="MainMenu.vxml"/>
+				</if>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="1"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="1"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<if cond="usr_status=='-1'">
+				    <assign name="lang" expr="array1[0]"/>
+					<log expr="'selected language is '+lang"></log>			    
+					<goto next="Subscription.vxml"/>
+				<else/>
+					<goto next="MainMenu.vxml"/>
+				</if>
+			</nomatch>
+			</field>
+		
+		</form>
+	
+</vxml>

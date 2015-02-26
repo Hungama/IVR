@@ -1,0 +1,89 @@
+VXML code on 227 server -
+
+Jyotish:
+db/tomcat/webapps/hungama/uni_jotish
+
+Kiji:
+db/tomcat/webapps/hungama/SummerContest
+
+MissRiya:
+db/tomcat/webapps/hungama/ManchalaPremSub
+
+Aircel -
+/db/tomcat1/webapps/hungama/Hungama_aircel
+
+Lokgeet -
+/db/tomcat1/webapps/hungama/HMP_54646_LokGeet
+
+
+MRT -
+/db/tomcat1/webapps/hungama/uni_mod
+
+SIVR -
+/db/tomcat1/webapps/hungama/Hungama_SIVR
+
+PKP -
+/db/tomcat1/webapps/hungama/Hungama_PKP_vxmlFiles
+/db/tomcat1/webapps/hungama/MND_UNIM
+/db/tomcat1/webapps/hungama/MND_RELM
+/db/tomcat1/webapps/hungama/REL_PKP_vxmlFiles
+
+
+MPMC -
+/db/tomcat1/webapps/hungama/Hungama_ComedyPortal_UNIM
+
+Chat -
+/db/tomcat1/webapps/hungama/Hungama_ChatRoom
+
+
+MM-
+/db/tomcat1/webapps/hungama/Hungama_546468_unim
+
+Devo -
+/db/tomcat1/webapps/hungama/Hungama_5464682_DEV
+/db/tomcat1/webapps/hungama/Hungama_5464694_DEV
+/db/tomcat1/webapps/hungama/Hungama_Devo_Unim
+
+
+Sport -
+/db/tomcat1/webapps/hungama/Hungama_USU
+
+Pause code -
+/db/tomcat1/webapps/hungama/Hungama_5464634_pausecode
+
+Jokes -
+/db/tomcat1/webapps/hungama/Hungama_54646_JOKE_MM
+
+HUL GLC -
+/db/tomcat1/webapps/hungama/HMP_GLC_OBD
+
+Reliance Cricket -
+/db/tomcat1/webapps/hungama/cricket
+
+54646 -
+/db/tomcat1/webapps/hungama/HMP_54646
+/db/tomcat1/webapps/hungama/Hungama_54646_Services_MM
+
+
+Endless -
+/db/tomcat1/webapps/hungama/Hungama_Mod
+
+RMM -
+/db/tomcat1/webapps/hungama/Hungama_MusicMania
+
+Starclub -
+/db/tomcat1/webapps/hungama/celebrity
+
+Goodlife -
+/db/tomcat1/webapps/hungama/Hungama_goodlife
+
+Devo_unim -
+/db/tomcat1/webapps/hungama/Hungama_Devo_Unim
+
+Redfm unim -
+/db/tomcat1/webapps/hungama/Hungama_service_redfm
+
+Redfm tata -
+/db/tomcat1/webapps/hungama/Hungama_service_redfm_all
+
+

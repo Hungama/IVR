@@ -1,0 +1,408 @@
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_ModPlay_newyear.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<script> 
+	<![CDATA[ 
+	
+	function getTime() { 
+	return new Date(); 
+	} 
+	
+	]]> 
+</script>
+	<var name="offset" expr="0"/>
+	<var name="callellapsedtime" expr="0"/>
+	<var name="starttime" />
+	<var name="breaktime" />
+	<var name="ellapsedtime" expr="0"/>
+	
+	<script>
+		var out_string=new Object();
+		var points = new Object();
+	</script>
+	
+	<form id="next">
+		<block>
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<assign name="total_time" expr="time_duration(C_Start)"/>
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="0" />
+			</if>
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="array1[unike_play]"/>    </log>
+			<script>
+				var songcheck1=array1[unike_play].split("_");
+				Song_Path=songcheck1[0];
+				songID = array1[unike_play];
+			</script>
+			<if cond="unike_play%2==0">
+			<else/>
+				<assign name="callellapsedtime" expr="30000"/>
+	<log>callellapsedtime is <value expr="callellapsedtime" /> ms</log>
+	<send event="timerStart" namelist="callellapsedtime"/>
+			</if>
+			 <assign name="song_begin" expr="start_time()"/>
+			 <assign name="song_listen" expr="'START'" />
+			 
+			 
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="digits0to37to9" version="1.0">
+						<rule id="digits0to37to9" scope="public">
+							<one-of>
+								 <item>  0  </item>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>								 
+								 <item>  7  </item>
+								 <item>  8  </item>
+								 <item>  9  </item>
+								 
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="2s">
+				<audio expr="contentpath+Song_Path+'/'+songID+'.wav'"/>	
+			</prompt>
+
+			<filled>
+				
+				<assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="time_duration(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log expr="'compare_time=='+compare_time"></log>
+				 <log expr="'ContentTime=='+ContentTime"></log>
+				 <log expr="'hash=='+hash"></log>
+				 <log expr="'songID=='+songID"></log>
+				 <log expr="'cat=='+cat"></log>
+				 <log expr="'subcat=='+subcat"></log>
+				 <log expr="'contentlog=='+contentlog"></log>
+				<log expr="'unike_play=='+unike_play"></log>
+				 <if cond="unike_play%2==0">
+				
+			
+				<else/>
+				<log> send event timerEND</log>
+				<send event="timerEnd"/>
+				 <assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				 </if>				
+				 <if cond="callendstatus==0">
+				 	<script srcexpr="'http://'+IP+'/hungama/duration?starttime='+C_Start+'&amp;endtime='+call_time()"/>
+					<script>
+						points=out_string[0];
+					</script>
+					<if cond="points &gt;= 300">
+						<goto next="Hungama_ModEnd.vxml"/>
+					</if>
+				</if>
+				<script>
+					contentfilepath="unimodconfig/"+operator+"/songconfig/";
+ 				</script>
+				<script>
+					cfgFile=playconfig+".cfg";
+				</script>
+				<assign name="contentfile" expr="songID+hash+contentfilepath+hash+cfgFile+hash+compare_time"></assign>
+				<if cond="choice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<goto next="#repeatform" />
+				<elseif cond="choice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="#repeatform" />
+				<elseif cond="choice=='3'"/>
+					<script> unike_play=unike_play-1</script>
+					<goto next="#repeatform" />				
+				<elseif cond="choice=='7'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_newyear_profile_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play"/>
+					<goto next="Hungama_ModNav.vxml"/>
+				<elseif cond="choice=='8'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_newyear_profile_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play"/>
+					<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+				<elseif cond="choice=='9'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_newyear_profile_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play"/>
+					<goto next="Hungama_ModMngAccnt.vxml"/>
+				<elseif cond="choice=='0'"/>
+					<if cond="unike_play%2==0">
+						<script> unike_play=unike_play+1</script>
+						<goto next="#next"></goto>
+					</if>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_newyear_profile_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play"/>
+					<goto next="Hungama_ModRngMenu.vxml"/>
+				<else/>
+					<script> unike_play=unike_play+1</script>
+					<goto next="#repeatform" />
+				</if>
+			</filled>
+			
+			<noinput>
+				<assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="time_duration(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log expr="'compare_time=='+compare_time"></log>
+				 <log expr="'ContentTime=='+ContentTime"></log>
+				 <log expr="'hash=='+hash"></log>
+				 <log expr="'songID=='+songID"></log>
+				 <log expr="'cat=='+cat"></log>
+				 <log expr="'subcat=='+subcat"></log>
+				 <log expr="'contentlog=='+contentlog"></log>
+				 <assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>				
+				 <if cond="callendstatus==0">
+				 	<script srcexpr="'http://'+IP+'/hungama/duration?starttime='+C_Start+'&amp;endtime='+call_time()"/>
+					<script>
+						points=out_string[0];
+					</script>
+					<if cond="points &gt;= 300">
+						<goto next="Hungama_ModEnd.vxml"/>
+					</if>
+				</if>
+				<script>
+					contentfilepath="unimodconfig/"+operator+"/songconfig/";
+ 				</script>
+				<script>
+					cfgFile=playconfig+".cfg";
+				</script>
+				<assign name="contentfile" expr="songID+hash+contentfilepath+hash+cfgFile+hash+compare_time"></assign>
+				<script> unike_play=unike_play+1</script>
+					<goto next="#repeatform" />
+			</noinput>
+			<nomatch>
+				 <if cond="unike_play%2==0">
+				
+			
+				<else/>
+				<log> send event timerEND</log>
+				<send event="timerEnd"/>
+				 
+				 </if>			
+				<goto next="#hill" />
+			</nomatch>
+			<catch event="timeUP">
+			<log> received event <value expr="_event"/></log>
+					
+			<assign name="nextchoice" expr="'1'"/>
+				<clear namelist="choice"/>
+				<goto next="#contentlogin" />
+		</catch>
+			
+		</field>
+			
+	</form>
+	
+		<form id="repeatform">
+			<block>
+				<goto next="#next"/>
+				
+			</block>
+			
+	</form>
+
+	
+	<form id="hill">
+		<field name="choice1">
+			<grammar mode="dtmf" root="only0to37to9" version="1.0">
+					<rule id="only0to37to9" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>								 
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+		
+		<filled>
+			<assign name="nextchoice" expr="choice1"></assign>
+			<goto next="#contentlogin" />				
+		</filled>
+		<noinput>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_newyear_profile_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play"/>
+			<goto next="Hungama_ModNav.vxml"/>
+		</noinput>
+		<nomatch>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_newyear_profile_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play"/>
+			<goto next="Hungama_ModNav.vxml"/>
+		</nomatch>
+</field>
+		
+	  	
+
+	</form>
+	
+	<form id="contentlogin">
+		<block>
+				 <assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="time_duration(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log expr="'compare_time=='+compare_time"></log>
+				 <log expr="'ContentTime=='+ContentTime"></log>
+				 <log expr="'hash=='+hash"></log>
+				 <log expr="'songID=='+songID"></log>
+				 <log expr="'cat=='+cat"></log>
+				 <log expr="'subcat=='+subcat"></log>
+				 <log expr="'contentlog=='+contentlog"></log>
+				 <assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				<if cond="callendstatus==0">
+				 		<script srcexpr="'http://'+IP+'/hungama/duration?starttime='+C_Start+'&amp;endtime='+call_time()"/>
+						<script>
+							points=out_string[0];
+						
+						</script>
+						<if cond="points &gt;= 180">
+							<goto next="Hungama_ModEnd.vxml"/>
+						</if>
+					</if>
+
+				 <script>
+					contentfilepath="unimodconfig/"+operator+"/songconfig/";
+ 				 </script>
+				 <script>
+				 	cfgFile=playconfig+".cfg";
+				 </script>
+
+				<assign name="contentfile" expr="songID+hash+contentfilepath+hash+cfgFile+hash+compare_time"></assign>
+				
+				 <if cond="nextchoice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/content_score_log?contenttime='+ContentTime+'&amp;contentfile='+contentfile"/> -->
+					<clear namelist="nextchoice"/>
+					<goto next="#next" />
+				<elseif cond="nextchoice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/content_score_log?contenttime='+ContentTime+'&amp;contentfile='+contentfile"/> -->
+					<goto next="#next" />
+				<elseif cond="nextchoice=='3'"/>
+					<script> unike_play=unike_play-1</script>
+					<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/content_score_log?contenttime='+ContentTime+'&amp;contentfile='+contentfile"/> -->
+					<goto next="#next" />				
+				<elseif cond="nextchoice=='7'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_newyear_profile_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play"/>
+					<goto next="Hungama_ModNav.vxml"/>
+				<elseif cond="nextchoice=='8'"/>
+					<!--<if cond="directaccess=='false'">
+						<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+					<else/>-->
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_newyear_profile_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play"/>
+						<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+					<!--</if>					-->
+				<elseif cond="nextchoice=='9'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_newyear_profile_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play"/>
+					<goto next="Hungama_ModMngAccnt.vxml"/>
+				<!--<elseif cond="nextchoice=='*'"/>
+					<goto next="Hungama_ModCRBT.vxml"/>-->
+				<elseif cond="nextchoice=='0'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_newyear_profile_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play"/>
+					<goto next="Hungama_ModRngMenu.vxml"/>
+				<else/>
+					<script> unike_play=unike_play+1</script>
+					<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/content_score_log?contenttime='+ContentTime+'&amp;contentfile='+contentfile"/> -->
+					<goto next="#next" />
+				</if>
+		</block>
+
+	</form>
+	
+	 <form id="AskForConfirmation">
+		<block>
+			<script> rcv_time = rcv_time+600 </script>
+		</block>
+		<field name="choice2">
+			<grammar mode="dtmf" root="only1" version="1.0">
+					<rule id="only1" scope="public">
+						<one-of>
+							<item>  1  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompts_Path+'/'+lang+'/tnb_offer_continue.wav'"/>
+			</prompt>
+		
+		<filled>
+			<if cond="choice2=='1'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=4'"/>
+				<script>
+			    <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<assign name="mod_of_sub" expr="'F'"></assign>
+			<goto next="Hungama_ModPlay.vxml#next"/>
+				
+			</if>						
+		</filled>
+		<noinput>
+			<goto next="Hungama_ModPlay.vxml#next"/>
+		</noinput>
+		<nomatch>
+			<goto next="Hungama_ModPlay.vxml#next"/>
+		</nomatch>
+	   </field>
+	</form>
+
+ <error>
+			  <!-- <script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+songID+'/uni_mod/'+playconfig"/>-->
+				<if cond="nextchoice=='3'">
+					<script>unike_play=unike_play-1;</script> 				 				 	
+			                <goto next="#next"/> 
+				<else/>
+					<script>unike_play=unike_play+1;</script> 				 				 	
+			                <goto next="#next"/> 
+				</if>
+		</error> 
+
+<!-- <catch vxmlexception event="error.noresource">
+			   <script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+songID+'/uni_mod/'+playconfig"/>
+				<if cond="choice=='3'">
+					<script>unike_play=unike_play-1;</script> 				 				 	
+			                <goto next="#next"/> 
+				<else/>
+					<script>unike_play=unike_play+1;</script> 				 				 	
+			                <goto next="#next"/> 
+				</if>
+		</catch>  
+
+	<catch vxmlexception event="error.*">
+			   <script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+songID+'/uni_mod/'+playconfig"/>
+				<if cond="choice=='3'">
+					<script>unike_play=unike_play-1;</script> 				 				 	
+			                <goto next="#next"/> 
+				<else/>
+					<script>unike_play=unike_play+1;</script> 				 				 	
+			                <goto next="#next"/> 
+				</if>
+		</catch>  -->
+	
+</vxml>

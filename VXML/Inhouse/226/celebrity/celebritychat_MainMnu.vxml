@@ -1,0 +1,650 @@
+
+<vxml version="2.0" application="FMJRoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+     
+    
+    <property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+   <var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="true"/>	
+   <var name="NXTEVENT" expr="'OFF'"/>	
+   <var name="names"/> 
+   <var name="return_opt" expr="''"/>
+   <var name="celebrityid" expr="''"/>
+   <var name="showdate" expr="''"/>
+   <var name="showtime" expr="''"/>
+   <var name="endtime" expr="''"/>
+   <var name="nxteventflag" expr="''"/>
+   <var name="price_tkt" expr="''"/>
+   <var name="show_status" expr="''"/>	   
+   	   
+   <script>
+		var favSongs=new Object();
+		var out_string=new Object();
+	</script>
+
+
+	
+<form id="loadstarclubcelebritycfg">
+  <block>   
+       <script>
+	    i=0;			    
+            Totalmf=0;
+	    len=0;					
+       </script>			
+       <log>--------------- START starclubcelebrity FILE LOADEDING  ----------------- </log>
+       <if cond="NXTEVENT=='ON'">
+	 	<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=starclubconfig/songconfig/'+lang+'nextchatevent.cfg'"/>
+       <else/>					
+		<!--<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=starclubconfig/'+operator+'/songconfig/'+lang+playconfig+'.cfg&TOKEN=FREE'"/>-->
+		<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=starclubconfig/songconfig/'+lang+playconfig+'.cfg'"/>
+       </if>
+       <log expr="'@@@@@@ Array Length is >>>>>> '+favSongs.length"/>
+       <log expr="'@@@@@@ Array is >>>>>> '+favSongs[0]"/>
+      <script>
+              <![CDATA[
+	          for(i=0; i<favSongs.length; i++)
+ 	           { 				       
+		          mfFileNames[i]= favSongs[i]; 
+		          var str=mfFileNames[i].split("_");   <!-- (Parameters are in the config file (109_1_1_2_1_20110927_170000_180000_0_15)) -->
+			  contentdir=str[0];		<!-- Content place in the directory  (109) -->			      
+			  celeshowid=str[1];		<!-- Status of Show ID (1) -->
+			  celeshowstatus=str[2]; 	<!-- Show Status (1) -->
+			  celebrityid=str[3]; 		<!-- Celeb id (2) -->
+			  show_status=str[4];	<!-- show statsus -->
+			  showdate=str[5];		<!-- Show date (20110927) -->
+			  showtime=str[6]; 		<!-- Show time (170000) -->
+			  endtime=str[7]; 		<!-- Show time (170000) -->
+  			  nxteventflag=str[8];		<!-- Next event Flag (0) -->
+			  price_tkt=str[9];		<!-- Next event Flag (0) -->
+		  }
+						 		  
+		]]>	
+	</script> 
+	<log expr="'@@@@@@ contentdir is >>>>>> '+contentdir"/>
+	<log expr="'@@@@@@ celeshowid is >>>>>> '+celeshowid"/>
+	<log expr="'@@@@@@ celeshowstatus is >>>>>> '+celeshowstatus"/>
+	<log expr="'@@@@@@ celebrityid is >>>>>> '+celebrityid"/>
+	<log expr="'@@@@@@ showdate is >>>>>> '+showdate"/>
+	<log expr="'@@@@@@ showtime is >>>>>> '+showtime"/>
+	<log expr="'@@@@@@ endtime is >>>>>> '+endtime"/>
+	<log expr="'@@@@@@ nxteventflag is >>>>>> '+nxteventflag"/>
+	<log expr="'@@@@@@ Price Ticket is >>>>>> '+price_tkt"/>
+	<log expr="'@@@@@@ DNIS is >>>>>> '+DNIS"/>
+	<script>
+	   i=0;
+	   j=0;
+	</script>
+	
+	<!--  Event Check case (Inactive,Offline and Active) -->
+	
+	<if cond="celeshowstatus == '1'">
+		<goto next="#starclubcelesubMenu"/> 	
+	<elseif cond="celeshowstatus=='2'"/>
+	        <goto next="#starclubcelesubMenu"/> 
+	<else/>
+		<prompt bargein="true" timeout="0s">	
+			<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'event_inactive.wav'"/>
+	       </prompt>
+		<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>	
+			
+	</if>
+		  
+  </block>
+		  
+</form>
+
+<form id="starclubcelesubMenu">
+   <block>       
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=sp_CHK_CELEBRITY_ATCIVE_USER&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeshowid"/>
+	<script>
+	 <![CDATA[
+	   for(j=0; j< out_string.length;  j++)
+      	   {  	  
+	       if(j==0)
+		      	cele_usr_status = out_string[j];
+	  }
+	]]>
+	</script>	
+	<if cond="cele_usr_status == '1'">
+		 <log expr="'@@@@@@ start_BalenceMinute is '+start_BalenceMinute"/>
+		 <if cond="timerflag=='1'">                       						   
+		         <script>
+			           total_used_bal=chkBalenceMinute(start_BalenceMinute);
+                                curbalance=balance-total_used_bal;  						  
+			  </script>
+			  <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			  <log expr="'@@@@@@ left balance is '+curbalance"/>
+                       <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                       </if>     
+		 </if>
+		 <log expr="'DNIS >>>>>>>>>>>>>>> '+DNIS"/>
+		 <if cond="celeshowstatus=='2'">
+		 	<if cond="nxteventflag=='1'">
+			 	<goto next="#nextevent"/>
+		 	<elseif cond="nxteventflag=='0'"/>
+				<goto next="#celebchatpending"/>
+
+				<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@FMJ@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+
+				<!-- <if cond="DNIS=='566669'">
+					<prompt bargein="true" timeout="0s">	
+  			       		<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'chat_timeover_toll.wav'"/>
+           				</prompt>
+           		 		<goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/>
+           		 	<elseif cond="DNIS=='56666' || DNIS=='566660'" />
+           				 <prompt bargein="true" timeout="0s">	
+  			            		<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'chat_timeover_tollfree.wav'"/>
+           		 		</prompt>
+    		      		 	<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>				 
+	         		</if> -->
+
+				<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@FMJ@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+
+
+		 	<else/>
+				<prompt bargein="true" timeout="0s">	
+  			      		 <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'event_inactive.wav'"/>
+           		 	</prompt>
+		 	</if>
+	        <else/>
+        		    
+			    <!--<if cond="DNIS=='566669'">				 	     
+		 	     	<goto next="#celebrityMainMenu"/>
+        	 	    <elseif cond="DNIS=='56666'"/>
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+	   	 	    </if> 
+			    <goto next="#celebrityMainMenu"/> 
+			    <goto next="#CALL_CONNECTED"/> -->
+			    <prompt bargein="true" timeout="3s">	
+	      	                  <audio expr="Prompt_Path+LANG_DESCRIPTION+'/thanks_registration1.wav'"/>	
+       	      	    </prompt>
+			    <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+
+	 	 </if>
+	<else/>		
+	     	<goto nextitem="submnuopt"/>
+ 	</if>				
+	</block>		
+		<field name="submnuopt">
+		
+			 <grammar mode="dtmf" root="start" version="1.0">
+		               <rule id="start" scope="public">
+              		   <one-of>				 
+					  <item>1</item>
+					  <item>8</item>						  			  		      
+              		  </one-of>
+		              </rule>
+	               </grammar>
+			
+				
+
+
+			<prompt bargein="true" timeout="3s">	
+	              	  <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'event_nosub1_option_'+price_tkt+'.wav'"/>
+      	     		</prompt>
+			
+			<filled>
+				<if cond="submnuopt=='1'">
+				    	     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_PURCHASE_CELEBRITY_TICKET&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=15&amp;INPARAM[5]='+celeshowid+'&amp;INPARAM[6]='+serviceid+'&amp;INPARAM[7]='+c_planid"/>
+					<!-- <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_PURCHASE_CELEBRITY_TICKET&amp;INTOKEN=10&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+celeshowid+'&amp;INPARAM[4]='+celebrityid+'&amp;INPARAM[5]='+showdate+'&amp;INPARAM[6]='+showtime+'&amp;INPARAM[7]='+endtime+'&amp;INPARAM[8]='+serviceid+'&amp;INPARAM[9]='+c_planid"/> -->
+
+				     
+				     <clear namelist="submnuopt"/> 		
+				     <prompt bargein="true" timeout="7s">	
+		                         <audio expr="Prompt_Path+LANG_DESCRIPTION+'/charging_wait.wav'"/>	
+              		     </prompt>
+				     
+					<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ BAlanace Check @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+					 <if cond="timerflag=='1'">                       						   
+					   <script>
+					          total_used_bal=chkBalenceMinute(start_BalenceMinute);
+		                               curbalance=balance-total_used_bal;  						  
+					   </script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		                        <if cond="curbalance &lt;= '0'">          
+		                             <goto next="TopupRenew.vxml"/>
+              		          </if>     
+				     </if> 									
+				     <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ BAlanace Check @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->	
+					
+				     <goto next="#BillStatusChk"/>
+				<elseif cond="submnuopt=='8'"/>
+					
+					<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ BAlanace Check @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->	
+
+					<if cond="timerflag=='1'">
+					   <script>
+						    total_used_bal=chkBalenceMinute(start_BalenceMinute);
+			                         curbalance=balance-total_used_bal;  						  
+					   </script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+		                        <if cond="curbalance &lt;= '0'">          
+		                             <goto next="TopupRenew.vxml"/>
+              		          </if>     
+				       </if>
+					<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ BAlanace Check @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->	
+					 			
+					<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FMJ Flow @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->	
+ 					
+				     
+    			   		<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>				 
+			               					
+					<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END FMJ Flow @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->	
+					<!-- <prompt bargein="true" timeout="3s">	
+				      		<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'CBC_thanksNoSub.wav'"/>
+              		       </prompt>
+		                     <disconnect/> -->
+				</if>
+			</filled>
+			
+			 <noinput>
+			       <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>                
+                 		<reprompt/> 
+	               </noinput>
+	        
+                      <noinput count="3">		  
+                      	<disconnect/>
+	               </noinput>
+	     
+        	        <nomatch>
+                		<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+		              <reprompt/>
+	               </nomatch> 
+	
+	               <nomatch count="3">
+	                     <disconnect/>					
+  	               </nomatch>                		
+	  </field>	 
+    </form>
+
+<form id="CALL_CONNECTED">
+		<block>
+				<!-- <prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'HIN/charge_req_recd.wav'"/>
+				</prompt> -->
+				<log> Honey This side </log>
+		
+				<log expr="'@@@@@@ ANI is '+ANI"/>
+		</block>
+		<!--	<var name = "mycli" expr ="'9136221731'"/>-->
+				<var name = "mycli" expr ="'222'+ANI"/>
+				
+				<!--  <transfer name="mytransfer" dest="isup:8586967045" bridge="true" connecttimeout="2000s" > -->
+		
+			 <!--	<transfer name="mytransfer" dest="isup:9971589801" bridge="true" connecttimeout="2000s" > -->
+
+			 <!--<transfer name="mytransfer" dest="isup:09478232031" bridge="true" connecttimeout="2000s" namelist="mycli"> -->
+
+				<!-- <transfer name="mytransfer" dest="isup:9871284495" bridge="true" connecttimeout="2000s" > -->
+					
+				 <!--  <transfer name="mytransfer" dest="isup:01166460000" bridge="true" connecttimeout="2000s" namelist="mycli" >  -->
+				  <transfer name="mytransfer" dest="isup:01166291000" bridge="true" connecttimeout="2000s" namelist="mycli" >  
+		   	   		<filled>
+						
+		    				<log> transfer done now</log>
+					      	<clear namelist="mytransfer"/>
+	   				</filled>
+			       </transfer>
+
+
+</form>
+
+
+
+<form id="celebchatpending">
+	 <block>   
+	    <assign name="call_date" expr="getcurryyyymmdd()"></assign>
+	    <assign name="call_time" expr="start_time()"/>
+
+	    <if cond="call_date==showdate">
+	    	 <if cond="(time_duration(showtime) &lt; 30) || (time_duration(showtime)==30)">
+			<prompt bargein="true" timeout="0s">	
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+''pre_event_engagement.wav'"/>
+		        </prompt>
+		 <elseif cond="call_time >= showtime"/>
+			<prompt bargein="true" timeout="0s">	
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+''event_cancel.wav'"/>
+		        </prompt>
+		 <else/>
+		 	<prompt bargein="true" timeout="0s">	
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+''chat_today.wav'"/>
+		    	</prompt>
+	         </if>
+	 	
+	    <else/>
+		 <prompt bargein="true" timeout="0s">	
+			<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+''call_postevent_next.wav'"/>
+        	 </prompt>
+	    </if>
+	    <disconnect/>
+	 </block>   
+</form>
+
+<form id="BillStatusChk">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=sp_CHK_CELEBRITY_ATCIVE_USER&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeshowid"/>
+		<script>
+			 <![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+			   {  	  
+			       if(j==0)
+			       	cele_usr_status = out_string[j];
+			  }
+			]]>
+		</script>
+		<if cond="cele_usr_status == '1'">
+			  <log expr="'@@@@@@ start_BalenceMinute is '+start_BalenceMinute"/>	
+			 <if cond="timerflag=='1'">                       						   
+				   <script>
+					   total_used_bal=chkBalenceMinute(start_BalenceMinute);
+              		          curbalance=balance-total_used_bal;  						  
+				   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         	   <if cond="curbalance &lt;= '0'">          
+                             	<goto next="TopupRenew.vxml"/>
+                       	  </if>
+     			 </if>
+			 <!-- <prompt bargein="false">	
+				<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'disclaimer_ticket.wav'"/>	
+              	 </prompt>
+			 <if cond="celeshowstatus == '2'">
+ 				 <prompt bargein="true" timeout="3s">	
+       	                  <audio expr="Prompt_Path+LANG_DESCRIPTION+'/thanks_registration1.wav'"/>	
+              	     	 </prompt>
+			 </if>	
+			 <log expr="'DNIS >>>>>>>>>>>>>>> '+DNIS"/>
+			<log expr="'DNIS >>>>>>>>>>>>>>> celebrityMainMenu '+DNIS"/>
+			<goto next="#celebrityMainMenu"/> -->
+			<prompt bargein="true" timeout="3s">	
+      	                  <audio expr="Prompt_Path+LANG_DESCRIPTION+'/thanks_registration1.wav'"/>	
+             	     	</prompt>
+			<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+
+		<else/>		
+		     <prompt bargein="true" timeout="3s">	
+                         <audio expr="Prompt_Path+LANG_DESCRIPTION+'/delay_charging.wav'"/>	
+                   </prompt>
+		     <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>	
+                   <!-- <goto next="starclub_End.vxml"/> -->			  	 				  				  
+   		</if>	
+	</block>
+</form> 
+   
+
+  <form id="celebrityMainMenu">
+        
+        <block>
+			  
+  	       <log expr="'@@@@@@ call start_BalenceMinute is '+start_BalenceMinute"/> 
+		<if cond="celeshowstatus=='1'">
+			<log expr="'@@@@@@ callget current date is '+getcurryyyymmdd()"/>
+	   		<if cond="showdate==getcurryyyymmdd()">
+				 
+	   			<if cond="time_duration(showtime)==30">
+			   		<log expr="'@@@@@@ call time_duration(showtime) is '+time_duration(showtime)"/>	
+					<if cond="DNIS=='566669' || DNIS=='54646124'">
+			   			<prompt bargein="false">	
+                  					<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'pre_event_engagement_toll.wav'"/>	
+            					</prompt>
+    			      			<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>	 	
+    		         		<elseif cond="DNIS=='56666' || DNIS=='566660'" />
+    		         			<prompt bargein="false">	
+                  					<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'pre_event_engagement_tollfree.wav'"/>	
+            					</prompt>
+    			       		<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+					</if>
+			   	<else/>
+			   		<if cond="DNIS=='566669'">
+			   			<prompt bargein="false">	
+                  					<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'chat_today_toll.wav'"/>	
+            					</prompt>
+    			       		<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+	 	
+    		         		<elseif cond="DNIS=='56666' || DNIS=='566660' || DNIS=='54646124'" />
+    		         			<prompt bargein="false">	
+                  					<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'chat_today_tollfree.wav'"/>	
+            					</prompt>
+    			       			<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+					</if>
+			   	</if>
+			   	
+			<else/>
+            			<prompt bargein="false">	
+                  			<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'event_offline_sub1.wav'"/>	
+            			</prompt>
+	 			<if cond="timerflag=='1'">
+			   		<script>
+				    		 total_used_bal=chkBalenceMinute(start_BalenceMinute);
+                         			 curbalance=balance-total_used_bal;  						  
+					</script>
+			   		<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			  		<log expr="'@@@@@@ left balance is '+curbalance"/>
+                         		<if cond="curbalance &lt;= '0'">          
+                             		<goto next="TopupRenew.vxml"/>
+                       		</if> 
+                       	</if>    
+				<if cond="DNIS=='566669'">
+    			       	<goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/>	 	
+    		         	<elseif cond="DNIS=='56666' || DNIS=='566660'" />
+    			       	<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+    			     	<else/>
+    			       	<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>				 
+			       </if>
+			</if>				
+					
+    		 <elseif cond="celeshowstatus=='0'" />
+    		     	<if cond="DNIS=='566669'">
+    		     		<prompt bargein="false">	
+                			 <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'event_active.wav'"/>
+                			
+                			 <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'disclaimer_pre_chat.wav'"/>
+            			</prompt>
+            		<elseif cond="DNIS=='56666' || DNIS=='566660'" />
+            			<prompt bargein="false">	
+                  			<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'celeb_chat_running.wav'"/>	
+            			</prompt>
+                     	<if cond="timerflag=='1'">
+			  		 <script>
+				    		 total_used_bal=chkBalenceMinute(start_BalenceMinute);
+                     	   		 curbalance=balance-total_used_bal;  						  
+					 </script>
+					 <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+curbalance"/>
+                        		 <if cond="curbalance &lt;= '0'">          
+                             		<goto next="TopupRenew.vxml"/>
+                       		 </if>     
+				</if>	
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<else/>
+				<prompt bargein="false">	
+                  			<audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'event_offline_sub1.wav'"/>	
+            			</prompt>
+	 			<if cond="timerflag=='1'">
+			   		<script>
+				    		 total_used_bal=chkBalenceMinute(start_BalenceMinute);
+                         			 curbalance=balance-total_used_bal;  						  
+					</script>
+			   		<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			  		<log expr="'@@@@@@ left balance is '+curbalance"/>
+                         		<if cond="curbalance &lt;= '0'">          
+                             		<goto next="TopupRenew.vxml"/>
+                       		</if> 
+                       	</if>    
+				<if cond="DNIS=='566669'">
+    			       	<goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/>	 	
+    		         	<elseif cond="DNIS=='56666' || DNIS=='566660'" />
+    			       	<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+    			     	<else/>
+    			       	<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>				 
+			       </if>
+	
+			</if>
+			<!-- <ccp_handoff profile="celebrity_talk" aep="CELEBTITY_AEP" wait="true" />
+			<ccp_getinfo key="return_opt" variable="return_opt"/> -->
+			<log expr="'CELE CHAT RESULT '+return_opt"/>
+						
+			<if cond="return_opt=='*'"> 
+			 	<log expr="'Successful return from chat'"/>
+			 	<goto next="starclub_End.vxml"/>		
+			</if>
+					 				 	
+			<if cond="DNIS=='566669'">
+    			       <goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/>	 	
+    		       <elseif cond="DNIS=='56666' || DNIS=='566660'" />
+    			       <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+    			<else/>
+    			       <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>				 
+			</if>
+			 
+		<else/>
+                     <if cond="timerflag=='1'">
+			   <script>
+				    total_used_bal=chkBalenceMinute(start_BalenceMinute);
+              	           curbalance=balance-total_used_bal;  						  
+			   </script>
+			   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                        <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>     
+			</if>					 				 	
+			<if cond="DNIS=='566669'">
+    			       <goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/>	 	
+    		       <elseif cond="DNIS=='56666' || DNIS=='566660'" />
+    			       <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>				 
+			</if>	 	
+		</if> 
+				
+	</block>
+			
+			 
+			 <catch event="error.ccp_handoff">
+		           <if cond="timerflag=='1'">
+					   <script>
+					     total_used_bal=chkBalenceMinute(start_BalenceMinute);
+                         balance=balance-total_used_bal;  						  
+					   </script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+                         <if cond="balance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                         </if>     
+				   </if>					 				 	
+				    <if cond="DNIS=='566669'">
+    			       <goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/>	 	
+    		         <elseif cond="DNIS=='56666' || DNIS=='566660'" />
+    			       <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>				 
+			         </if>
+		   				
+            </catch>     
+			
+			 <catch event="error.ccp_getinfo">
+		           <if cond="timerflag=='1'">
+					   <script>
+					     total_used_bal=chkBalenceMinute(start_BalenceMinute);
+                         balance=balance-total_used_bal;  						  
+					   </script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+                         <if cond="balance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                         </if>     
+				   </if>					 				 	
+				    <if cond="DNIS=='566669'">
+    			       <goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/>	 	
+    		         <elseif cond="DNIS=='56666' || DNIS=='566660'" />
+    			       <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>				 
+			         </if>
+		   				
+            </catch>               
+   		
+    </form> 
+	
+	<form id="nextevent">
+		<field name="eventopt">
+		
+			 <grammar mode="dtmf" root="start">
+               <rule id="start" scope="public">
+                 <one-of>				 
+				  <item>1</item>
+				  <item>8</item>						  			  		      
+                </one-of>
+              </rule>
+            </grammar>
+			
+		   
+			<prompt bargein="true" timeout="3s">	
+  			      	 <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'call_postevent_next.wav"/>
+           	</prompt>
+			
+	    			
+			
+			<filled>
+				<if cond="eventopt=='1'">
+					 <if cond="timerflag=='1'">                       						   
+					   <script>
+					     total_used_bal=chkBalenceMinute(start_BalenceMinute);
+                         curbalance=balance-total_used_bal;  						  
+					   </script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>     
+					 </if>	
+					 <assign name="NXTEVENT" expr="'ON'"/>								
+					<goto next="#loadstarclubcelebritycfg"/>
+				<elseif cond="eventopt=='8'"/>
+					<if cond="timerflag=='1'">
+					   <script>
+					     total_used_bal=chkBalenceMinute(start_BalenceMinute);
+                         curbalance=balance-total_used_bal;  						  
+					   </script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+curbalance"/>
+                         <if cond="curbalance &lt;= '0'">          
+                             <goto next="TopupRenew.vxml"/>
+                        </if>     
+					 </if>					 				 	
+				     <if cond="DNIS=='566669'">
+    			       <goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/>	 	
+    		         <elseif cond="DNIS=='56666' || DNIS=='566660'" />
+    			       <goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>				 
+			         </if> 					
+				</if>
+			</filled>
+			
+			 <noinput>
+			     <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>                
+                 <reprompt/> 
+             </noinput>
+	        
+             <noinput count="3">		  
+                 <disconnect/>
+              </noinput>
+	        
+             <nomatch>
+                <audio expr="Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+                <reprompt/>
+             </nomatch> 
+	
+	         <nomatch count="3">
+	             <disconnect/>					
+	         </nomatch>                
+				
+	  </field>	
+	</form>
+</vxml>
+
+
+
+   

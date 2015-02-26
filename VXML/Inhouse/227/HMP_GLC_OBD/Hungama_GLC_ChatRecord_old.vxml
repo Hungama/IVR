@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_ChatRecord.vxml" content="" />
+<var name="CELEB_ONLINE" expr="session.connection.ccxml.values.CELEB_ONLINE"/>
+<var name="UploadFileName" expr="''"/>
+<var name="record_remove" expr="''"/>
+<var name="celeb_rec_fcount" expr="0"/>
+<var name="RECORD_FIRST" expr="1"/>
+
+<script>
+	var out_string=new Object();
+	
+</script>
+
+<form id="FetchCountValue">
+	<block>
+	<assign name="Usage_time" expr="rim(section_begin)"/>
+	<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+	<assign name="Section_Name" expr="'Chat_recording'"/>
+	<assign name="section_begin" expr="starttime()"/>
+	 <assign name="ANI" expr="'9711071741'"/>
+	 <assign name="dbservlet" expr="'hul_dbinteraction'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+		<log> before fetch</log>
+		<script>
+			<![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+			   {  	  
+			       if(j==0)
+					celeb_rec_fcount = out_string[j];
+			  }
+			]]>
+		</script>
+		
+		<script>
+			celeb_rec_fcount=parseInt(celeb_rec_fcount);
+			UploadFileName='celeb_record_'+celeb_rec_fcount+'.wav';
+		</script>
+		<log> UploadFileName number  <value expr="UploadFileName"/> </log>
+		<goto next="#RecordSession"/>
+	</block>
+</form>
+
+
+<form id="RecordSession">
+
+     <block>
+	 <log> Got value from ccxml isssss @@@@@@ <value expr="CELEB_ONLINE"/></log>
+	 <prompt bargein="true" timeout="1s" cond="CELEB_ONLINE=='TRUE'">
+		<audio expr="promptpath+'/'+lang+'/welcome_celeb.wav'"/>
+		
+	 </prompt> 
+	 <assign name="CELEB_ONLINE" expr="'FALSE'"/>
+     </block>
+
+	<record name="message" beep="false" maxtime="15s" dtmfterm="false" type="audio/wav;codec=alaw">
+	</record>
+
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INPUT_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=GET_RECORD&amp;INPARAM[1]=no'"/>
+			<script>
+			<![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+			   {  	  
+			       if(j==0)
+					record_remove = out_string[j];
+			   }
+			]]>
+			</script>
+			<if cond="record_remove=='star'">
+				<script srcexpr="'http://192.168.100.226:8080/hungama/Record_Copy_Rename?ConfigPath=111&amp;ANI=1236&amp;MSG=celeb_star.wav&amp;TOKEN='+UploadFileName"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INPUT_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=SET_RECORD&amp;INPARAM[1]=hash'"/>
+				
+				<script>
+			     		celeb_rec_fcount=celeb_rec_fcount+1;
+			     		UploadFileName='celeb_record_'+celeb_rec_fcount+'.wav';
+			     	</script>
+			     	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=SET'"/>
+			     	<assign name="RECORD_FIRST" expr="'1'"/>
+     				<goto next="#RecordSessiontwo"/>
+			</if>
+	</block>
+
+	<subdialog name="messageUpload" srcexpr="'http://192.168.100.226:8080/hungama/air_recording_mobisur'" enctype="multipart/form-data" method="post" namelist="ANI UploadFileName message">	    	    							
+	</subdialog>
+
+
+     <block>
+     	<script srcexpr="'http://192.168.100.226:8080/hungama/Record_Mobisur?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;MSG='+message"/> 
+     	<script>
+     		celeb_rec_fcount=celeb_rec_fcount+1;
+     		UploadFileName='celeb_record_'+celeb_rec_fcount+'.wav';
+     	</script>
+     	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=SET'"/>
+     	<assign name="RECORD_FIRST" expr="'1'"/>
+     	<goto next="#RecordSessiontwo"/>
+     </block>
+     
+</form>
+
+<form id="RecordSessiontwo">
+
+    <block>
+	 <!--<prompt bargein="false" timeout="1s">
+		<audio expr="promptpath+'/'+lang+'/blank.wav'"/>
+	</prompt>-->
+    </block>
+
+	<record name="messagetwo" beep="false" maxtime="15s" dtmfterm="false" type="audio/wav;codec=alaw">
+	</record>
+	
+	<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INPUT_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=GET_RECORD&amp;INPARAM[1]=no'"/>
+				<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+				   {  	  
+				       if(j==0)
+						record_remove = out_string[j];
+				   }
+				]]>
+				</script>
+				<if cond="record_remove=='star'">
+					<script srcexpr="'http://192.168.100.226:8080/hungama/Record_Copy_Rename?ConfigPath=111&amp;ANI=1236&amp;MSG=celeb_star.wav&amp;TOKEN='+UploadFileName"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INPUT_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=SET_RECORD&amp;INPARAM[1]=hash'"/>
+					
+					<script>
+				     		celeb_rec_fcount=celeb_rec_fcount+1;
+				     		UploadFileName='celeb_record_'+celeb_rec_fcount+'.wav';
+				     	</script>
+				     	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=SET'"/>
+				     	<assign name="RECORD_FIRST" expr="'1'"/>
+	     				<goto next="#RecordSession"/>
+				</if>
+	</block>
+
+	<subdialog name="messageUpload" srcexpr="'http://192.168.100.226:8080/hungama/air_recording_mobisur'" enctype="multipart/form-data" method="post" namelist="ANI UploadFileName messagetwo">	    	    							
+	</subdialog>
+  
+     <block>
+	<script srcexpr="'http://192.168.100.226:8080/hungama/Record_Mobisur?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;MSG='+messagetwo"/> 
+	<script>
+		celeb_rec_fcount=celeb_rec_fcount+1;
+		UploadFileName='celeb_record_'+celeb_rec_fcount+'.wav';
+	</script>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=SET'"/>
+	<assign name="RECORD_FIRST" expr="'2'"/>
+	<goto next="#RecordSession"/>
+     </block>
+  
+</form>
+
+</vxml>

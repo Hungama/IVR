@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="CricketRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MatchCenter.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="ctr" expr="0"/>
+	<var name="songID" expr="''"/>
+	
+	<script>
+		var favSongs=new Object();
+		var song_begin=0;
+		var song=0;
+		var nextchoice=0;
+	</script>
+
+	<form id="match_center">
+			
+		<block>
+			<assign name="Usage_time" expr="time_duration(section_begin)"/>
+			<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+			<assign name="SECTION" expr="'MATCHCENTER'"/>
+			<assign name="Section_Name" expr="'MATCHCENTER'" />
+			<assign name="section_begin" expr="start_time()"/>
+			<assign name="cat" expr="'mc'"/>
+		</block>	
+		<field name="choice">
+			<grammar mode="dtmf" root="start20" version="1.0">
+						<rule id="start20" scope="public">
+							<one-of>
+								 <item> 1 </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_matchcenter.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#play_clip"/>	
+				</if>
+			</filled>
+			
+			<noinput>
+				<goto next="#play_clip"/>
+			</noinput>
+			
+			<nomatch>
+				<goto next="#play_clip"/>
+			</nomatch>
+		</field>
+	</form>
+
+	<form id="play_clip">
+		<block>
+			<if cond="clipFlag=='0'">
+				<script srcexpr="'http://'+S_IP+'/'+servlet_path_1+'/ar_ReadConfigSong?ConfigPath=matchcenter.cfg&amp;TOKEN=FREE'"/>
+				<script>
+								array1.length=0;
+								unike_play=0;
+				</script>
+				<assign name="len" expr="favSongs.length" />
+				<log>Length Match Center  is	<value expr="len"/>    </log>
+				<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+				<script>
+						 <![CDATA[
+							   for(j=0; j<len ;  j++)
+							   {  	  
+										array1[j] = favSongs[j];						   
+							   }
+
+						]]>		
+				</script>
+				<assign name="clipFlag" expr="'1'" />
+			</if>
+			
+			<if cond="unike_play &gt; len-1">
+				<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="len-1" />
+			</if>
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array == <value expr="array1[unike_play]"/>    </log>
+			<script>
+				songID=array1[unike_play]
+		</script>
+		</block>
+		
+		<field name="choice">
+		
+			<prompt bargein="true" timeout="1s">
+					<!--<audio expr="'http://'+CONTENT_PATH+'/'+lang+'/'+songID+'.wav'"/> -->
+					<audio expr="'http://'+S_IP+'/cricprompt/mc/'+songID+'.wav'"/>
+			</prompt>
+			
+			<grammar mode="dtmf" root="start21" version="1.0">
+						<rule id="start21" scope="public">
+							<one-of>
+								 
+								 <item>  1  </item>
+								 
+							</one-of>
+						</rule>
+			</grammar>
+				
+			<filled>
+				<if cond="choice=='1'">
+					<script>ctr=ctr+1;</script>
+					<goto next="#detail_preview"/>
+				</if>
+			</filled>
+				
+			<noinput>
+			<script> unike_play=unike_play+1</script>
+				<script>ctr=ctr+1;</script>
+				<goto next="#play_clip"/>
+				<!--<if cond="ctr==3">
+					<goto next="#match_center"/>
+				<else/>
+					<goto next="#play_clip"/>
+				</if>
+				<goto next="MainMenu.vxml"/>-->
+			</noinput>
+				
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				
+			</nomatch>
+			
+			<nomatch count="3">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<goto next="MainMenu.vxml"/>
+			</nomatch>
+		</field>
+	</form>
+	
+	<form id="detail_preview">
+		<block>
+			<assign name="mcflag" expr="1"/>
+			<assign name="song_begin" expr="start_time()"/>
+     	    <assign name="song_listen" expr="'START'" />
+     	    <script>song='c_'+songID</script>
+			<log expr="'@@@@@@@@@@@@@@@@@@@@@@@@@@@song=='+song"></log>
+		</block>		
+		<field name="input">
+		
+			<prompt bargein="true" timeout="3s">
+				<!--<audio expr="'http://cricprompt/'+lang+'/c_'+songID+'.wav'"/>-->
+					<audio expr="'http://'+S_IP+'/cricprompt/mc/c_'+songID+'.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/matchcenter_option.wav'"/>
+			</prompt>
+			
+			<grammar mode="dtmf" root="start22" version="1.0">
+						<rule id="start22" scope="public">
+							<one-of>
+								 <item>  4  </item>
+								 <item>  9  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+			</grammar>
+				
+			<filled>
+				<assign name="nextchoice" expr="input"></assign>
+				<script>song='c_'+songID</script>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!song=='+song"></log>
+				
+				<goto next="#contentlogin" /> 
+			</filled>
+				
+			<noinput>
+				<!--<script>ctr=ctr+1;</script>
+				<script> unike_play=unike_play+1</script>
+				<goto next="#detail_preview"/>-->
+				
+				<goto next="MainMenu.vxml"/>
+			</noinput>
+				
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+			</nomatch>
+		</field>
+	</form>
+
+<form id="contentlogin">
+	<block>
+		<!--<assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="time_duration(song_begin)"/>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!compare_time=='+compare_time"></log>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!ContentTime=='+ContentTime"></log>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!hash=='+hash"></log>
+				 
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!cat=='+cat"></log>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!subcat=='+subcat"></log>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!contentlog=='+contentlog"></log>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!song=='+song"></log>
+				 <assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign> 
+				 <assign name="contentlog" expr="contentlog+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>-->
+				 
+				 
+				<if cond="nextchoice=='4'">
+						<goto next="#detail_preview"/>
+				<elseif cond="nextchoice=='9'"/>
+						<goto next="MainMenu.vxml"/>
+				<elseif cond="nextchoice=='#'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_MATCHCENTER&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+				</if>
+				
+	</block>
+</form>
+
+</vxml>

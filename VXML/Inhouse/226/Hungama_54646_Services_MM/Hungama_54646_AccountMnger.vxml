@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_AccountMnger.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+
+	<form id="AcntOption">
+			<script>
+				<![CDATA[
+				if(timerflag==1)
+					start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+			<block>
+			<assign name="Section_Name" expr="'ACCOUNTMANAGER'"/>
+			</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start21" version="1.0">
+						<rule id="start21" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/welcome_acmanager.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/acmanager_option.wav'"/>
+			</prompt>
+			<filled>
+			    <if cond="choice=='1'">
+					<goto next="#AcntBalance"></goto>
+				<elseif cond="choice=='2'"/>
+					<goto next="#AcntLanguage"></goto>
+				<elseif cond="choice=='3'"/>
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='4'"/>
+					<goto next="#AcntHungama54646"></goto>
+				<elseif cond="choice=='8'"/>
+				
+					<if cond="DNIS=='546462'">
+						 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+					<elseif cond="DNIS=='546463'"/>
+						<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+					<elseif cond="DNIS=='546469'"/>
+						<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+					</if>
+					
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<if cond="DNIS=='546462'">
+				 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+			<elseif cond="DNIS=='546463'"/>
+				<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+			<elseif cond="DNIS=='546469'"/>
+				<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+			</if>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="DNIS=='546462'">
+				 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+			<elseif cond="DNIS=='546463'"/>
+				<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+			<elseif cond="DNIS=='546469'"/>
+				<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+			</if>
+		</nomatch>
+	</form>
+	
+	
+	<form id="AcntBalance">
+		<block>
+		<assign name="Section_Name" expr="'ACCOUNTMANAGER_BALANCE'"/>
+			
+			<script>
+		       	<![CDATA[
+			       if(timerflag==1)
+				 start_BalenceMinute=starttime();
+		       	]]>	 	
+		     </script>					   
+		
+		
+			<assign name="loc_balance" expr="balance"/>
+			 <log expr="' Server ip is :' +loc_balance"/>
+		
+			<script> 
+				  loc_balance=Math.floor(loc_balance/60); 
+		
+			</script>
+			 <log expr="' Server ip is :' +loc_balance"/>
+		
+			<if cond="loc_balance &lt;= '0'">   
+			
+				<prompt bargein="false" >
+					<audio expr="promptspath_54646+'/'+lang+'/acmanager_balanceis.wav'"/>
+					 <audio expr="promptspath_54646+'/'+lang+'/0.wav'"/>
+					 <audio expr="promptspath_54646+'/'+lang+'/minutes.wav'"/>
+				</prompt>
+			<elseif cond="loc_balance &gt;= '100'"/>
+				<script>loc_balance=loc_balance-100;</script>
+				<prompt bargein="false" >
+					 <audio expr="promptspath_54646+'/'+lang+'/acmanager_balanceis.wav'"/>
+					 <audio expr="promptspath_54646+'/'+lang+'/1.wav'"/>
+					 <audio expr="promptspath_54646+'/'+lang+'/100.wav'"/>
+					 <audio expr="promptspath_54646+'/'+lang+'/'+loc_balance+'.wav'"/>
+					 <audio expr="promptspath_54646+'/'+lang+'/minutes.wav'"/>
+				</prompt>
+			<else/>
+				<prompt bargein="false" >
+					<audio expr="promptspath_54646+'/'+lang+'/acmanager_balanceis.wav'"/>
+					 <audio expr="promptspath_54646+'/'+lang+'/'+loc_balance+'.wav'"/>
+					 <audio expr="promptspath_54646+'/'+lang+'/minutes.wav'"/>
+				</prompt>
+			</if> 
+		
+				<if cond="timerflag=='1'">
+					   <script>
+					     total_used_bal=rim(start_BalenceMinute);
+					     balance=balance-total_used_bal;  						  
+					   </script>
+						   <if cond="balance &lt;= '0'">          
+							 <goto next="Topup.vxml"/>
+						   </if>     
+					</if>
+		
+		
+			<!--<goto next="Hungama_MUSICWORLD_PlayContent.vxml" />-->
+				<if cond="DNIS=='546462'">
+					 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+				<elseif cond="DNIS=='546463'"/>
+					<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+				<elseif cond="DNIS=='546469'"/>
+					<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+				</if>
+		</block>
+	</form>
+		
+	
+	
+	<!--<form id="AcntBalance">
+		<block>
+				<if cond="timerflag=='1'">
+					   <script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					  </script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+						     <if cond="balance &lt;= '0'">          
+							   <goto next="Topup.vxml"/>
+						    </if>     
+				</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+				 <![CDATA[
+							    for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==2)
+								       	loc_balance = out_string[j];								       							      
+								  }
+		
+					]]>
+				</script>
+			
+			<log expr="'selected loc_balance is '+loc_balance"></log>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/acmanager_balanceis.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/'+loc_balance+'.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/minutes.wav'"/>
+			</prompt>
+			
+			<if cond="DNIS=='546462'">
+				 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+			<elseif cond="DNIS=='546463'"/>
+				<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+			<elseif cond="DNIS=='546469'"/>
+				<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+			</if>
+			
+		</block>
+	</form>-->
+	
+	<form id="AcntLanguage">
+		<block>
+		<assign name="Section_Name" expr="'ACCOUNTMANAGER_LANGCHANGE'"/>
+		<if cond="timerflag=='1'">
+		   <script>
+			total_used_bal=rim(start_BalenceMinute);
+			balance=balance-total_used_bal;  						  
+		  </script>
+		   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+		   <log expr="'@@@@@@ left balance is '+balance"/>
+			     <if cond="balance &lt;= '0'">          
+				   <goto next="Topup.vxml"/>
+			    </if>     
+		</if>
+			<goto next="Hungama_54646_NewUser_MM.vxml#LANGSEL1"></goto>
+		</block>
+	</form>
+	
+	<form id="AcntUnsubscription">
+	<block>
+	<assign name="Section_Name" expr="'ACCOUNTMANAGER_UNSUB'"/>
+		<if cond="timerflag=='1'">
+		   <script>
+			total_used_bal=rim(start_BalenceMinute);
+			balance=balance-total_used_bal;  						  
+		  </script>
+		   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+		   <log expr="'@@@@@@ left balance is '+balance"/>
+			     <if cond="balance &lt;= '0'">          
+				   <goto next="Topup.vxml"/>
+			    </if>     
+		</if>
+	
+	</block>
+			<!-- 	<field name="choice" type="digits?length=1"> -->
+		<field name="choice">
+			<grammar mode="dtmf" root="start22" version="1.0">
+						<rule id="start22" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/acmanager_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<!-- UNSUB REQUEST -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath_54646+'/'+lang+'/thanks_unsub.wav'"/>
+						</prompt>
+						<goto next="Hungama_54646_End.vxml"></goto>
+				<else/>			
+
+					<if cond="DNIS=='546462'">
+						 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+					<elseif cond="DNIS=='546463'"/>
+						<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+					<elseif cond="DNIS=='546469'"/>
+						<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+					</if>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			
+			<if cond="DNIS=='546462'">
+				 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+			<elseif cond="DNIS=='546463'"/>
+				<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+			<elseif cond="DNIS=='546469'"/>
+				<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+			</if>
+			
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			
+			<if cond="DNIS=='546462'">
+				 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+			<elseif cond="DNIS=='546463'"/>
+				<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+			<elseif cond="DNIS=='546469'"/>
+				<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+			</if>
+			
+		</nomatch>
+	</form>
+	
+	<form id="AcntHungama54646">
+		<block>
+		<assign name="Section_Name" expr="'ACCOUNTMANAGER_TOLL'"/>
+				<if cond="timerflag=='1'">
+					   <script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					  </script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+						     <if cond="balance &lt;= '0'">          
+							   <goto next="Topup.vxml"/>
+						    </if>     
+				</if>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/subintro_toll.wav'"/>				
+			</prompt>
+			
+			<if cond="DNIS=='546462'">
+				 <goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+			<elseif cond="DNIS=='546463'"/>
+				<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+			<elseif cond="DNIS=='546469'"/>
+				<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+			</if>
+			
+		</block>
+	</form>
+
+</vxml>

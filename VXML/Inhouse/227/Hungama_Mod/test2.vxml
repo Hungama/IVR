@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_ERoot.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="test2.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<form id="LANGSEL1">
+		
+		<field name="choice">
+				<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  9  </item>
+
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/lang01.wav'"/>
+					
+				</prompt>
+				<prompt bargein="true" timeout="1s">
+					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/press_dtmf1.wav'"/>
+				</prompt>
+				<prompt bargein="true" timeout="1s">
+
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/02/lang02.wav'"/>
+
+																									
+				</prompt>
+<prompt bargein="true" timeout="1s">
+					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/press_dtmf2.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="1s">
+					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/04/lang04.wav'"/>
+
+					
+																					
+				</prompt>
+<prompt bargein="true" timeout="1s">
+					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/press_dtmf3.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="1s">
+					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/06/lang06.wav'"/>
+
+					
+																					
+				</prompt>
+				<prompt bargein="true" timeout="1s">
+					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/press_dtmf4.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="1s">
+					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/08/lang08.wav'"/>
+
+					
+																					
+				</prompt>
+				<prompt bargein="true" timeout="1s">
+					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/press_dtmf5.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="1s">
+					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/09/lang09.wav'"/>
+
+																					
+				</prompt>
+				<prompt bargein="true" timeout="1s">
+					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/press_dtmf6.wav'"/>
+				</prompt>
+
+
+			<filled>
+				
+				<log expr="I got into valid field"></log>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<goto next="Hungama_ModEnd.vxml"></goto>
+			
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<goto next="Hungama_ModEnd.vxml"></goto>
+			
+		</nomatch>
+	</form>
+</vxml>

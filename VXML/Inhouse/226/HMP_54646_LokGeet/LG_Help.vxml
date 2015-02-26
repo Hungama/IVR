@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="LG_Root.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="LG_Help.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+
+<form id="help">
+<block>
+<if cond="ANI=='9167610350' || ANI=='7838696917'">
+	<assign name="circle" expr="'guj'"/>
+</if>
+		<prompt bargein="true" timeout="3s">
+			<audio expr="promptspath_54646+'/'+lang+'/wel_help.wav'"/>
+		</prompt>
+		<goto next="#AcntOption"></goto>
+</block>
+</form>
+<form id="AcntOption">
+			<script>
+				<![CDATA[
+				if(timerflag==1)
+					start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+			<block>
+			<assign name="Section_Name" expr="'ACCOUNTMANAGER'"/>
+			</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start21" version="1.0">
+						<rule id="start21" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  8  </item>
+								  <item>  7 </item>
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				
+				<audio expr="promptspath_54646+'/'+lang+'/inside_help.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/keyinfo_mainmenu.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/keyinfo_pervmenu.wav'"/>
+				
+			</prompt>
+			<filled>
+			    	<if cond="choice=='1'">
+			    		<if cond="(circle=='bih'  || circle=='apd'  || circle=='guj' || circle=='mah' || circle=='upw' || circle=='upe' || circle=='mum1')">
+						<goto next="#AcntLanguage"></goto>
+					<else/>
+						<goto next="LG_MainMenu.vxml"></goto>
+					</if>
+				<elseif cond="choice=='2'"/>
+					<goto next="#AcntUnsubscription"></goto>
+				<elseif cond="choice=='7'"/>
+					<if cond="lencontent=='1'">
+						<if cond="TotalTV=='1'">
+							<assign name="TotalTV" expr="'0'"/>
+							<goto next="LG_MainMenu.vxml"></goto>
+						</if>
+						<goto next="LG_MainMenu.vxml#StartToPlaysongs"></goto>
+					<else/>
+						<goto next="LG_MainMenu.vxml"></goto>
+					</if>
+				<elseif cond="choice=='8'"/>
+					<goto next="LG_MainMenu.vxml"></goto>
+				<elseif cond="choice=='9'"/>
+					<goto next="#AcntOption"></goto>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/sys_nokeypress.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+				<log expr="'@@@@@@ used lencontent is '+total_used_bal"/>
+				<if cond="lencontent=='1'">
+					<goto next="LG_MainMenu.vxml#StartToPlaysongs"></goto>
+				<else/>
+					<goto next="LG_MainMenu.vxml"></goto>
+				</if>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/sys_nokeypress.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="LG_MainMenu.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+				
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/sys_wrongkeypress.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+		 <log expr="'@@@@@@ used lencontent is '+total_used_bal"/>
+			<if cond="lencontent=='1'">
+				<goto next="LG_MainMenu.vxml#StartToPlaysongs"></goto>
+			<else/>
+				<goto next="LG_MainMenu.vxml"></goto>
+			</if>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+lang+'/sys_wrongkeypress.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="LG_MainMenu.vxml"></goto>
+		</nomatch>
+	</form>
+	<form id="AcntLanguage">
+				<block>
+				
+				<assign name="Section_Name" expr="'HELP_LANG'"/>
+					<prompt bargein="true" timeout="0s" cond="usr_status=='-1'">
+							<audio expr="promptspath_54646+'/'+lang+'/lang_select.wav'"/>					
+					</prompt>
+					
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/'+operator+'/LokGeet/langorder_'+circle+'.cfg'"/>
+					<script>
+							    	array.length=0;
+					</script>
+					<assign name="movie_idx" expr="0"/>
+					<assign name="len" expr="favSongs.length" />
+					<assign name="i" expr="0" />
+					<log>previous Array[1]  is	<value expr="array[0]"/>    </log>
+					<script>
+						 <![CDATA[
+							   for(j=0; j<len ;  j++)
+							   {  	  	
+										array[j] = favSongs[j];						   
+							   }
+		
+						]]>		
+					</script> 	       					       
+					<log>Length  is	<value expr="len"/>    </log>
+					<log>Array[1]  is	<value expr="array[0]"/>    </log>	
+				</block>
+				<field name="choice">
+						<grammar mode="dtmf" root="start1" version="1.0">
+								<rule id="start1" scope="public">
+									<one-of>
+										 <item>  1  </item>
+										 <item>  2  </item>
+										 <item>  3  </item>
+										 <item>  4  </item>
+										 <item>  5  </item>
+										 <item>  6  </item>
+ 										  <item>  7 </item>
+										 <item>  8  </item>
+										 <item>  9  </item>
+
+									</one-of>
+								</rule>
+						</grammar>
+						<prompt bargein="true" timeout="1s">
+							<foreach item="names" array="array">
+								
+								<log>	song is is    	<value expr="movie_idx"/>  	</log>
+								<log>	names is is    	<value expr="names"/>  	</log>
+								<audio expr="promptspath_54646+'/'+lang+'/language_'+names+'.wav'"/>
+								<audio expr="promptspath_54646+'/'+lang+'/sel_dtmf'+ ++movie_idx+'.wav'"/>			
+							</foreach>						
+						</prompt>
+						<prompt bargein="true" timeout="2s">
+							<audio expr="promptspath_54646+'/'+lang+'/keyinfo_mainmenu.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/keyinfo_pervmenu.wav'"/>
+						</prompt>
+					<filled>
+						<if cond="choice=='7'">
+							<assign name="TotalTV" expr="'1'"/>
+							<goto next="#AcntOption"></goto>
+						</if>
+						<if cond="choice=='8'">
+							<goto next="LG_MainMenu.vxml"></goto>
+						</if>
+						<if cond="choice=='9'">
+							<goto next="#AcntOption"></goto>
+						</if>
+
+						<if cond="choice &lt; len+1">
+								<assign name="lang" expr="array[--choice]"/>
+								<log expr="'selected language is '+lang"></log>
+								 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=LG_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>
+									<prompt bargein="true" timeout="0s">
+										<audio expr="promptspath_54646+'/'+lang+'/lang_changed.wav'"/>
+									</prompt>
+									<goto next="LG_MainMenu.vxml"></goto>
+						<else/>
+							<prompt bargein="true" timeout="0s">
+								<audio expr="promptspath_54646+'/'+lang+'/sys_wrongkeypress.wav'"/>
+							</prompt>
+							<assign name="movie_idx" expr="0"/>
+							<goto next="#AcntLanguage"></goto>
+
+										
+						</if>
+					</filled>
+				</field>
+				<noinput count="1">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/sys_nokeypress.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<reprompt></reprompt>
+				</noinput>
+				<noinput count="2">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/sys_nokeypress.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<reprompt></reprompt>
+				</noinput>
+				<noinput count="3">
+					<goto next="LG_MainMenu.vxml"></goto>
+				</noinput>
+				<nomatch count="1">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/sys_wrongkeypress.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<reprompt></reprompt>
+				</nomatch>
+				<nomatch count="2">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/sys_wrongkeypress.wav'"/>
+					</prompt>
+					<assign name="movie_idx" expr="0"/>
+					<reprompt></reprompt>
+				</nomatch>
+				<nomatch count="3">
+					<goto next="LG_MainMenu.vxml"></goto>
+		
+				</nomatch>
+			</form>
+
+	
+	<form id="AcntUnsubscription">
+	<block>
+	<assign name="Section_Name" expr="'ACCOUNTMANAGER_UNSUB'"/>
+		<if cond="timerflag=='1'">
+		   <script>
+			total_used_bal=rim(start_BalenceMinute);
+			balance=balance-total_used_bal;  						  
+		  </script>
+		   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+		   <log expr="'@@@@@@ left balance is '+balance"/>
+			     <if cond="balance &lt;= '0'">          
+				   <goto next="Topup.vxml"/>
+			    </if>     
+		</if>
+	
+	</block>
+			
+		<field name="choice">
+			<grammar mode="dtmf" root="start22" version="1.0">
+						<rule id="start22" scope="public">
+							<one-of>
+								 <item>  #  </item>
+								 <item>  8  </item>
+								  <item>  9  </item>
+								 <item>  7  </item>
+
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptspath_54646+'/'+lang+'/conf_unsub.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='#'">
+					<!-- UNSUB REQUEST -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=LG_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath_54646+'/'+lang+'/unsub_done.wav'"/>
+						</prompt>
+						<goto next="LG_End.vxml"></goto>
+				<elseif cond="choice=='9'"/>
+					<goto next="#AcntOption"></goto>
+				<elseif cond="choice=='8'"/>
+					<goto next="LG_MainMenu.vxml"></goto>
+				<elseif cond="choice=='7'"/>
+					<goto next="#AcntOption"></goto>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<goto next="LG_MainMenu.vxml"></goto>
+		</noinput>
+		
+		<nomatch count="1">
+			<goto next="LG_MainMenu.vxml"></goto>
+		</nomatch>
+		
+	</form>
+</vxml>

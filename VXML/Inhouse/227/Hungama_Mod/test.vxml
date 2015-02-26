@@ -1,0 +1,105 @@
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModUserStatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<var name="subtype" expr="''"/>
+	
+<var name = "mycli" expr ="'9711071741'"/>
+
+<var name="response" expr="'Blank'"/>
+<var name="DestVar" expr="'isdn:08587900178'"/>
+	
+   <form id="TEST_TAR">
+		<block>
+
+			<script>  
+	              	realDNIS=session.connection.local.uri;                   
+	             		 ANI=session.connection.remote.uri;
+             		 </script>
+
+			<log>testing</log>
+			<prompt>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'"/>
+			</prompt>
+			<goto next="#call"/>
+		</block>
+
+				
+    </form>
+
+<form id="call">
+		<block>
+			<send event="dialog.transfer" namelist="DestVar mycli"/> 						 
+			<goto next="#CallSubDialog"/>	
+           	</block>				
+
+</form>
+
+<form id="CallSubDialog">
+
+	<subdialog name="confirmUserChoice" srcexpr="'http://192.168.100.226:8080/hungama/Hungama_Mod/dtmf.vxml'">
+		<filled>
+			<log>back from the confirmation app, the user input field_confirm:<value expr="confirmUserChoice.response"/></log>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'"/>
+			
+
+		</filled>
+	</subdialog>
+</form>
+
+
+<form id="capture">
+	<block>
+		<log>call came</log>
+	</block>
+  <field name="field_confirm">
+	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/invalidoption.wav'"/>
+     <grammar mode="dtmf"  root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>						
+							<item>1</item>
+							<item>2</item>
+							<item>3</item>
+							<item>4</item>
+							<item>5</item>
+							<item>6</item>
+							<item>7</item>
+							<item>8</item>
+							<item>9</item>
+							<item>*</item>
+							<item>0</item>
+						</one-of>
+					</rule>
+				  </grammar>
+
+    <filled>
+	<assign name="response" expr="field_confirm"/>
+	<log>press dtmf:<value expr="response"/></log>
+  </filled>
+
+<noinput>
+	<assign name="response" expr="field_confirm"/>
+
+	<log>press dtmf:<value expr="response"/></log>
+
+</noinput>
+
+  </field> 
+</form>		       
+
+    
+</vxml>

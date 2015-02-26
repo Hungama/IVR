@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_LiveChatDeffered.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+
+<var name="celeb_rec_fcount" expr="''"/>
+<var name="celeb_rec_fcount_check" expr="''"/>
+<var name="celeb_status" expr="''"/>
+<var name="myfileplay" expr="0"/>
+<var name="celeb_rec_fcount" expr="0"/>
+<var name="celeb_rec_fcount_check" expr="0"/>
+<var name="celeb_status" expr="''"/>
+<var name="chat_status" expr="''"/>
+<var name="celeb_on_time" expr="0"/>
+<var name="ALREADY_USER" expr="'0'"/>
+<var name="MyError" expr="0"/>
+<var name="uninorretry_counter" expr="1"/>
+<var name="MyErrorMsg" expr="0"/>
+<var name="myfileplay" expr="0"/>
+<var name="RECORD_DUR" expr="0"/>
+<var name="retry_counter" expr="0"/>
+<var name="DIFF_DUR" expr="0"/>
+	<property name="compatibility.audio.badfetch" value="ocmpbre32"></property>
+<script>
+	var out_string=new Object();
+</script>
+
+
+<form id="GetDefferedFileNum">
+   <block>
+                <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+			<log> before fetch</log>
+			<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+				   {  	  
+				       if(j==0)
+						celeb_rec_fcount = out_string[j];
+				       if(j==1)
+						celeb_status = out_string[j];
+				       if(j==2)
+						chat_status = out_string[j];
+		
+				  }
+				]]>
+			</script>
+	
+                
+               
+                <script>celeb_rec_fcount=parseInt(celeb_rec_fcount);</script>
+		<script>celeb_rec_fcount=celeb_rec_fcount-2;</script>
+                <goto next="#Main"/>
+  </block>
+</form>
+<form id="Main">
+<catch event="error.badfetch">
+	<if cond="retry_counter=='3'">
+		<goto next="#catch_counter_lcd"/>
+	<else/>
+		 <goto next="#catch_counter"/>
+	</if>
+</catch>
+<block>
+		
+<!--****************************************************************RECORDING GET SIZE*******************************************************************8-->
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_record_submit&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=celeb_record_'+celeb_rec_fcount+'.wav&amp;INPARAM[1]=1&amp;INPARAM[2]=GET'"/>
+	<log> before fetch</log>
+<script>
+	<![CDATA[
+	   for(j=0; j< out_string.length;  j++)
+	   {  	  
+	       if(j==0)
+			RECORD_DUR = out_string[j];
+		if(j==1)
+			DIFF_DUR = out_string[j];
+	  }
+	]]>
+</script>
+<log> ################RECORD_DUR <value expr="RECORD_DUR"/> </log>
+<log> ################DIFF_DUR <value expr="DIFF_DUR"/> </log>
+		<if cond="myfileplay=='2'">
+					<script>
+						myfileplay=0;
+					</script>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+						<log> cll will not go black if play file count value will exeed the celeb_rec_fcount value</log>
+						<script>
+							<![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+							   {  	  
+							      if(j==1)
+									celeb_status = out_string[j];
+							  }
+							]]>
+					</script>
+						<if cond="celeb_status=='FALSE'">
+											 <goto next="GLC_celeb_offline.vxml"/>
+						</if>
+					
+		</if>
+<!--**************************************************************************************************************************************************-->
+		
+	
+	</block>
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start1" version="1.0">
+			<rule id="start1" scope="public">
+			<one-of>     
+				<item>8</item>                   
+			</one-of>
+			</rule>
+		</grammar>
+
+		<prompt bargein="false" timeout="0s">
+			<audio expr="'http://192.168.100.226:8080/hungama/RecordChat/celeb_record_'+celeb_rec_fcount+'.wav'"/>
+		</prompt>
+		<filled>
+			<script>
+				myfileplay=myfileplay+1;;
+			</script>
+			
+				<goto next="#Main_next"/>
+			
+		</filled>
+
+		<noinput>
+			<script>
+				myfileplay=myfileplay+1;;
+			</script>
+			<goto next="#Main_next"/>
+		</noinput>
+
+		<nomatch>
+			<script>
+				myfileplay=myfileplay+1;;
+			</script>
+			<goto next="#Main_next"/>
+		</nomatch>
+		
+ 
+	</field>
+	
+</form>
+
+<form id="catch_counter">
+	<block>
+		<script>
+		retry_counter=retry_counter+1;
+		</script>
+		<prompt bargein="false" timeout="0s">
+			<audio expr="promptpath+'/'+lang+'/blank2.wav'"/>
+		</prompt>
+	</block>
+    <field name="wait_input13">
+	<grammar mode="dtmf" root="start135" version="1.0">
+		<rule id="start135" scope="public">
+		<one-of>     
+			<item>8</item>                   
+		</one-of>
+		</rule>
+	</grammar>
+
+	       <prompt bargein="false" timeout="0s">
+			<audio expr="promptpath+'/'+lang+'/blank2.wav'"/>
+		</prompt>
+	<filled>
+		<goto next="#Main"/>
+
+	</filled>
+
+	<noinput>
+		 <goto next="#Main"/>
+	</noinput>
+
+	<nomatch>
+		 <goto next="#Main"/>
+	</nomatch>
+</field>
+
+
+
+</form>
+
+<form id="catch_main_incre">
+<block>
+	<script>
+			retry_counter=0;
+			celeb_rec_fcount=celeb_rec_fcount+1;
+			myfileplay=myfileplay+1;
+	</script>
+	
+	<goto next="#Main"/>
+</block>
+
+</form>
+<form id="catch_counter_lcd">
+	<block>
+	<script>
+		retry_counter=0;
+	</script>
+
+	</block>
+    <field name="wait_input15">
+	<grammar mode="dtmf" root="start136" version="1.0">
+		<rule id="start136" scope="public">
+		<one-of>     
+			<item>8</item>                   
+		</one-of>
+		</rule>
+	</grammar>
+	 <prompt bargein="true" timeout="0s">
+		<audio expr="promptpath+'/'+lang+'/wait_music.wav'"/>
+	</prompt>
+	
+	<filled>
+		<goto next="#Main"/>
+
+	</filled>
+
+	<noinput>
+		 <goto next="#Main"/>
+	</noinput>
+
+	<nomatch>
+		 <goto next="#Main"/>
+	</nomatch>
+</field>
+</form>
+
+<form id="Main_next">
+   <block>
+   		
+   	<if cond="DIFF_DUR &lt;'100'">	
+		 <script>celeb_rec_fcount=celeb_rec_fcount+1;</script>
+		 <goto next="#Main"/>
+	<else/>
+	
+		 <goto next="#play_blank"/>
+	</if>
+	
+  </block>
+  
+  </form>
+
+<form id="play_blank">
+<block>
+	<if cond="DIFF_DUR !='NOK'">
+		<send event="timerStart" namelist="DIFF_DUR"/>
+	 	<script>celeb_rec_fcount=celeb_rec_fcount+1;</script>
+	 </if>
+		
+</block>
+<field name="wait_input12">
+		<grammar mode="dtmf" root="start134" version="1.0">
+			<rule id="start134" scope="public">
+			<one-of>     
+				<item>8</item>                   
+			</one-of>
+			</rule>
+		</grammar>
+
+		        <prompt bargein="false" timeout="0s">
+				<audio expr="promptpath+'/'+lang+'/GLC_blank.wav'"/>
+			</prompt>
+		<filled>
+			
+			
+				<goto next="#Main"/>
+			
+		</filled>
+
+		<noinput>
+			 <goto next="#Main"/>
+		</noinput>
+
+		<nomatch>
+			 <goto next="#Main"/>
+		</nomatch>
+	<catch event="timerUP">
+		<log> received event <value expr="_event"/></log>
+		<goto next="#Main"/>
+	</catch>	
+ 
+	</field>
+	
+</form>
+
+
+</vxml>

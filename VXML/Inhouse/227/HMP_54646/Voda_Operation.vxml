@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Voda_Operation.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="chat_whitlist_flag" expr="0"/>
+<var name="chatlang" expr="'01'"/>
+<var name="chatlang" expr="'01'"/>
+	<var name="TXFLAG" expr="'1'"/>
+	<var name="trans_status" expr="'1'"/>
+<script>
+	var favSongs=new Object();
+	var favLangs=new Object();
+	var out_string=new Object();
+	var spzone=new Object();
+	var len=0;
+</script>
+<form id="MAINMENU">
+<block>
+ <assign name="DNIS" expr="'546465'"/>
+ <assign name="operator" expr="'vodm'"/>
+ <assign name="dbservlet" expr="'unihungama_dbinteraction'"/>
+
+<!--******************CELEB DATE ***********************************************-->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=1'"/>
+		<script>
+		 <![CDATA[
+			 for(j=0; j< out_string.length;  j++)
+				  {  	  
+				   if(j==0)
+					celeb_date = out_string[j];
+				  }
+
+		]]>
+		</script>
+		<log expr="'celeb_date issssss =' + celeb_date"/>	
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Celebrity_ChatRoom.CHAT_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=4'"/>
+				<script>
+					 <![CDATA[
+						for(j=0; j< out_string.length;  j++)
+							 {  	  
+							  if(j==0)
+								chat_whitlist_flag = out_string[j];
+							 }
+
+					]]>
+				</script>
+		<log expr="'chat_whitlist_flag issssss =' + chat_whitlist_flag"/>
+
+
+<if cond="chat_whitlist_flag=='1'" >
+	<script>
+		celeb_date=1;
+	</script>
+</if>
+	<goto next="Hungama_54646_MainMenu.vxml#MAINMENU"/>
+
+
+	<if cond="celeb_date=='1'" >
+		<goto next="Chat_Operation.vxml"></goto>
+	<else/>
+<goto next="Hungama_54646_MainMenu.vxml#MAINMENU"/>
+		<prompt bargein="true">	
+					<audio expr="promptspath_54646+'/CHAT/'+chatlang+'/info_chat_generic.wav'"/>
+				</prompt>
+		 <goto next="Hungama_54646_End.vxml"></goto>
+	</if>
+</block>
+</form>
+
+
+</vxml>

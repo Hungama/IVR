@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModExistUserWMD.vxml" content="" />	
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />		
+	
+	<var name="ContestPrompt" expr="'0'"/> 
+	<form>
+		<block>
+			<assign name="program_name" expr="'Hungama_ModExistUser'"/>
+			<assign name="var_wel" expr="getRandom(1,300)" />
+			<if cond="var_wel &lt; 100">
+				<assign name="var_wel" expr="1" />
+	         	<elseif cond="var_wel &lt; 200 &amp;&amp; var_wel &gt; 100"/>
+				<assign name="var_wel" expr="2" />
+			<else/>
+				<assign name="var_wel" expr="3" />
+			</if>
+			<log>Direct Access:<value expr="directaccess"/></log>
+			<log>circle:<value expr="circle"/></log>
+			<log>DNIS:<value expr="DNIS"/></log>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=GET'"/>
+			<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {
+					       if(j==0)
+						HEARD = out_string[j];
+					  }
+				]]>	
+			</script>			
+			<log expr="'HEARD @@@@@@@@@%%%%55 '+HEARD"></log>		
+		</block>
+		<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/WMD/'+lang+'/welcome_old_'+var_wel+'.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="HEARD=='0' || HEARD=='00'">
+					<goto next="Hungama_EndlessMainMenu.vxml"></goto>
+				<else/>
+					<if cond="HEARD=='Contest'">
+						<assign name="playconfig" expr="HEARD"></assign>
+						<goto next="Hungama_Wmd_Contest_Play.vxml"/>
+					<else/>
+						<assign name="playconfig" expr="HEARD"></assign>
+						<goto next="Hungama_EndlessMainMenu.vxml#FETCHSONGS"></goto>
+					</if>
+				</if>
+			</filled>
+		</field>		
+		<noinput>
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="Hungama_EndlessMainMenu.vxml"></goto>
+			<else/>
+				<if cond="HEARD=='Contest'">
+					<assign name="playconfig" expr="HEARD"></assign>
+					<goto next="Hungama_Wmd_Contest_Play.vxml"/>
+				<else/>
+					<assign name="playconfig" expr="HEARD"></assign>
+					<goto next="Hungama_EndlessMainMenu.vxml#FETCHSONGS"></goto>
+				</if>
+			</if>	
+		</noinput>
+		<nomatch>
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="Hungama_EndlessMainMenu.vxml"></goto>
+			<else/>
+				<if cond="HEARD=='Contest'">
+					<assign name="playconfig" expr="HEARD"></assign>
+					<goto next="Hungama_Wmd_Contest_Play.vxml"/>
+				<else/>			
+					<assign name="playconfig" expr="HEARD"></assign>				
+					<goto next="Hungama_EndlessMainMenu.vxml#FETCHSONGS"></goto>
+				</if>
+			</if>
+		</nomatch>		
+	</form>	
+</vxml>

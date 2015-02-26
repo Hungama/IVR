@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_CELEBACT.vxml" content="" />
+<var name="getDigitsnext" expr="''"/>
+<var name="j" expr="0"/>
+<var name="user_sessionid_fromapp" expr="''"/>
+<var name="ANI" expr="''"/> 
+<var name="user_value" expr="''"/> 
+<var name="realDNIS" expr="''"/> 
+<var name="celb_user_value" expr="''"/>
+
+<var name="celeb_user_session" expr="''"/>
+
+<script>
+	realDNIS=session.connection.local.uri;                   
+	ANI=session.connection.remote.uri;
+	var out_string=new Object();
+</script>
+<!--*******************************************************************************************************************************************-->
+<form id="one">
+   <block>
+	<assign name="dbservlet" expr="'hul_dbinteraction'"/>
+	
+	<!---******************************************8modification 23 july **************************************************-->
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_STATUS&amp;INTOKEN=4&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]=1&amp;INPARAM[3]=1'"/>
+	<log> before fetch</log>
+	<script>
+		<![CDATA[
+		   for(j=0; j< out_string.length;  j++)
+		   {  	  
+		       if(j==0)
+				user_value = out_string[j];
+
+		  }
+		]]>
+	</script>
+	
+	<log> celeb status sss <value expr="user_value"/> </log>
+	<if cond="user_value=='TRUE'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INVITE&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<log> before fetch</log>
+				<script>
+					<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+					   {  	  
+					       if(j==0)
+							celeb_user_session = out_string[j];
+
+					  }
+					]]>
+			</script>
+			<log> celeb_user_session issssssssssssssssssssss <value expr="celeb_user_session"/> </log>
+			<if cond="celeb_user_session!='NA'">
+				<send event="InviteNextUser" namelist="celeb_user_session"/>
+			</if>
+	
+	
+	<else/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_GET_SESSION_ID&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI" fetchhint="prefetch"/>
+			<log> Get session id of user </log>
+
+			<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+				   {  	  
+				       if(j==0)
+						user_sessionid_fromapp = out_string[j];
+				  }
+				]]>
+		</script>
+		<log expr="'@@@@@@ user_sessionid_fromapp is '+user_sessionid_fromapp"/>
+	
+	</if>
+	
+   </block>
+  
+    <field name="getDigits">
+	<grammar mode="dtmf" root="r1" version="1.0">
+      		<rule id="r1" scope="public">
+        	<one-of>
+	          <item>*</item>
+        	   <item>#</item>
+	         
+        	 </one-of>
+	       </rule>
+     	</grammar>
+     	 <prompt bargein="true" timeout="10s">
+		<audio expr="promptpath+'/'+lang+'/blank.wav'"/>
+	</prompt>
+	
+	<filled>
+	    <assign name="getDigitsnext" expr="getDigits"/>
+	    	<if cond="getDigits=='*'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEBRITY_DTMF&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]=SET&amp;INPARAM[1]=star'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INPUT_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=SET&amp;INPARAM[1]=star'"/>
+			<log> Got the dtmf input.. </log>
+			<goto next="#two"></goto>
+		<elseif cond="getDigits=='#'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEBRITY_DTMF&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]=SET&amp;INPARAM[1]=hash'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INPUT_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=SET&amp;INPARAM[1]=hash'"/>
+			<log> Got the dtmf input.. </log>
+			<goto next="#two"></goto>
+		</if>
+	</filled>
+	
+		
+	<noinput>
+		<goto next="#one"/>
+	</noinput>
+	<nomatch>
+		<goto next="#one"/>
+	</nomatch>
+    </field>
+</form>		
+
+<form id="two">
+	<block>
+		
+	    <exit namelist="getDigitsnext user_sessionid_fromapp"/>
+	</block>
+</form>
+
+</vxml>

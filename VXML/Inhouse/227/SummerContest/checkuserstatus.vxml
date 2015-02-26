@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Contest_root.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="checkuserstatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="UNSUBSTATUS" expr="''"/>
+
+<script>
+	var ciropr1=new Object();
+	var out_string = new Object();
+	var blacklist_status=0;
+</script>
+
+<error>
+	<goto next="end.vxml"/>
+</error>
+
+<form id="checkuserstatus">
+<block>
+
+	
+
+	<assign name="start_BalenceMinute" expr="start_time()"/>	
+	<assign name = "DNIS" expr="session.connection.local.uri"/>
+	<assign name = "gANI" expr = "session.connection.remote.uri" />	
+	<assign name = "ANI" expr = "session.connection.remote.uri" />	
+	<log> start time is: <value expr="start_time()"/></log>
+	
+	<assign name="C_Start" expr="start_time()"/>
+	<assign name="gUserCallID" expr=" gANI + '-' + GetFileMS() "/>
+	
+	<log>Call Id is: <value expr="gUserCallID"/></log>
+	
+		<assign name="initial_balance" expr="start_time()"/>
+		<assign name="Game_Start" expr="starttime()"/>
+
+		
+
+		<assign name = "realdnis" expr="session.connection.local.uri"/>
+
+		<assign name="contentpath" expr="'http://192.168.100.212:6666/hungama/'"/>
+	
+			<script>
+				length = ANI.length;
+				ANI = ANI.substring(length-10,length);
+			</script>			
+			
+			<log> User ANI  is	<value expr="ANI"/>	</log>			
+	
+			<if cond="ANI=='7838588843' || ANI=='7838696917'">
+				<submit expr="'../SummerContest_Toll/checkuserstatus.vxml'"/>
+			</if>
+
+
+		       <script srcexpr="'http://'+IP+'/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+		       <script>
+			       <![CDATA[
+				     for(j=0; j< out_string.length;  j++)
+					   {      
+						if(j==0)
+						       circle = out_string[j];
+					   }
+				]]>
+		       </script>
+                     
+		       <log> FIRST DB FETCH circle  is   <value expr="circle"/>    </log>
+		       <if cond="circle=='oth'">
+				    <script srcexpr="'http://192.168.100.226:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+				    <assign name="DNIS" expr="realDNIS"/>
+				    <assign name="operator" expr="'und'"/>
+
+				    <goto next="end.vxml"></goto>                    
+		        </if>
+		
+			<assign name="operator" expr="'unim'"/>
+
+  			<!--<if cond="circle=='upe'">
+				  <goto next="end.vxml"></goto>                    
+			</if>-->
+
+			<if cond="realdnis=='66291151'">
+				<assign name="DNIS" expr="'520001'"/>
+			<elseif cond="realdnis=='66291152'"/>
+				<assign name="DNIS" expr="'520002'"/>
+			<elseif cond="realdnis=='66291153'"/>
+				<assign name="DNIS" expr="'520003'"/>
+			<elseif cond="realdnis=='66291154'"/>
+				<assign name="DNIS" expr="'520004'"/>
+			<elseif cond="realdnis=='66291155'"/>
+				<assign name="DNIS" expr="'520005'"/>
+			<elseif cond="realdnis=='66291155'"/>
+				<assign name="DNIS" expr="'520005'"/>
+			<elseif cond="realdnis=='66291156'"/>
+				<assign name="DNIS" expr="'520006'"/>
+			<elseif cond="realdnis=='66291157'"/>
+				<assign name="DNIS" expr="'520007'"/>
+			<elseif cond="realdnis=='66291158'"/>
+				<assign name="DNIS" expr="'520008'"/>
+			<elseif cond="realdnis=='66291159'"/>
+				<assign name="DNIS" expr="'520009'"/>
+			<elseif cond="realdnis=='66291160'"/>
+				<assign name="DNIS" expr="'520000'"/>
+			<elseif cond="realdnis=='66291161'"/>
+				<assign name="DNIS" expr="'52000'"/>
+			</if>	
+
+
+			<assign name="dbservlet" expr="'contest_dbinteraction'"/>
+			<log>DB servlet:<value expr="dbservlet"/></log>
+
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+
+			<!-- UPW CIRCLE BLOCKED AS PER THE GAURAV REQUEST START -->
+
+			<!--<if cond="circle == 'upw'">
+					 <assign name="drop_point" expr="'service_Block'"/>
+		       	 	 <assign name="modeofsub" expr="'NA'"/>
+		       	 	 <audio expr="promptpath+'/'+LANG_DESCRIPTION+'/blocked_service.wav'"/>
+				 <goto next="end.vxml"/>
+			</if>-->
+
+			<!--<if cond="circle == 'guj'">
+					 <assign name="drop_point" expr="'service_Block'"/>
+		       	 	 <assign name="modeofsub" expr="'NA'"/>
+
+				 	<goto next="end.vxml"/>
+			</if>-->
+
+
+	<!--Check User last sub status-->
+			
+		<if cond="ANI != '7843018099' &amp;&amp; ANI != '9059675134' &amp;&amp; ANI != '8546048758'  &amp;&amp; ANI != '8341789747' &amp;&amp; ANI != '8738864210'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Contest_ChkStatus&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+circle"/>
+
+			<script>
+				<![CDATA[
+					for(j=0; j< out_string.length;  j++)
+						{  
+							if(j==0)
+								UNSUBSTATUS= out_string[j];
+							if(j==1)
+						 		 lang = out_string[j];
+
+						}
+				]]>
+			</script>
+
+				<log>UNSUBSTATUS:<value expr="UNSUBSTATUS"/></log>
+		
+				<if cond="UNSUBSTATUS=='1'">
+				    <audio expr="promptpath+'/'+lang +'/calldrop.wav'"/>
+					<goto next="end.vxml"/>
+				</if>
+
+		</if>
+
+
+		
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Contest_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+
+			<script>
+				<![CDATA[
+				    for(j=0; j< out_string.length;  j++)
+					  {  
+						if(j==0)
+						  usr_status = out_string[j];
+						if(j==1)
+						  lang = out_string[j];
+						if(j==2)
+						  channel = out_string[j];
+						if(j==3)
+						  maxscore = out_string[j];
+						if(j==4)
+						  diff_level = out_string[j];
+						if(j==5)
+						  QuestCount = out_string[j];
+						if(j==6)
+						  Amt = out_string[j];
+						 if(j==7)
+						  TotalQuestion = out_string[j];
+					      
+					  }
+				]]>
+			</script>
+		<!--<script>
+			QuestCount=parseInt(QuestCount);
+		</script>-->
+
+		<!-- Check for Black list Start -->
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Contest_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>
+			<script>
+				 blacklist_status = out_string[0];
+			</script>
+			<log>blacklist_status issss:<value expr="blacklist_status"/></log>
+
+			<if cond="blacklist_status == '1'">
+				 <assign name="drop_point" expr="'Black_list'"/>
+		       	 <assign name="modeofsub" expr="channel"/>
+				 <goto next="end.vxml"/>
+			</if>
+		<!-- Check for Black list End -->		
+
+		<if cond="lang=='99'">
+				<assign name="lang" expr="'01'"/>
+		</if>	
+		
+		<assign name="LANG_DESCRIPTION" expr="lang"/>
+
+		<if cond="circle=='apd'">
+			<assign name="lang" expr="'08'"/>
+			<assign name="LANG_DESCRIPTION" expr="lang"/>
+		<else/>
+			<assign name="LANG_DESCRIPTION" expr="lang"/>
+		</if>
+				
+		<log> user status is:<value expr="usr_status"/></log>	         	
+		<log> lang status is:<value expr="lang"/></log>
+
+								
+		<log> channel status is:<value expr="channel"/></log>	         	
+		<log> maxscore status is:<value expr="maxscore"/></log>
+						
+		<log> diff_level status is:<value expr="diff_level"/></log>	         	
+		<log> QuestCount status is:<value expr="QuestCount"/></log>
+		
+		<if cond="usr_status=='1' &amp;&amp; QuestCount &lt; 1">
+			  <assign name="drop_point" expr="'Old_User'"/>
+			  <assign name="modeofsub" expr="channel"/>
+			  <goto next="AccountManager.vxml#topup" fetchhint="prefetch" fetchtimeout="10s"/>	
+		<elseif cond="usr_status=='1' &amp;&amp; QuestCount &gt;= 1"/>
+			 <assign name="modeofsub" expr="channel"/>
+			<assign name="drop_point" expr="'Old_User'"/>		
+			<goto next="MainMenu.vxml#MainExist" fetchhint="prefetch" fetchtimeout="10s"/>
+		<elseif cond="usr_status=='-1'"/>
+			<assign name="drop_point" expr="'New_User'"/>
+			<log>New User call</log>
+			<goto next="NewUser.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+		<else/>
+			<assign name="modeofsub" expr="channel"/>
+			<assign name="drop_point" expr="'Grace'"/>
+			<log>result Pending</log>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+			<goto next="end.vxml"/>
+		</if>
+	
+	
+</block>
+</form>
+
+<form id="game_close">
+	<block>
+		<assign name="drop_point" expr="'Game_Close'"/>
+	</block>
+		<field name="pressdtmf" type="digits?length=1">
+				<prompt timeout="1s" >
+					<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/game_finish.wav'"/>
+				</prompt>								
+				<grammar mode="dtmf" root="start1" version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>
+							 <item>  1  </item>
+						</one-of>
+					</rule>
+				</grammar>	
+
+				<filled>
+					<goto next="end.vxml"></goto> 
+				</filled>
+
+				<nomatch>
+					<goto next="end.vxml"></goto> 
+				</nomatch>
+
+				<noinput>
+					<goto next="end.vxml"></goto> 
+				</noinput>
+		</field>
+</form>
+
+</vxml>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.1" application="NineXMPortalRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+	<script>
+		var out_string=new Object();
+		var res;
+var service_id=0;
+
+	</script>
+
+	<form id="EndLogin">
+		<block>
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			</if>
+			
+			<if cond="timerflag=='1'">
+				   <script>
+				     total_used_bal=rim(start_BalenceMinute);
+				     balance=balance-total_used_bal;  						  
+				   </script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				   <log expr="'@@@@@@ left balance is '+balance"/>
+				
+				   <script>balance=Math.floor(balance/60);</script>
+				   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+	   			   <log expr="'@@@@@@ left balance is '+balance"/>
+
+			 </if>
+
+			 <if cond="sub_flag=='0'">
+				<log expr="'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Updating Balance=====>'+balance"/>  
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME_9XM&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]=5'"/>
+			</if>
+ <if cond="(operator=='tatm' || operator=='tatc' || operator=='virm' || operator=='unim' || operator=='relc' || operator=='relm') &amp;&amp; sub_flag=='true'">
+<if cond="operator=='relm' || operator=='relc'">
+	<assign name="service_id" expr="'1202'"/>
+<elseif cond="operator=='unim'"/>
+	<assign name="service_id" expr="'1402'"/>
+<elseif cond="operator=='tatm'"/>
+	<assign name="service_id" expr="'1002'"/>
+<elseif cond="operator=='tatc'"/>
+	<assign name="service_id" expr="'1602'"/>
+<else/>
+	<assign name="service_id" expr="'54646'"/>
+</if>
+
+	<script srcexpr="'http://192.168.100.227:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service='+service_id+'&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+CPTID+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>  
+</if>
+<if cond="operator=='unim'">
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Inhouse_IVR.UNIM_54646_PRICINGGRID&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+realDNIS"/>
+						<script>
+							var res = out_string[0];
+							var res1 = out_string[1];
+
+						</script>
+
+ <log expr="'@@@@@@ newwwww  '+res"/>
+ <log expr="'@@@@@@ pricing '+res1"/>
+	<script>
+		DNIS=res;
+		callcharge=res1;
+	</script>
+
+</if>
+
+
+			<if cond="ANI=='85869670461'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=JOKE&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=54646&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			</if>
+			<exit/>
+		</block>
+
+	<catch event="error.badfetch">
+    	  <log>Inside Error BadCatch catch  End2222</log>  	      
+	  <exit/>								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 
+		  
+		  <exit/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  End4444</log>	
+		   
+		   <exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  End5555</log>	
+		
+		   <exit/>
+		  
+      </catch>
+	</form>
+</vxml>

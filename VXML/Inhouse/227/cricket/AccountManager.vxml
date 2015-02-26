@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="CricketRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="AccountManager.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+
+	<form id="AccountManager">
+	<block>
+		<assign name="Usage_time" expr="time_duration(section_begin)"/>
+		<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+		<assign name="SECTION" expr="'ACCOUNTMANAGER'"/>
+		<assign name="Section_Name" expr="'ACCOUNTMANAGER'" />
+		<assign name="section_begin" expr="start_time()"/>
+	</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_acmanager.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#ChngLanguage"></goto>
+				<elseif cond="choice=='2'"/>
+					<goto next="#Unsubscription"></goto>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="MainMenu.vxml" />
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="MainMenu.vxml" />
+		</nomatch>
+	</form>
+	
+	
+	<form id="ChngLanguage">
+		<block>
+		<assign name="Section_Name" expr="'ACCOUNTMANAGER_LANG'" />
+			<goto next="NewUser.vxml#LANGSEL1"></goto>
+		</block>
+	</form>
+	
+	<form id="Unsubscription">
+	<block>
+		<assign name="Section_Name" expr="'ACCOUNTMANAGER_UNSUB'" />
+	</block>
+	
+		<field name="choice">
+			<grammar mode="dtmf" root="start2" version="1.0">
+						<rule id="start2" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/acmanager_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<!-- UNSUB REQUEST -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+										
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/thanks_nosub.wav'"/>
+					</prompt>
+					<goto next="End.vxml"></goto>
+				<elseif cond="choice=='2'"/>
+					<goto next="MainMenu.vxml"></goto>
+				</if>
+			</filled>
+			
+			<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+						<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/smita.wav'"/>
+			</prompt>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/smita.wav'"/>
+			</prompt>
+		</nomatch>
+		</field>	
+	</form>
+
+
+</vxml>

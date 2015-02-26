@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_NonMember.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	
+	<var name="DATE" expr="''" />
+	<var name="TIME" expr="''" />
+	<var name="UploadFileName" expr="''"/>
+	<var name="month" expr="''" />
+	<var name="day" expr="''" />
+	<var name="existshop" expr="''" />
+       <script>
+		var config=new Array();
+		var Record_Time=0;
+       </script>
+        <script>
+			var out_string=new Object();
+			
+	</script>
+
+<form id="Welcome">
+	<block>
+	 <assign name="Section_Name" expr="'Drop_vote'"/>
+	<assign name="CATEGORY" expr="'NONLIVE'"/>
+		<assign name="C_Start" expr="start_time()"/>
+		<assign name="section_begin" expr="starttime()"/>
+		<assign name="song_begin" expr="starttime()"/>
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;						   
+		</script>
+		<script>
+			var length = ANI.length;
+			
+			ANI = ANI.substring(6,16);
+
+		</script>
+
+		<script>
+			length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		</script>  
+
+		<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+		<assign name="DNIS" expr="realDNIS"/>
+		<assign name="dbservlet" expr="'hul_dbinteraction'"/>
+ 
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_GET_CIR_OPR&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						operator = out_string[j];
+					       if(j==1)
+						circle = out_string[j];
+					  }
+				]]>
+			</script> 
+			<log>operator of number  is <value expr="operator"/>    </log>
+		<log>circle of number  is <value expr="circle"/>    </log>
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+		<assign name="Usagelog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+		<goto next="#RECORD"/>
+	</block>
+</form>
+
+<form id="RECORD">
+		<field name="mobilenumber" type="digits?length=5" >
+			
+				<grammar mode="dtmf" root="start59" version="1.0">
+					<rule id="start59" scope="public">
+						<one-of>
+							<item>  1  </item>
+							<item>  2  </item>
+							<item>  3 </item>
+							<item>  4  </item>
+							<item>  5  </item>
+							<item>  6  </item>
+							<item>  7  </item>
+							<item>  8 </item>
+							<item>  9  </item>
+							<item>  0  </item>
+						</one-of>
+					</rule>
+				</grammar>
+				<prompt bargein="false" timeout="12s">
+					<audio expr="promptpath+'/'+lang+'/welcome_vote.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/beep.wav'"/>
+				</prompt>
+				<filled>
+					<script>
+						mobilenumber= mobilenumber.replace(/\s+/g,'');
+						number = mobilenumber.length;
+						mnumber=mobilenumber;
+					</script>
+						<log expr="'mnumber @@@@@@@@@ '+mnumber"></log>
+						<log expr="number @@@@@@@@@ '+number "></log>
+						<if cond="number =='5'">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_NONMEB_LASTDIGIT&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+mnumber"/>	
+								<script>
+										<![CDATA[
+										   for(j=0; j< out_string.length;  j++)
+											  {  	  
+											       if(j==0)
+												existshop = out_string[j];
+											 }
+								
+										]]>
+								</script>
+							<log expr="'existshop @@@@@@@@@ '+existshop"></log>
+								<if cond="existshop =='-1'">
+									<throw event="nomatch"/>
+								<else/>
+									<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=HUL_VOTINGSMS&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+
+									<goto next="#RecordComplete"/>
+								</if>
+						
+						</if>
+				</filled>
+				<noinput count="1">
+					<prompt bargein="false" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/vote_incorrect.wav'"/>
+					</prompt>
+					<reprompt/>
+				</noinput>
+				<noinput count="2">	
+					<prompt bargein="false" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/vote_incorrect.wav'"/>
+					</prompt>
+					<reprompt/>
+				</noinput>
+				<noinput count="3">	
+					<goto next="Hungama_GLC_End.vxml"/>
+				</noinput>
+				<nomatch count="1">
+					<prompt bargein="false" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/vote_incorrect.wav'"/>
+					</prompt>
+						<goto nextitem="mobilenumber"/>
+					<!--<reprompt/>-->
+				</nomatch>
+				<nomatch count="2">
+					<prompt bargein="false" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/vote_incorrect.wav'"/>
+					</prompt>
+					<goto nextitem="mobilenumber"/>
+					<!--<reprompt/>-->
+				</nomatch>
+				<nomatch count="3">	
+					<goto next="Hungama_GLC_End.vxml"/>
+				</nomatch>
+		</field>
+				
+   </form>
+
+
+<form id="RecordComplete"> 
+	 <field name="choice">               
+		<grammar mode="dtmf" root="start41" version="1.0">
+                   	<rule id="start41" scope="public">
+                     	<one-of>     
+				   <item>1</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+               	
+          	<prompt bargein="false" timeout="1s">
+			<audio expr="promptpath+'/'+lang+'/thanks_vote.wav'"/>
+		</prompt>   
+				 
+		<filled>  
+			<goto next="Hungama_GLC_End.vxml"/>
+		</filled>
+			  
+	      <noinput>		  
+	             	<goto next="Hungama_GLC_End.vxml"/>	     
+              </noinput>
+              
+              <nomatch>
+			<goto next="Hungama_GLC_End.vxml"/>	
+	      </nomatch>		
+        </field>		
+		
+</form>
+
+</vxml>

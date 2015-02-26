@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MMCheck.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="RetailerCheck" expr="'0'"/>
+	
+	<script>
+		ciropr1 = new Object();
+		var out_string=new Object();
+	</script>
+
+
+<script>
+var ANI=0;
+var temp=0;
+var tempDNIS=0;
+var aniNum=new Array();
+var out_string=new Object();
+</script>
+
+<form id="MMCHECK">
+		<block>
+		<log expr="'DNIS==' +DNIS"/>		
+		<assign name="tempDNIS" expr="DNIS"/>
+		<log expr="'tempDNIS==' +tempDNIS"/>
+		
+		<script>
+			var len=DNIS.length;
+		</script>
+		 		<script>
+						  <![CDATA[
+									for( i=0 ; i<len ; i++)
+									{
+									temp= tempDNIS%10;
+									aniNum[i]= temp;
+									tempDNIS = Math.floor(tempDNIS/10);
+									}
+								]]>
+				 </script>
+						
+				<script>
+				  <![CDATA[
+									for( i=0 ; i<len/2 ; i++)
+									{
+									temp = aniNum[len-1-i];
+									re = aniNum[i];
+									aniNum[i] = temp;
+									aniNum[len-1-i] =re;
+									}
+							]]>
+						
+				</script> 
+			
+				<log>aniNum  is	<value expr="aniNum[0]"/>    </log>				
+				<log>aniNum  is	<value expr="aniNum[1]"/>    </log>				
+				<log>aniNum  is	<value expr="aniNum[2]"/>    </log>				
+				<log>aniNum  is	<value expr="aniNum[3]"/>    </log>				
+				<log>aniNum  is	<value expr="aniNum[4]"/>    </log>	
+			
+				<prompt bargein="true">																			
+		          <foreach item="names" array="aniNum">
+								<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/'+names+'.wav'"/>
+				  </foreach>
+				</prompt>
+		</block>
+</form>
+</vxml>
+	  
+
+
+
+
+

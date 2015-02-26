@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="SunnyLeoneChat.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="DATE" expr="''"/>
+<var name="double_switch" expr="0"/>
+<var name="prompt_switch" expr="0"/>
+<var name="skip_level" expr="0"/>
+
+<script>
+	var out_string=new Object();
+</script>
+<script>
+	function getUNIMDT()
+		{
+			var currentDT = new Date();
+			var day = currentDT.getDate();
+			var month = currentDT.getMonth() + 1;
+			var year = currentDT.getFullYear();
+			var hours = currentDT.getHours();
+			var minutes = currentDT.getMinutes();
+			var seconds = currentDT.getSeconds();
+			if (!(month > 9)) {month = "0" + month; }
+			if (!(day > 9 )) {day = "0" + day; }
+			if (!(hours > 9)) {hours = "0" + hours; }
+			if (!(minutes > 9 )) {minutes = "0" + minutes ; }
+			if (!(seconds > 9) ) {seconds = "0" + seconds ; }
+			var strDateTime =  year + "-" + month + "-" + day +" "+ hours+":"+minutes+":"+seconds ;	
+			return strDateTime;
+		}
+	function gettransidtime_event() 
+		{
+			var d3=new Date();
+			var date3 = d3.getDate();
+			var month3=d3.getMonth()+1;
+				var hh = d3.getHours();
+				var mm = d3.getMinutes();
+				var ss = d3.getSeconds();
+				var ms = d3.getMilliseconds();
+			if(!(month3>9)) {
+				month3 = "0" + month3;
+			}
+			if(!(date3 >9)) {
+				date3 = "0" + date3;
+			}
+			var year3=d3.getYear()+1900;
+			return(""+year3+month3+date3+hh+mm+ss+ms);						
+		}
+</script>
+
+
+
+<form id="ChatSubsEvent">
+	<block>
+		<assign name="firstconsent" expr="'Event'"/>
+		<assign name="firstconsenttime" expr="start_time()"/>
+		<assign name="sub_flag_d" expr="'true'"/>
+		<goto next="#EventOptionDoubleconfirm_uninor"/>	
+
+	</block>		 
+</form> 
+
+
+<form id="EventOptionDoubleconfirm_uninor">
+		<block>
+			<assign name="amt" expr="'10'"/>
+			<assign name="plan_id" expr="'173'"/>
+			<assign name="service_id" expr="'1409'"/>
+			<assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+			<assign name="Section_Name" expr="'Download_Event'"/>
+			<assign name="PATH" expr="promptpath_riya+LANG_DESCRIPTION"/>
+			<assign name="SCHN" expr="'IVR_EVT'"/>
+			<assign name="CP" expr="'HUNGAMA'"/>
+			<assign name="MSISDN" expr="ANI"/>
+			<assign name="CPPID" expr="'HUI0003712'"/>
+			<assign name="PRODTYPE" expr="'EVENT'"/>     
+			<assign name="PMARKNAME" expr="'Miss Riya'"/>
+			<assign name="PRICE" expr="'10'"/>
+			<assign name="SE" expr="'HUNGAMA_EVT'"/>
+			<assign name="CPTID" expr="gettransidtime_event()"/>
+			<assign name="DT" expr="getUNIMDT()"/>
+			<assign name="PD" expr="'Sensous stories of Riya'"/>
+			<assign name="SCODE" expr="'songid'"/>
+			<assign name="RSV" expr="'rsv'"/>
+			<assign name="RSV2" expr="'rsv2'"/>
+				<script>
+						PRICE=amt*100;
+				</script>
+
+				<log expr="'DT @@@@@@@@@ '+DT"></log>
+				<log expr="'CPTID @@@@@@@@@ '+CPTID"></log>
+				<log expr="'PRICE @@@@@@@@@ '+PRICE"></log>
+
+				<if cond="lang=='01'">
+						<assign name="LANG" expr="'HIN'"/>
+				</if> 
+
+</block> 
+		<subdialog name="confirmUserChoice" srcexpr="'http://180.178.28.62:7001/IVR/SecondConsentIVRRequestSyncPS?PATH='+PATH+'&amp;LANG='+LANG+'&amp;SCHN='+SCHN+'&amp;CP='+CP+'&amp;MSISDN='+MSISDN+'&amp;CPPID='+CPPID+'&amp;PRODTYPE='+PRODTYPE+'&amp;PMARKNAME='+PMARKNAME+'&amp;PRICE='+PRICE+'&amp;SE='+SE+'&amp;CPTID='+CPTID+'&amp;DT='+DT+'&amp;PD='+PD+'&amp;SCODE='+SCODE+'&amp;RSV='+RSV+'&amp;REQ_TYPE=IVR&amp;RSV2='+RSV2">
+
+		<filled>
+				<assign name="secondconsent" expr="'Y'"/>
+				<assign name="secondconsenttime" expr="start_time()"/>
+				<assign name="ccgresult" expr="confirmUserChoice.result"/>
+				<assign name="pressdtmf" expr="confirmUserChoice.PRESSED_DTMF"/>
+				<assign name="trans_id" expr="CPTID"/>  
+
+			<log>Confirmation page</log>
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+			<log>back from the confirmation app, the PRESSED_DTMF:<value expr="confirmUserChoice.PRESSED_DTMF"/></log>
+			<log>back from the confirmation app, the response:<value expr="confirmUserChoice.result"/></log>
+			
+			<script srcexpr="'http://192.168.100.226:8082/hungama/Uninor_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=RIYA&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+CPTID+'&amp;ccgresult='+confirmUserChoice.result+'&amp;ccgdtmf='+confirmUserChoice.PRESSED_DTMF"/> 
+
+			<if cond="confirmUserChoice.result=='success'">
+				<if cond="sub_flag_d=='true'">
+					<script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service='+service_id+'&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>  
+				</if>
+					<assign name="sub_flag_d" expr="'false'"/>
+										
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.CHAT_SUB_UNIM&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id+'&amp;INPARAM[7]='+CPTID"/>
+
+					<goto next="#ChatSubsEventRequest"/>
+				
+			<else/>
+				<goto next="Hungama_RMMSPlay.vxml#userstatus"/>
+			</if>		                       
+		</filled>
+	</subdialog>
+
+</form>
+
+
+
+
+<form id="ChatSubsEventRequest">
+
+    <field name="actmgrmnuopt">
+	     <grammar mode="dtmf" root="start11112" version="1.0">
+		   <rule id="start11112" scope="public">
+		     <one-of>				 
+			  <item>1</item>			
+		     </one-of>
+		  </rule>
+		</grammar>
+
+		<prompt bargein="false" timeout="0s" cond="operator=='unim'">
+			<!--<audio expr="promptpath+'/'+lang+'/disclaimer_ticket.wav'"/>-->
+			 <audio expr="promptpath+'/'+lang+'/charging_wait.wav'"/>
+		</prompt>
+
+		<filled>
+			<goto next="#ChatSubsEventCheck"/>
+		</filled>
+
+	<noinput>
+		<goto next="#ChatSubsEventCheck"/>
+	</noinput>
+	
+	<nomatch>	
+		<goto next="#ChatSubsEventCheck"/>
+	</nomatch>
+  </field>	 
+</form> 
+
+<form id="ChatSubsEventCheck">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_RaginiMMS?PROCEDURE=Hungama_RaginiMMS.CHAT_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					<script>
+						 <![CDATA[
+							for(j=0; j< out_string.length;  j++)
+								 {  	  
+								  if(j==0)
+									usr_status_chat = out_string[j];
+								 }
+		
+						]]>
+			</script>
+		
+	</block>
+
+		<field name="actmgrmnuopt">
+			 <grammar mode="dtmf" root="start" version="1.0">
+				   <rule id="start" scope="public">
+					     <one-of>				 
+						  <item>1</item>			
+					     </one-of>
+				  </rule>
+			 </grammar>
+	
+			<prompt bargein="false" timeout="0s" cond="usr_status_chat=='1'">
+				<audio expr="promptpath+'/'+lang+'/thanks_ticket.wav'"/>
+			</prompt>
+			<!--<prompt bargein="false" timeout="0s" cond="usr_status_chat=='-1'">
+				<audio expr="promptpath+'/'+lang+'/ticket_again.wav'"/>
+			</prompt>-->
+	
+			<filled>
+					<if cond="celeb_on=='1' &amp;&amp; usr_status_chat=='1' &amp;&amp; (chat_subtype=='TICKET' || chat_subtype=='IVRFREE')">
+							<goto next="Hungama_RMMSPlay.vxml#CelebTimeCheck"/>
+					<else/>
+							<goto next="Hungama_RMMSPlay.vxml#userstatus"/>
+					</if>
+			</filled>
+	
+		<noinput>
+				<if cond="celeb_on=='1' &amp;&amp; usr_status_chat=='1' &amp;&amp; (chat_subtype=='TICKET' || chat_subtype=='IVRFREE')">
+						<goto next="Hungama_RMMSPlay.vxml#CelebTimeCheck"/>
+				<else/>
+						<goto next="Hungama_RMMSPlay.vxml#userstatus"/>
+				</if>
+		</noinput>
+		
+		<nomatch>	
+				<if cond="celeb_on=='1' &amp;&amp; usr_status_chat=='1' &amp;&amp; (chat_subtype=='TICKET' || chat_subtype=='IVRFREE')">
+						<goto next="Hungama_RMMSPlay.vxml#CelebTimeCheck"/>
+				<else/>
+						<goto next="Hungama_RMMSPlay.vxml#userstatus"/>
+				</if>
+		</nomatch>
+	  </field>	 
+
+</form> 
+
+</vxml>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_54646_UserStatus.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+ <form id="call_pick_number11">
+    <var name="iAnswer" />
+    <var name="bPrompt" />
+    <var name="iRetval" expr="0" />
+
+<block>
+					<log expr="'iAnsweriAnsweriAnsweriAnswerkinnnnnn pick numbnerrr@@@@@@@@@@@@@@@@@@@  =' + iAnswer"/>
+</block>
+    <field name="iPick">
+    <grammar mode="dtmf" root="start11" version="1.0">
+						<rule id="start11" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+							</one-of>
+						</rule>
+				</grammar>
+
+ 			  <prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/01/welcome_new_1.wav'"/>
+					</prompt>
+
+     
+      <filled>
+        <if cond="iPick == iAnswer">
+<log expr="iPick  pick numbnerrr@@@@@@@@@@@@@@@@@@@  =' + iPick"/>
+
+	<log expr="'iAnsweriAnsweriAnsweriAnswerkinnnnnn pick numbnerrr@@@@@@@@@@@@@@@@@@@  =' + iAnswer"/>
+
+          <assign name="iRetval" expr="1" />
+        </if>
+        <return namelist="iAnswer iPick iRetval" />
+      </filled>
+    </field>
+  </form>
+</vxml>
+
+
+	

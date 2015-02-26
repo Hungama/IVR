@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="CricketRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Subscription.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+
+	<script>
+		var out_string=new Object();
+		var amount=0;
+	</script>
+
+
+	
+	<form id="sub_dnis_chk">
+		<block>
+			
+			<if cond="DNIS=='5443322' || DNIS=='5443333'">
+				<log expr="'!!!!!!!!!Direct Activation!!!!!!!!!!!!!!! '"></log>
+				<goto next="#SubRequest"></goto>
+			
+			<else/>
+				<log expr="'!!!!!!!!!Normal Subscription !!!!!!!!!!!!!!! '"></log>
+				<goto next="#frc_chk"></goto>
+			</if>
+		</block>
+	</form>
+	
+	
+	<form id="frc_chk">
+		<block>
+			<if cond="usr_status=='-1'">
+			   	<goto next="#SubOption"></goto>
+			   <elseif cond="usr_status=='5'"/>
+				<goto next="#Frc_SubOption"></goto>	
+			   </if>
+		</block>
+	</form>
+	
+	<form id="SubOption">
+		<field name="choice">
+			<grammar mode="dtmf" root="start31" version="1.0">
+						<rule id="start31" scope="public" >
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='54433'">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/sub_intro_mt.wav'"/>
+			</prompt>
+			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='544331'">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/sub_intro_wk.wav'"/>
+			</prompt>
+			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='544332'">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/sub_intro.wav'"/>
+			</prompt> -->
+			
+			<prompt bargein="true" timeout="3s" cond="promo_status=='3'">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/sub_promoa15.wav'"/>
+			</prompt>
+				
+			<prompt bargein="true" timeout="3s" cond="usr_status!='5'&amp;&amp;promo_status!='3'">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/sub_intro_mt.wav'"/>
+			</prompt>
+			
+			<prompt bargein="true" timeout="3s" cond="usr_status=='5'&amp;&amp;promo_status!='3'">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/sub_frc.wav'"/>
+			</prompt>
+			
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#SubRequest"></goto>	
+				<elseif cond="choice=='2'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/thanks_nosub.wav'"/>
+					</prompt>
+					<exit/>
+				</if>
+			</filled>
+		</field>
+	</form>
+	
+	<form id="Frc_SubOption">
+		<field name="choice">
+			<grammar mode="dtmf" root="start51" version="1.0">
+						<rule id="start51" scope="public" >
+							<one-of>
+								 <item>  1  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			
+			
+		
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/sub_frc.wav'"/>
+			</prompt>
+			
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#SubRequest"></goto>	
+				</if>
+			</filled>
+			
+			<noinput >
+				<goto next="MainMenu.vxml"/>
+			</noinput>
+			
+			<nomatch >
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			
+			<exit></exit>
+		</nomatch>
+		
+		</field>
+	</form>
+	
+	<form id="SubRequest">
+		<block>
+			<!-- SUB REQUEST -->
+			<if cond="DNIS=='54433'">
+				<assign name="amount" expr="49"/>
+				<assign name="planid" expr="'21'"/>
+			<elseif cond="DNIS=='5443333'"/>
+				<assign name="amount" expr="49"/>
+				<assign name="planid" expr="'21'"/>
+			<elseif cond="DNIS=='5443322'"/>
+				<assign name="amount" expr="5"/>
+				<assign name="planid" expr="'23'"/>
+			<else/>	
+				<assign name="amount" expr="49"/>
+				<assign name="planid" expr="'21'"/>		
+			</if>
+			<if cond="usr_status=='-1'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amount+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+				<!--<prompt bargein="false" timeout="0s" cond="usr_status=='-1' & (DNIS!='5443322' || DNIS!='5443333')">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/charging_wait.wav'"/>
+				</prompt> -->
+				<if cond="DNIS=='5443322' || DNIS=='5443333' || DNIS=='5443311'">
+					<goto next="NewUser.vxml#LANGSEL1"/>
+				<else/>
+					<goto next="#BillStatusChk"/>	
+				</if>
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_FRC_UPDATE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<goto next="MainMenu.vxml"></goto>
+			</if>
+		</block>
+	</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+ 								if(j==3)
+							         frc_status = out_string[j];
+
+						    }
+
+					]]>
+			
+			</script>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="End.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<if cond="DNIS=='5443322' || DNIS=='5443333' ||DNIS=='5443311'">
+					<goto next="MainMenu.vxml"/>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/thank_sub.wav'"/>
+					</prompt>
+					<goto next="MainMenu.vxml"/>
+				</if>	
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="End.vxml"/>
+			</if>
+		</block>
+	</form>
+
+</vxml>

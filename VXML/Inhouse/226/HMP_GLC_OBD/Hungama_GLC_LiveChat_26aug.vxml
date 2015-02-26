@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_LiveChat_26aug.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+ <var name="contentfilepath" expr="''"/>
+ <var name="cfgFile" expr="''"/>
+<var name="contentfile" expr="''"/>
+	<script>
+		
+		var out_string=new Object();
+		var spzone=new Object();
+		var len=0;
+	</script>
+	<form id="MAINMENU">
+		<block>
+			<assign name="Usage_time" expr="rim(section_begin)"/>
+			<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+			<assign name="Section_Name" expr="'Welcome_chat'"/>
+			<assign name="section_begin" expr="starttime()"/>
+			<assign name="CATEGORY" expr="'GLC_CHAT_MENU'"/>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/welcome_chat.wav'"/>
+			</prompt>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=1'"/>
+				<script>
+					 <![CDATA[
+						 for(j=0; j< out_string.length;  j++)
+							  {  	  
+							   if(j==0)
+								celeb_on = out_string[j];
+							  }
+			
+					]]>
+			</script>
+			<log> celeb_on is   <value expr="celeb_on"/> </log>
+			<goto next="#Chat_status"/>
+		</block>
+		
+		
+	</form>
+	
+	<form id="Chat_status">
+		<block>
+		       
+		        
+			
+			<if cond="celeb_on=='-1'">
+				<assign name="Usage_time" expr="rim(section_begin)"/>
+				<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+				 <assign name="Section_Name" expr="'errorprompt_chat'"/>
+				 	<assign name="section_begin" expr="starttime()"/>
+				 	<prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/'+lang+'/event_offline.wav'"/>
+					</prompt>
+					<goto next="Hungama_GLC_RootMenu.vxml"/>
+					<elseif cond="celeb_on=='1'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=2'"/>
+						<script>
+						<![CDATA[
+						 for(j=0; j< out_string.length;  j++)
+						 {  	  
+							if(j==0)
+								celeb_on_time = out_string[j];
+						 }
+						]]>
+						</script>
+					 
+					<if cond="celeb_on_time=='2'">
+						<prompt bargein="true" timeout="3s">
+							<audio expr="promptpath+'/'+lang+'/chat_today.wav'"/>
+						</prompt>
+						<!--********************************CELEB will gone online before 30***************-->
+						  <goto next="Hungama_GLC_RootMenu.vxml"/>
+					<elseif cond="celeb_on_time=='3'"/>
+						<!--********************************CELEB will  gone online before 30***************-->
+						<prompt bargein="true" timeout="3s">
+							<audio expr="promptpath+'/'+lang+'/pre_event_engagement.wav'"/>
+						</prompt>
+						<goto next="Hungama_GLC_RootMenu.vxml"/>
+					<elseif cond="celeb_on_time=='4'"/>
+						<prompt bargein="true" timeout="3s">
+							<audio expr="promptpath+'/'+lang+'/event_postponed.wav'"/>
+						</prompt>
+						<!--********************************CELEB gone offline***************-->
+						<goto next="Hungama_GLC_RootMenu.vxml"/>
+					<else/>
+						<goto next="#Chat_menu"/>
+				
+					</if>
+			</if>
+		</block>
+	
+	</form>
+	<form id="Chat_menu">
+			<block>
+				<log expr="'celeb_on issssss =' + celeb_on"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLCCHAT_SERVERIP_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+				<![CDATA[
+					for(j=0; j< out_string.length;  j++)
+
+					 {  	  
+						 if(j==0)
+							usr_status_deffered = out_string[j];
+					 }
+				]]>
+				</script>
+				<log expr="'usr_status_deffered issssss =' + usr_status_deffered"/>
+			</block>
+			<field name="choice">
+			<grammar mode="dtmf" root="start180" version="1.0"> 
+				<rule id="start180" scope="public">	
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptpath+'/'+lang+'/chat_option1.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#Chat_IP_transfer"/>
+				<elseif cond="choice=='2'"/>
+					<prompt bargein="true" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/wait_music.wav'"/>
+					</prompt>
+					<goto next="Hungama_GLC_LiveChatDeffered.vxml"/>
+				</if>
+			</filled>
+			<noinput count="1">
+				<audio expr="promptpath+'/'+lang+'/waiting_response.wav'"/>
+				<reprompt/>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/wait_music.wav'"/>
+				</prompt>
+				<goto next="Hungama_GLC_LiveChatDeffered.vxml"/>
+			</noinput>
+			<nomatch count="1">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+			<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/wait_music.wav'"/>
+				</prompt>
+				<goto next="Hungama_GLC_LiveChatDeffered.vxml"/>
+			</nomatch>
+		</field>			
+	</form>
+	<form id="Chat_IP_transfer">
+			<block>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=USER_TRF_GLC&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+usr_status_deffered+'&amp;INPARAM[2]='+realDNIS"/>
+				<goto next="Hungama_GLC_CHATUSERSTATUS.vxml"/>
+				<!--<if cond="usr_status_deffered=='217' &amp;&amp; celeb_on=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=USER_TRF_GLC&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=217&amp;INPARAM[2]='+realDNIS"/>
+					<goto next="Hungama_GLC_LiveChatDeffered.vxml"/>
+				<elseif cond="usr_status_deffered=='213' &amp;&amp; celeb_on=='1'"/>			
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=USER_TRF_GLC&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=213&amp;INPARAM[2]='+realDNIS"/>
+					<submit expr="Hungama_GLC_CHATUSERSTATUS.vxml"/>
+				<else/>
+					
+				</if>-->
+			</block>		
+		</form>
+	
+	
+	</vxml>

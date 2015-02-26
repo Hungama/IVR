@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml xmlns="http://www.w3.org/2001/vxml" xml:lang="en-IN" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml 
+   http://www.w3.org/TR/voicexml20/vxml.xsd" version="2.0" >
+
+<var name="counter" expr="0"/> 
+<form id ="fetch">
+	<block name="FetchStream">
+			<log>fetching stream</log>
+		<prompt>
+			
+
+			<audio expr="'livertsp://180.149.242.77/hungama_shirdivoice'"/>  
+		<!--	<audio expr="'http://192.168.4.30:8080/hungama/Ripper/'+counter+'.wav"/>   -->
+		</prompt>
+		
+		
+		<assign name = "counter" expr = "counter+1 " />
+		<goto nextitem="FetchStream"/>
+	</block>
+</form>
+</vxml>

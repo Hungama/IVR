@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="manchalaRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+<form id="balance_setting_to_zero">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PREM_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/>	
+		<prompt bargein="true">
+		 	<audio expr="promptpath+LANG_DESCRIPTION+'/balance_less_0.wav'"/> 
+		</prompt>
+			<assign name="timerflag" expr="'0'"/>
+			<assign name="curbalance" expr="0"/>
+			<goto next="#topup_options"/>
+	</block>
+</form>
+<form id="topup_options">
+  <field name="mnuopt">
+	 <grammar mode="dtmf" root="start1" version="1.0">
+               <rule id="start1" scope="public">
+                 <one-of>				 
+				   <item>1</item>		
+				   <item>2</item>		
+				   <item>3</item>				  			  		      
+				   <item>4</item>				  			  		      
+                </one-of>
+              </rule>
+            </grammar>			
+			
+		   
+		<prompt bargein="false" timeout="3s">			  	
+                <audio expr="promptpath+LANG_DESCRIPTION+'/topup1.wav'"/>
+                <audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf1.wav'"/>
+                <audio expr="promptpath+LANG_DESCRIPTION+'/topup2.wav'"/>
+                <audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf2.wav'"/>
+		<audio expr="promptpath+LANG_DESCRIPTION+'/topup3.wav'"/>
+                <audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf3.wav'"/>				
+                <audio expr="promptpath+LANG_DESCRIPTION+'/topup4.wav'"/>
+                <audio expr="promptpath+LANG_DESCRIPTION+'/press_dtmf4.wav'"/>				
+            </prompt>			
+		    			
+			
+			<filled>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PREM_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/>			
+				<if cond="mnuopt=='1'">
+				    <clear namelist="mnuopt"/> 
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PREM_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/> 					
+				<elseif cond="mnuopt=='2'"/>
+				    <clear namelist="mnuopt"/> 
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PREM_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/> 
+				<elseif cond="mnuopt=='3'"/>
+				    <clear namelist="mnuopt"/> 
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PREM_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/> 
+				<elseif cond="mnuopt=='4'"/>
+				    <clear namelist="mnuopt"/> 
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PREM_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5&amp;INPARAM[2]='+DNIS"/> 
+				</if>
+				<goto next="#billingchk"/>
+			</filled>		
+			
+			<noinput>
+			     <prompt bargein="false" timeout="0s">
+					   <audio expr="promptpath+LANG_DESCRIPTION+'/nodtmf.wav'"/>                                 					
+			     </prompt>
+			     <reprompt></reprompt>			   			     
+                 </noinput>
+	
+	          <nomatch>			   
+                        <prompt bargein="false" timeout="0s">
+					   <audio expr="promptpath+LANG_DESCRIPTION+'/invalidoption.wav'"/>		               	
+			     </prompt> 
+			     <reprompt></reprompt>                    
+                </nomatch>  		 			            	
+	  </field>	 
+</form>
+
+
+<form id="billingchk">
+<field name="mnuopt">
+	 <grammar mode="dtmf" root="start2" version="1.0">
+               <rule id="start2" scope="public">
+                 <one-of>				 
+				   <item>1</item>		
+				   <item>2</item>		
+				   <item>3</item>				  			  		      
+				   <item>4</item>				  			  		      
+                </one-of>
+              </rule>
+            </grammar>			
+			
+		   
+	  <prompt bargein="true" timeout="2s">			  	
+                <audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>				
+            </prompt>			
+		
+	<filled>
+	        <goto next="#billing_status"/>
+	</filled>		
+			
+	<noinput>
+	      <goto next="#billing_status"/>		   			     
+          </noinput>
+	
+	  <nomatch>			   
+                      <goto next="#billing_status"/>                  
+         </nomatch>
+    </field>
+</form>
+
+
+<form id="billing_status">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PREM_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						       if(j==3)
+						       	movienumber = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+		<if cond="balance &gt; 0">
+				<script> 					 
+					 balance=balance*60;
+					 timerflag=1;      
+				</script>							
+				<script>
+					 <![CDATA[
+						if(timerflag==1)
+			                        start_BalenceMinute=starttime();
+					 ]]>	 	
+			        </script>
+			<goto next="playcontent_premsub.vxml"/>
+		<else/>
+			<goto next="End.vxml"/>
+		</if>
+    </block>
+  </form>
+</vxml>

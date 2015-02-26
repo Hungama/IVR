@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_ModNav.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<form id="NAV">
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  0  </item>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>						 
+						 <item>  8  </item>
+						 <item>  9  </item>
+						  
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="2s">
+					<audio expr="Prompts_Path+'/'+lang+'/keypad_options.wav'"/>							
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<script> unike_play=unike_play+1</script>
+					<goto next="Hungama_ModPlay.vxml#next" />
+				<elseif cond="choice=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="Hungama_ModPlay.vxml#next" />
+				<elseif cond="choice=='3'"/>
+					<script> unike_play=unike_play-1</script>
+					<goto next="Hungama_ModPlay.vxml#next" />				
+				<elseif cond="choice=='7'"/>
+					<goto next="Hungama_ModNav.vxml"/>
+				<elseif cond="choice=='8'"/>
+					<goto next="Hungama_ModMainMenu.vxml"/>
+				<elseif cond="choice=='9'"/>
+					<goto next="Hungama_ModMngAccnt.vxml"/>
+				<!--<elseif cond="choice=='*'"/>
+					<goto next="Hungama_ModCRBT.vxml"/>-->
+				<elseif cond="choice=='0'"/>
+					<goto next="Hungama_ModRngMenu.vxml"/>
+				</if>
+			</filled>
+		</field>
+			<noinput>
+				<!--<prompt bargein="true" timeout="0s">
+					<audio expr="Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				
+				<reprompt></reprompt>-->
+
+
+				<script> unike_play=unike_play</script>
+				<goto next="Hungama_ModPlay.vxml#next" />
+			</noinput>
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				
+				<reprompt></reprompt>
+				<!--<script> unike_play=unike_play</script>
+				<goto next="Hungama_ModPlay.vxml#next" />-->
+			</nomatch>
+	</form>
+
+
+
+</vxml>

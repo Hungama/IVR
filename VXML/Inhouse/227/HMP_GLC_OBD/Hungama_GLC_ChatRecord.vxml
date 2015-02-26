@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_ChatRecord.vxml" content="" />
+<var name="CELEB_ONLINE" expr="session.connection.ccxml.values.CELEB_ONLINE"/>
+<var name="User_ANI" expr="0"/>
+<var name="UploadFileName" expr="''"/>
+<var name="UploadFileName_user" expr="''"/>
+<var name="record_remove" expr="''"/>
+<var name="celeb_rec_fcount" expr="0"/>
+<var name="RECORD_FIRST" expr="1"/>
+<var name="RECORD_DUR" expr="0"/>
+<var name="RECORD_DUR1" expr="0"/>
+<var name="RECORD_SUM" expr="0"/>
+
+<script>
+	var out_string=new Object();
+	
+</script>
+
+<form id="FetchCountValue">
+	<block>
+	<assign name="Usage_time" expr="rim(section_begin)"/>
+	<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+	<assign name="Section_Name" expr="'Chat_recording'"/>
+	<assign name="section_begin" expr="starttime()"/>
+	 <assign name="ANI" expr="'9711071741'"/>
+	 <assign name="dbservlet" expr="'hul_dbinteraction'"/>
+		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+		<log> before fetch</log>
+		<script>
+			<![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+			   {  	  
+			       if(j==0)
+					celeb_rec_fcount = out_string[j];
+			  }
+			]]>
+		</script>
+		 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=1&amp;INPARAM[1]=2'"/>
+	 		<log> before fetch</log>
+	 		<script>
+	 			<![CDATA[
+	 			   for(j=0; j< out_string.length;  j++)
+	 			   {  	  
+	 			       if(j==0)
+	 					User_ANI = out_string[j];
+	 			  }
+	 			]]>
+		</script>
+<log> User_ANI  <value expr="User_ANI"/> </log>
+
+		<script>
+			celeb_rec_fcount=parseInt(celeb_rec_fcount);
+			UploadFileName='celeb_record_'+celeb_rec_fcount+'.wav';
+			
+		</script>
+		<log> UploadFileName number  <value expr="UploadFileName"/> </log>
+		
+		<goto next="#RecordSession"/>
+	</block>
+</form>
+
+
+<form id="RecordSession">
+
+     <block>
+	 <log> Got value from ccxml isssss @@@@@@ <value expr="CELEB_ONLINE"/></log>
+	 <prompt bargein="true" timeout="1s" cond="CELEB_ONLINE=='TRUE'">
+		<audio expr="promptpath+'/'+lang+'/welcome_celeb.wav'"/>
+		
+	 </prompt> 
+	 <assign name="CELEB_ONLINE" expr="'FALSE'"/>
+     </block>
+
+	<record name="message" beep="false" maxtime="7s"  dtmfterm="false" finalsilence="7s" type="audio/wav;codec=alaw">
+	</record>
+
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INPUT_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=GET_RECORD&amp;INPARAM[1]=no'"/>
+			<script>
+			<![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+			   {  	  
+			       if(j==0)
+					record_remove = out_string[j];
+			   }
+			]]>
+			</script>
+			<if cond="record_remove=='star'">
+				<script srcexpr="'http://192.168.100.226:8080/hungama/Record_Copy_Rename?ConfigPath=111&amp;ANI=1236&amp;MSG=celeb_star.wav&amp;TOKEN='+UploadFileName"/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INPUT_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=SET_RECORD&amp;INPARAM[1]=hash'"/>
+				<script>
+			     		celeb_rec_fcount=celeb_rec_fcount+1;
+			     		UploadFileName='celeb_record_'+celeb_rec_fcount+'.wav';
+			     		
+			     	</script>
+			     	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=SET'"/>
+			     	<assign name="RECORD_FIRST" expr="'1'"/>
+				 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=1&amp;INPARAM[1]=2'"/>
+	 				<log> before fetch</log>
+	 			<script>
+	 				<![CDATA[
+	 				   for(j=0; j< out_string.length;  j++)
+	 				   {  	  
+	 				       if(j==0)
+	 						User_ANI = out_string[j];
+	 				  }
+	 				]]>
+				</script>
+				      <log> User_ANI  <value expr="User_ANI"/> </log>
+					<goto next="#RecordSessiontwo"/>
+			</if>
+			
+			<log>recording duration =  <value expr="message$.duration"/> milliseconds.</log>
+			<log>recording maxtime sssssss =  <value expr="message$.maxtime"/> milliseconds.</log>
+			<script>
+				RECORD_DUR=message$.duration;
+			</script>
+	</block>
+
+
+
+	<subdialog name="messageUpload" srcexpr="'http://192.168.100.226:8080/hungama/air_recording_mobisur'" enctype="multipart/form-data" method="post" namelist="ANI UploadFileName message">	    	    							
+	</subdialog>
+	
+
+
+
+     <block>
+     	<script srcexpr="'http://192.168.100.226:8080/hungama/Record_Mobisur?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;MSG='+message"/> 
+     	 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_RECORDINGNAME&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+User_ANI+'&amp;INPARAM[1]='+UploadFileName"/>
+     	
+     
+     	<script>
+     		celeb_rec_fcount=celeb_rec_fcount+1;
+     		UploadFileName='celeb_record_'+celeb_rec_fcount+'.wav';
+     		
+     	</script>
+     	<log> UploadFileName number  <value expr="UploadFileName"/> </log>
+		
+     	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=SET'"/>
+     	<assign name="RECORD_FIRST" expr="'1'"/>
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=1&amp;INPARAM[1]=2'"/>
+	 				<log> before fetch</log>
+	 			<script>
+	 				<![CDATA[
+	 				   for(j=0; j< out_string.length;  j++)
+	 				   {  	  
+	 				       if(j==0)
+	 						User_ANI = out_string[j];
+	 				  }
+	 				]]>
+				</script>
+<log> User_ANI  <value expr="User_ANI"/> </log>
+
+
+<!--***************************************************RECORDING SIZEEEE ********************************************************-->
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_record_submit&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+UploadFileName+'&amp;INPARAM[1]='+RECORD_DUR+'&amp;INPARAM[2]=SET'"/>
+	<log> before fetch</log>
+<script>
+	<![CDATA[
+	   for(j=0; j< out_string.length;  j++)
+	   {  	  
+	       if(j==0)
+			RECORD_SUM = out_string[j];
+	  }
+	]]>
+</script>
+
+
+
+
+
+<!--*****************************************************************************************************************************-->
+
+
+     	<goto next="#RecordSessiontwo"/>
+     </block>
+     
+</form>
+
+<form id="RecordSessiontwo">
+
+    <block>
+	 <!--<prompt bargein="false" timeout="1s">
+		<audio expr="promptpath+'/'+lang+'/blank.wav'"/>
+	</prompt>-->
+    </block>
+
+	<record name="messagetwo" beep="false" maxtime="7s"  finalsilence="7s" dtmfterm="false" type="audio/wav;codec=alaw">
+	</record>
+	
+	<block>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INPUT_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=GET_RECORD&amp;INPARAM[1]=no'"/>
+				<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+				   {  	  
+				       if(j==0)
+						record_remove = out_string[j];
+				   }
+				]]>
+				</script>
+				<if cond="record_remove=='star'">
+					<script srcexpr="'http://192.168.100.226:8080/hungama/Record_Copy_Rename?ConfigPath=111&amp;ANI=1236&amp;MSG=celeb_star.wav&amp;TOKEN='+UploadFileName"/>
+					
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_INPUT_GET&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=SET_RECORD&amp;INPARAM[1]=hash'"/>
+					
+					<script>
+				     		celeb_rec_fcount=celeb_rec_fcount+1;
+				     		UploadFileName='celeb_record_'+celeb_rec_fcount+'.wav';
+				     		
+				     	</script>
+				     	<log> UploadFileName number  <value expr="UploadFileName"/> </log>
+						
+				     	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=SET'"/>
+				     	<assign name="RECORD_FIRST" expr="'1'"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=1&amp;INPARAM[1]=2'"/>
+	 				<log> before fetch</log>
+	 			<script>
+	 				<![CDATA[
+	 				   for(j=0; j< out_string.length;  j++)
+	 				   {  	  
+	 				       if(j==0)
+	 						User_ANI = out_string[j];
+	 				  }
+	 				]]>
+				</script>
+			<log> User_ANI  <value expr="User_ANI"/> </log>
+	     				<goto next="#RecordSession"/>
+				</if>
+				<log>recording duration sssssss =  <value expr="messagetwo$.duration"/> milliseconds.</log>
+				<log>recording maxtime sssssss =  <value expr="messagetwo$.maxtime"/> milliseconds.</log>
+				
+				<script>
+					RECORD_DUR1=messagetwo$.duration;
+				</script>
+	</block>
+
+	<subdialog name="messageUpload" srcexpr="'http://192.168.100.226:8080/hungama/air_recording_mobisur'" enctype="multipart/form-data" method="post" namelist="ANI UploadFileName messagetwo">	    	    							
+	</subdialog>
+	
+  
+     <block>
+	<script srcexpr="'http://192.168.100.226:8080/hungama/Record_Mobisur?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;MSG='+messagetwo"/> 
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_RECORDINGNAME&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+User_ANI+'&amp;INPARAM[1]='+UploadFileName"/>
+	<script>
+		celeb_rec_fcount=celeb_rec_fcount+1;
+		UploadFileName='celeb_record_'+celeb_rec_fcount+'.wav';
+		
+	</script>
+	<log> UploadFileName number  <value expr="UploadFileName"/> </log>
+		
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=SET'"/>
+	<assign name="RECORD_FIRST" expr="'2'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]=1&amp;INPARAM[1]=2'"/>
+	 				<log> before fetch</log>
+	 			<script>
+	 				<![CDATA[
+	 				   for(j=0; j< out_string.length;  j++)
+	 				   {  	  
+	 				       if(j==0)
+	 						User_ANI = out_string[j];
+	 				  }
+	 				]]>
+					<log> User_ANI  <value expr="User_ANI"/> </log>
+				</script>
+
+<!--***************************************************RECORDING SIZEEEE ********************************************************-->
+<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_record_submit&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+UploadFileName+'&amp;INPARAM[1]='+RECORD_DUR1+'&amp;INPARAM[2]=SET'"/>
+	<log> before fetch</log>
+<script>
+	<![CDATA[
+	   for(j=0; j< out_string.length;  j++)
+	   {  	  
+	       if(j==0)
+			RECORD_SUM = out_string[j];
+	  }
+	]]>
+</script>
+
+
+
+
+
+<!--*****************************************************************************************************************************-->
+
+	<goto next="#RecordSession"/>
+     </block>
+  
+</form>
+
+</vxml>

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="jyotish_root1.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="checkuserstatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+	<var name="blacklist_status" expr="'NA'"/>
+<script>
+		var ciropr1=new Object();
+		var out_string = new Object();
+	</script>
+<error>
+<goto next="end.vxml"/>
+</error>
+
+<form id="checkuserstatus">
+<block>
+	<assign name="program_name" expr="'checkuserstatus'"/>	
+	  <assign name="start_BalenceMinute" expr="start_time()"/>	
+	<assign name = "DNIS" expr="session.connection.local.uri"/>
+	<assign name = "gANI" expr = "session.connection.remote.uri" />	
+	<assign name = "ANI" expr = "session.connection.remote.uri" />	
+	<log> start time is: <value expr="start_time()"/></log>
+
+<assign name="C_Start" expr="start_time()"/>
+	<assign name="gUserCallID" expr=" gANI + '-' + GetFileMS() "/>
+	
+	<log>Call Id is: <value expr="gUserCallID"/></log>
+	
+		<assign name="initial_balance" expr="start_time()"/>
+		
+	<!--<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>-->
+
+		 <assign name = "realdnis" expr="session.connection.local.uri"/>
+		 
+	
+			<script>
+				length = ANI.length;
+				if(length == 15)
+					ANI = ANI.substring(5,15);
+				if(length == 14)
+					ANI = ANI.substring(4,14);
+				if(length == 13)
+					ANI = ANI.substring(3,13);
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+			</script>			
+			<log> User ANI  is	<value expr="ANI"/>	</log>		
+
+			<if cond="ANI=='9999130777' || ANI=='9582596960' || ANI=='9582213775'">
+				<submit expr="'../SummerContest/checkuserstatus.vxml'"/>
+			</if>
+
+	
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>				
+			<assign name="ciropr" expr="ciropr1.value"/>
+			<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+			<script>
+				var songcheck=ciropr.split("#");
+				operator=songcheck[1];
+				circle=songcheck[2];
+			</script>	       
+			<log>circle  is	<value expr="circle"/>    </log>
+			<log>operator is <value expr="operator"/>    </log>
+
+
+			<script>
+		       	 operator= realdnis.substring(0,4);
+			</script>
+			
+
+
+			<if cond="operator=='0111'">
+				<script>
+					DNIS= realdnis.substring(4,length);
+					operator = "tatc";
+				</script>
+			<elseif cond="operator=='0115'"/>
+				<script>
+					DNIS= realdnis.substring(3,length);
+					operator = "tatm";
+				</script>
+			<elseif cond="operator=='0110'"/>
+				<script>
+					DNIS= realdnis.substring(3,length);
+					operator = "virm";
+				</script>
+			<elseif cond="operator=='6629'"/>
+				<script>
+					DNIS= '5464627';
+		    			operator = "unim";
+				</script>
+
+			<else/>
+				<script>
+					DNIS= realdnis;
+		    			operator = "relc";
+				</script>
+			</if>	
+
+
+
+
+
+
+			<if cond="operator=='tatm'">
+				<assign name="dbservlet" expr="'docomo_dbinteraction'"/>
+			<elseif cond="operator=='tatc'"/>
+				<assign name="dbservlet" expr="'indicom_dbinteraction'"/>
+			<elseif cond="operator=='virm'"/>
+				<assign name="dbservlet" expr="'docomo_dbinteraction'"/>
+			<elseif cond="operator=='relc'"/>
+				<assign name="dbservlet" expr="'reliance_jyotish'"/>
+
+			<else/>
+				 <assign name="dbservlet" expr="'jyotish_dbinteraction'"/>
+			</if>
+
+			<if cond="ANI=='7838091548'">
+				<assign name="dbservlet" expr="'jyotish_dbinteraction'"/>
+			</if>
+
+		
+			<if cond="ANI=='8527000779'">
+				<assign name="dbservlet" expr="'jyotish_dbinteraction'"/>
+			</if>
+
+			<log>DB servlet:<value expr="dbservlet"/></log>
+
+		<if cond="realdnis=='662911427'">
+			<assign name="DNIS" expr="'5464627'"/>
+		</if>
+
+		<if cond="circle=='bih'">
+			<assign name="alertCircle" expr="'BIHAR'"/>
+		<elseif cond="circle== 'apd'"/>
+			<assign name="alertCircle" expr="'Andhra Pradesh'"/>
+		<elseif cond="circle== 'guj'"/>
+			<assign name="alertCircle" expr="'GUJARAT'"/>
+		<elseif cond="circle== 'kol'"/>
+			<assign name="alertCircle" expr="'KOLKATA'"/>
+		<elseif cond="circle== 'mum'"/>
+			<assign name="alertCircle" expr="'Mumbai'"/>
+		<elseif cond="circle== 'mah'"/>
+			<assign name="alertCircle" expr="'Maharashtra'"/>
+		<elseif cond="circle== 'upe'"/>
+			<assign name="alertCircle" expr="'UP EAST'"/>
+		<elseif cond="circle== 'wbl'"/>
+			<assign name="alertCircle" expr="'WestBengal'"/>
+		<elseif cond="circle== 'upw'"/>
+			<assign name="alertCircle" expr="'UP WEST'"/>
+		<elseif cond="circle== 'del'"/>
+			<assign name="alertCircle" expr="'Delhi'"/>
+
+		<else/>
+			<assign name="alertCircle" expr="circle"/>
+
+		</if>
+
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+		
+
+		<log>Pause Code value :<value expr="IsPause"/></log>
+
+		<if cond="IsPause=='true'">
+			<assign name="DNIS" expr="IsPauseDNIS"/>
+			<log> PAuse Code APP</log>
+		</if>
+	<!--**********************************************************************Check for Black list Start******************************************************-->		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3'"/>
+			<script>
+			 	 blacklist_status = out_string[0];			
+			</script>
+			<log>blacklist_status issss:<value expr="blacklist_status"/></log>		
+					<if cond="blacklist_status == '1'">
+						 <assign name="program_name" expr="'Blacklist'"/>
+				       	 <assign name="channel" expr="'ND'"/>
+						 <goto next="end.vxml"></goto>                    
+					</if>
+	<!--**********************************************************************Check for Black list End******************************************************-->				
+		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		
+		<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					lang = out_string[j];
+				       if(j==2)
+					balance = out_string[j];
+						if(j==3)
+					sunsign = out_string[j];
+					if(j==4)
+					sunsignname = out_string[j];
+					if(j==5)
+					channel= out_string[j];
+	
+				  }
+			]]>
+		</script>
+		
+						<script>
+			         		 balance=balance*60;
+					 		 curbalance=balance;
+			         	</script>
+		
+		<log> user status is:<value expr="usr_status"/></log>	         	
+		<log> lang status is:<value expr="lang"/></log>
+		<log> balance status is:<value expr="balance"/></log>
+		<log> sunsign status is:<value expr="sunsign"/></log>
+		<log> sunsignname status is:<value expr="sunsignname"/></log>
+		<log> channel status is:<value expr="channel"/></log>
+		
+		<assign name="LANG_DESCRIPTION" expr="lang"/>
+
+		<if cond="lang=='99'">
+			<assign name="LANG_DESCRIPTION" expr="'01'"/>
+		</if>
+
+
+		<if cond= "usr_status=='1'">
+			  <goto next="ExistingUser.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+		<elseif cond="usr_status== '0'"/>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+			 <goto next="end.vxml"/>
+		<elseif cond="usr_status== '5'"/>
+			 <goto next="ExistingUser.vxml" fetchhint="prefetch" fetchtimeout="10s"/>
+		<elseif cond="usr_status== '11'"/>
+			<audio expr="promptpath+'/'+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+			 <goto next="end.vxml"/>
+		<else/>
+			<goto next="NewUser.vxml" fetchhint="prefetch" fetchtimeout="10s"/>	
+		</if>
+	
+	
+</block>
+</form>
+
+</vxml>

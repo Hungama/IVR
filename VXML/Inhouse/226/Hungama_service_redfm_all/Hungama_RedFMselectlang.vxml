@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_RedFMselectlang.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="names" expr="''"/>
+	<var name="movie_idx" expr="0"/>
+	<var name="NM_count" expr="1"/>
+	<var name="NI_count" expr="1"/>	
+	
+	<script>
+	    var favSongs=new Object();
+	    var j=new Object();
+	    var Lang_Array = new Array();
+	</script>
+	
+	<form id="Select_Lang">
+ 	<block>
+		<if cond="circle=='mpd' || circle=='MPD'">
+			<assign name="lang" expr="'01'"/>
+			<if cond="usr_status=='1'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>					  				        	
+				<if cond="new_lang=='1'">
+					<goto next="Hungama_RedFMexisting.vxml"/>
+				</if>
+				<goto next="Hungama_RedFMHELP.vxml#Menu"/>
+			<else/>
+		      		<goto next="Hungama_RedFMNewuser.vxml"/>
+			</if>		
+		</if>
+ 		<script>
+ 			PreviewToPlay='lang_select_'+circle;
+ 		</script>
+ 		<!--<assign name="PreviewToPlay" expr="'lang_select'" />-->
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Redfm/'+operator+'/lang/'+circle+'.txt'"/>
+		<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/AARTIPACK?type=LRADIO/config/'+PreviewToPlay"/>-->
+	     <script>
+              <![CDATA[
+                              
+                           var k=1;
+                              for(j=0;j < favSongs.length;j++)
+ 	                          {  	  
+ 	                                     	 	                         
+ 	                          Lang_Array[j] = favSongs[j];
+ 	                          
+ 					         }
+              ]]>		
+           </script>              
+ 	       <assign name="len" expr="favSongs.length"/>
+ 	       <assign name="lang" expr="Lang_Array[0]"/>
+			<log>
+				value of servelet is <value expr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Redfm/'+operator+'/lang/'+circle+'.txt'"/>
+				value of len is <value expr="len"/>
+			</log> 	
+			<if cond="len=='0'">
+		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Redfm/'+operator+'/lang/del.txt'"/>
+		
+	     <script>
+              <![CDATA[
+                              
+                            for(j=0;j < favSongs.length;j++)
+ 	                          {  	  
+ 	                                     	 	                         
+ 	                          Lang_Array[j] = favSongs[j];
+ 	                          
+ 					         }
+              ]]>		
+           </script>              
+ 	       <assign name="len" expr="favSongs.length"/>
+ 	       <assign name="lang" expr="Lang_Array[0]"/>
+			
+			
+		</if>
+			<if cond="circle=='mum'">
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='kol'"/>
+		    	<assign name="lang" expr="'06'"/>
+		    <elseif cond="circle=='apd'"/>
+		    	<assign name="lang" expr="'08'"/>
+		    <elseif cond="circle=='upw'"/>
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='upe'"/>
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='guj'"/>
+		    	<assign name="lang" expr="'12'"/>
+		    <elseif cond="circle=='mah'"/>
+		    	<assign name="lang" expr="'11'"/>
+		    <elseif cond="circle=='chn'"/>
+		    	<assign name="lang" expr="'07'"/>
+		    <elseif cond="circle=='ker'"/>
+		    	<assign name="lang" expr="'09'"/>
+		    <elseif cond="circle=='ori'"/>
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='bih'"/>
+		    	<assign name="lang" expr="'01'"/>
+		    <elseif cond="circle=='tnu'"/>
+		    	<assign name="lang" expr="'07'"/>
+		    <elseif cond="circle=='wbl'"/>
+		    	<assign name="lang" expr="'06'"/>
+		    <elseif cond="circle=='kar'"/>
+		    	<assign name="lang" expr="'10'"/>
+		    <else/>
+		    	<assign name="lang" expr="'01'"/>
+		    </if>
+		     <prompt bargein="true" timeout="1s">
+		    <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/lang_option.wav'" />
+		    </prompt>
+			<if cond="circle!='tnu'">
+		    <prompt bargein="true" cond="lang!='01'" timeout="1s">
+		    <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/lang_option.wav'" />
+			
+		    </prompt>
+			</if>
+			
+ 	</block>
+ 	 <field name="opt" >
+	       <grammar mode="dtmf" root="start" version="1.0">
+		     <rule id="start" scope="public">
+			   <one-of>
+				<item>1</item>
+				<item>2</item>
+				<item>3</item>
+				<item>4</item>
+				<item>5</item>
+				<item>6</item>
+				<item>7</item>
+				<item>8</item>
+				<item>9</item>
+				<item>*</item>
+				<item>#</item>
+			   </one-of>
+		    </rule>
+	      </grammar>    		
+		    <prompt bargein="true" timeout="0s">
+			  <!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/lang_option_upw.wav'" />-->
+			  <!--<foreach item="names" array="Lang_Array">
+			  	<mark nameexpr="movie_idx++"/>
+				
+				 <log>	song is is    	<value expr="movie_idx"/>  	</log>
+			        <log>	names is is    	<value expr="names"/>  	</log>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+names+'/lang'+names+'.wav'" />
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+names+'/press_dtmf'+movie_idx+'.wav'"  />
+				</foreach>   -->
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+Lang_Array[movie_idx]+'/lang'+Lang_Array[movie_idx]+'.wav'" />
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+Lang_Array[movie_idx]+'/press_dtmf'+ ++movie_idx +'.wav'"  />
+		    </prompt>
+			<filled>
+				<if cond="opt &gt; len ">
+		           <clear namelist="opt"></clear>
+			 	   <throw event="nomatch"></throw>
+		        </if>
+				<if cond="opt=='1' || opt=='2' || opt=='3' || opt=='4' || opt=='5' || opt=='6' || opt=='7' || opt=='8' || opt=='9'">
+					<script>
+						opt = parseInt(opt) -1;
+					</script>
+					<assign name="lang" expr="Lang_Array[opt]"></assign>
+			        <if cond="usr_status=='1'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LANG_CHANGE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang"/>					  				        	
+						<if cond="new_lang=='1'">
+						<goto next="Hungama_RedFMexisting.vxml"/>
+						</if>
+			        	<goto next="Hungama_RedFMHELP.vxml#Menu"/>
+			        <else/>
+			        	<goto next="Hungama_RedFMNewuser.vxml"/>
+			        </if>			        
+				<else/>
+					<clear namelist="opt"></clear>
+				 	<throw event="nomatch"></throw>
+				</if>
+			
+			</filled>
+           <nomatch>
+			<assign name="movie_idx" expr="0"/>
+					<prompt>
+                  		<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+                 	</prompt>
+			<reprompt></reprompt>
+           </nomatch>
+           <noinput>
+			<if cond="movie_idx &lt; len">
+				<goto nextitem="opt"/>
+			</if>
+			<assign name="movie_idx" expr="0"/>
+					<prompt>
+                  		<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+                 	</prompt>
+			<reprompt></reprompt>
+           </noinput>
+    	</field>
+ </form>
+</vxml>

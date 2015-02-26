@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="CricketRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="MainMenu_test.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<script>
+	var favSongs=new Object();
+</script>
+<form id="livescore">
+		<block>
+				<if cond="ANI=='8586967046'">
+					<goto next="MainMenu-old.vxml"/>
+				</if>
+			<assign name="Usage_time" expr="time_duration(section_begin)"/>
+			<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+			<assign name="SECTION" expr="'MAINMANEU'"/>
+			<assign name="section_begin" expr="start_time()"/>
+			<script srcexpr="'http://'+S_IP+'/'+servlet_path_1+'/ar_ReadConfigSong?ConfigPath=ls.cfg&amp;TOKEN=FREE'"/>
+			<assign name="len" expr="favSongs.length" />
+			
+			<script>
+				 <![CDATA[
+				     	  	livescore = favSongs[0];						   
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="livescore"/>    </log>
+			
+			<if cond="lang=='10' || lang=='08' || lang=='07' || lang=='09'">
+				<assign name="LIVE_LANG" expr="'02'" />
+			<elseif cond="lang=='06' || lang=='17'"/>
+				<assign name="LIVE_LANG" expr="'01'" />
+			<else/>
+				<assign name="LIVE_LANG" expr="lang" />
+			</if>
+		</block>
+		
+		<field name="choice">
+				<grammar mode="dtmf" root="start15" version="1.0">
+						<rule id="start15" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  9  </item>
+								 <item>  *  </item>
+								 <item>  #  </item>
+								 <item>  0  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="'http://'+S_IP+'/'+CONTENT_PATH+'/'+LIVE_LANG+'/ls/'+livescore+'.wav'"/>																															
+				</prompt>
+				
+				<filled>
+<if cond="match_user=='OK' &amp;&amp; usr_status=='-1'">
+								<goto next="Subscription.vxml#SubOption"/>
+							</if>
+
+					<if cond="choice=='0'">
+						<goto next="AccountManager.vxml"/>
+					<else/>
+						<goto next="#category_selection"/>
+					</if>
+				</filled>
+				
+				<noinput>
+<if cond="match_user=='OK' &amp;&amp; usr_status=='-1'">
+								<goto next="Subscription.vxml#SubOption"/>
+							</if>
+
+					<goto next="#category_selection"/>
+				</noinput>
+				
+				<nomatch>
+<if cond="match_user=='OK' &amp;&amp; usr_status=='-1'">
+								<goto next="Subscription.vxml#SubOption"/>
+							</if>
+
+					<goto next="#category_selection"/>
+				</nomatch>
+		</field>
+	</form>
+<form id="category_selection">
+	
+		<field name="catopt">
+		
+				<prompt bargein="true" timeout="1s">
+				<audio expr="'http://'+S_IP+'/cricprompt/'+lang+'/prompts_unim/p1_in_unim.wav'"/>
+				<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/press_dtmf1.wav'"/>
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/select_catname.wav'"/>
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/press_dtmf2.wav'"/>
+					<!--<audio expr="'http://'+S_IP+'/cricprompt/'+lang+'/prompts_unim/select_player.wav'"/>-->
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/select_catname_345.wav'"/>
+					
+				</prompt>
+				
+				<grammar mode="dtmf" root="start19" version="1.0">
+						<rule id="start19" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								<!-- <item>  6  </item>-->
+								 <item>  0  </item>
+							</one-of>
+						</rule>
+				</grammar>
+				<filled>
+					<if cond="catopt=='1'">	
+						<assign name="cat" expr="'pc'"/>
+						<goto next="PredictionContest.vxml"/>
+					<elseif cond="catopt=='2'"/>
+						<assign name="cat" expr="'mc'"/>
+						<goto next="MatchCenter.vxml"/>
+					<elseif cond="catopt=='3'"/>
+						<assign name="cat" expr="'ms'"/>
+						<goto next="MatchSchedule.vxml"/>
+					<!--<elseif cond="catopt=='3'"/>
+						<goto next="PlayerOfTheWeek.vxml"/>-->
+					<elseif cond="catopt=='4'"/>
+						<goto next="FeedBack.vxml"/>
+					<elseif cond="catopt=='5'"/>
+						<goto next="SMSScoreAlert.vxml"/>
+					<elseif cond="catopt=='0'"/>
+						<goto next="AccountManager.vxml"/>
+					</if>
+				</filled>
+				
+				<noinput>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+					</prompt>
+					<reprompt></reprompt>
+				</noinput>
+				
+				<noinput count="3">
+					<goto next="#livescore"/>
+				</noinput>
+				
+				<nomatch>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+					<reprompt></reprompt>
+				</nomatch>
+				
+				<nomatch count="3">
+					<goto next="#livescore"/>
+				</nomatch>	
+		</field>
+	</form>
+</vxml>

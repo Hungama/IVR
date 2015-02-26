@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="CricketRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="PredictionContest.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<script>
+	var favSongs=new Object();
+</script>
+	<form id="play_contest">
+		<block>
+			<assign name="Usage_time" expr="time_duration(section_begin)"/>
+			<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+			<assign name="SECTION" expr="'PREDICTION'"/>
+			<assign name="Section_Name" expr="'PREDICTION'"/>
+			<assign name="section_begin" expr="start_time()"/>
+			<!--<script srcexpr="'http://'+S_IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=cricketconfig/'+operator+'/songconfig/prediction.cfg'"/>-->
+			<script srcexpr="'http://'+S_IP+'/'+servlet_path_1+'/ar_ReadConfigSong?ConfigPath=prid.cfg&amp;TOKEN=FREE'"/>
+			<script>
+				 <![CDATA[
+				     	  	
+								 contestarray = favSongs[0];						   
+					  
+
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="contestarray"/>   </log>
+			
+			<script>
+				temp=contestarray.split("#");
+					 question=temp[0];
+					rule=temp[1];
+					matchid=temp[2];
+					questid=temp[3];
+					fbmsg=temp[4];
+					samplefile=temp[5];
+			</script>
+			<log>question  is	<value expr="question"/>    </log>
+			<log>rule  is	<value expr="rule"/>    </log>
+			<log>matchid  is	<value expr="matchid"/>    </log>
+			<log>questid  is	<value expr="questid"/>    </log>
+			<log>fbmsg  is	<value expr="fbmsg"/>    </log>
+			<log>samplefile  is	<value expr="samplefile"/>    </log>
+			
+	<assign name="song_begin" expr="start_time()"/>
+     	    <assign name="song_listen" expr="'START'" />
+		</block>
+		
+		<!--<field name="choice">
+			<grammar mode="dtmf" root="start29" varsion="1.0">
+						<rule id="start29" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  4  </item>								 
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+							
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+IP+'/'+CONTENT_PATH+'/'+lang+'/'+rule"/>	
+			</prompt>
+
+			<filled>
+				<goto nextitem="conopt" />				
+			</filled>
+
+			<noinput>				
+				<goto nextitem="conopt" />
+			</noinput>
+			
+			<nomatch>
+				<goto nextitem="conopt" />
+			</nomatch>
+		</field> -->
+		
+		
+		<field name="conopt">
+			<grammar mode="dtmf" root="start30" version="1.0">
+						<rule id="start30" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  4  </item>								 
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			
+				
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+S_IP+'/'+CONTENT_PATH+'/'+lang+'/prid_1/'+question"/>
+				<!--<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/'question+"/>	-->
+			</prompt>
+
+			<filled>
+				
+				<assign name="nextchoice" expr="conopt"></assign>
+				
+				<assign name="song" expr="question"></assign>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!song=='+song"></log>
+				<goto next="#contentlogin" />				
+			</filled>
+
+			<noinput>				
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</noinput>
+			
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</nomatch>
+		</field>
+	</form>
+
+<form id="contentlogin">
+	<block>
+					<!--<assign name="cat" expr="'pc'"/>
+					<assign name="song_listen" expr="'END'" />
+				 <assign name="compare_time" expr="time_duration(song_begin)"/>
+
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!compare_time=='+compare_time"></log>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!ContentTime=='+ContentTime"></log>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!hash=='+hash"></log>
+				 
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!cat=='+cat"></log>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!subcat=='+subcat"></log>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!contentlog=='+contentlog"></log>
+				 <log expr="'!!!!!!!!!!!!!!!!!!!!contentfileg=='+song"></log>
+				 <assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign> 
+				 <assign name="contentlog" expr="contentlog+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				 <script srcexpr="'http://124.153.73.2/Reliance/SnsPost.php?msisdn=91'+ANI+'&amp;siteid=1&amp;msg='+fbmsg+'&amp;option='+nextchoice"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/cricket_fb?ANI='+ANI+'&amp;MSG='+fbmsg+'&amp;option='+nextchoice"/>-->
+				 
+				 <if cond="nextchoice==1 || nextchoice==2">
+				 	
+					
+					
+					<if cond="usr_status=='5'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_FRC_UPDATE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+					</if>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_PREDICTION&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+nextchoice+'&amp;INPARAM[2]='+matchid+'&amp;INPARAM[3]='+questid+'&amp;INPARAM[4]='+call_stime+'&amp;INPARAM[5]='+DNIS+'&amp;INPARAM[6]=p1'"/>
+					<prompt bargein="true" timeout="3s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/p1_thanks_unim.wav'"/>
+					</prompt>
+					<goto next="MainMenu.vxml" />
+					
+				<elseif cond="nextchoice==4"/>
+					<goto next="#play_contest" />
+				<elseif cond="nextchoice==9"/>
+					<goto next="MainMenu.vxml" />
+				</if>
+				 
+	</block>
+</form>
+
+</vxml>

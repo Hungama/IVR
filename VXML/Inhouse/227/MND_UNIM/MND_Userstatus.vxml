@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_MNDRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="MND_Userstatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+ <form id="Starting">
+ 	<block>
+		<if cond="circle=='apd'">
+			<assign name="lang" expr="'08'" />
+		<else/>
+			<assign name="lang" expr="'01'" />
+		</if>
+		<goto next="#Menu"/>
+ 	</block>
+ </form>
+ 
+ <form id="Menu">
+    <block>
+     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>
+           <script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	
+					      if(j==0)
+						   usr_status = out_string[j];
+					      if(j==1)
+						   lang = out_string[j];
+					      if(j==2)
+						   balance = out_string[j]; 
+					      if(j==3)
+						   modofsub = out_string[j];
+					  }
+				]]>
+			</script>
+			<log expr="'Balance isss'+balance"/>
+			<log>Balance isss  <value expr="balance"/>    </log>
+
+			<log>	usr_status isssss    <value expr="usr_status"/> 	</log>
+
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10'"/>
+			<script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						var sub_type = out_string[j];							      
+					  }
+				]]>
+			</script>
+
+			<log>	sub_type isssss    <value expr="sub_type"/> 	</log>
+			
+
+			<if cond="usr_status=='1'">
+				<assign name="prompt_name" expr="'OLD_USER'"/>
+				<script>
+					balance=balance*60;
+					timerflag=1;
+				</script>
+				<script>
+					<![CDATA[
+						if(timerflag==1)
+							 start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<goto next="#Checkuser"/>
+			<elseif cond="usr_status=='-1'"/>
+					<script> 					 
+						balance=5*60;
+						timerflag=1;      
+					</script>							
+					<script>
+						<![CDATA[
+							if(timerflag==1)
+							start_BalenceMinute=starttime();
+						]]>	 	
+					</script>
+					<log expr="'balance @@@@@@@@@ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'+balance"></log>
+					<assign name="prompt_name" expr="'NEW_USER'"/>
+					<goto next="MND_Subscription.vxml"/> 
+			<else/> 
+					<goto next="#DelayCharging"/>
+			</if>
+   </block>
+</form>
+
+<form id="DelayCharging">
+	 <block>
+		<assign name="prompt_name" expr="'delaycharging'"/>
+	 </block>
+     <field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+				</one-of>
+			</rule>
+		</grammar>
+		        
+		        <prompt bargein="true" timeout="2s">
+				<audio expr="promptpath+'/'+lang+'/common/delay_charge.wav'"/>
+			</prompt>
+										        
+		        <filled>
+					<goto next="MND_end.vxml"/>
+		        </filled>				    
+			
+			<noinput>
+					<goto next="MND_end.vxml"/>
+			</noinput>  
+
+			<nomatch>
+					<goto next="MND_end.vxml"/>
+			</nomatch> 
+			
+	    </field>
+</form>
+
+
+<form id="Checkuser">
+	<block>
+			<if cond="timerflag=='1'">
+				   <script>
+				       total_used_bal=rim(start_BalenceMinute);
+				       balance=balance-total_used_bal;  						  
+				   </script>
+				           <log>	used balance isssss    <value expr="total_used_bal"/> </log>
+				           <log>	left balance isssss    <value expr="balance"/> </log>
+					   
+					  <if cond="balance &lt;= '0'">          
+						   <goto next="Topup.vxml"/>
+					  </if>     
+			</if> 
+
+		 		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LASTCAT_ALLCHARACTER&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]=2'"/>
+		<script>
+			<![CDATA[
+				for(j=0; j< out_string.length;  j++)
+					{  	
+						playconfig = out_string[j];
+					}
+			]]>
+		</script>
+
+		<log>	playconfig  isssss    <value expr="playconfig"/> 	</log>
+		
+		<if cond="playconfig=='-1'">
+				<assign name="playconfig" expr="'ch1'" />
+				<assign name="dtmfsub" expr="'Old_User'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+playconfig"></assign>
+				<prompt bargein="false" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/ch1/welcome_old.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/common/mainmenu.wav'"/>
+				</prompt>
+				
+
+				<goto next="MND_mainmenu.vxml"/>
+		<else/>
+				<assign name="prompt_name" expr="'LAST_CAT'"/>
+				<assign name="dtmfsub" expr="'last_cat'"/>
+				<assign name="dtmf_log" expr="dtmf_log+hash+dtmfsub+hash+playconfig"></assign>
+				<prompt bargein="false" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/'+playconfig+'/repeat_'+playconfig+'.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/'+playconfig+'/last_cat.wav'"/>
+				</prompt>
+				<goto next="MND_mainmenu.vxml#loadcliptoplay"/>
+		</if>
+	</block>
+</form>
+
+</vxml>

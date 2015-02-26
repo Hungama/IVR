@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" 
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Endless_PlayQuesAns.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+<var name="response" expr="'Blank'"/>
+
+<form>
+	<block>
+		<log>call came</log>
+	</block>
+  <field name="field_confirm">
+     <grammar mode="dtmf"  root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>						
+							<item>1</item>
+							<item>2</item>
+							<item>3</item>
+							<item>4</item>
+							<item>5</item>
+							<item>6</item>
+							<item>7</item>
+							<item>8</item>
+							<item>9</item>
+							<item>*</item>
+							<item>0</item>
+						</one-of>
+					</rule>
+				  </grammar>
+
+    <filled>
+	<assign name="response" expr="field_confirm"/>
+
+        <return namelist="response"/>
+    </filled>
+
+<noinput>
+	<assign name="response" expr="field_confirm"/>
+
+	<return namelist="response"/>
+</noinput>
+
+  </field> 
+</form>		       
+</vxml>

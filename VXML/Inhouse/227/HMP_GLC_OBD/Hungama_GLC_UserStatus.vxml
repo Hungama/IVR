@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_UserStatus.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="SUBANI" expr="''"/>
+<var name="TEMPANI" expr="''"/>
+<var name="SUBDNIS" expr="''"/>
+<var name="TEMPDNIS" expr="''"/>
+<var name="ciropr" expr="''"/>
+<var name="declaimDNIS" expr="0"/>
+<var name="RELIANCEDNIS" expr="0"/>
+<var name="declaimlength" expr="0"/>
+<var name="declaimTF" expr="0"/>
+<var name="declaimlang" expr="'01'"/>
+<var name="tnb_modofsub" expr="0"/>
+<var name="tnb_subtype" expr="0"/>
+<var name="declaimPlay" expr="0"/>
+<var name="shuffle_userstatus" expr="0"/>
+<var name="iAnswer" expr="Math.floor(Math.random(1) *100)" />
+<var name="bPrompt" expr="true" />
+<var name="livmin" expr="0" />
+<var name="livmin1" expr="0" />
+<var name="contentpath" expr="'http://192.168.100.212:6666/hungama/'"/> 
+<var name="operator2" expr="''"/>
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+<form id="CIRCLEID">
+		<block>
+			<assign name="contentpath" expr="'http://192.168.100.212:6666/hungama/'"/> 
+			<assign name="CATEGORY" expr="'USER_STATUS_CHECK'"/>
+			<assign name="C_Start" expr="start_time()"/>
+			<assign name="section_begin" expr="starttime()"/>
+			<assign name="song_begin_live" expr="starttime()"/>
+				
+
+				<script>  
+					realDNIS=session.connection.local.uri;                   
+					ANI=session.connection.remote.uri;						   
+                </script>
+			<script>
+				var length = ANI.length;
+				ANI = ANI.substring(6,16);
+			</script>
+                <script>
+					length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				</script>  
+				
+		<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+		<log expr="'section_begin @@@@@@@@@@@@@@@@@@@@ =' + section_begin"/>
+		<log expr="'C_Start @@@@@@@@@@@@@@@@@@@@ =' + C_Start"/>
+		<assign name="DNIS" expr="realDNIS"/>
+		
+		<log> operator-circle identification </log>
+		<assign name="dbservlet" expr="'hul_dbinteraction'"/>
+	<script srcexpr="'http://192.168.100.226:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+		<script>
+		<![CDATA[
+		   for(j=0; j< out_string.length;  j++)
+			  {  	  
+			       if(j==0)
+				circle = out_string[j];
+			 }
+
+		]]>
+		</script>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_GET_CIR_OPR&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+							<script>
+							 <![CDATA[
+								   for(j=0; j< out_string.length;  j++)
+									  {  	  
+									       if(j==0)
+										operator = out_string[j];
+									       if(j==1)
+										circle = out_string[j];
+									  }
+								]]>
+							</script> 
+							<log>operator of number  is <value expr="operator"/>    </log>
+				<log>circle of number  is <value expr="circle"/>    </log>
+			
+			
+			
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+			<assign name="Usagelog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+		<prompt bargein="true" timeout="1s">
+			<audio expr="promptpath+'/'+lang+'/welcome.wav'"/>
+		</prompt>
+			
+	</block>
+			<field name="choice">
+					<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 
+							</one-of>
+						</rule>
+				</grammar>
+				<filled>
+					<goto next="Hungama_GLC_RootMenu.vxml"></goto>
+				</filled>
+				<noinput>
+					<goto next="Hungama_GLC_RootMenu.vxml"></goto>
+				</noinput>
+				<nomatch>
+					<goto next="Hungama_GLC_RootMenu.vxml"></goto>
+				</nomatch>
+		</field>
+	</form>
+</vxml>

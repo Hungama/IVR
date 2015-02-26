@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_celebspecial.vxml" content="" />
+<var name="disconn_join_user" expr="''"/>
+<var name="conn3" expr="''"/>
+<var name="getDigitsnext" expr="''"/>
+<var name="in_out_user" expr="''"/>
+<var name="celeb_rec_fcount" expr="0"/>
+<var name="celeb_status" expr="''"/>
+<var name="chat_status" expr="''"/>
+<var name="connection_id" expr="''"/> 
+<var name="j" expr="0"/>
+<var name="ANI" expr="''"/> 
+<var name="realDNIS" expr="0"/>
+<var name="var_wel_random" expr="0"/>
+<var name="celeb_rec_fcount_new" expr="0"/>
+<var name="celeb_on_time" expr="0"/>
+<var name="celeb_rec_fcount_check" expr="0"/>
+ <script>
+	realDNIS=session.connection.local.uri;                   
+        ANI=session.connection.remote.uri;
+	var out_string=new Object();
+	
+</script>
+
+		<script>
+				var length = ANI.length;
+				ANI = ANI.substring(6,16);
+			</script>
+			
+<catch event="JoinCelebAsNextCallerSignal">
+	 <goto next="Hungama_GLC_NextJoin.vxml"/>
+
+</catch>
+<form id="one">
+<block>
+<!--**********************************celeb gonaaa offline***************************************************************************-->
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEBCHATDATE_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=2'"/>
+				<script>
+				<![CDATA[
+				 for(j=0; j< out_string.length;  j++)
+				 {  	  
+					if(j==0)
+						celeb_on_time = out_string[j];
+				 }
+				]]>
+			</script>
+		<log expr="'celeb_on_time issssss =' + celeb_on_time"/>
+		
+		<if cond="celeb_on_time=='4'">
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/call_postevent.wav'"/>
+			</prompt>
+			<goto next="Hungama_GLC_RootMenu.vxml"/>
+		</if>
+
+<!--**********************************************************************************************************************************-->
+		
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+		<script>
+			<![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+			   {  	  
+			       if(j==0)
+					celeb_rec_fcount_check = out_string[j];
+			  }
+			]]>
+		</script>
+		<script>celeb_rec_fcount_new=parseInt(celeb_rec_fcount_check);</script>
+		<script>celeb_rec_fcount_new=celeb_rec_fcount_new-1;</script>
+		<assign name="var_wel_random" expr="getRandom(1,celeb_rec_fcount_new)"/>
+		<log> var_wel_random <value expr="var_wel_random"/> </log>
+		
+</block>
+  
+    <field name="getDigits">
+	<grammar mode="dtmf" root="r1" version="1.0">
+      		<rule id="r1" scope="public">
+        	<one-of>
+	          <item>*</item>
+        	  <item>#</item>
+	          <item>5</item>
+	          <item>0</item>
+        	 </one-of>
+	       </rule>
+     	</grammar>
+     	 <prompt bargein="true" timeout="1s">
+		<audio expr="promptpath+'/'+lang+'/wait_music.wav'"/>
+	</prompt>
+	
+	
+	<filled>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+		<log> before fetch</log>
+		<script>
+			<![CDATA[
+			for(j=0; j< out_string.length;  j++)
+			{  	  
+				if(j==1)
+				celeb_status = out_string[j];
+			}
+    	  	    ]]>
+		</script>
+	
+		<if cond="celeb_status=='TRUE'">
+			<assign name="connection_id" expr="session.connection.ccxml.connectionid"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_CHAT_DESIDE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+connection_id+'&amp;INPARAM[2]=1'"/>
+			<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+				   {  	  
+				       if(j==0)
+						in_out_user = out_string[j];
+				  }
+				]]>
+			</script>	
+			<goto next="Hungama_GLC_CHATUSRPROFILE.vxml"></goto>
+		<else/>
+			<goto next="#one"/>
+		</if>
+	</filled>
+		
+	<noinput>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+		<log> before fetch</log>
+		<script>
+			<![CDATA[
+			for(j=0; j< out_string.length;  j++)
+			{  	  
+				if(j==1)
+				celeb_status = out_string[j];
+			}
+    	  	    ]]>
+		</script>
+	
+		<if cond="celeb_status=='TRUE'">
+			<assign name="connection_id" expr="session.connection.ccxml.connectionid"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_CHAT_DESIDE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+connection_id+'&amp;INPARAM[2]=1'"/>
+			<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+				   {  	  
+				       if(j==0)
+						in_out_user = out_string[j];
+				  }
+				]]>
+			</script>	
+			<goto next="Hungama_GLC_CHATUSRPROFILE.vxml"></goto>
+		<else/>
+			<goto next="#one"/>
+		</if>
+	</noinput>
+	
+	<nomatch>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+		<log> before fetch</log>
+		<script>
+			<![CDATA[
+			for(j=0; j< out_string.length;  j++)
+			{  	  
+				if(j==1)
+				celeb_status = out_string[j];
+			}
+    	  	    ]]>
+		</script>
+	
+		<if cond="celeb_status=='TRUE'">
+			<assign name="connection_id" expr="session.connection.ccxml.connectionid"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_CELEB_CHAT_DESIDE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+connection_id+'&amp;INPARAM[2]=1'"/>
+			<script>
+				<![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+				   {  	  
+				       if(j==0)
+						in_out_user = out_string[j];
+				  }
+				]]>
+			</script>	
+			<goto next="Hungama_GLC_CHATUSRPROFILE.vxml"></goto>
+		<else/>
+			<goto next="#one"/>
+		</if>
+	</nomatch>
+    </field>
+</form>		
+
+</vxml>

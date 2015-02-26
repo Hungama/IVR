@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_specialzone_valintine.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="langnew" expr="0"/>
+<var name="event_zone" expr="'00'"/>
+<var name="FilePlay" expr="0"/>
+<var name="delay" expr="0"/>
+
+<var name="contentdir" expr="''"/>
+<script>
+	var favSongs=new Object();
+	var favLangs=new Object();
+	var out_string=new Object();
+	var eventzone=new Object();
+	var len=0;
+	var movie_idx=0;
+</script>
+ <form id="loadcliptoplay">
+		  <block>
+			<assign name="cat" expr="'valintine'" />
+			<assign name="subcat" expr="'valintine'" />
+			<if cond="lang=='01' || lang=='06' || lang=='07' || lang=='08' || lang=='10'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=master_db.valintine_clip&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+lang"/>
+			<else/>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=master_db.valintine_clip&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=01"/>
+			</if>		  	
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							FilePlay = out_string[j];
+							if(j==1)
+							delay= out_string[j];
+						  }
+
+					]]>
+
+			</script>
+				   <log expr="'@@@@@@ FilePlay e is '+FilePlay"/>
+				   <log expr="'@@@@@@ delaye is '+delay"/>	
+			<script>
+				var songcheck=FilePlay.split("_");
+				contentdir=songcheck[0]; 
+				song = FilePlay;
+				songID=FilePlay;
+			</script>
+			<log expr="'@@@@@@ contentdire is '+contentdir"/>
+			<log expr="'@@@@@@ song is '+song "/>
+			<goto next="#StartToPlaysongs"/> 			 					
+		   </block>
+	</form>
+	
+	<form id="StartToPlaysongs">
+		<block>
+			<assign name="song_begin" expr="starttime()"/>
+			<assign name="song_listen" expr="'START'" />	 
+	  	</block>
+			   <field name="selectoption">	
+				    <grammar mode="dtmf" root="start15" version="1.0">
+					<rule id="start15" scope="public">
+					  <one-of>
+
+
+						<item>8</item>
+						<item>9</item>
+					     </one-of>
+					</rule>
+				    </grammar>
+				
+			      <prompt bargein="true"  timeout="1s">
+					<log>calling url:<value expr="'http://'+CDSIP+'/'+cds_path+'/'+contentdir+'/'+song+'.wav'"/></log>
+				   <audio expr="'http://'+CDSIP+'/'+cds_path+'/'+contentdir+'/'+song+'.wav'"/>
+			      </prompt> 			 
+			  
+			      <filled>
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+					<log>contentlog is:<value expr="contentlog"/></log>
+					<log>compare_time is:<value expr="compare_time"/></log>
+
+					 
+					 <if cond="selectoption=='8'">
+						 <if cond="directaccess=='false'">
+							<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+						<elseif cond="directaccess=='raj'"/>
+							<goto next="Hungama_ModMainMenu_RAJMM.vxml#MAINMENU"/>
+						<else/>
+							<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+						</if>					
+					 <elseif cond="selectoption=='9'"/>
+							 <if cond="directaccess=='raj'">
+								<goto next="Hungama_ModMainMenu_RAJMM.vxml#ModMngAccnt"/>	
+							<else/>
+								<goto next="Hungama_ModMngAccnt.vxml"/>
+							</if>					  
+
+					</if>				 
+				  </filled>				  
+			
+			     
+				   <noinput>	
+				        
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				  	<goto next="#loadcliptoplay"/> 	
+				</noinput>
+
+				<nomatch>
+					<prompt bargein="true">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+					</prompt>
+
+					 <goto next="#loadcliptoplay"/> 	
+
+				</nomatch>	
+				
+				<catch event="error.badfetch">
+					 <goto next="#loadcliptoplay"/> 
+				</catch>
+				 
+				
+		  </field>
+		  	
+		</form>	
+		
+		</vxml>

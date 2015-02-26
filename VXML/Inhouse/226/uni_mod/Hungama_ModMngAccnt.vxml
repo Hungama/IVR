@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Hungama_ModMngAccnt.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<var name="cRBTSTATUS" expr="''"/>	
+
+	<script>
+		var UserStatus1=new Object();		
+	</script>
+	<form id="AcntOption1">
+		<block>
+			<assign name="drop_point" expr="'Help_Menu'"/>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompts_Path+'/'+lang+'/welcome_acmanager.wav'"/>
+			</prompt>
+			<goto next="#AcntLanguage"></goto>
+		</block>
+	</form>
+	<form id="AcntOption">
+		<block>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompts_Path+'/'+lang+'/welcome_acmanager.wav'"/>
+			</prompt>
+			<goto next="#AcntLanguage"></goto>
+
+		</block>
+
+		<field name="choice">
+			<grammar mode="dtmf" root="only18" version="1.0">
+						<rule id="only18" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  8  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompts_Path+'/'+lang+'/welcome_acmanager.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">
+					<goto next="#AcntLanguage"></goto>
+				<!--<elseif cond="choice=='2'"/>
+					<goto next="#AcntUnsubscription"></goto>-->
+				<elseif cond="choice=='8'"/>
+					<!--<if cond="directaccess=='false'">
+						<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+					<else/>-->
+						<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+					<!--</if>-->
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<!--<if cond="directaccess=='false'">
+				<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+			<else/>-->
+				<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+			<!--</if>-->
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<if cond="directaccess=='false'">
+				<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+			<else/>
+				<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+			</if>
+		</nomatch>
+	</form>
+	
+	<form id="AcntBalance">
+		<block>
+			<!-- GET BALANCE -->
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompts_Path+'/'+lang+'/Acmanager_balanceis.wav'"/>
+				<audio expr="Prompts_Path+'/'+lang+'/g_29.wav'"/>
+				<audio expr="Prompts_Path+'/'+lang+'/minutes.wav'"/>
+				<audio expr="Prompts_Path+'/'+lang+'/g_30.wav'"/>
+				<audio expr="Prompts_Path+'/'+lang+'/seconds.wav'"/>
+			</prompt>
+			<goto next="Hungama_ModMainMenu.vxml"></goto>
+		</block>
+	</form>
+
+	<form id="AcntLanguage">
+		<block>
+			<!--<if cond="ANI=='8527000779'">
+				<goto next="test2.vxml#LANGSEL1"/>
+			</if>-->
+
+			<!--<if cond="directaccess=='false'">
+				<goto next="Hungama_ModNewUserMM.vxml#LANGSEL1"/>
+			<else/>-->
+				<goto next="Hungama_ModNewUser.vxml#LANGSEL1"/>
+			<!--</if>			-->
+		</block>
+	</form>
+	
+	<form id="AcntUnsubscription">
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="only1starhash" version="1.0">
+						<rule id="only1starhash" scope="public">
+							<one-of>
+								<item>  1  </item>
+								 <item>  *  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompts_Path+'/'+lang+'/acmanager_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<!-- UNSUB REQUEST -->
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=IVR'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompts_Path+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=USERSTATUS&amp;OPERATOR='+operator"/>
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>			
+					<!--	<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>					-->
+					<if cond="cRBTSTATUS=='EAUC'">		
+						<goto next="#UCT_Unsubscription"></goto>
+					<else/>
+						<goto next="Hungama_ModEnd.vxml"></goto>
+					</if>
+				<else/>
+					<if cond="directaccess=='false'">
+						<goto next="Hungama_ModMainMenuMM.vxml#MAINMENU"/>
+					<else/>
+						<goto next="Hungama_ModMainMenu.vxml#MAINMENU"/>
+					</if>
+				</if>
+			</filled>
+		</field>	
+	</form>
+
+	<form id="UCT_Unsubscription">
+		<field name="choice" type="digits?length=1">
+			<grammar mode="dtmf" root="onestarhash" version="1.0">
+						<rule id="onestarhash" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  *  </item>
+								 <item>  #  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompts_Path+'/'+lang+'/crbt_unsub_confirm.wav'"/>
+			</prompt>
+			<filled>	
+				<if cond="choice=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_cRBT?ANI='+ANI+'&amp;TOKEN=DEACTIVATE&amp;OPERATOR='+operator"/>					
+					<assign name="cRBTSTATUS" expr="UserStatus1.value"/>			
+					<log expr="'!!!!!!cRBTSTATUS='+cRBTSTATUS+'!!!!!!!!!'"></log>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompts_Path+'/'+lang+'/thanks_unsub.wav'"/>
+					</prompt>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				<else/>
+					<goto next="Hungama_ModEnd.vxml"></goto>
+				</if>
+			</filled>
+		</field>	
+	</form>
+
+</vxml>

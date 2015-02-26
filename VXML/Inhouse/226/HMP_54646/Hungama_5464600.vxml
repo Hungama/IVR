@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_5464600.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+	<var name="FilePlay" expr="''"></var>
+	<var name="delay" expr="''"/>
+	<script>
+	       var favSongs=new Object();
+	       var out_string=new Object();
+	       var j=0;
+		var info_counter=0;
+	</script>
+	
+	
+	<form id="Main_Menu">
+		<block>
+			<!--    Start to play song as per the clock sheet start  -->
+			
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_5464600_CLIP&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]=01'"/>
+				<script>
+					<![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+									FilePlay = out_string[j];
+							       if(j==1)
+									delay= out_string[j];
+							  }
+						]]>
+				</script>
+
+				<script>
+					var songcheck1=FilePlay.split("_");
+					Song_Path=songcheck1[0];
+					songID = FilePlay;
+				</script>	
+			            
+            			 <!--    Start to play song as per the clock sheet End  -->
+					
+					<assign name="song_begin" expr="starttime()"/>
+					<assign name="song_listen" expr="'START'" />			
+					
+					<log>File To be Played @@@@@@@@@@@@@@@@@@ <value expr="songID"></value></log>
+					
+					<assign name="cat" expr="'clip'"/>
+					<assign name="subcat" expr="'clip'"/>
+			
+					<assign name="Section_Name" expr="'CLOCKSHEET_PLAY'"/>
+					
+		</block>
+			
+			<field name="opt">
+				<grammar mode="dtmf" root="start1"  version="1.0">
+					<rule id="start1" scope="public">
+						<one-of>
+							<item>  1  </item>
+						</one-of>
+					</rule>
+				</grammar>
+				
+				<prompt bargein="false" timeout="0s">					
+					<audio expr="contentpath+'/'+Song_Path+'/'+songID+'.wav'"/>
+				</prompt>
+				<!--<prompt bargein="true" timeout="0s" cond="info_counter=='0'">
+				   <audio expr="promptspath_54646+'/01/info.wav'"/>
+				</prompt>-->
+
+				
+				<filled>
+					<script>
+						info_counter=info_counter+1;
+					</script>
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+
+					<goto next="#Main_Menu" />
+				</filled>
+				<nomatch>
+					<script>
+						info_counter=info_counter+1;
+					</script>
+
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+
+
+					<goto next="#Main_Menu" />
+				</nomatch>
+				<noinput>
+					<script>
+						info_counter=info_counter+1;
+					</script>
+
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>					 				 						 
+				
+					<goto next="#Main_Menu" />
+				</noinput>
+		</field>
+	</form>
+			
+</vxml>

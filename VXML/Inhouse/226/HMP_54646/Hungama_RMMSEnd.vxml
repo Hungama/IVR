@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_BNB_End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+<form id="END">
+		<block>
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="song_listen=='START'">
+			<assign name="song_listen" expr="'END'" />
+			<assign name="compare_time" expr="rim(song_begin)"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+			<assign name="contentlog" expr="contentlog+hash+question+hash+cat+hash+subcat+hash+compare_time"></assign>
+			</if>
+
+			<if cond="operator=='tatc' || operator=='tatm' || operator=='virm'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Hungama_RaginiMMS.MMS_LINK_TATA&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+			<else/>
+			<script srcexpr="'http://192.168.100.226:8082/'+servlet_path+'/Ragini_MMSAPI?ANI='+ANI+'&amp;operator=INHOUSE&amp;circle='+circle+'&amp;continous_counter='+continous_counter"/>
+			</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+drop_point+hash+modofsub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=54646&amp;subflag=-1&amp;contentlog='+contentlog"/>
+
+			<exit/>
+		</block>
+	</form>
+	
+	 <catch event="error.badfetch">		 								
+    	 	 <exit/>
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 	<exit/>
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+		  	<exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+			<exit/>
+      </catch>
+
+
+
+</vxml>

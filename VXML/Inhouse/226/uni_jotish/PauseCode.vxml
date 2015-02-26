@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="jyotish_root1.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="PauseCode.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+<error>
+<goto next="end.vxml"/>
+</error>
+
+
+<script>
+		var ciropr1=new Object();
+		var out_string = new Object();
+	</script>
+
+<form id="PauseCode">
+<block>
+
+	 <assign name="start_BalenceMinute" expr="start_time()"/>	
+	<assign name = "DNIS" expr="session.connection.local.uri"/>
+	<assign name = "gANI" expr = "session.connection.remote.uri" />	
+	<assign name = "ANI" expr = "session.connection.remote.uri" />	
+	<log> start time is: <value expr="start_time()"/></log>
+	<log> ANI: <value expr="ANI"/></log>
+	<script>
+		length = ANI.length;
+		if(length == 15)
+			ANI = ANI.substring(5,15);
+		if(length == 14)
+			ANI = ANI.substring(4,14);
+		if(length == 13)
+			ANI = ANI.substring(3,13);
+		if(length == 12)
+			ANI = ANI.substring(2,12);
+		if(length == 11)
+			ANI = ANI.substring(1,11);
+	</script>	
+ <assign name="dbservlet" expr="'jyotish_dbinteraction'"/>
+
+	<log>CAll Url <value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_CheckPauseCode&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+''"/></log>
+
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_CheckPauseCode&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+''"/>
+
+
+	<script>
+		 <![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					DNIS = out_string[j];
+				      				  }
+			]]>
+		</script>
+		
+		<log> NewDNIS: <value expr="DNIS"/></log>
+		<assign name="IsPause" expr="'true'"/>
+		<assign name="IsPauseDNIS" expr="DNIS "/>
+		<goto next="checkuserstatus.vxml" fetchhint="prefetch" fetchtimeout="10s"/>	
+
+
+	
+</block>
+</form>
+
+</vxml>

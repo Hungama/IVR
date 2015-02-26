@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_RedFMTopUpFinish.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	<var name="j" expr="0"/>
+	<script>
+		var out_string=new Object();    		 
+	</script>
+	
+	<form id="hungamatopupchk">
+   
+       <block>
+			<assign name="drop_point" expr="'Topup'" />
+	          <script> balance=Math.floor(balance/60);	</script>
+  	          <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=0&amp;INPARAM[2]='+DNIS"/>            		
+			  <script> 					 				  
+				balance=0;			   
+			  </script>	
+			  <assign name="timerflag" expr="'0'"/>			
+				<prompt bargein="false" timeout="0s">
+			    	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/sufficient_no.wav'"/>					 
+			    </prompt>
+			    <goto next="#TopUp"/>	
+	   </block>	
+	  
+	 
+   </form>
+		
+	<form id="TopUp">
+		<field name="opt">
+			<grammar mode="dtmf" root="onlyonetwothree" version="1.0">
+				<rule id="onlyonetwothree" scope="public">
+					<one-of>
+						<item>  1  </item>
+						<item>  2  </item>
+						<item>  3  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/topup1.wav'" />
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf1.wav'" />
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/topup2.wav'" />
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf2.wav'" />
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/topup3.wav'" />
+				  <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf3.wav'" />
+	     	</prompt>
+	     	<filled>
+	     		<if cond="opt=='1'">				     
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=10&amp;INPARAM[2]='+DNIS"/> 					
+				<elseif cond="opt=='2'"/>				    
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=20&amp;INPARAM[2]='+DNIS"/> 
+				<elseif cond="opt=='3'"/>				     
+					 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_TOPUP&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=30&amp;INPARAM[2]='+DNIS"/> 
+				</if>
+				<goto next="#BillingCheck"/>
+	     	</filled>
+		</field>
+			<noinput count="1">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt/>
+			</noinput>			
+			<noinput count="3">
+				<goto next="Hungama_RedFMEnd.vxml"></goto>
+			</noinput>   
+
+			<nomatch count="1">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt/>
+			</nomatch>
+			<nomatch count="3">
+				<goto next="Hungama_RedFMEnd.vxml"></goto>
+			</nomatch> 
+	</form>
+	<form id="BillingCheck">
+          <field name="opt">
+	      	<prompt bargein="false" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/wait.wav'"/>
+			</prompt>
+			<grammar mode="dtmf" root="onlystarhash" version="1.0">
+ 		    	<rule id="onlystarhash" scope="public">
+ 		    		<one-of>
+ 		    			<item>  #  </item>
+					    <item>  *  </item>
+ 		    		</one-of>
+ 		     	</rule>
+   			</grammar>
+   			
+   			<noinput count="1">
+   				<goto next="#bill"/>
+   			</noinput>
+   			<nomatch count="1">
+   				<goto next="#bill"/>
+   			</nomatch>
+   			
+			<filled>
+				<goto next="#bill"/>
+		    </filled>	
+	
+		</field>
+	</form>
+
+	<form id="bill">
+		<block>
+		    <assign name="start_BalenceMinute" expr="start_time()"/>						
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						       if(j==3)
+						       	movie = out_string[j];								       							      
+						  }
+
+					]]>
+			
+			</script>			
+			<log>Live Radio usr_status is	<value expr="usr_status"/>  </log>
+			<script> 					 				  
+				balance=balance*60;			   
+			</script>
+			<if cond="balance &lt; 0   || balance == 0">
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/topup_sorry.wav'" />
+				</prompt>
+				<goto next="Hungama_RedFMEnd.vxml"></goto>				
+			<else/>
+				<prompt bargein="true">
+			    	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/topup_request.wav'" />
+				</prompt>
+							  <assign name="timerflag" expr="'1'"/>
+				<goto next="Hungama_RedFMexisting.vxml"/>
+			</if>			
+		</block>
+	</form>	
+</vxml>

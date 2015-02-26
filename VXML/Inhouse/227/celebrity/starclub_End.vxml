@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="FMJRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="starclub_End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+
+	<var name="C_End" expr="''"/>
+	
+
+	<form id="EndLogin">
+		<script>
+			<![CDATA[
+			if(timerflag==1)
+				start_BalenceMinute=starttime();
+			]]>	 	
+		</script>
+		<block>
+		     <assign name="C_End" expr="start_time()"/>
+		 	 <if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE contentlog======'+contentlog"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE hash======'+hash"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE contentfile======'+contentfile"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE cat======'+cat"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE subcat======'+subcat"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!END FILE compare_time======'+compare_time"></log>
+				<assign name="contentlog" expr="contentlog+contentfile+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			</if> 
+			<log expr="'!!!!!!!!!!!!!!!!!!!!BIGB======'+BIGB"></log>
+			<!--<if cond="circle=='upe' &amp;&amp; (operator=='tatm' || operator=='tatc') &amp;&amp; usr_status=='-1'">
+				<if cond="operator=='relm' || operator=='relc'">
+					<assign name="dbservlet" expr="'docomo_fmjdbinteraction'"/>
+					<assign name="serviceid" expr="'1005'"/>
+					<assign name="planid" expr="'0'"/>
+					<assign name="c_planid" expr="'0'"/>
+					<assign name="f_planid" expr="'0'"/>
+				<elseif cond="operator=='unim'"/>
+					<assign name="dbservlet" expr="'docomo_fmjdbinteraction'"/>
+					<assign name="serviceid" expr="1005''"/>
+					<assign name="planid" expr="'0'"/>
+					<assign name="c_planid" expr="'0'"/>
+				<elseif cond="operator=='tatm'"/>
+					<assign name="dbservlet" expr="'docomo_fmjdbinteraction'"/>
+					<assign name="serviceid" expr="'1005'"/>
+					<assign name="planid" expr="'18'"/>
+					<assign name="f_planid" expr="'19'"/>
+					<assign name="c_planid" expr="'20'"/>
+				<elseif cond="operator=='tatc'"/>
+					<assign name="dbservlet" expr="'indicom_fmjdbinteraction'"/>
+					<assign name="serviceid" expr="'1605'"/>
+					<assign name="planid" expr="'28'"/>
+					<assign name="c_planid" expr="'31'"/>	
+					<assign name="f_planid" expr="'30'"/>
+				<else/>
+					<assign name="dbservlet" expr="'docomo_fmjdbinteraction'"/>
+					<assign name="serviceid" expr="'1005'"/>
+					<assign name="planid" expr="'18'"/>
+					<assign name="f_planid" expr="'19'"/>
+					<assign name="c_planid" expr="'20'"/>
+				</if>
+				<script srcexpr="'http://'+IP+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=01&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=30&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+
+			</if>-->	
+<!--			<if cond="BIGB=='TRUE'">
+				<script srcexpr="'http://'+CIP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_BIGBCONTEST_UPDATETIME&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+Sit_Counter+'&amp;INPARAM[5]='+round"/>
+				<script srcexpr="'http://'+CIP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_BIGB_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]=1'"/>
+			<else/>
+				<script srcexpr="'http://'+CIP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_BIGB_UPDATETIME&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]=2'"/>				
+			</if>-->
+
+
+			<if cond="usr_status=='0'">
+				 <script srcexpr="'http://'+IP+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				 <script>
+				 	<![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							 {  	  
+							       if(j==0)
+							       	usr_status = out_string[j];
+							       if(j==1)
+						       		lang = out_string[j];
+							       if(j==2)
+							       	balance = out_string[j];
+							  }
+				
+						]]>
+			
+				</script>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!Balance======'+balance"></log>
+				<log expr="'!!!!!!!!!!!!!!!!!!!!Status======'+usr_status"></log>
+
+			</if>
+				
+			<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+					   
+				 </if>	
+			 <script> balance=Math.floor(balance/60); </script>
+			 <if cond="balance &lt; 0">
+			 	<script>balance=0;</script>
+			 </if>
+				<script srcexpr="'http://'+IP+'/'+dbservlet+'?PROCEDURE=JBOX_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/>
+				<!--<log expr="'!!!!!!!!!!!!!!!!!!!!Updating Balance Minutes======'+balance"></log>-->
+			<if cond="lencontent &gt; 0">
+                                <script srcexpr="'http://192.168.100.226:8080/hungama/appendcontent?ani='+ANI+'&amp;contentlog='+contentlog"/>
+                                <assign name="lencontent" expr="0"/>
+                                <assign name="contentlog" expr="''"/>
+                                <log expr="'content log written into temp file '+ANI+'.tmp'"/>
+			</if>
+			<if cond="(operator=='tatm' || operator=='tatc') &amp;&amp; sub_flag=='true'">
+				<script srcexpr="'http://192.168.100.227:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service='+serviceid+'&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>
+			</if>
+			<!--<script srcexpr="'http://192.168.100.227:8080/hungama/exit_log_file?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=starclub&amp;subflag='+usr_status"/>-->
+		       <script srcexpr="'http://192.168.100.227:8080/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+prompt_name+hash+modesub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=starclub&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<exit/>
+		</block>
+	   
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  End3333</log> 
+		  
+		  <exit/>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  End4444</log>	
+		   
+		   <exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  End5555</log>	
+		
+		   <exit/>
+ 
+      </catch>
+	</form>
+
+
+
+</vxml>

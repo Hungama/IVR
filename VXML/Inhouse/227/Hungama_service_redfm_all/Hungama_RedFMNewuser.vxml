@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_RedFMNewuser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="NM_count" expr="1"/>
+	<var name="NI_count" expr="1"/>
+	<var name="planid" expr="'1'"/>
+	<var name="Amt" expr="'2'"/>	
+	<script>
+		var bill_min=new Object();
+		var j=new Object();
+    	var billing_code=new Object();
+    	var out_string=new Object();
+	var tnbcheck=new Object();
+	var trybuy = new Object();
+		var curbalance = new Object();
+	</script>
+	<form id="Main">
+		<block>
+			<assign name="drop_point" expr="'Sub_Menu'" />
+			<if cond="operator=='relm' || operator=='relc'">
+				<assign name="amt" expr="'30'"/>
+				<assign name="plan_id" expr="'5'"/>
+				<assign name="service_id" expr="'1202'"/>
+			<elseif cond="operator=='unim'"/>
+				<assign name="amt" expr="'10'"/>
+				<assign name="plan_id" expr="'35'"/>
+				<assign name="service_id" expr="'1410'"/>
+			<elseif cond="operator=='tatm'"/>
+				<assign name="amt" expr="'10'"/>
+				<assign name="plan_id" expr="'38'"/>
+				<assign name="service_id" expr="'1010'"/>	
+			<elseif cond="operator=='tatc'"/>
+				<assign name="amt" expr="'10'"/>
+				<assign name="plan_id" expr="'68'"/>
+				<assign name="service_id" expr="'1610'"/>
+			<elseif cond="operator=='virm'"/>
+				<assign name="amt" expr="'10'"/>
+				<assign name="plan_id" expr="'72'"/>
+				<assign name="service_id" expr="'1810'"/>
+			</if>       	 
+		
+		<!-- Try and Buy check from DB start -->	
+						<if cond="operator=='tatm' &amp;&amp; circle=='upw'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         					
+				<goto next="#BillingCheck"/>
+			</if>	
+			<if cond="operator=='tatm' || operator=='virm'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=REDFM_COMMON&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+circle+'@'+DNIS+'&amp;INPARAM[1]=TNB_FLAG'"/>	
+				<script>
+				 <![CDATA[
+						   	for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       		tnbcheck = out_string[j];						       
+							  }
+						]]>
+				</script>
+				<if cond="tnbcheck=='1' || tnbcheck=='2'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;OPERATOR='+operator+'&amp;;INPARAM[0]='+ANI+'&amp;INPARAM[1]=4'"/>
+					<script>
+		 				<![CDATA[
+				   			for(j=0; j< out_string.length;  j++)
+					  		{  	  
+					       		if(j==0)
+					       			trybuy = out_string[j];						       
+					 		}
+						]]>
+		
+					</script>						
+				    					
+				</if>
+				</if>
+			<!-- try and buy check from DB end -->
+			</block>
+		<field name="opt">
+		     <grammar mode="dtmf" root="onlyone" version="1.0">
+				<rule id="onlyone" scope="public">
+					<one-of>
+						<item>1</item>
+					</one-of>
+				</rule>
+			 </grammar>
+			<prompt bargein="true" timeout="3s" cond="tnbcheck=='1' &amp;&amp; trybuy=='-1' &amp;&amp; (operator=='tatm' || opearator=='virm')">
+				<!-- <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/redfm_jingle.wav'" /> -->
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/trynbuy_mum.wav'" />
+				
+			</prompt>			
+			<prompt bargein="true" timeout="3s"  cond="tnbcheck!='1' &amp;&amp; trybuy!='-1' &amp;&amp; lang!='01'">
+				<!-- <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/redfm_jingle.wav'" /> -->
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk.wav'" />
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf1.wav'" />
+			</prompt>
+
+			<prompt bargein="true" timeout="3s"  cond="tnbcheck!='1' &amp;&amp; trybuy!='-1' &amp;&amp; lang=='01'">
+				<!-- <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_tata.wav'" />-->
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_tata_10.wav'" />					
+			</prompt>
+
+			<filled>			
+				<if cond="opt=='1'">
+					<!--<if cond="ANI=='8860777743' || ANI=='8527000779'|| ANI=='9028345283' || ANI=='9999111117' || ANI=='9654415676'">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=TOBD&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         					
+					<goto next="#BillingCheck"/>
+					</if>-->
+					<if cond="modeofsub=='TIVR5'">
+	     					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=TIVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         					
+						<goto next="#BillingCheck"/>
+	     				</if>
+
+					<if cond="tnbcheck=='1' &amp;&amp; trybuy=='-1'">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=TIVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=0&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         					
+							<goto next="#BillingCheck"/>					
+				    </if>
+				    <if cond="subtype=='COMBO'">
+				    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=COMACT&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         					
+					<goto next="#BillingCheck"/>
+				    </if>
+					<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         					
+					<goto next="#BillingCheck"/>	-->
+					<!--<if cond="operator == 'tatm' &amp;&amp; (circle=='upw')">-->
+					<!--<if cond="operator == 'tatm' || operator == 'tatc' || operator == 'virm'">
+						 <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         					
+						 <goto next="#BillingCheck"/>
+					</if>-->
+
+						<assign name="firstconsent" expr="'Y'"/>
+                                		<assign name="firstconsenttime" expr="start_time()"/>
+                                		<assign name="sub_flag" expr="'true'"/>
+
+
+						<goto next="#doubleconfirm"/>									
+				</if>
+			</filled>
+			<nomatch>
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</nomatch>
+           		<noinput>
+				<prompt>
+                  			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'" />
+                 		</prompt>
+				<reprompt></reprompt>
+           		</noinput>
+		</field>
+	</form>
+
+<!--	<form id="doubleconfirm">  
+	   <field name="choice">               
+	  	 <grammar mode="dtmf" root="start1111" version="1.0">
+                     <rule id="start1111" scope="public">
+                       <one-of>
+  	                         <item>2</item>	
+                       </one-of>
+                    </rule>
+                 </grammar> 	
+			  <prompt bargein="true" timeout="3s">
+  		 			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/confirm_sub.wav'" />
+			 </prompt>	
+	  	 <filled>                            
+	             <if cond="choice=='2'">
+	             		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         					
+				<goto next="#BillingCheck"/>
+		     </if>
+		 </filled>
+	       <nomatch>
+			<prompt>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'" />
+			</prompt>
+			<reprompt></reprompt>
+   	     </nomatch>
+	     <noinput>
+			<prompt>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'" />
+			</prompt>
+			<reprompt></reprompt>
+	    </noinput>
+
+     </field>       
+</form> -->
+
+<form id="doubleconfirm">
+		<block>
+				<assign name="drop_point" expr="'Double_sub'" />
+
+				<!--http://10.124.168.27:8091/API/TPCG? MSISDN=<10digit number>&productID=<pid>&pName=<name of product>&pPrice=1000&pVal=30&CpId=45&CpPwd=245&CpName=Hungama&reqMode=IVR&Ivr_approach=VXML&NetworkId=CDMA&circleId=MH&Lang=Hindi&Lang_A=F&reqType=Event&ismID=10&transID=24525-->
+	
+				<!--http://10.124.168.27:8091/API/TPCG? MSISDN=<10digit number>&productID=<pid>&pName=<name of product>&pPrice=1000&pVal=30&CpId=45&CpPwd=245&CpName=Hungama&reqMode=IVR&Ivr_approach=VXML&NetworkId=CDMA&circleId=MH&Lang=Hindi&Lang_A=F&reqType=Event&ismID=10&transID=24525-->
+						
+				<if cond="operator=='tatm'">
+					<assign name="productID" expr="'GSMREDFM10'"/>
+				<elseif cond="operator=='tatc'"/>
+					<assign name="productID" expr="'CDMAGSMREDFM10'"/>
+				<elseif cond="operator=='virm'"/>
+					<assign name="productID" expr="'VMIGSMREDFM10'"/>
+				</if>
+				<assign name="pName" expr="'Red FM'"/>
+	
+				<assign name="CpId" expr="'hug'"/>
+				<assign name="CpPwd" expr="'hug@8910'"/>
+				<assign name="CpName" expr="'Hungama'"/>
+				<assign name="reqMode" expr="'Hungama'"/>	
+				<assign name="Ivr_approach" expr="'VXML'"/>
+				<assign name="NetworkId" expr="'ISDNPRI'"/>
+				<assign name="circleId" expr="circle"/>
+				<assign name="trans_id" expr="gettransidtime()"/>
+
+				
+	
+				<assign name="Lang_A" expr="'F'"/>
+				<assign name="reqType" expr="'Event'"/>
+	
+				<assign name="ismID" expr="'16'"/>
+				<assign name="transID" expr="C_Start"/>
+	
+				<script>
+					pPrice=amt*100;
+				</script>
+	
+				<if cond="amt=='10'">
+					<assign name="pVal" expr="'10'"/>
+				<elseif cond="amt=='30'"/>
+					<assign name="pVal" expr="'30'"/>
+				</if>
+	
+	
+				<if cond="lang=='01'">
+					<assign name="Lang" expr="'Hin'"/>
+				<elseif cond="lang=='02'"/>
+					<assign name="Lang" expr="'ENG'"/>
+				<elseif cond="lang=='11'"/>
+					<assign name="Lang" expr="'Mar'"/>
+				<elseif cond="lang=='10'"/>
+					<assign name="Lang" expr="'Kan'"/>
+				<elseif cond="lang=='08'"/>
+					<assign name="Lang" expr="'Tel'"/>
+				<elseif cond="lang=='09'"/>
+					<assign name="Lang" expr="'Mal'"/>
+				<elseif cond="lang=='07'"/>
+					<assign name="Lang" expr="'Tam'"/>
+				<elseif cond="lang=='13'"/>
+					<assign name="Lang" expr="'Ori'"/>
+				<elseif cond="lang=='06'"/>
+					<assign name="Lang" expr="'Ben'"/>
+				<elseif cond="lang=='12'"/>
+					<assign name="Lang" expr="'Guj'"/>
+				<elseif cond="lang=='17'"/>
+					<assign name="Lang" expr="'Asm'"/>
+				<elseif cond="lang=='18'"/>
+					<assign name="Lang" expr="'Maw'"/>
+				<elseif cond="lang=='03'"/>
+					<assign name="Lang" expr="'Pun'"/>
+				<elseif cond="lang=='05'"/>
+					<assign name="Lang" expr="'Har'"/>
+				<else/>
+					<assign name="Lang" expr="'Hin'"/>
+				</if>       
+			</block>
+			<!--<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.80:8091/API/CCG?MSISDN=91'+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpPwd='+CpPwd+'&amp;CpName='+CpName+'&amp;reqMode=HUNGAMA&amp;Ivr_approach='+Ivr_approach+'&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID='+ismID+'&amp;transID='+gettransidtime()">-->
+
+			<!--<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.79:8091/API/CCG?MSISDN=919711711335&amp;productID=111&amp;pName=CMTB_TestNew&amp;reqMode=IVR&amp;Ivr_approach=VXML&amp;NetworkId=GCMO&amp;circleId=WBC&amp;Lang=EN&amp;Lang_A=F&amp;reqType=SUBSCRIPTION&amp;ismID=15&amp;transID='+ANI+'&amp;pPrice=3000&amp;pVal=30&amp;CpId=123&amp;CpName=mcarbon&amp;CpPwd=123&amp;Songname=abc'">-->
+			<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.80:8091/API/CCG?MSISDN=91'+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;reqMode=IVR&amp;Ivr_approach=VXML&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID=16&amp;transID='+trans_id+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpName='+CpName+'&amp;CpPwd='+CpPwd+'&amp;Songname=abc'">			
+			
+			<filled>
+				<assign name="secondconsent" expr="'Y'"/>
+                            <assign name="secondconsenttime" expr="start_time()"/>
+                            <assign name="ccgresult" expr="confirmUserChoice.CCGResponse"/>
+
+				
+				<script srcexpr="'http://192.168.100.226:8082/hungama/TATA_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=REDFM&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+trans_id+'&amp;ccgresult='+confirmUserChoice.CCGResponse"/> 
+					<log>Confirmation page</log>
+					<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+					<log>back from the confirmation app, the CCGRESPONSE:<value expr="confirmUserChoice.CCGResponse"/></log>
+					<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userinput"/></log>
+					<log>back from the confirmation app, the user tranId:<value expr="confirmUserChoice.tranId"/></log>
+					<if cond="confirmUserChoice.CCGResponse=='Success'">
+						<goto next="#BillingCheck"/>
+					<else/>
+						<goto next="Hungama_RedFMEnd.vxml"/>
+					</if>			
+			</filled>
+		</subdialog>
+	</form>
+	
+<form id="BillingCheck">
+	<block>
+		<assign name="drop_point" expr="'Billing_Hit'" />
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=jbox_sub&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id+'&amp;INPARAM[7]='+trans_id"/>        					
+				
+	</block>
+          <field name="opt" type="digits?length=1">
+	      	<prompt bargein="false">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/charging_wait.wav'" />
+			</prompt>
+			<grammar mode="dtmf" root="onlystarhash" version="1.0">
+ 		    	<rule id="onlystarhash" scope="public">
+ 		    		<one-of>
+ 		    			<item>  #  </item>
+					    <item>  *  </item>
+ 		    		</one-of>
+ 		     	</rule>
+   			</grammar>
+   			
+   			<noinput count="1">
+   				<goto next="#bill"/>
+   			</noinput>
+   			<nomatch count="1">
+   				<goto next="#bill"/>
+   			</nomatch>
+   			
+			<filled>
+				<goto next="#bill"/>
+		    </filled>	
+	
+		</field>
+	</form>
+
+	<form id="bill">
+		<block>
+			<assign name="drop_point" expr="'Billing_check'" />			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3'"/>
+			<script>
+			 <![CDATA[
+					    for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+							if(j==3)
+						       	modeofsub= out_string[j];						       						       							      
+						  }
+
+					]]>
+			
+			</script>			
+			<log>Live Radio usr_status is	<value expr="usr_status"/>  </log>
+			<if cond="usr_status=='-1'">
+				<prompt bargein="true" timeout="0s">				    
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="Hungama_RedFMEnd.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<script>balance=balance*60</script>
+				<script>timerflag=1;</script>
+				<script>
+			    	total_used_bal=chkBalenceMinute(start_BalenceMinute);
+	             	curbalance=balance-total_used_bal;  						  
+			    </script>
+			   	<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			   	<log expr="'@@@@@@ left balance is '+balance"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/thank_sub.wav'"/>
+				</prompt>								
+
+				<goto next="Hungama_RedFMexisting.vxml"/>
+			<elseif cond="usr_status == '2' &amp;&amp; (modeofsub=='TIVR' || modeofsub=='TOBD' || modeofsub=='TUSSD' || modeofsub=='TIVR5') &amp;&amp; (operator=='tatm' || operator=='virm') "/>
+				<script>balance=balance*60</script>
+				<script>timerflag=1;</script>
+				<script>
+			    	total_used_bal=chkBalenceMinute(start_BalenceMinute);
+	             	curbalance=balance-total_used_bal;  						  
+			    </script>
+			   	<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+			   	<log expr="'@@@@@@ left balance is '+balance"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/thank_sub.wav'"/>
+				</prompt>								
+				<goto next="Hungama_RedFMexisting.vxml"/>
+			<else/>
+				<prompt bargein="true" timeout="0s">				    
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/delay_charging.wav'"/>
+				</prompt>
+				<log expr="'call ended due to user status =' + usr_status"/>
+				<goto next="Hungama_RedFMEnd.vxml"/>
+			</if>					
+		</block>
+	</form>
+</vxml>

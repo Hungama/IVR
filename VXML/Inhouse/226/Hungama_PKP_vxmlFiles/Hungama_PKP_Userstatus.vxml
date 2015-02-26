@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_PKPRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_PKP_Userstatus.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+	<script>
+		var disclaimstatus=0;
+	</script>
+		<form id="Call_Connect">
+		  <block>
+					<assign name="drop_point" expr="'status_check'"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>
+					<script>
+						   <![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+								  {  	
+								      if(j==0)
+										 usr_status = out_string[j];
+								      if(j==1)
+										lang = out_string[j];
+								      if(j==2)
+										balance = out_string[j]; 
+								  }
+							]]>
+					</script>
+					<log expr="'Balance isss'+balance"/>
+					<log>Balance isss  <value expr="balance"/>    </log>
+					<log>usr_status isss  <value expr="usr_status"/>    </log>
+								
+					<if cond="usr_status=='1'">	
+						<script>
+							playbalance=balance;
+							balance=balance*60;
+							timerflag=1;
+							start_BalenceMinute=starttime();
+						</script>
+					</if>
+
+					<!-- For second Disclaimer -->
+					<if cond="usr_status=='1'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=11'"/>
+				 		<script>
+	 						disclaimstatus=out_string[0];
+		 				</script>
+		
+						<log>	disclaimstatus  isssss    <value expr="disclaimstatus"/> 	</log>
+					</if>
+
+					<assign name="playbalance" expr="getPromptCtr(playbalance)"/>
+					<log>playbalance iss <value expr="playbalance"/></log>
+		   </block>
+		<field name="mnuopt">
+				<grammar mode="dtmf" root="start171" version="1.0">
+					<rule id="start171" scope="public">
+					 <one-of>				 
+						   <item>1</item>
+					 </one-of>
+					</rule>
+				</grammar>			
+	
+				<prompt bargein="true" timeout="0s" cond="usr_status=='-1'">
+					<audio expr="promptpath+'/'+lang+'/common/disclaimer_1.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="0s" cond="disclaimstatus=='-1' &amp;&amp; usr_status=='1'">
+					<audio expr="promptpath+'/'+lang+'/common/disclaimer_2.wav'"/>
+				</prompt>
+				
+				<prompt bargein="true" timeout="0s" cond="usr_status=='1'">
+					<audio expr="promptpath+'/'+lang+'/common/welcome_old.wav'"/>
+				</prompt>
+				
+				<prompt bargein="true" timeout="0s" cond="usr_status=='1'">
+					<audio expr="promptpath+'/'+lang+'/common/acmanager_balanceis.wav'"/>
+				</prompt>
+				<prompt bargein="true" timeout="0s" cond="usr_status=='1'">
+					<foreach item="singledigit" array="num2play_Array">
+						<audio expr="promptpath+'/'+lang+'/common/'+parseInt(singledigit)+'.wav'"/>
+						<log>	--------	<value expr="singledigit"/>	</log>
+					</foreach>
+				</prompt>
+			
+				<filled>
+
+<if cond="usr_status=='1'">
+			<goto next="#Checkuser"/>
+		<elseif cond="usr_status=='-1'"/>
+			<goto next="Hungama_PKP_Subscription.vxml"/> 
+		<elseif cond="usr_status=='11'"/>
+			<goto next="#Play_delay_charging"/> 
+		<elseif cond="usr_status=='5'"/>
+			<goto next="#Play_delay_charging"/> 
+		<else/> 
+			<goto next="#Play_delay_charging"/>
+		</if>
+
+					 	<goto next="#Menu"></goto>
+				</filled>		
+			
+				<noinput>
+<if cond="usr_status=='1'">
+			<goto next="#Checkuser"/>
+		<elseif cond="usr_status=='-1'"/>
+			<goto next="Hungama_PKP_Subscription.vxml"/> 
+		<elseif cond="usr_status=='11'"/>
+			<goto next="#Play_delay_charging"/> 
+		<elseif cond="usr_status=='5'"/>
+			<goto next="#Play_delay_charging"/> 
+		<else/> 
+			<goto next="#Play_delay_charging"/>
+		</if>
+
+						<goto next="#Menu"></goto>	   			     
+				</noinput>
+			
+				<nomatch>
+<if cond="usr_status=='1'">
+			<goto next="#Checkuser"/>
+		<elseif cond="usr_status=='-1'"/>
+			<goto next="Hungama_PKP_Subscription.vxml"/> 
+		<elseif cond="usr_status=='11'"/>
+			<goto next="#Play_delay_charging"/> 
+		<elseif cond="usr_status=='5'"/>
+			<goto next="#Play_delay_charging"/> 
+		<else/> 
+			<goto next="#Play_delay_charging"/>
+		</if>
+			   
+						 <goto next="#Menu"></goto>            
+				</nomatch>
+		</field>
+	</form>	
+	
+ <form id="Menu">
+    <block>
+<if cond="realDNIS=='307819611111'">
+<log>	lcccc  isssss    <value expr="realDNIS"/> 	</log>
+
+<script>
+ 	usr_status="1";
+	 lang="01";
+	balance=1800;
+</script>
+	<assign name="playconfig" expr="'ch1'" />
+	<goto next="Hungama_PKP_mainmenu.vxml"/>
+
+
+</if>
+
+
+		<if cond="usr_status=='1'">
+			<goto next="#Checkuser"/>
+		<elseif cond="usr_status=='-1'"/>
+			<goto next="Hungama_PKP_Subscription.vxml"/> 
+		<elseif cond="usr_status=='11'"/>
+			<goto next="#Play_delay_charging"/> 
+		<elseif cond="usr_status=='5'"/>
+			<goto next="#Play_delay_charging"/> 
+		<else/> 
+			<goto next="#Play_delay_charging"/>
+		</if>
+   </block>
+</form>
+
+<form id="Play_delay_charging">
+	<block>
+		<assign name="drop_point" expr="'delay_charging'"/>
+	</block>
+	<field name="mnuopt">
+	<grammar mode="dtmf" root="start171" version="1.0">
+	       <rule id="start171" scope="public">
+		 <one-of>				 
+			   <item>1</item>
+		 </one-of>
+	       </rule>
+	</grammar>			
+
+		<prompt bargein="true" timeout="1s">
+			<audio expr="promptpath+'/'+lang+'/common/delay_charge.wav'"/>
+		</prompt>
+		
+	<filled>
+		 <goto next="Hungama_PKP_end.vxml"></goto>
+	</filled>		
+
+	<noinput>
+		<goto next="Hungama_PKP_end.vxml"></goto>	   			     
+	</noinput>
+
+	<nomatch>			   
+		 <goto next="Hungama_PKP_end.vxml"></goto>            
+	</nomatch>
+	</field>
+</form>
+
+
+<form id="Checkuser">
+	<block>
+		<assign name="drop_point" expr="'last_heard'"/>
+		<if cond="balance &lt;= '0'">          
+				<goto next="Hungama_PKP_TopUp.vxml"/>
+		</if>  
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LASTCAT_ALLCHARACTER&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]=2'"/>
+		<script>
+			<![CDATA[
+				for(j=0; j< out_string.length;  j++)
+					{  	
+						playconfig = out_string[j];
+					}
+			]]>
+		</script>
+
+		<if cond="playconfig=='-1'">
+			<assign name="playconfig" expr="'ch1'" />
+			<goto next="Hungama_PKP_mainmenu.vxml"/>
+		<else/>
+			<assign name="cat" expr="playconfig" />
+			<assign name="subcat" expr="playconfig" />
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/last_cat.wav'"/>
+			</prompt>
+			<goto next="Hungama_PKP_mainmenu.vxml#loadcliptoplay"/>
+		</if>
+	</block>
+  </form>
+</vxml>

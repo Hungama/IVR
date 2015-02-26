@@ -1,0 +1,1576 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModSub1.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="ContestPrompt" expr="'0'"/> 
+    
+<!--      <var name="doubleconfirm" expr="'1'"/>
+	<var name="trybuy" expr="'1'"/>
+	<var name="nocheck" expr="'0'"/>
+	<var name="tnbcheck" expr="'0'"/>
+	<var name="serviceid" expr="'0'"/> 
+	<var name="planid" expr="'0'"/> 
+	<var name="Amt" expr="'0'"/> -->
+	<var name="specialdate" expr="0"/>
+	<var name="double_switch" expr="0"/>
+	<var name="prompt_switch" expr="0"/>      
+
+	<script>
+		var out_string=new Object();
+		var sub_val=new Object();
+	</script>-->
+
+	<script>
+		var indexCounter=0;
+	</script>
+
+	<script>
+		function GetDateTime()
+			{
+			var currentDT = new Date();
+			var day = currentDT.getDate();
+			var month = currentDT.getMonth() + 1;
+			var year = currentDT.getFullYear();
+			var hours = currentDT.getHours();
+			var minutes = currentDT.getMinutes();
+			var seconds = currentDT.getSeconds();
+
+			var strDateTime =  year + "-" + month + "-" + day+ "-" +hours + "-" +minutes ;
+			return strDateTime;
+		}
+	</script>	
+
+	
+	<form id="SubIntro">
+		<block>	
+			<if cond="ANI=='8376903442' || ANI=='8961114347' || ANI=='9210643979'">		
+				<goto next="Hungama_ModSub1_Test.vxml"></goto>
+			</if>
+			<assign name = "specialdate" expr = "GetDateTime()"/>
+			<log>specialdate  specialdate time:<value expr="specialdate"/></log>
+			<if cond="(DNIS=='59090' || DNIS=='590908') &amp;&amp; (operator=='tatm' || operator=='tatc')">
+				<goto next="Hungama_ModAudioCinema.vxml"/>
+			</if>
+			<log>circle:<value expr="circle"/></log>
+			<log>lang:<value expr="lang"/></log>
+			<log>realDNIS:<value expr="realDNIS"/></log>	
+			<log>DNIS:<value expr="DNIS"/></log>
+			<if cond="directaccess=='MM' &amp;&amp; DNIS!='5909013'">
+				<assign name="DNISset" expr="DNIS"/>
+				<assign name="DNIS" expr="'590907'"/>
+			</if>
+		<!--<if cond="ANI=='8376903442'">		
+			<assign name="circle" expr="'mpd'"/>	
+		</if>-->
+
+		<!--<if cond="(circle=='hay' || circle=='hpd'|| circle=='raj'|| circle=='mum'|| circle=='mah'|| circle=='guj'|| circle=='mpd'|| circle=='upe' || circle=='upw'|| circle=='ori' || circle=='bih' || circle=='pub' || circle=='kol' || circle=='wbl') &amp;&amp; (realDNIS=='59090' || realDNIS=='590906' || realDNIS=='590907'  || realDNIS=='01159090' || realDNIS=='011590906' || realDNIS=='011590907'  ||  realDNIS=='011159090' || realDNIS=='0111590906' || realDNIS=='0111590907'  )">
+				<assign name="directaccess" expr="'SangamContest'"></assign>
+		</if>-->
+
+
+		<if cond="(circle=='wbl' || circle=='kol')  &amp;&amp; DNIS=='590907' &amp;&amp; (lang=='01' || lang=='06')">
+				<assign name="directaccess" expr="'NotSangam'"></assign>
+		</if>
+
+		
+			<log>Direct Access Value:<value expr="directaccess"/></log>
+			<!--<if cond="DNIS=='59090' || DNIS=='590907' || DNIS=='590906'">
+				<if cond="circle=='kol' || circle=='wbl' || circle=='ori'">
+					<if cond="lang=='06' || lang=='04' || lang=='12' || lang=='05' || lang=='15' || lang=='01' || lang=='11' || lang=='13' || lang=='03' || lang=='18'">
+						<assign name="Contest_mod" expr="'true'"/>
+					<else/>	
+						<assign name="Contest_mod" expr="'false'"/>
+					</if>
+				</if>	
+			</if>-->	
+				
+			
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=5'"/>
+			<script>
+				<![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					{  	  
+					if(j==0)
+						nocheck= out_string[j];						       
+					}
+
+				]]>
+
+			</script>		
+				<log>nochk value :<value expr="nocheck"/></log>
+				<log>Try and Buy check</log>-->
+
+			<!-- Try and Buy check from DB start -->			
+				<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_COMMON&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'@'+DNIS+'&amp;INPARAM[1]=TNB_FLAG'"/>	
+				<script>
+				 <![CDATA[
+						   	for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       		tnbcheck = out_string[j];						       
+							  }
+						]]>
+				</script>
+				<log>tnbcheck value :<value expr="tnbcheck "/></log>
+
+				<if cond="tnbcheck=='1' || tnbcheck=='2'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3'"/>
+					<script>
+		 				<![CDATA[
+				   			for(j=0; j< out_string.length;  j++)
+					  		{  	  
+					       		if(j==0)
+					       			trybuy = out_string[j];						       
+					 		}
+						]]>
+		
+					</script>						
+				    <if cond="trybuy=='-1'">
+						<assign name="MOS" expr="'TIVR'"/>						
+				    </if>					
+				</if>-->
+			
+	<if cond="operator=='tatm'">
+				<if cond="DNIS=='590906'">
+				<assign name="planid" expr="'3'"/>
+				<assign name="Amt" expr="'60'"/>
+	            		<assign name="serviceid" expr="'1001'"/>     
+       	<elseif cond="DNIS=='590907'"/>
+				<assign name="planid" expr="'2'"/>
+				<assign name="Amt" expr="'14'"/>
+			        <assign name="serviceid" expr="'1001'"/>
+				<if cond="ANI=='8376903442'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Endless_Switch&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+					 double_switch=out_string[0];
+					 prompt_switch=out_string[1];
+				</script>				
+				<log>double_switch Sub : <value expr="double_switch"/></log>
+
+				<if cond="double_switch=='1'">
+					<assign name="firstconsent" expr="'YY'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+		                        <assign name="sub_flag" expr="'true'"/>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/SwitchPrompts/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+					</prompt>
+					<goto next="#Doubleconfirm"></goto>
+				</if>
+				</if>
+       		<elseif cond="directaccess=='MM'"/>
+					<assign name="planid" expr="'2'"/>
+					<assign name="Amt" expr="'14'"/>
+			             <assign name="serviceid" expr="'1001'"/> 
+		<elseif cond="DNIS=='59090123'"/>
+					<assign name="planid" expr="'2'"/>
+					<assign name="Amt" expr="'14'"/>
+			             <assign name="serviceid" expr="'1001'"/> 
+					<log>59090123 call entry</log>
+					<log expr="'tnbcheck here @@@@@@@@@@@@@@@@@@@@ =' +tnbcheck"/>		        
+					<log expr="'trybuy here @@@@@@@@@@@@@@@@@@@@ =' +trybuy"/>
+
+		<elseif cond="DNIS=='5909066'"/>
+					<assign name="planid" expr="'2'"/>
+					<assign name="Amt" expr="'14'"/>
+			              <assign name="serviceid" expr="'1001'"/> 
+					
+					<log expr="'tnbcheck here @@@@@@@@@@@@@@@@@@@@ =' +tnbcheck"/>		        
+					<log expr="'trybuy here @@@@@@@@@@@@@@@@@@@@ =' +trybuy"/>	
+     		<elseif cond="DNIS=='590901'"/>
+					<assign name="planid" expr="'2'"/>
+					<assign name="Amt" expr="'14'"/>
+	                		<assign name="serviceid" expr="'1001'"/> 
+		<elseif cond="DNIS=='5909011'"/>
+					<assign name="planid" expr="'88'"/>
+					<assign name="Amt" expr="'1'"/>
+					<assign name="serviceid" expr="'1001'"/> 	                
+ 	   	<elseif cond="DNIS=='590909'"/>
+					<assign name="planid" expr="'2'"/>
+					<assign name="Amt" expr="'14'"/>
+					<assign name="serviceid" expr="'1001'"/> 
+ 	   	<elseif cond="DNIS=='590903'"/>
+					<assign name="planid" expr="'2'"/>
+					<assign name="Amt" expr="'14'"/>
+					<assign name="serviceid" expr="'1001'"/> 
+	       <elseif cond="DNIS=='5909060' &amp;&amp; directaccess=='BAL45'"/>
+     					<assign name="planid" expr="'46'"/>
+					<assign name="Amt" expr="'45'"/>
+	               		<assign name="serviceid" expr="'1001'"/> 
+   		<elseif cond="DNIS=='5909060' &amp;&amp; directaccess!='BAL45'"/>
+					<assign name="planid" expr="'2'"/>
+					<assign name="Amt" expr="'14'"/>
+					<assign name="serviceid" expr="'1001'"/> 		           
+	       <elseif cond="DNIS=='5909030' &amp;&amp; directaccess=='5909030MM'"/>
+     					<assign name="planid" expr="'14'"/>
+					<assign name="Amt" expr="'30'"/>
+	       	        	<assign name="serviceid" expr="'1001'"/>                  
+		<elseif cond="DNIS=='590908'"/>
+			     <!--<if cond="circle=='guj'">
+			       <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3'"/>
+						<script>
+							<![CDATA[
+								for(j=0; j< out_string.length;  j++)
+								{  	  
+								if(j==0)
+									trybuy = out_string[j];						       
+								}
+							]]>
+						</script>						
+					      <if cond="trybuy=='-1'">
+
+					       <assign name="tnbcheck" expr="'2'"/>						
+							<assign name="MOS" expr="'TIVR'"/>						
+					      </if>
+				</if>-->		        
+				<assign name="planid" expr="'2'"/>
+				<assign name="Amt" expr="'14'"/>
+				<assign name="serviceid" expr="'1001'"/> 
+		<else/>
+				<assign name="planid" expr="'1'"/>
+				<assign name="Amt" expr="'2'"/>
+           			<assign name="serviceid" expr="'1001'"/>  
+			                 								                            
+		</if>	
+			
+
+		<if cond="DNIS =='5909020' || DNIS =='5909021'">
+			<log>direct sub</log>
+			<assign name="planid" expr="'14'"/>
+			<assign name="Amt" expr="'30'"/>
+	              <assign name="serviceid" expr="'1001'"/> 
+			<goto next="#Doubleconfirm"/>
+		</if>
+			<!-- double confirmation check from DB start -->		
+				<!--<log>Radio Common Url:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_COMMON&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'@'+DNIS+'&amp;INPARAM[1]=SUB_FLAG'"/></log>	
+
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_COMMON&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'@'+DNIS+'&amp;INPARAM[1]=SUB_FLAG'"/>	
+				<script>
+				 <![CDATA[
+						   	for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       		doubleconfirm = out_string[j];						       
+							  }
+	
+						]]>
+				
+				</script>-->
+			<!-- double confirmation check from DB end -->	
+			<!--<log>nocheck value here:<value expr="nocheck"/></log>			
+			<if cond="nocheck==1">
+					<goto next="#SubOption"/>
+			<else/>
+				<log expr="'doubleconfirm here @@@@@@@@@@@@@@@@@@@@ =' +doubleconfirm"/>							
+				<log expr="'doubleconfirm here @@@@@@@@@@@@@@@@@@@@ =' +circle"/>
+				<log expr="'Try n buy status here @@@@@@@@@@@@@@@@@@@@ =' +trybuy"/>
+					<if cond="doubleconfirm=='1' || doubleconfirm=='2'">
+						<if cond="circle=='mpd' &amp;&amp; planid=='2'">
+							<if cond="trybuy=='1'">
+								<goto next="#SubOption"/>
+							<else/>
+								<goto next="#SubOption"/>
+							</if>
+						<else/>
+							<goto next="#SubOption"/>
+						</if>
+					<else/>
+						<goto next="#Doubleconfirm"/>
+					</if>				
+		  </if>-->
+		  <goto next="#SubOption"/>	
+	<elseif cond="operator=='tatc'"/><!-- operator check indicom-->
+			<if cond="DNIS=='590907'">
+				<assign name="planid" expr="'26'"/>
+				<assign name="Amt" expr="'14'"/>
+				<assign name="serviceid" expr="'1601'"/>
+				<if cond="ANI=='8376903442'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Endless_Switch&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+				<script>
+					 double_switch=out_string[0];
+					 prompt_switch=out_string[1];
+				</script>				
+				<log>double_switch Sub : <value expr="double_switch"/></log>
+				
+				<if cond="double_switch=='1'">
+					<assign name="firstconsent" expr="'YY'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+		                        <assign name="sub_flag" expr="'true'"/>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/SwitchPrompts/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+					</prompt>
+					<goto next="#Doubleconfirm"></goto>
+				</if>
+				</if>
+	       	<elseif cond="directaccess=='MM'"/>
+					<assign name="planid" expr="'26'"/>
+					<assign name="Amt" expr="'14'"/>
+					<assign name="serviceid" expr="'1601'"/>
+			<elseif cond="DNIS=='590906'"/>
+					<assign name="planid" expr="'27'"/>
+					<assign name="Amt" expr="'60'"/>
+					<assign name="serviceid" expr="'1601'"/>
+					<!--<goto next="#SubOption_tatc"/>-->
+			<elseif cond="DNIS=='590901'"/>
+					<assign name="planid" expr="'26'"/>
+					<assign name="Amt" expr="'14'"/>
+	                		<assign name="serviceid" expr="'1601'"/>		
+			<elseif cond="DNIS=='590903'"/>
+					<assign name="planid" expr="'26'"/>
+					<assign name="Amt" expr="'14'"/>
+					<assign name="serviceid" expr="'1601'"/>
+			<elseif cond="DNIS=='590909'"/>
+					<assign name="planid" expr="'26'"/>
+					<assign name="Amt" expr="'14'"/>
+					<assign name="serviceid" expr="'1601'"/>
+			<elseif cond="DNIS=='590908'"/>
+	               		<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3'"/>
+					<script>
+			 			<![CDATA[
+							for(j=0; j< out_string.length;  j++)
+					  		{  	  
+					       		if(j==0)
+					       			trybuy = out_string[j];						       
+					 		}
+						]]>
+					</script>						
+				      <if cond="trybuy=='-1'">
+						<assign name="MOS" expr="'TIVR'"/>						
+				      </if>-->
+					<assign name="planid" expr="'26'"/>
+					<assign name="Amt" expr="'14'"/>
+		    			<assign name="serviceid" expr="'1601'"/>
+	    			<!--<goto next="#SubOption_tatc"/> -->
+			<else/>
+					<assign name="planid" expr="'25'"/>
+					<assign name="Amt" expr="'2'"/>
+		                	<assign name="serviceid" expr="'1601'"/>
+                	<!--<goto next="#SubOption_tatc"/> 	-->
+			</if>  
+					<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_COMMON&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'@'+DNIS+'&amp;INPARAM[1]=SUB_FLAG'"/>	
+					<script>
+					 <![CDATA[
+							   	for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+								       		doubleconfirm = out_string[j];						       
+								  }
+							]]>
+					
+					</script>
+					<if cond="nocheck==1">
+						<goto next="#SubOption_tatc"/>
+					<else/>
+						<if cond="doubleconfirm=='1' || doubleconfirm=='2'">
+							<goto next="#SubOption_tatc"/>
+						<else/>
+							<goto next="#Doubleconfirm"/>
+						</if>
+					</if>-->
+				<goto next="#SubOption_tatc"/>
+	<else/>  <!-- operator check other-->
+				<assign name="planid" expr="'40'"/>
+				<assign name="Amt" expr="'2'"/>
+                <assign name="serviceid" expr="'1801'"/> 
+                <!-- TRYANDBUY in MUM and MAH -->
+                
+                <!--<if cond="circle=='mah' || circle=='mum'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3'"/>
+						<script>
+			 				<![CDATA[
+					   			for(j=0; j< out_string.length;  j++)
+						  		{  	  
+						       		if(j==0)
+						       			trybuy = out_string[j];						       
+						 		}
+							]]>
+			
+						</script>						
+					    <if cond="trybuy=='-1'">
+						<assign name="MOS" expr="'TIVR'"/>						
+					    </if>
+				</if>-->
+	                <!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_COMMON&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'@'+DNIS+'&amp;INPARAM[1]=SUB_FLAG'"/>	
+				<script>
+				 <![CDATA[
+						   	for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       		doubleconfirm = out_string[j];						       
+							  }
+						]]>
+				
+				</script>-->
+				<goto next="#SubOption_virm"/>                                  
+			</if>			
+		</block>
+	</form>
+	<!-- ####################################### SubOptionMP ############################ -->
+	<form id="SubOptionMP">
+		<block>
+			<assign name="var_wel" expr="getRandom(1,8)" />	
+		</block>
+		<field name="choice">				
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>			
+
+
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; directaccess=='SangamContest' ">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_contest_daily.wav'"/>
+			</prompt>
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590906'  &amp;&amp; directaccess=='SangamContest' ">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/sub_intro_contest_mt_cont.wav'"/>
+				
+			</prompt>
+			
+						
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590907' &amp;&amp; directaccess=='SangamContest'">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/sub_intro_contest_wk_cont_'+var_wel+'.wav'"/>
+				
+			</prompt>
+
+
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590907' &amp;&amp; directaccess!='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+			</prompt>
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='590907' &amp;&amp; circle!='mpd'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+			</prompt>-->		
+			<prompt bargein="true" timeout="3s" cond="DNIS=='5909060' &amp;&amp; directaccess=='BAL45'">
+					<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_45.wav'"/>-->
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_contest_daily_45.wav'"/>
+
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='5909060' &amp;&amp; directaccess!='BAL45'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+			</prompt>	
+			
+			<filled>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=dtmf_logging&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+choice+'&amp;INPARAM[2]=sub&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+circle"/>
+
+				<if cond="choice=='1'">
+						<if cond="circle=='upw' || circle=='raj'">
+							<goto next="#Doubleconfirm"></goto>
+
+						<else/>
+				   
+							<goto next="#Doubleconfirm"></goto>
+						</if>
+
+
+
+					<goto next="#Doubleconfirm"></goto>
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>
+	
+
+	<!-- ####################################### SubOption ############################ -->
+	<form id="SubOption">
+		<block>
+
+			<assign name="var_wel" expr="getRandom(1,8)" />	
+
+		<log>Direct ACCESS is:<value expr="directaccess"/></log>
+
+		<log expr="'doubleconfirm @@@@@@@@@@@@@@@@@@@@ =' +circle"/>	
+			<!--<if cond="circle=='mpd' &amp;&amp; DNIS=='590909'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_spzone_check?events=sub'"/>
+				<assign name="sub_val" expr="sub_val.value"/>
+				<assign name="sub_val" expr="'00'"/>				
+				<if cond="sub_val==undefined">
+						<assign name="sub_val" expr="'00'" />					
+				</if>
+				<log expr="'sub_val @@@@@@@@@@@@@@@@@@@@ =' +sub_val"/>	
+				<if cond="sub_val=='00'">	
+						<assign name="sub_val" expr="getRandom(1,9)" />					
+				</if>	
+			</if>-->
+			<log expr="'doubleconfirm end @@@@@@@@@@@@@@@@@@@@ =' +circle"/>
+		
+
+		</block>
+		<field name="choice">			
+			<grammar mode="dtmf" root="start2" version="1.0">
+						<rule id="start2" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+				</grammar>
+				
+		
+			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; directaccess=='SangamContest' ">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_contest_daily.wav'"/>
+			</prompt>
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590906'  &amp;&amp; directaccess=='SangamContest' ">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/sub_intro_contest_mt_cont.wav'"/>
+				
+			</prompt>
+			
+						
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590907' &amp;&amp; directaccess=='SangamContest' ">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/sub_intro_contest_wk_cont_'+var_wel+'.wav'"/>
+				
+			</prompt>
+
+      			<!--changes done by reeju-->
+
+			<prompt bargein="true" timeout="3s" cond="directaccess=='5909030MM' &amp;&amp; lang=='06'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/06/subintro_30_1.wav'"/>
+			</prompt>
+
+			<prompt bargein="true" timeout="3s" cond="directaccess=='5909030MM' &amp;&amp; lang!='06'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_30_1.wav'"/>
+			</prompt>
+
+
+
+			
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; Contest_mod=='true' &amp;&amp; circle!='mpd' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_'+circle+'.wav'"/>
+			</prompt>-->
+
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; Contest_mod=='true' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_'+circle+'.wav'"/>
+			</prompt>
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; Contest_mod=='true' &amp;&amp; circle=='mpd' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_'+circle+'.wav'"/>
+			</prompt>-->
+			<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; Contest_mod=='false' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest'">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_'+circle+'.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; trybuy=='-1' &amp;&amp; directaccess!='SangamContest'">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_trybuy.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>			
+		
+			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590906' &amp;&amp; Contest_mod=='true' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest'">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/sub_intro_mt_cont.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='590906' &amp;&amp; Contest_mod=='true' &amp;&amp; circle=='mpd' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest'">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_mt_'+circle+'.wav'"/>
+			</prompt>-->			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590906' &amp;&amp; Contest_mod=='false' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest'">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_mt_'+circle+'.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590906' &amp;&amp; trybuy=='-1' &amp;&amp; directaccess!='SangamContest'">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_mt_trybuy.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>					
+			
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590907' &amp;&amp; Contest_mod=='true' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest' &amp;&amp; directaccess!='NotSangam'">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_wk_'+circle+'.wav'"/>
+			</prompt>		
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='590907' &amp;&amp; Contest_mod=='true' &amp;&amp; circle=='mpd' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest' &amp;&amp; directaccess!='NotSangam'">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_wk_'+circle+'.wav'"/>
+			</prompt>-->				
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590907' &amp;&amp; Contest_mod=='false' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest' &amp;&amp; directaccess!='NotSangam'">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>		
+			<prompt bargein="true" timeout="3s" cond="(DNIS=='590903' || DNIS=='590909') &amp;&amp; Contest_mod=='false' &amp;&amp; directaccess!='SangamContest' &amp;&amp; directaccess!='NotSangam'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+			</prompt>
+       		<prompt bargein="true" timeout="3s" cond="DNIS=='590907' &amp;&amp; trybuy=='-1' &amp;&amp; directaccess!='SangamContest' &amp;&amp; directaccess!='NotSangam'">
+
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_trybuy_mum.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>
+	
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590907' &amp;&amp; directaccess=='NotSangam'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_wk_'+circle+'.wav'"/>
+			</prompt>
+	
+
+
+
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='590909' &amp;&amp; circle=='mpd' &amp;&amp; trybuy=='1'">
+				
+			     <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_10_mpd_'+sub_val+'.wav'"/>
+			       <audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_10_mpd.wav'"/>
+			</prompt>-->	
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='590909' &amp;&amp; circle=='mpd' &amp;&amp; trybuy=='-1'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_10_trybuy.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590909'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_10.wav'"/>
+			</prompt>-->
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590908' &amp;&amp; trybuy=='-1' &amp;&amp; directaccess!='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_trybuy_mum.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590908' &amp;&amp; trybuy!='-1' &amp;&amp; directaccess!='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+			</prompt>
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590901' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>	
+			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='5909011' &amp;&amp; directaccess!='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_one_pub.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>			
+			<!--changes done by reeju-->
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='5909060' &amp;&amp; directaccess=='BAL45' &amp;&amp; directaccess!='SangamContest'">
+					<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_45.wav'"/>-->
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_contest_daily_45.wav'"/>
+
+			</prompt>	
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='5909060' &amp;&amp; directaccess!='BAL45'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+			</prompt>
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='5909066' &amp;&amp; directaccess=='combo'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_combo.wav'"/>
+			</prompt>
+			
+			<prompt bargein="true" timeout="3s" cond="directaccess=='DURGA' &amp;&amp; Contest_mod=='false' &amp;&amp; trybuy=='1' &amp;&amp; directaccess!='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_'+circle+'.wav'"/>
+			</prompt>
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='5909013' &amp;&amp; directaccess=='MM'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/Sub_intro5909013.wav'"/>
+			</prompt>
+
+			
+			<prompt bargein="true" timeout="3s" cond="DNIS!='59090' &amp;&amp; DNIS!='590901' &amp;&amp; DNIS!='5909013' &amp;&amp; DNIS!='5909011' &amp;&amp; DNIS!='590906' &amp;&amp; DNIS!='590907' &amp;&amp; DNIS!='590909' &amp;&amp; DNIS!='590908' &amp;&amp; DNIS!='5909011' &amp;&amp; DNIS!='5909060' &amp;&amp; DNIS!='5909066' &amp;&amp;  directaccess!='5909030MM'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_'+circle+'.wav'"/>
+			</prompt>
+
+
+
+			<!--End-->	
+			<filled>
+				<log>Price Point:<value expr="Amt"/></log>
+				
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=dtmf_logging&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+choice+'&amp;INPARAM[2]=sub&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+circle"/>
+
+				<if cond="choice=='1'">
+					<if cond="operator=='tatm'">
+						<if cond="DNISFlag=='TRUE'">
+							<assign name="DNIS" expr="59090"/>
+						</if>
+
+
+						<!--<if cond="circle=='upw' || circle=='raj'">
+
+				    			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+						 	<goto next="#SubRequest"></goto>
+						<else/>
+				   
+							<goto next="#Doubleconfirm"></goto>
+						</if>-->
+		                            <assign name="firstconsent" expr="'Y'"/>
+                                		<assign name="firstconsenttime" expr="start_time()"/>
+		                            <assign name="sub_flag" expr="'true'"/>
+
+						<goto next="#Doubleconfirm"></goto>
+
+				    <else/>
+		                            <assign name="firstconsent" expr="'Y'"/>
+                                		<assign name="firstconsenttime" expr="start_time()"/>
+		                            <assign name="sub_flag" expr="'true'"/>
+				    	<goto next="#Doubleconfirm"></goto>
+				    </if>
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<if cond="doubleconfirm=='2'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+				<goto next="#Doubleconfirm"></goto>				
+			</if>
+			<if cond="tnbcheck=='2' ">
+			    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+				<goto next="#Doubleconfirm"></goto>				
+			</if>
+			<if cond="FreeBaseFLAG=='TRUE'">
+				<assign name="F_Start" expr="start_time()"/>
+				<assign name="free_time" expr="0"/>
+				<!--<assign name="free_time" expr="time_duration(F_Start)"/>-->
+				<if cond="RESUME_SERVICE=='LANG_SELECT'">
+					<goto next="Hungama_ModNewUser.vxml#LANGSEL1"/>
+				<elseif cond="RESUME_SERVICE=='MAIN_MENU'"/>
+					<goto next="Hungama_ModMainMenu.vxml"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT'"/>
+					<goto next="Hungama_ModMainMenu.vxml"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT1'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU1"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT2'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU2"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT3'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU3"/>
+				<elseif cond="RESUME_SERVICE=='SUB_MENU'"/>
+					<goto next="Hungama_ModMainMenu.vxml#SUBMENU"/>
+				<elseif cond="RESUME_SERVICE=='FETCH_SNG'"/>
+					<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"/>
+				<elseif cond="RESUME_SERVICE=='PLAY_SNG'"/>
+					<goto next="Hungama_ModPlay.vxml#next"/>
+				</if>
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</if>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<if cond="FreeBaseFLAG=='TRUE'">
+				<assign name="F_Start" expr="start_time()"/>
+				<assign name="free_time" expr="0"/>
+				<if cond="RESUME_SERVICE=='LANG_SELECT'">
+					<goto next="Hungama_ModNewUser.vxml#LANGSEL1"/>
+				<elseif cond="RESUME_SERVICE=='MAIN_MENU'"/>
+					<goto next="Hungama_ModMainMenu.vxml"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT'"/>
+					<goto next="Hungama_ModMainMenu.vxml"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT1'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU1"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT2'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU2"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT3'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU3"/>
+				<elseif cond="RESUME_SERVICE=='SUB_MENU'"/>
+					<goto next="Hungama_ModMainMenu.vxml#SUBMENU"/>
+				<elseif cond="RESUME_SERVICE=='FETCH_SNG'"/>
+					<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"/>
+				<elseif cond="RESUME_SERVICE=='PLAY_SNG'"/>
+					<goto next="Hungama_ModPlay.vxml#next"/>
+				</if>
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</if>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>
+	
+	<!-- ####################################### SubOption_tatc############################ -->
+	<form id="SubOption_tatc">
+		<block>
+			<log>Indicom section</log>
+			<log>try n buy status:<value expr="trybuy"/></log>
+			<assign name="var_wel" expr="getRandom(1,8)" />
+		</block>
+		
+		<field name="choice">			
+			<grammar mode="dtmf" root="start3" version="1.0">
+						<rule id="start3" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 						
+							</one-of>
+						</rule>
+				</grammar>	
+
+
+			<!--<prompt bargein="true" timeout="3s" cond="directaccess =='SangamContest' &amp;&amp; operator=='tatc'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_dabangcontest.wav'"/>
+			</prompt>-->
+
+
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; directaccess=='SangamContest' &amp;&amp; operator=='tatc'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_contest_daily.wav'"/>
+			</prompt>		
+			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590906'  &amp;&amp; directaccess=='SangamContest'&amp;&amp; operator=='tatc' ">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/sub_intro_contest_mt_cont.wav'"/>
+				
+			</prompt>
+			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590907' &amp;&amp; directaccess=='SangamContest'&amp;&amp; operator=='tatc' ">
+
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/sub_intro_contest_wk_cont.wav'"/>-->
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/sub_intro_contest_wk_cont_'+var_wel+'.wav'"/>
+
+			</prompt>
+
+
+		
+			
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='590906' &amp;&amp; Contest_mod=='true' &amp;&amp; trybuy!='-1' &amp;&amp; directaccess !='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/sub_intro_mt_cont.wav'"/>
+			</prompt>-->
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='590906' &amp;&amp; Contest_mod=='true' &amp;&amp; circle=='mpd' &amp;&amp; trybuy!='-1' &amp;&amp; directaccess !='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_mt_'+circle+'.wav'"/>
+			</prompt>-->			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590906' &amp;&amp; Contest_mod=='false' &amp;&amp; directaccess !='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_mt_'+circle+'.wav'"/>
+			</prompt>
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='590906' &amp;&amp; trybuy=='-1' &amp;&amp; directaccess !='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_mt_trybuy.wav'"/>
+			</prompt>-->
+			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; Contest_mod=='true' &amp;&amp; trybuy!='-1' &amp;&amp; directaccess !='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/sub_intro_cont.wav'"/>
+			</prompt>			
+			<!--<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; Contest_mod=='true' &amp;&amp; circle=='mpd' &amp;&amp; trybuy!='-1' &amp;&amp; directaccess !='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/subintro_'+circle+'.wav'"/>
+			</prompt>-->			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; Contest_mod=='false' &amp;&amp; trybuy!='-1' &amp;&amp; directaccess !='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_'+circle+'.wav'"/>
+			</prompt>						
+		       <prompt bargein="true" timeout="3s" cond=" DNIS=='59090'  &amp;&amp; trybuy=='-1' &amp;&amp; directaccess !='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_trybuy.wav'"/>				
+			</prompt>
+            
+            
+            
+            
+            <prompt bargein="true" timeout="3s" cond=" DNIS!='59090' &amp;&amp; trybuy=='-1'  &amp;&amp; directaccess !='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_trybuy_mum.wav'"/>				
+			</prompt>
+			
+
+
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590901' &amp;&amp; trybuy=='1' &amp;&amp; directaccess !='SangamContest'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>		
+
+			
+			<prompt bargein="true" timeout="3s" cond="DNIS=='590907' &amp;&amp; directaccess!='SangamContest'&amp;&amp; operator=='tatc' ">
+
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/sub_intro_contest_wk_cont.wav'"/>-->
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+				
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="(DNIS=='590903' || DNIS=='590909') &amp;&amp; directaccess!='SangamContest' ">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_wk_'+circle+'.wav'"/>
+			</prompt>
+
+			<prompt bargein="true" timeout="3s" cond="DNIS=='5909013' &amp;&amp; directaccess=='MM'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/Sub_intro5909013.wav'"/>
+			</prompt>
+
+
+			<prompt bargein="true" timeout="3s" cond="DNIS!='59090' &amp;&amp; DNIS!='5909013' &amp;&amp; DNIS!='590901' &amp;&amp; DNIS!='5909011' &amp;&amp; DNIS!='590906' &amp;&amp; DNIS!='590907' &amp;&amp; DNIS!='590909' &amp;&amp; DNIS!='590908' &amp;&amp; DNIS!='5909011' &amp;&amp; DNIS!='5909060' &amp;&amp; DNIS!='5909066' &amp;&amp;  directaccess!='5909030MM'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_'+circle+'.wav'"/>
+			</prompt>
+
+
+
+			<filled>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=dtmf_logging&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+choice+'&amp;INPARAM[2]=sub&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+circle"/>
+
+				<if cond="choice=='1'">
+					<if cond="DNISFlag=='TRUE'">
+						<assign name="DNIS" expr="59090"/>
+					</if>
+					<if cond="directaccess=='MM' &amp;&amp; DNIS!='5909013'">
+						<assign name="DNIS" expr="DNISset"/>
+					</if>
+						<!--<if cond="circle=='upw' || circle=='raj'">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+				  			<goto next="#SubRequest"></goto>
+						<else/>
+				   
+							<goto next="#Doubleconfirm"></goto>
+						</if>-->
+		                            <assign name="firstconsent" expr="'Y'"/>
+                                		<assign name="firstconsenttime" expr="start_time()"/>
+		                            <assign name="sub_flag" expr="'true'"/>
+
+					<goto next="#Doubleconfirm"></goto>
+
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<if cond="doubleconfirm=='2'">
+				<goto next="#Doubleconfirm"></goto>				
+			</if>
+		    <if cond="tnbcheck=='2'">
+				<goto next="#Doubleconfirm"></goto>				
+			</if>
+		
+			<if cond="FreeBaseFLAG=='TRUE'">
+						<assign name="F_Start" expr="start_time()"/>
+						<assign name="free_time" expr="0"/>
+						<if cond="RESUME_SERVICE=='LANG_SELECT'">
+							<goto next="Hungama_ModNewUser.vxml#LANGSEL1"/>
+						<elseif cond="RESUME_SERVICE=='MAIN_MENU'"/>
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						<elseif cond="RESUME_SERVICE=='CAT_SELECT'"/>
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						<elseif cond="RESUME_SERVICE=='CAT_SELECT1'"/>
+							<goto next="Hungama_ModMainMenu.vxml#CATMENU1"/>
+						<elseif cond="RESUME_SERVICE=='CAT_SELECT2'"/>
+							<goto next="Hungama_ModMainMenu.vxml#CATMENU2"/>
+						<elseif cond="RESUME_SERVICE=='CAT_SELECT3'"/>
+							<goto next="Hungama_ModMainMenu.vxml#CATMENU3"/>
+						<elseif cond="RESUME_SERVICE=='SUB_MENU'"/>
+							<goto next="Hungama_ModMainMenu.vxml#SUBMENU"/>
+						<elseif cond="RESUME_SERVICE=='FETCH_SNG'"/>
+							<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"/>
+						<elseif cond="RESUME_SERVICE=='PLAY_SNG'"/>
+							<goto next="Hungama_ModPlay.vxml#next"/>
+						</if>
+					<else/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+						</prompt>			
+						<reprompt></reprompt>
+					</if>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<if cond="FreeBaseFLAG=='TRUE'">
+						<assign name="F_Start" expr="start_time()"/>
+						<assign name="free_time" expr="0"/>
+						<if cond="RESUME_SERVICE=='LANG_SELECT'">
+							<goto next="Hungama_ModNewUser.vxml#LANGSEL1"/>
+						<elseif cond="RESUME_SERVICE=='MAIN_MENU'"/>
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						<elseif cond="RESUME_SERVICE=='CAT_SELECT'"/>
+							<goto next="Hungama_ModMainMenu.vxml"/>
+						<elseif cond="RESUME_SERVICE=='CAT_SELECT1'"/>
+							<goto next="Hungama_ModMainMenu.vxml#CATMENU1"/>
+						<elseif cond="RESUME_SERVICE=='CAT_SELECT2'"/>
+							<goto next="Hungama_ModMainMenu.vxml#CATMENU2"/>
+						<elseif cond="RESUME_SERVICE=='CAT_SELECT3'"/>
+							<goto next="Hungama_ModMainMenu.vxml#CATMENU3"/>
+						<elseif cond="RESUME_SERVICE=='SUB_MENU'"/>
+							<goto next="Hungama_ModMainMenu.vxml#SUBMENU"/>
+						<elseif cond="RESUME_SERVICE=='FETCH_SNG'"/>
+							<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"/>
+						<elseif cond="RESUME_SERVICE=='PLAY_SNG'"/>
+							<goto next="Hungama_ModPlay.vxml#next"/>
+						</if>
+					<else/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+						</prompt>			
+						<reprompt></reprompt>
+					</if>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>
+	
+	<form id="Optin_tatc">
+		<field name="choice">
+			<grammar mode="dtmf" root="start6" version="1.0">
+						<rule id="start6" scope="public">
+							<one-of>
+								 <item>  1  </item>																
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/pressed_2.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">					
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/after_pressing_1.wav'"/>
+					</prompt>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_COMMON&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=OPTIN'"/>	
+					<script>
+				 	<![CDATA[
+						   	for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       		doubleconfirm = out_string[j];						       
+							  }
+	
+						]]>
+				
+					</script>
+					<goto next="Hungama_ModEnd.vxml"></goto>				
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>
+	
+	<form id="Doubleconfirm">
+		
+		<block>
+
+<!--http://10.124.168.27:8091/API/TPCG? MSISDN=<10digit number>&productID=<pid>&pName=<name of product>&pPrice=1000&pVal=30&CpId=45&CpPwd=245&CpName=Hungama&reqMode=IVR&Ivr_approach=VXML&NetworkId=CDMA&circleId=MH&Lang=Hindi&Lang_A=F&reqType=Event&ismID=10&transID=24525-->
+
+			<assign name="productID" expr="'GSMENDLESSMONTHLY60'"/>
+			<assign name="pName" expr="'Endless music'"/>
+			<assign name="CpId" expr="'hug'"/>
+			<assign name="CpPwd" expr="'hug@8910'"/>
+			<assign name="CpName" expr="'Hungama'"/>
+			<assign name="reqMode" expr="'IVR'"/>
+
+			<assign name="Ivr_approach" expr="'VXML'"/>
+			<assign name="NetworkId" expr="'GCMO'"/><!--Not cleared-->
+			<assign name="circleId" expr="circle"/>
+
+			<assign name="Lang_A" expr="'F'"/>
+			<assign name="reqType" expr="'Event'"/><!--Not cleared-->
+
+			<assign name="ismID" expr="'16'"/>
+			<assign name="trans_id" expr="gettransidtime()"/>	
+			<if cond="operator=='tatm'">
+				<if cond="Amt=='60'">
+					<assign name="Amt" expr="'75'"/>
+					<assign name="pVal" expr="'30'"/>
+					<assign name="productID" expr="'GSMENDLESSMONTHLY60'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='14'"/>
+					<assign name="Amt" expr="'21'"/>
+					<assign name="pVal" expr="'7'"/>
+					<assign name="productID" expr="'GSMENDLESSWEEKLY14'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='1'"/>
+					<assign name="pVal" expr="'1'"/>
+					<assign name="productID" expr="'ENDLESS01'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='10'"/>
+					<assign name="Amt" expr="'21'"/>				
+					<assign name="pVal" expr="'10'"/>
+					<assign name="productID" expr="'GSMENDLESS10'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='45'"/>
+					<assign name="pVal" expr="'60'"/>
+					<assign name="productID" expr="'GSMENDLESS45'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='75'"/>
+					<assign name="pVal" expr="'90'"/>
+					<assign name="productID" expr="'GSMENDLESS75'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='30'"/>
+					<assign name="Amt" expr="'45'"/>				
+					<assign name="pVal" expr="'15'"/>
+					<assign name="productID" expr="'ENDLESS30'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='2'"/>
+					<assign name="Amt" expr="'3'"/>
+					<assign name="pVal" expr="'1'"/>
+					<assign name="productID" expr="'GSMENDLESSDAILY2'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<else/>
+					<assign name="pVal" expr="'1'"/>
+					<assign name="Amt" expr="'2'"/>	
+					<assign name="productID" expr="'ENDLESS01'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				</if>
+			<elseif cond="operator=='tatc'"/>
+				<if cond="Amt=='60'">
+					<assign name="Amt" expr="'75'"/>				
+					<assign name="pVal" expr="'30'"/>
+					<assign name="productID" expr="'CDMAGSMENDLESS60'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='14'"/>
+					<assign name="Amt" expr="'21'"/>
+					<assign name="pVal" expr="'7'"/>
+					<assign name="productID" expr="'CDMAGSMENDLESSWEEKLY14'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='2'"/>
+					<assign name="Amt" expr="'3'"/>				
+					<assign name="pVal" expr="'1'"/>
+					<assign name="productID" expr="'CDMAGSMENDLESSDAILY2'"/>
+					<assign name="pName" expr="'Endless music'"/>					
+				<elseif cond="Amt=='10'"/>
+					<assign name="Amt" expr="'21'"/>
+					<assign name="pVal" expr="'10'"/>
+					<assign name="productID" expr="'CDMAGSMENDLESS10'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='30'"/>
+					<assign name="Amt" expr="'45'"/>
+					<assign name="pVal" expr="'30'"/>
+					<assign name="productID" expr="'CDMAENDLESS30'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				<elseif cond="Amt=='1'"/>
+					<assign name="pVal" expr="'1'"/>
+					<assign name="productID" expr="'CDMAENDLESS01'"/>
+					<assign name="pName" expr="'Endless music'"/>
+				</if>
+			<elseif cond="operator=='virm'"/>		
+					<assign name="pVal" expr="'1'"/>
+					<assign name="Amt" expr="'3'"/>	
+					<assign name="productID" expr="'VMIENDLESSDAILY2'"/>
+					<assign name="pName" expr="'Endless music'"/>
+			</if>	
+			<script>
+				pPrice=Amt*100;
+			</script>
+			<if cond="lang=='01'">
+				<assign name="Lang" expr="'Hin'"/>
+			<elseif cond="lang=='02'"/>
+				<assign name="Lang" expr="'Eng'"/>
+			<elseif cond="lang=='11'"/>
+				<assign name="Lang" expr="'Mar'"/>
+			<elseif cond="lang=='10'"/>
+				<assign name="Lang" expr="'Kan'"/>
+			<elseif cond="lang=='08'"/>
+				<assign name="Lang" expr="'Tel'"/>
+			<elseif cond="lang=='09'"/>
+				<assign name="Lang" expr="'Mal'"/>
+			<elseif cond="lang=='07'"/>
+				<assign name="Lang" expr="'Tam'"/>
+			<elseif cond="lang=='13'"/>
+				<assign name="Lang" expr="'Ori'"/>
+			<elseif cond="lang=='06'"/>
+				<assign name="Lang" expr="'Ben'"/>
+			<elseif cond="lang=='12'"/>
+				<assign name="Lang" expr="'Guj'"/>
+			<elseif cond="lang=='17'"/>
+				<assign name="Lang" expr="'Asm'"/>
+			<elseif cond="lang=='18'"/>
+				<assign name="Lang" expr="'Maw'"/>
+			<elseif cond="lang=='03'"/>
+				<assign name="Lang" expr="'Pun'"/>
+			<elseif cond="lang=='05'"/>
+				<assign name="Lang" expr="'Har'"/>
+			<else/>
+				<assign name="Lang" expr="'Hin'"/>
+			</if>       
+
+
+		</block>
+	<!--http://182.156.191.79:8091/API/TPCG?MSISDN=9711071741&productID=23&pName=Endless&pPrice=30000&pVal=30&CpId=23&CpPwd=1234&CpName=hungama&reqMode=27&Ivr_approach=VXML&NetworkId=27&circleId=16&Lang=Hindi&Lang_A=M&reqType=EVENT&ismID=16&transID=12345-->
+
+
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.79:8091/API/CCG?MSISDN=919654608739&amp;productID=111&amp;pName=CMTB_TestNew&amp;reqMode=IVR&amp;Ivr_approach=VXML&amp;NetworkId=GCMO&amp;circleId=WBC&amp;Lang=EN&amp;Lang_A=F&amp;reqType=SUBSCRIPTION&amp;ismID=15&amp;transID=1369836465550&amp;pPrice=3000&amp;pVal=30&amp;CpId=123&amp;CpName=mcarbon&amp;CpPwd=123&amp;Songname=abc'">-->
+
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.79:8091/API/TPCG?MSISDN='+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpPwd='+CpPwd+'&amp;CpName='+CpName+'&amp;reqMode='+reqMode+'&amp;Ivr_approach='+Ivr_approach+'&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID='+ismID+'&amp;transID='+transID">-->
+
+	<!--<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.79:8091/API/CCG?MSISDN=919031952983&amp;productID='+productID+'&amp;pName='+pName+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpPwd='+CpPwd+'&amp;CpName='+CpName+'&amp;reqMode='+reqMode+'&amp;Ivr_approach='+Ivr_approach+'&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID='+ismID+'&amp;transID='+transID">-->
+	    <subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.80:8091/API/CCG?MSISDN=91'+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpPwd='+CpPwd+'&amp;CpName='+CpName+'&amp;reqMode='+reqMode+'&amp;Ivr_approach='+Ivr_approach+'&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID='+ismID+'&amp;transID='+trans_id">
+
+
+		<filled>
+                            <assign name="secondconsent" expr="'Y'"/>
+                            <assign name="secondconsenttime" expr="start_time()"/>
+                            <assign name="ccgresult" expr="confirmUserChoice.CCGResponse"/>
+				<log>Confirmation page</log>
+				<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+				<log>back from the confirmation app, the CCGRESPONSE:<value expr="confirmUserChoice.CCGResponse"/></log>
+				<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userinput"/></log>
+				<log>back from the confirmation app, the user tranId:<value expr="confirmUserChoice.tranId"/></log>
+				<log>back from the confirmation app, the user tranId:<value expr="confirmUserChoice.TransID"/></log>
+
+
+				<script srcexpr="'http://192.168.100.226:8082/'+servlet_path+'/TATA_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=MOD&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+trans_id+'&amp;ccgresult='+confirmUserChoice.CCGResponse"/> 
+
+				<if cond="confirmUserChoice.CCGResponse=='Success'">
+					<goto next="#SubRequest"/>
+				<else/>
+					<goto next="Hungama_ModEnd.vxml"/>
+				</if>			
+		</filled>
+	</subdialog>
+	</form>
+	
+	<form id="SubRequest">
+		<block>
+		       <assign name="backendsub" expr="'false'"/>
+		       <assign name="MP_HANGUP" expr="'false'"/>
+			<!-- SUB REQUEST -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid+'&amp;INPARAM[7]='+trans_id"/>
+			
+				
+		</block>
+		<field name="billingcheck1"> 	
+			<grammar mode="dtmf" root="start" version="1.0">
+			       <rule id="start" scope="public">
+					 <one-of>				 
+						 <item>1</item>
+					 </one-of>
+			      </rule>
+			  </grammar>
+			<prompt bargein="false" timeout="4s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/charging_wait.wav'"/>
+			</prompt>
+		<filled>
+			<goto next="#BillStatusChk"/>
+		</filled>
+		<noinput>
+			<goto next="#BillStatusChk"/>
+		</noinput>
+		<nomatch>
+			<goto next="#BillStatusChk"/>
+		</nomatch>
+</field>
+</form>
+
+	<form id="BillStatusChk">
+		<block>
+			<if cond="AudioCinema=='yes'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_lastusercat&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<script>
+					 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						LastUserCat= out_string[j];
+					  }
+
+					]]>
+				</script>
+
+				<assign name="LastUserCat" expr="'AUDIOCINEMA'"/>									
+			</if>
+			<!-- SUB REQUEST STATUS -->
+
+				<script>
+					indexCounter=indexCounter+1;
+				</script>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	bal = out_string[j];
+						  }
+				]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>		
+			<log expr="'lang  @@@@@@@@@ '+lang"></log>
+			<log expr="'bal @@@@@@@@@ '+bal"></log>	
+		</block>
+		<field name="billingcheck"> 	
+			<grammar mode="dtmf" root="start" version="1.0">
+			       <rule id="start" scope="public">
+					 <one-of>				 
+						 <item>1</item>
+					 </one-of>
+			      </rule>
+			  </grammar>
+			<prompt bargein="false" timeout="1s" cond="usr_status != '1'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/delay_charging.wav'"/>
+			</prompt>
+
+			<prompt bargein="true" timeout="1s" cond="usr_status == '1'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/thank_sub.wav'"/>
+			</prompt>			          
+			<filled>
+				<if cond="usr_status=='1'">
+					<script>bal=bal*60;</script>
+					<if cond="directaccess=='MM' &amp;&amp; DNIS!='5909013'">
+						<assign name="DNIS" expr="DNISset"/>
+						<goto next="Hungama_MM_MENU.vxml"></goto>
+					<elseif cond="directaccess=='MM'  &amp;&amp; DNIS=='5909013'"/>
+						<goto next="Hungama_MM_MENU.vxml"></goto>
+					<elseif cond="directaccess=='combo'"/>	
+						<goto next="Hungama_combo_menu.vxml"></goto>					
+					<else/>
+						<goto next="Hungama_ModMainMenu.vxml"></goto>
+					</if>
+
+				<else/>
+					<goto next="Hungama_ModEnd.vxml"/>
+				</if>
+			</filled>
+			<noinput>
+				<if cond="usr_status=='1'">
+					<script>bal=bal*60;</script>
+					<if cond="directaccess=='MM' &amp;&amp; DNIS!='5909013'">
+						<assign name="DNIS" expr="DNISset"/>
+						<goto next="Hungama_MM_MENU.vxml"></goto>
+					<elseif cond="directaccess=='MM'  &amp;&amp; DNIS=='5909013'"/>
+						<goto next="Hungama_MM_MENU.vxml"></goto>
+					<elseif cond="directaccess=='combo'"/>	
+						<goto next="Hungama_combo_menu.vxml"></goto>					
+					<else/>
+						<goto next="Hungama_ModMainMenu.vxml"></goto>
+					</if>
+
+				<else/>
+					<goto next="Hungama_ModEnd.vxml"/>
+				</if>
+			</noinput>
+			<nomatch>
+				<if cond="usr_status=='1'">
+					<script>bal=bal*60;</script>
+					<if cond="directaccess=='MM' &amp;&amp; DNIS!='5909013'">
+						<assign name="DNIS" expr="DNISset"/>
+						<goto next="Hungama_MM_MENU.vxml"></goto>
+					<elseif cond="directaccess=='MM'  &amp;&amp; DNIS=='5909013'"/>
+						<goto next="Hungama_MM_MENU.vxml"></goto>
+					<elseif cond="directaccess=='combo'"/>	
+						<goto next="Hungama_combo_menu.vxml"></goto>					
+					<else/>
+						<goto next="Hungama_ModMainMenu.vxml"></goto>
+					</if>
+
+				<else/>
+					<goto next="Hungama_ModEnd.vxml"/>
+				</if>			
+			</nomatch>
+		</field>		
+	</form>
+	<form id="Direct">
+		<block>
+			<if cond="operator=='tatc'">
+				<assign name="planid" expr="'25'"/>
+				<assign name="Amt" expr="'2'"/>
+                		<assign name="serviceid" expr="'1601'"/>                		
+			<else/> 
+                  	<assign name="planid" expr="'1'"/>
+				<assign name="Amt" expr="'2'"/>
+                  	<assign name="serviceid" expr="'1001'"/> 
+			</if>
+			<goto next="#Doubleconfirm"/>
+		</block>
+	</form>
+<!-- ####################################### SubOption_virm   ############################ -->
+	<form id="SubOption_virm">
+		<field name="choice">			
+			<grammar mode="dtmf" root="start8" version="1.0">
+					<rule id="start8" scope="public">
+						<one-of>
+							 <item>  1  </item>								
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s"  cond="DNIS=='59090' &amp;&amp; trybuy!='-1'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_'+circle+'_virm.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="DNIS=='59090' &amp;&amp; trybuy=='-1'">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subintro_trybuy.wav'"/>
+				<!--<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/doubleconf.wav'"/>-->
+			</prompt>
+			
+			<filled>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=dtmf_logging&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+choice+'&amp;INPARAM[2]=sub&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+circle"/>
+
+				<if cond="choice=='1'">
+						<if cond="DNISFlag=='TRUE'">
+							<assign name="DNIS" expr="59090"/>
+						</if>
+				    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+MOS+'&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+				    	<!--<goto next="#SubRequest"></goto>-->
+					<goto next="#Doubleconfirm"></goto>
+
+				</if>				
+			</filled>
+		</field>
+		<noinput count="1">
+			<if cond="doubleconfirm=='2'">
+				<goto next="#Doubleconfirm"></goto>				
+			</if>
+			<if cond="tnbcheck=='2'">
+				<goto next="#Doubleconfirm"></goto>				
+			</if>
+			
+			<if cond="FreeBaseFLAG=='TRUE'">
+				<assign name="F_Start" expr="start_time()"/>
+				<assign name="free_time" expr="0"/>
+				<!--<assign name="free_time" expr="time_duration(F_Start)"/>-->
+				<if cond="RESUME_SERVICE=='LANG_SELECT'">
+					<goto next="Hungama_ModNewUser.vxml#LANGSEL1"/>
+				<elseif cond="RESUME_SERVICE=='MAIN_MENU'"/>
+					<goto next="Hungama_ModMainMenu.vxml"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT'"/>
+					<goto next="Hungama_ModMainMenu.vxml"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT1'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU1"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT2'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU2"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT3'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU3"/>
+				<elseif cond="RESUME_SERVICE=='SUB_MENU'"/>
+					<goto next="Hungama_ModMainMenu.vxml#SUBMENU"/>
+				<elseif cond="RESUME_SERVICE=='FETCH_SNG'"/>
+					<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"/>
+				<elseif cond="RESUME_SERVICE=='PLAY_SNG'"/>
+					<goto next="Hungama_ModPlay.vxml#next"/>
+				</if>
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</if>
+		</noinput>
+		<noinput count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<if cond="FreeBaseFLAG=='TRUE'">
+				<assign name="F_Start" expr="start_time()"/>
+				<assign name="free_time" expr="0"/>
+				<if cond="RESUME_SERVICE=='LANG_SELECT'">
+					<goto next="Hungama_ModNewUser.vxml#LANGSEL1"/>
+				<elseif cond="RESUME_SERVICE=='MAIN_MENU'"/>
+					<goto next="Hungama_ModMainMenu.vxml"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT'"/>
+					<goto next="Hungama_ModMainMenu.vxml"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT1'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU1"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT2'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU2"/>
+				<elseif cond="RESUME_SERVICE=='CAT_SELECT3'"/>
+					<goto next="Hungama_ModMainMenu.vxml#CATMENU3"/>
+				<elseif cond="RESUME_SERVICE=='SUB_MENU'"/>
+					<goto next="Hungama_ModMainMenu.vxml#SUBMENU"/>
+				<elseif cond="RESUME_SERVICE=='FETCH_SNG'"/>
+					<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"/>
+				<elseif cond="RESUME_SERVICE=='PLAY_SNG'"/>
+					<goto next="Hungama_ModPlay.vxml#next"/>
+				</if>
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>			
+				<reprompt></reprompt>
+			</if>
+		</nomatch>
+		<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>			
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_ModEnd.vxml"></goto>
+		</nomatch>
+	</form>
+</vxml>

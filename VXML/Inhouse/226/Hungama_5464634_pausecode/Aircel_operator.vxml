@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Aircel_operator.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+   <var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="true"/>		
+   <var name="names"/> 
+   <var name="tottopup" expr="''"/>	
+   <var name="CIRCLE_LANG" expr="''"/>	
+   <var name="var_wel" expr="''"/>	
+   <var name="LangFirstValue" expr="''"/>	
+   <var name="topupmnu" expr="''"/>	
+   <var name="balupdatestatus" expr="'1'"/>	
+   <script>
+		var out_string=new Object();
+   </script>
+
+  <form id="LANGCHK">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CHK_LANG&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						usr_status = out_string[j];
+					       if(j==1)
+						lang = out_string[j];						      
+					  }
+				]]>
+		</script>
+		<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+		<log expr="'lastkeyinput @@@@@@@@@ '+lastkeyinput"></log>
+
+		<if cond="usr_status=='1'">
+			<script>balance=500*60;</script>
+			<if cond="lastkeyinput=='1'">
+				<goto next="Hungama_MM_LoveGuru_546462.vxml"/>
+			<elseif cond="lastkeyinput=='2'"/>
+				<goto next="Hungama_MW_PlayContent_546463.vxml"/>
+			<elseif cond="lastkeyinput=='3'"/>
+				<goto next="Audio_Cinema_MainMenu_546469.vxml"/>
+			<elseif cond="lastkeyinput=='4'"/>
+				<goto next="Hungama_54646_CelebrityWorld.vxml"/>
+			<elseif cond="lastkeyinput=='5'"/>
+				<goto next="ExistingUser.vxml"></goto>
+			<else/>
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>
+			</if>
+		<else/>
+			<goto next="#LANGSEL1"/>
+		</if>
+	</block>
+  </form>
+  
+  <form id="LANGSEL1">
+		<block>
+ 			<if cond="(circle=='tnu' || circle=='kar' || circle=='ker' || circle=='apd')">
+				<assign name="CIRCLE_LANG" expr="circle"/> 
+			<else/>
+				<assign name="CIRCLE_LANG" expr="'otherlang'"/>
+			</if>        
+			<assign name="var_wel" expr="getRandom(1,50)" />
+			<script srcexpr="'http://192.168.100.226:8082/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/langorder-'+CIRCLE_LANG+'.cfg'"/>
+			<script>
+					    	array1.length=0;
+			</script>
+			<var name="movie_idx" expr="0"/>
+			<assign name="len" expr="favSongs.length" />
+			<assign name="i" expr="0" />
+			<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+			<script>
+				 <![CDATA[
+					   for(j=0; j<len ;  j++)
+					   {  	  	
+								array1[j] = favSongs[j];						   
+					   }
+
+				]]>		
+			</script> 	       
+			<assign name="LangFirstValue" expr="favSongs[0]"/>
+			<assign name="LangFirstValue" expr="'01'"/>
+			<prompt bargein="true" timeout="0s" cond="usr_status=='-1'">
+					<audio expr="promptspath_54646+'/'+LangFirstValue+'/welcome_new_'+var_wel+'.wav'"/>
+					<audio expr="promptspath_54646+'/'+LangFirstValue+'/language_option.wav'"/>					
+			</prompt>	       
+			<log>Length  is	<value expr="len"/>    </log>
+			<log>Array[1]  is	<value expr="array1[0]"/>    </log>	
+		</block>
+		<field name="choice">
+				<grammar mode="dtmf" root="start11" version="1.0">
+						<rule id="start11" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  7  </item>
+							</one-of>
+						</rule>
+				</grammar>
+			<prompt bargein="true" timeout="1s">
+			<foreach item="names" array="array1">
+
+				<log>	song is is    	<value expr="movie_idx"/>  	</log>
+				<log>	names is is    	<value expr="names"/>  	</log>
+				<audio expr="promptspath_54646+'/'+names+'/lang'+names+'.wav'"/>
+				<audio expr="promptspath_54646+'/'+names+'/press_dtmf'+ ++movie_idx+'.wav'"/>			
+			</foreach>						
+			</prompt>
+			<filled>
+				<if cond="choice &lt; len+1">
+					<assign name="lang" expr="array1[--choice]"/>
+					<log expr="'selected language is '+lang"></log>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_LANG_CHANGE&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]='+lang"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/lang_thanks.wav'"/>
+					</prompt>							
+					<script>balance=500*60;</script>
+					
+					<if cond="lastkeyinput=='0'">
+						<goto next="Hungama_54646_MainMenu.vxml"/>
+					<elseif cond="lastkeyinput=='1'"/>
+						<goto next="Hungama_MM_LoveGuru_546462.vxml"/>
+					<elseif cond="lastkeyinput=='2'"/>
+						<goto next="Hungama_MW_PlayContent_546463.vxml"/>
+					<elseif cond="lastkeyinput=='3'"/>
+						<goto next="Audio_Cinema_MainMenu_546469.vxml"/>
+					<elseif cond="lastkeyinput=='4'"/>
+						<goto next="Hungama_54646_CelebrityWorld.vxml"/>
+					<elseif cond="lastkeyinput=='5'"/>
+						<goto next="ExistingUser.vxml"></goto>
+					<else/>
+						<goto next="Hungama_54646_MainMenu.vxml"></goto>
+					</if>					
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<script>movie_idx=movie_idx+1;</script>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+LangFirstValue+'/waiting_response.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<script>movie_idx=movie_idx+1;</script>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+LangFirstValue+'/waiting_response.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="3">
+			<goto next="Hungama_54646_End.vxml"></goto>
+		</noinput>
+		<nomatch count="1">
+			<script>movie_idx=1;</script>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+LangFirstValue+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<script>movie_idx=1;</script>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="promptspath_54646+'/'+LangFirstValue+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="3">
+			<goto next="Hungama_54646_End.vxml"></goto>
+		</nomatch>
+	</form>   
+</vxml>  

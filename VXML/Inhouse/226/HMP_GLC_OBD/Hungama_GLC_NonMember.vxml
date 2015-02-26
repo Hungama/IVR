@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_NonMember.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	
+	<var name="DATE" expr="''" />
+	<var name="TIME" expr="''" />
+	<var name="UploadFileName" expr="''"/>
+	<var name="month" expr="''" />
+	<var name="day" expr="''" />
+       <script>
+		var config=new Array();
+		var Record_Time=0;
+       </script>
+        
+
+<form id="Welcome">
+	<block>
+	 <assign name="Section_Name" expr="'Drop_vote'"/>
+	<assign name="CATEGORY" expr="'NONLIVE'"/>
+		<assign name="C_Start" expr="start_time()"/>
+		<assign name="section_begin" expr="starttime()"/>
+		<assign name="song_begin" expr="starttime()"/>
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;						   
+		</script>
+		<script>
+			var length = ANI.length;
+			
+			ANI = ANI.substring(6,16);
+
+		</script>
+
+		<script>
+			length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		</script>  
+
+		<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+		<assign name="DNIS" expr="realDNIS"/>
+		
+		<assign name="dbservlet" expr="'hul_dbinteraction'"/>
+<if cond="ANI=='9910883325' || ANI=='9920287620' || ANI=='9819817702' || ANI=='9711943010' || ANI=='8587900178' || ANI=='9711130819'">
+			<prompt bargein="false" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/OBD_HINDI.wav'"/>
+			</prompt>
+	<exit/>
+</if>
+<!--*****************digit input last ******************-->
+<!--<if cond="ANI=='8586967046' || ANI=='7838696917' ||ANI=='8130335773' || ANI=='9910040744' || ANI=='8879255598' || ANI=='9869441975' || ANI=='9930746701' || ANI=='9811456221' || ANI=='9167064061' || ANI=='9999497837'">
+	<submit expr="'../HMP_GLC_OBD_TEST/Hungama_GLC_NonMember.vxml'"/>
+	</if>-->
+<!--**********jokes play clip **************-->
+ <!--<if cond="ANI=='8586967046' || ANI=='8586967045' || ANI=='9711943010' || ANI=='8587800852'">
+			<prompt bargein="false" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/jokes.wav'"/>
+			</prompt>
+				<assign name="compare_time" expr="rim(song_begin)"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=HUL_RECEIVE_OBD_NONLIVE&amp;INTOKEN=6&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3&amp;INPARAM[2]='+compare_time+'&amp;INPARAM[3]=NONLIVE_APP&amp;INPARAM[4]='+C_Start+'&amp;INPARAM[5]=NA'"/>		
+
+			<exit/>
+</if>-->
+<!--********************************************-->
+<prompt bargein="false" timeout="1s">
+	<audio expr="promptpath+'/'+lang+'/welcome_recording.wav'"/>
+	<!--<audio expr="promptpath+'/'+lang+'/beep.wav'"/>-->
+	
+</prompt>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_GET_CIR_OPR&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						operator = out_string[j];
+					       if(j==1)
+						circle = out_string[j];
+					  }
+				]]>
+			</script> 
+			<log>operator of number  is <value expr="operator"/>    </log>
+		<log>circle of number  is <value expr="circle"/>    </log>
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+		<assign name="Usagelog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+		<goto next="#RECORD"/> 
+	</block>
+</form>
+
+<form id="RECORD">
+	<block>
+	
+	
+		<assign name="DATE" expr="getcurryyyymmdd()"/>
+		<assign name="TIME" expr="start_time()"/>
+		<script>
+			month=DATE.substring(4,6);
+			day=DATE.substring(6,8);
+			month=month+'-GLCNONlive';
+		</script>
+		
+		<assign name="day" expr="'GLCNONLIVE'"/>
+		<assign name="month" expr="'GLCNONLIVE'"/>
+		
+		<log>	DATE  isssss    <value expr="DATE"/> 	</log>
+		<log>	month isssss    <value expr="month"/> 	</log>
+		<log>	day isssss    <value expr="day"/> 	</log>
+		
+		
+		<script>UploadFileName=ANI+'_'+DATE+'_'+TIME+'.wav';</script>
+		<assign name="Usage_time" expr="rim(section_begin)"/>
+		<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+		<assign name="Section_Name" expr="'Vote_record'"/>
+		<assign name="section_begin" expr="starttime()"/>
+		
+	</block>
+     
+       <record name="recording" beep="true" maxtime="12s" finalsilence="10s" dtmfterm="true" type="audio/wav;codec=alaw"/>
+	<subdialog name="messageUpload" srcexpr="'http://192.168.100.226:8082/hungama/air_recording_bolbabybol'" enctype="multipart/form-data" method="post" namelist="ANI UploadFileName month day recording">	    	    							
+	</subdialog> 
+	
+        <field name="LGRecconfirmopt" type="boolean">
+		 <grammar mode="dtmf" root="start3" version="1.0">
+	           <rule id="start3" scope="public">
+		       <one-of>				 
+			  <item>1</item>				  					 			      
+		       </one-of>
+	           </rule>
+               </grammar>
+                 
+					
+		<filled>
+			
+		      <if cond="LGRecconfirmopt=='1'">
+			   <script srcexpr="'http://192.168.100.226:8082/hungama/Record_bolbabybol?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;month='+month+'&amp;day='+day+'&amp;MSG='+recording"/> 
+			   <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLCNONOLIVE_RECORDING_SAVE&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator+'&amp;INPARAM[2]='+circle+'&amp;INPARAM[3]='+UploadFileName+'&amp;INPARAM[4]=1'"/>
+ 			   <goto next="#RecordComplete"/>
+		      </if>
+		</filled>				
+		<noinput>
+			
+
+			  <script srcexpr="'http://192.168.100.226:8082/hungama/Record_bolbabybol?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;month='+month+'&amp;day='+day+'&amp;MSG='+recording"/> 
+		         <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLCNONOLIVE_RECORDING_SAVE&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator+'&amp;INPARAM[2]='+circle+'&amp;INPARAM[3]='+UploadFileName+'&amp;INPARAM[4]=1'"/>
+ 			  <goto next="#RecordComplete"/>
+    		</noinput>
+		
+		<nomatch>
+			
+			  <script srcexpr="'http://192.168.100.226:8082/hungama/Record_bolbabybol?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;month='+month+'&amp;day='+day+'&amp;MSG='+recording"/>  
+		          <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLCNONOLIVE_RECORDING_SAVE&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator+'&amp;INPARAM[2]='+circle+'&amp;INPARAM[3]='+UploadFileName+'&amp;INPARAM[4]=1'"/>
+ 			  <goto next="#RecordComplete"/>
+		</nomatch>
+	  </field>
+  
+   </form>
+
+
+<form id="RecordComplete"> 
+	 <field name="choice">               
+		<grammar mode="dtmf" root="start41" version="1.0">
+                   	<rule id="start41" scope="public">
+                     	<one-of>     
+				   <item>1</item>
+			</one-of>
+                	</rule>
+               	</grammar>
+               	
+          	<prompt bargein="false" timeout="1s">
+			 <audio expr="promptpath+'/'+lang+'/thanks_recording.wav'"/>
+		</prompt>   
+				 
+		<filled>  
+			<goto next="Hungama_GLC_End.vxml"/>
+		</filled>
+			  
+	      <noinput>		  
+	             	<goto next="Hungama_GLC_End.vxml"/>	     
+              </noinput>
+              
+              <nomatch>
+			<goto next="Hungama_GLC_End.vxml"/>	
+	      </nomatch>		
+        </field>		
+		
+</form>
+
+</vxml>

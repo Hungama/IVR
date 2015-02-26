@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_ModRoot.vxml"
+
+        xmlns="http://www.w3.org/2001/vxml"
+
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+        xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+        <meta name="Hungama_ModRngMenu.vxml" content="" />
+
+        <meta name="Author" content="" />
+
+        <meta name="Date" content="" />
+
+        <meta name="Description" content="" />
+
+        <meta name="Support" content="" />
+
+        <var name="rngid" expr="''"/>
+	<var name="addext" expr="''"/>
+	<var name="rng_len" expr="0"/>
+	<var name="rngmenu" expr="0"/>
+	<var name="CRBT_RING_COMMON" expr="''"/>
+	<var name="END_songID" expr="''"/>
+
+<!--********************************UNINOR DOUBLE CONSENT *************************************************-->
+	<var name="PATH" expr="''"/>
+	<var name="LANG" expr="''"/>
+
+	<var name="SCHN" expr="''"/>
+	<var name="MSISDN" expr="''"/>
+	<var name="CP" expr="''"/>
+	<var name="CPPID" expr="''"/>
+	<var name="PRODTYPE" expr="''"/>
+	<var name="PMARKNAME" expr="''"/>
+	<var name="PRICE" expr="''"/>
+	<var name="SE" expr="''"/>
+	<var name="CPTID" expr="''"/>
+	<var name="DT" expr="''"/>
+	<var name="PD" expr="''"/>
+	<var name="SCODE" expr="''"/>
+	<var name="RSV" expr="''"/>
+	<var name="RSV2" expr="''"/>
+<!--****************************************************************************************-->
+
+<script>
+
+function gettransidtime() 
+{
+ 	var d3=new Date();
+	var date3 = d3.getDate();
+	var month3=d3.getMonth()+1;
+		var hh = d3.getHours();
+		var mm = d3.getMinutes();
+		var ss = d3.getSeconds();
+		var ms = d3.getMilliseconds();
+	if(!(month3>9)) {
+		month3 = "0" + month3;
+	}
+	if(!(date3 >9)) {
+		date3 = "0" + date3;
+	}
+	var year3=d3.getYear()+1900;
+	return(""+year3+month3+date3+hh+mm+ss+ms);						
+}
+
+
+function getUNIMDT()
+{
+	var currentDT = new Date();
+	var day = currentDT.getDate();
+	var month = currentDT.getMonth() + 1;
+	var year = currentDT.getFullYear();
+	var hours = currentDT.getHours();
+	var minutes = currentDT.getMinutes();
+	var seconds = currentDT.getSeconds();
+	if (!(month > 9)) {month = "0" + month; }
+	if (!(day > 9 )) {day = "0" + day; }
+	if (!(hours > 9)) {hours = "0" + hours; }
+	if (!(minutes > 9 )) {minutes = "0" + minutes ; }
+	if (!(seconds > 9) ) {seconds = "0" + seconds ; }
+	var strDateTime =  year + "-" + month + "-" + day +" "+ hours+":"+minutes+":"+seconds ;	
+	return strDateTime;
+}
+</script>
+	
+        <script>
+                var out_string=new Object();
+		var RTFREE=new Object();
+		var total_count=0;
+        </script>
+
+        <form id="Menu">
+                <block>
+			<assign name="drop_point" expr="'RT_Menu'"/>
+
+			
+			<!-- CHECK FOR RINGTONE FREE START-->
+			
+			<!--	<if cond="circle!='upw'">
+			       	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=9'"/>
+					<script>
+						RTFREE = out_string[0];
+					</script>
+					<log expr="'RTFREE @@@@@@@@@ '+RTFREE"></log>	
+				</if>  -->
+
+			<!-- CHECK FOR RINGTONE FREE END-->
+
+				<log>servlet  is      <value expr="'http://'+IP+'/'+servlet_path+'/uniradio_rngmenu?SONGID='+songID+'&amp;IN_TYPE=RNG&amp;CIRCLE='+circle+'&amp;IN_DNIS='+DNIS"/>    </log>
+                        <!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/uniradio_rngmenu?SONGID='+songID+'&amp;IN_TYPE=RNG&amp;CIRCLE='+circle+'&amp;IN_DNIS='+DNIS+'&amp;TOKEN=FREE'"/>-->
+  			 <script srcexpr="'http://192.168.100.226:8084/'+servlet_path+'/Uninor_MRT?SONGID='+songID+'&amp;IN_TYPE=RNG&amp;CIRCLE='+circle+'&amp;IN_DNIS='+DNIS+'&amp;OPR=MRT_IVR&amp;TOKEN=FREE'"/>
+
+                        <script>
+                                                array2.length=0;
+                        </script>
+                        <assign name="rng_len" expr="out_string.length" />
+                        <assign name="movie_idx" expr="0" />
+                        <assign name="i" expr="0" />
+                        <log>previous Array[1]  is      <value expr="array2[0]"/>    </log>
+                        <script>
+                                 <![CDATA[
+                                           for(j=0; j<rng_len ;  j++)
+                                           {
+                                                                var temp = out_string[j].split("@");
+                                                                array2[j] = temp[0];
+                                                                array3[j] = temp[1];
+                                           }
+                                ]]>
+                        </script>
+                        <log>Length  is <value expr="rng_len"/>    </log>
+                        <log>Array2[1]  is      <value expr="array2[0]"/>    </log>
+                        <log>Array3[1]  is       <value expr="array3[0]"/>    </log>
+                        <if cond="array2[0]==''">
+                                <prompt bargein="true" timeout="0s">
+                                        <audio expr="Prompts_Path+'/'+lang+'/no-ringtone-avail.wav'"/>
+                                </prompt>
+					<if cond="playconfig=='00'">
+							<if cond="lang='01'">
+								<goto next="Hungama_ModPlay_newyear.vxml#next"/>
+							</if>
+
+				    </if>
+
+                                <goto next="Hungama_ModPlay.vxml#next"/>
+                        </if>
+			<if cond="DNIS=='52888' || DNIS=='528884' || DNIS=='528886' || DNIS=='528888' || DNIS=='528889'">
+                        	<assign name="addext" expr="''" />
+			</if>
+					     <if cond="DNIS=='528881'">
+					     	<assign name="addext" expr="'_1'" />
+					     </if>
+			
+					     <if cond="DNIS=='528882'">
+					     	<assign name="addext" expr="'_2'" />
+					     	
+					     </if>
+					     <if cond="DNIS=='528883'">
+					     	<assign name="addext" expr="'_3'" />
+					     	
+					     </if>
+					     <if cond="DNIS=='528885'">
+					     	<assign name="addext" expr="'_5'" />
+					     	
+					     </if>
+
+					     <if cond="DNIS=='528887'">
+					     	<assign name="addext" expr="'_7'" />
+					     	
+					     </if>
+					     <if cond="DNIS=='528880'">
+					     	<assign name="addext" expr="''" />
+					     	
+					     </if>
+                </block>
+                <field name="choice">
+                        <grammar mode="dtmf" root="start" version="1.0">
+                                                <rule id="start" scope="public">
+                                                        <one-of>
+                                                                 <item>  1  </item>
+                                                                 <item>  2  </item>
+                                                                 <item>  3  </item>
+                                                        </one-of>
+                                                </rule>
+                                </grammar>
+                        <prompt bargein="true" timeout="2s">
+                                <foreach item="names" array="array2">
+                                	 <log>   song is is      <value expr="movie_idx"/>       </log>
+                                        <log>   names is is     <value expr="names"/>   </log>
+					<audio expr="Prompts_Path+'/'+lang+'/select_'+names+'_charge'+ addext +'.wav'"/>
+                                        <audio expr="Prompts_Path+'/'+lang+'/select_'+names+'.wav'"/>
+                                        <audio expr="Prompts_Path+'/'+lang+'/press_dtmf'+ ++movie_idx+'.wav'"/>
+                                </foreach>
+                        </prompt>
+                        <filled>
+                                <if cond="choice &lt; rng_len+1">
+					<!--<assign name="callendstatus" expr="1"/> -->
+                                        <assign name="rngmenu" expr="array2[--choice]"/>
+                                        <assign name="rngid" expr="array3[choice]"/>
+                                        <log expr="'selected rng category is '+rngmenu"></log>
+                                        <log expr="'selected rng id is '+rngid"></log>
+                                        <assign name="CRBT_RING_COMMON" expr="'RING'" />
+                                        <assign name="END_songID" expr="songID"/>
+
+					 <if cond="rngmenu=='mt'">
+						<assign name="planid" expr="'70'"></assign>
+					 <elseif cond="rngmenu=='pt'"/>
+						<assign name="planid" expr="'69'"></assign>
+					 <elseif cond="rngmenu=='tt'"/>
+						<assign name="planid" expr="'71'"></assign>
+					 </if>
+
+                                        <if cond="DNIS=='528881'">
+                                        	<assign name="Amt" expr="'1'"></assign>
+                                        <elseif cond="DNIS=='528882'"/>
+                                        	<assign name="Amt" expr="'2'"></assign>
+                                        <elseif cond="DNIS=='528883'"/>
+                                        	<assign name="Amt" expr="'3'"></assign>
+					     <elseif cond="DNIS=='528885'"/>
+                                        	<assign name="Amt" expr="'5'"></assign>
+                                        <elseif cond="DNIS=='528887'"/>
+						<assign name="Amt" expr="'7'"></assign>
+                                        <elseif cond="DNIS=='528880'"/>
+                                        	<assign name="Amt" expr="'10'"></assign>
+                                        <else/>
+	                                        <if cond="rngmenu=='mt'">
+	                                        	<assign name="Amt" expr="'5'"></assign>
+	                                        <elseif cond="rngmenu=='pt'"/>
+	                                        	<assign name="Amt" expr="'7'"></assign>
+	                                        <elseif cond="rngmenu=='tt'"/>
+	                                        	<assign name="Amt" expr="'10'"></assign>
+	                                        </if>
+                                        </if>
+						<log>IP is :::<value expr="IP"/></log>
+						<log>servlet_path is :::<value expr="servlet_path"/></log>
+						<log>dbservlet is :::<value expr="dbservlet"/></log>
+						<log>ANI is :::<value expr="ANI"/></log>
+						<log>lang is :::<value expr="lang"/></log>
+						<log>serviceid is :::<value expr="serviceid"/></log>
+						<log>planid is :::<value expr="planid"/></log>
+						<log>ringid is :::<value expr="rngid"/></log>
+
+						     <assign name="dtmf_log" expr="dtmf_log+hash+songID+hash+rngmenu+hash+choice"></assign>
+					<!--	<if cond="mtcount=='0' &amp;&amp; (rngmenu=='tt' || rngmenu=='pt')">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MRT_MTFREE&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+rngid+'&amp;INPARAM[5]='+songID"/>
+							<assign name="mtcount" expr="1"></assign>
+						</if>  -->
+
+									
+				
+				
+					<!--	<if cond="playconfig=='00'">
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_NAVRATRI_RT&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+rngmenu+'&amp;INPARAM[2]='+rngid+'&amp;INPARAM[3]='+songID"/>
+						</if> -->
+
+					<if cond="ANI=='9711711335' || circle=='upw'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_RT_DOWNLOAD&amp;INTOKEN=6&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+rngid+'&amp;INPARAM[3]='+songID+'&amp;INPARAM[4]='+rngmenu+'&amp;INPARAM[5]=SET'"/>
+					</if> 
+				
+				<!--	<if cond="RTFREE=='1'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_RT_FREE&amp;INTOKEN=10&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid+'&amp;INPARAM[7]='+rngid+'&amp;INPARAM[8]='+songID+'&amp;INPARAM[9]='+rngmenu"/>
+					<else/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADOI_SUBRINGTONE&amp;INTOKEN=10&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid+'&amp;INPARAM[7]='+rngid+'&amp;INPARAM[8]='+songID+'&amp;INPARAM[9]='+rngmenu"/>
+					</if>  -->
+				
+						<assign name="firstconsent" expr="'Event'"/>
+						<assign name="firstconsenttime" expr="start_time()"/>
+						<assign name="sub_flag" expr="'true'"/>
+
+						<goto next="#SubOptionDoubleconfirm_uninor"/>				
+
+ 
+						<!-- <goto next="#ThanksDownload"/> -->
+
+						<!--<if cond="playconfig=='00'">
+							<if cond="lang='01'">
+								<goto next="Hungama_ModPlay_newyear.vxml#next"/>
+							</if>
+						</if>
+              	                          <goto next="Hungama_ModPlay.vxml#next"/>  -->
+                                <else/>
+                                       <throw event="nomatch"/>
+                                </if>
+                        </filled>
+
+			<catch event="timeUP">
+				<log> received event <value expr="_event"/></log>
+				<clear namelist="choice"/>
+				<goto nextitem="choice" />
+			</catch>
+                </field>
+                <noinput count="1">
+                		<assign name="dtmf_log" expr="dtmf_log+hash+songID+hash+'noinput'"></assign>
+                        <prompt bargein="true" timeout="0s">
+                                <audio expr="Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+                        </prompt>
+                        <assign name="movie_idx" expr="0"/>
+                        <reprompt></reprompt>
+                </noinput>
+                <noinput count="2">
+                		<assign name="dtmf_log" expr="dtmf_log+hash+songID+hash+'noinput'"></assign>
+				<if cond="playconfig=='00'">
+					<if cond="lang='01'">
+						<goto next="Hungama_ModPlay_newyear.vxml#next"/>
+					</if>
+						
+				</if>
+	                        <goto next="Hungama_ModPlay.vxml#next"/>
+                </noinput>
+                <nomatch>
+                	<assign name="dtmf_log" expr="dtmf_log+hash+songID+hash+'nomatch'"></assign>
+                        <assign name="invalidcounter" expr="invalidcounter + 1"></assign>
+                		<if cond="invalidcounter &gt;= 2">
+					<assign name="invalidcounter" expr="0"></assign>
+					<if cond="playconfig=='00'">
+						<if cond="lang='01'">
+							<goto next="Hungama_ModPlay_newyear.vxml#next"/>
+						</if>
+				        </if>
+                			<goto next="Hungama_ModPlay.vxml#next"/>
+                		</if>
+                        <prompt bargein="true" timeout="0s">
+                                <audio expr="Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+                        </prompt>
+                        <assign name="movie_idx" expr="0"/>
+                        <goto next="Hungama_ModRngMenu.vxml#Menu"></goto>
+                </nomatch>
+        </form>
+
+<form id="SubOptionDoubleconfirm_uninor">
+		<block>
+				 <if cond="rngmenu=='mt'">
+					<assign name="PMARKNAME" expr="'Mono tone'"/>
+					<if cond="Amt=='5'">
+						<assign name="CPPID" expr="'HUI0002709'"/>
+					<elseif cond="Amt=='3'"/>
+						<assign name="CPPID" expr="'HUI0002710'"/>
+					<elseif cond="Amt=='2'"/>
+						<assign name="CPPID" expr="'HUI0002711'"/>
+					<elseif cond="Amt=='1'"/>
+						<assign name="CPPID" expr="'HUI0002712'"/>
+					</if>
+				 <elseif cond="rngmenu=='pt'"/>
+					<assign name="PMARKNAME" expr="'Poly tone'"/>
+					<if cond="Amt=='7'">
+						<assign name="CPPID" expr="'HUI0002702'"/>
+					<elseif cond="Amt=='5'"/>
+						<assign name="CPPID" expr="'HUI0002703'"/>
+					<elseif cond="Amt=='3'"/>
+						<assign name="CPPID" expr="'HUI0002704'"/>
+					<elseif cond="Amt=='2'"/>
+						<assign name="CPPID" expr="'HUI0002705'"/>
+					<elseif cond="Amt=='1'"/>
+						<assign name="CPPID" expr="'HUI0002706'"/>
+					</if>
+				 <elseif cond="rngmenu=='tt'"/>
+					<assign name="PMARKNAME" expr="'True tone'"/>
+					<if cond="Amt=='10'">
+						<assign name="CPPID" expr="'HUI0002510'"/>
+					<elseif cond="Amt=='7'"/>
+						<assign name="CPPID" expr="'HUI0002511'"/>
+					<elseif cond="Amt=='5'"/>
+						<assign name="CPPID" expr="'HUI0002601'"/>
+					<elseif cond="Amt=='3'"/>
+						<assign name="CPPID" expr="'HUI0002602'"/>
+					<elseif cond="Amt=='2'"/>
+						<assign name="CPPID" expr="'HUI0002603'"/>
+					<elseif cond="Amt=='1'"/>
+						<assign name="CPPID" expr="'HUI0002605'"/>
+					</if>
+				</if>
+
+
+				<assign name="PATH" expr="Prompts_Path+'/'+lang+'/'"/>
+				<assign name="SCHN" expr="'IVR_EVT'"/>
+				<assign name="CP" expr="'HUNGAMA'"/>
+				<assign name="MSISDN" expr="ANI"/>
+				<assign name="PRODTYPE" expr="'EVENT'"/> 
+				<assign name="PRICE" expr="'5'"/>
+				<assign name="SE" expr="'HUNGAMA_EVT'"/>
+				<assign name="CPTID" expr="gettransidtime()"/>
+				<assign name="DT" expr="getUNIMDT()"/>
+				<assign name="PD" expr="'Ringtone downloads'"/>
+				<assign name="SCODE" expr="rngid"/>
+			<!--	<assign name="RSV" expr="'reserve1'"/>
+				<assign name="RSV2" expr="'reserve2'"/>  -->
+
+				<assign name="RSV" expr="'rsv'"/>
+				<assign name="RSV2" expr="'rsv2'"/>
+				<script>
+						PRICE=Amt*100;
+				</script>
+				<log expr="'DT @@@@@@@@@ '+DT"></log>
+				<log expr="'CPTID @@@@@@@@@ '+CPTID"></log>
+				<log expr="'PRICE @@@@@@@@@ '+PRICE"></log>
+
+				<if cond="lang=='01'">
+						<assign name="LANG" expr="'HIN'"/>
+				<elseif cond="lang=='02'"/>
+						<assign name="LANG" expr="'ENG'"/>
+				<elseif cond="lang=='11'"/>
+						<assign name="LANG" expr="'MAR'"/>
+				<elseif cond="lang=='10'"/>
+						<assign name="LANG" expr="'KAN'"/>
+				<elseif cond="lang=='08'"/>
+						<assign name="LANG" expr="'TEL'"/>
+				<elseif cond="lang=='09'"/>
+						<assign name="LANG" expr="'MAL'"/>
+				<elseif cond="lang=='07'"/>
+						<assign name="LANG" expr="'TAM'"/>
+				<elseif cond="lang=='13'"/>
+						<assign name="LANG" expr="'ORI'"/>
+				<elseif cond="lang=='06'"/>
+						<assign name="LANG" expr="'BEN'"/>
+				<elseif cond="lang=='12'"/>
+						<assign name="LANG" expr="'GUJ'"/>
+				<elseif cond="lang=='17'"/>
+						<assign name="LANG" expr="'ASM'"/>
+				<elseif cond="lang=='18'"/>
+						<assign name="LANG" expr="'MAW'"/>
+				<elseif cond="lang=='03'"/>
+						<assign name="LANG" expr="'PUN'"/>
+				<elseif cond="lang=='05'"/>
+						<assign name="LANG" expr="'HAR'"/>
+				<else/>
+						<assign name="LANG" expr="'HIN'"/>
+				</if> 
+		
+</block> 
+
+	<!-- <subdialog name="confirmUserChoice" srcexpr="'http://180.178.28.47:8001/IVR/SecondConsentIVRRequestSyncPS?PATH='+PATH+'&amp;LANG='+LANG+'&amp;SCHN='+SCHN+'&amp;CP='+CP+'&amp;MSISDN='+MSISDN+'&amp;CPPID='+CPPID+'&amp;PRODTYPE='+PRODTYPE+'&amp;PMARKNAME='+PMARKNAME+'&amp;PRICE='+PRICE+'&amp;SE='+SE+'&amp;CPTID='+CPTID+'&amp;DT='+DT+'&amp;PD='+PD+'&amp;SCODE='+SCODE+'&amp;RSV='+RSV+'&amp;REQ_TYPE=IVR&amp;RSV2='+RSV2"> -->
+
+		<subdialog name="confirmUserChoice" srcexpr="'http://180.178.28.62:7001/IVR/SecondConsentIVRRequestSyncPS?PATH='+PATH+'&amp;LANG='+LANG+'&amp;SCHN='+SCHN+'&amp;CP='+CP+'&amp;MSISDN='+MSISDN+'&amp;CPPID='+CPPID+'&amp;PRODTYPE='+PRODTYPE+'&amp;PMARKNAME='+PMARKNAME+'&amp;PRICE='+PRICE+'&amp;SE='+SE+'&amp;CPTID='+CPTID+'&amp;DT='+DT+'&amp;PD='+PD+'&amp;SCODE='+SCODE+'&amp;RSV='+RSV+'&amp;REQ_TYPE=IVR&amp;RSV2='+RSV2">
+
+		<filled>
+					<assign name="secondconsent" expr="'Y'"/>
+					<assign name="secondconsenttime" expr="start_time()"/>
+					<assign name="ccgresult" expr="confirmUserChoice.result"/>
+					<assign name="pressdtmf" expr="confirmUserChoice.PRESSED_DTMF"/>
+					<assign name="trans_id" expr="CPTID"/>
+
+			<log>Confirmation page</log>
+
+			<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+			<log>back from the confirmation app, the PRESSED_DTMF:<value expr="confirmUserChoice.PRESSED_DTMF"/></log>
+			<log>back from the confirmation app, the response:<value expr="confirmUserChoice.result"/></log>
+			
+			<script srcexpr="'http://192.168.100.226:8082/hungama/Uninor_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=MRT&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+CPTID+'&amp;ccgresult='+confirmUserChoice.result+'&amp;ccgdtmf='+confirmUserChoice.PRESSED_DTMF"/> 
+
+			<if cond="confirmUserChoice.result=='success'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADOI_SUBRINGTONE_DOUBLE&amp;INTOKEN=11&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid+'&amp;INPARAM[7]='+rngid+'&amp;INPARAM[8]='+songID+'&amp;INPARAM[9]='+rngmenu+'&amp;INPARAM[10]='+CPTID"/>
+
+					<assign name="sub_flag" expr="'false'"/>
+                                	<script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1412&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>  
+			
+					<goto next="#ThanksDownload"/>
+			<else/>
+					<goto next="Hungama_ModEnd.vxml"/>
+			</if>		                       
+		</filled>
+	</subdialog>
+
+</form>
+
+
+<form id="ThanksDownload">
+	<block>
+		<assign name="drop_point" expr="'RT_Request'"/>
+
+		<if cond="ANI=='9711711335' || circle=='upw'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_RT_DOWNLOAD&amp;INTOKEN=6&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]='+rngid+'&amp;INPARAM[3]='+songID+'&amp;INPARAM[4]='+rngmenu+'&amp;INPARAM[5]=GET'"/>
+			<script>
+				  total_count = out_string[0];
+			</script>
+			<log>total ringtone download count  :::<value expr="total_count"/></log>
+		</if> 
+	</block>
+	<field name="mnuopt">
+		<grammar mode="dtmf" root="start171" version="1.0">
+		       <rule id="start171" scope="public">
+			 <one-of>				 
+				   <item>1</item>					  			  		      
+			 </one-of>
+		       </rule>
+		</grammar>			
+
+		<prompt bargein="true" timeout="1s">
+			<audio expr="Prompts_Path+'/'+lang+'/thanks-download.wav'"/>
+		</prompt>
+
+		<prompt bargein="true" timeout="1s" cond="(ANI=='9711711335' || circle=='upw') &amp;&amp; (total_count &lt; '5' || total_count=='5')">
+			<audio expr="Prompts_Path+'/'+lang+'/freeminute_'+total_count+'.wav'"/>
+		</prompt>
+		<prompt bargein="true" timeout="1s" cond="(ANI=='9711711335' || circle=='upw') &amp;&amp; total_count &gt; '5'">
+			<audio expr="Prompts_Path+'/'+lang+'/freeminute_5.wav'"/>
+		</prompt>			
+
+		<filled>
+		     <goto next="#CheckBilling"/>
+		</filled>		
+
+		<noinput>
+		    <goto next="#CheckBilling"/>	   			     
+		</noinput>
+
+		<nomatch>			   
+		    <goto next="#CheckBilling"/>              
+		</nomatch>
+		</field>
+</form>
+
+
+<form id="CheckBilling">  
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>
+		<script>
+			 rt_status = out_string[0];
+		</script>
+		<log>rt_status is :::<value expr="rt_status"/></log>
+		<if cond="rt_status=='1'">
+			<assign name="RT_Start" expr="start_time()"/>
+			<!-- <if cond="playconfig=='00'">
+				<if cond="lang='01'">
+					<goto next="Hungama_ModPlay_newyear.vxml#next"/>
+				</if>
+			</if> -->
+				<goto next="Hungama_ModPlay.vxml#next"/>
+		<else/>
+			<!-- <if cond="playconfig=='00'">
+				<if cond="lang='01'">
+					<goto next="Hungama_ModPlay_newyear.vxml#next"/>
+				</if>
+			</if> -->
+				<goto next="Hungama_ModPlay.vxml#next"/>
+		</if>
+	</block>
+</form>
+</vxml>

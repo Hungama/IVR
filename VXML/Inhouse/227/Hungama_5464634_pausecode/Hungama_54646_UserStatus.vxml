@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_54646_UserStatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="SUBANI" expr="''"/>
+	<var name="TEMPANI" expr="''"/>
+	<var name="SUBDNIS" expr="''"/>
+	<var name="TEMPDNIS" expr="''"/>
+	<var name="ciropr" expr="''"/>
+	<var name="operator2" expr="''"/>
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+
+
+
+	<form id="USRSTATUS">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						       if(j==3)
+						       	moviectr = out_string[j];							      
+							if(j==4)
+							       modofsub=out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+							
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CHECK_PAUSECODE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+operator+'&amp;INPARAM[2]='+lastkeyinput"/>
+			<script>
+				  evalue = out_string[j];
+			</script>
+			<log expr="'evalue issss @@@@@@@@@ '+evalue"></log> -->
+
+
+			<if cond="usr_status=='-1'">
+				<assign name="drop_point" expr="'New_User'"/>
+				<goto next="Hungama_54646_NewUser.vxml"></goto>
+			<elseif cond="usr_status=='1'"/>
+				<assign name="drop_point" expr="'old_user'"/>
+				<script> 					 
+					balance=balance*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+				<if cond="lang=='99'">	
+					<goto next="Hungama_54646_NewUser.vxml"></goto>	
+				<else/>
+					
+						<if cond="lang=='01'">
+							<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+						<elseif cond="lang=='02'" />
+                     	   				<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+						<elseif cond="lang=='06'" />
+                        				<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+						<elseif cond="lang=='07'" />
+       	                 				<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+						<elseif cond="lang=='08'" />
+                     	   				<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+						<elseif cond="lang=='10'" />
+                        				<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+                        			<elseif cond="lang=='17'" />
+                        				<assign name="LANG_DESCRIPTION" expr="'ASM'"/>
+						<else/>
+							<if cond="circle=='kar'">
+								<assign name="lang" expr="'10'"/>
+							        <assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+							<else/>
+								<assign name="lang" expr="'01'"/>
+							        <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+							</if>
+						</if>
+						
+					
+					<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath_54646+'/'+lang+'/already_subs_t.wav'"/>
+						</prompt>
+						<goto next="#USRSTATUS_TOLL"></goto>
+					</if>					    									
+					
+					<if cond="lastkeyinput=='1'">
+						<goto next="Hungama_MM_LoveGuru_546462.vxml"></goto>
+					<elseif cond="lastkeyinput=='2'"/>
+						<goto next="Hungama_MW_PlayContent_546463.vxml"></goto>
+					<elseif cond="lastkeyinput=='3'"/>
+						<goto next="Audio_Cinema_MainMenu_546469.vxml"></goto>
+					<elseif cond="lastkeyinput=='4'"/>
+						<goto next="Hungama_54646_CelebrityWorld.vxml"></goto>
+					<elseif cond="lastkeyinput=='5'"/>
+						<submit expr="'../uni_jotish/checkuserstatus.vxml'"/>
+				
+					<else/>
+						<goto next="Hungama_54646_MainMenu.vxml"></goto>
+					</if>
+
+					
+				</if>
+			 <elseif cond="usr_status=='11'"/>
+				<assign name="drop_point" expr="'Grace'"/>
+				<!--<assign name="STATUS_ELEVEN_FLAG" expr="'TRUE'" />
+				<goto next="#USRSTATUS_TOLL"></goto>  -->
+
+				<if cond="lang=='99'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/01/charge_req_recd.wav'"/>
+					</prompt>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/charge_req_recd.wav'"/>
+					</prompt>
+				</if>				
+				<goto next="Hungama_54646_End.vxml"></goto>
+			<else/>
+				<assign name="drop_point" expr="'Grace'"/>
+				<if cond="(realDNIS=='54646' || realDNIS=='546464') &amp;&amp; operator=='relm' &amp;&amp; (circle=='mpd' || circle=='ori')">
+					<goto next="#USRSTATUS_TOLL"></goto>
+				</if>
+				<if cond="lang=='99'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/01/charge_req_recd.wav'"/>
+					</prompt>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/charge_req_recd.wav'"/>
+					</prompt>
+				</if>				
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+
+	<form id="USRSTATUS_TOLL">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_CHK_LANG&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];						      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+			<log expr="'contentlog=='+contentlog"></log>
+		
+		
+
+			<if cond="usr_status=='-1'">
+				<goto next="Hungama_54646_NewUser.vxml#WELNEW_TOLL"></goto>
+			<elseif cond="usr_status=='1'"/>
+				<script> 					 
+					balance=60*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+				<if cond="lang=='99'">
+					<assign name="lang" expr="'01'"/>
+					<goto next="Hungama_54646_NewUser.vxml#WELNEW_TOLL"></goto>	
+				<else/>
+					<if cond="lang=='01'">
+						<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+					<elseif cond="lang=='02'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+					<elseif cond="lang=='06'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+					<elseif cond="lang=='07'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+					<elseif cond="lang=='08'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+					<elseif cond="lang=='10'" />
+                        			<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+					<elseif cond="lang=='17'" />
+                       				<assign name="LANG_DESCRIPTION" expr="'ASM'"/>
+					<else/>
+						<if cond="circle=='kar'">
+								<assign name="lang" expr="'10'"/>
+							        <assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+							<else/>
+								<assign name="lang" expr="'01'"/>
+							        <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+							</if>
+					</if>							    									
+					<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				</if>
+			<else/>
+				<goto next="Hungama_54646_NewUser.vxml#WELNEW_TOLL"></goto>
+			</if>
+		</block>
+	</form>
+</vxml>

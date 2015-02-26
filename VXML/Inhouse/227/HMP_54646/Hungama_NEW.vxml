@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version = "2.1"  xmlns="http://www.w3.org/2001/vxml">
+<var name="s1" expr = "'song1'"/>
+<var name="s2" expr = "'song2'"/>
+<var name="s3" expr = "'song3'"/>
+<var name="s4" expr = "'song4'"/>
+<var name="lang" expr = "'01'"/>
+<var name="playconfig" expr = "'01'"/>
+<var name="digits" expr = "''"/>
+<var name="IP" expr = "'192.168.100.226:8082'"/>
+<var name="unike_play" expr="0"/>
+<var name="promptspath_54646" expr="'http://192.168.100.226:8082/promptFiles/54646_version2_prompts'"/>
+<var name="contentpath" expr="'http://192.168.100.212:6666/hungama/'"/> 
+<var name="movie_idx" expr="0"/>
+<var name="contentdir" expr=""/>
+
+<var name="song" expr="''"/>	
+<script>
+var array=new Array();
+var favSongs=new Object();
+var songcheck=new Array();
+var i=0;
+var k=0;
+var len=0;
+</script>
+<form id="Fs_1">
+	
+  <field name="Song_1" modal="false">
+    <grammar version="1.0" mode="dtmf" xml:lang="en-US" root="myrule1">
+        <rule id="myrule1">
+			<one-of>
+				<item> 1 </item>
+				<item> 2 </item>
+				<item> 3 </item>
+				<item> 4 </item>
+				<item> 5 </item>
+			</one-of>
+        </rule>
+    </grammar>
+		<prompt  bargein="true">
+			<audio expr="promptspath_54646+'/'+lang+'/select_cat0121.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/press_dtmf1.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/select_cat0122.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/press_dtmf2.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/select_cat0124.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/press_dtmf3.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/select_cat0621.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/press_dtmf4.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/select_cat0721.wav'"/>
+			<audio expr="promptspath_54646+'/'+lang+'/press_dtmf5.wav'"/>
+		</prompt>
+		  <catch cond="true" count="1" event="noinput">
+				<prompt bargein="true">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>
+			<reprompt/>
+		  </catch>
+		  <catch cond="true" count="2" event="noinput">
+				<prompt bargein="true">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>
+			<disconnect/>
+		  </catch>
+		<catch cond="true" count="1" event="nomatch">
+				<prompt bargein="true">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+			<reprompt/>
+		</catch>
+		<catch cond="true" count="2" event="nomatch">
+				<prompt bargein="true">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+			<disconnect/>
+		</catch>
+    <filled>
+		<assign name="digits" expr="Song_1"/>
+		<if cond="Song_1 == 1">
+			<script>
+				playconfig='0101';
+			</script>
+			<goto next="#Fs_2"/>
+		<elseif cond="Song_1 == 2"/>
+			<script>
+				playconfig='0102';
+			</script>
+			<goto next="#Fs_2"/>
+		<elseif cond="Song_1 == 3"/>
+			<script>
+				playconfig='0103';
+			</script>
+			<goto next="#Fs_2"/>
+		<elseif cond="Song_1 == 4"/>
+			<script>
+				playconfig='0104';
+			</script>
+			<goto next="#Fs_2"/>
+		<elseif cond="Song_1 == 5"/>
+			<script>
+				playconfig='0105';
+			</script>
+			<goto next="#Fs_2"/>
+		</if>
+    </filled>
+  </field>
+</form>  
+ <form id="Fs_2">
+		  <block> 
+			<!--<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=54646config_V2/unim/mwconfig/songconfig/'+playconfig+'.cfg'"/>-->
+			
+			<script srcexpr="'http://192.168.100.227/uninor/vxmlCallUrl.php?ConfigPath=54646config_V2/unim/mwconfig/songconfig/'+playconfig+'.cfg'"/>
+			
+			
+			<script>
+						array.length=0;
+						unike_play=0;
+			</script>
+					<!--<assign name="HEARD" expr="playconfig" />-->
+					<assign name="len" expr="favSongs.length" />
+					
+					<assign name="i" expr="0" />
+					
+					<log expr="'@@@@@@ used len is '+len"/>
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+								array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#Fs_3"/>  					
+		   </block>
+	</form>
+<form id="Fs_3">
+		<block>
+				
+		<if cond="unike_play &gt; len-1">
+			<assign name="unike_play" expr="0" />
+		<elseif cond="unike_play &lt; 0" />
+			<assign name="unike_play" expr="len-1" />
+		</if>
+		
+			<script>
+				songcheck=array[unike_play].split("_");
+				contentdir=songcheck[0]; 
+				song = array[unike_play];
+
+			</script>
+			
+			<log expr="'@@@@@@ used balance is '+unike_play"/>
+			   <log expr="'@@@@@@ left balance is '+songcheck[0]"/>		
+					
+ 
+      </block>
+		  
+			 <field name="Song_2" modal="false">
+			    <grammar version="1.0" mode="dtmf" xml:lang="en-US" root="myrule2">
+			        <rule id="myrule2">
+						<one-of>
+							<item> 1 </item>
+							<item> 2 </item>
+							<item> 3 </item>
+							<item> 8 </item>
+							
+						</one-of>
+      			  </rule>
+      			  </grammar>
+			      <prompt bargein="true"  timeout="1s">
+				  <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+			      </prompt> 
+		<catch cond="true" count="1" event="noinput">
+			<prompt bargein="true">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+		<reprompt/>
+		</catch>
+		<catch cond="true" count="2" event="noinput">
+			<prompt bargein="true">
+				<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+			</prompt>
+			<script> 
+					unike_play=unike_play+1;
+			</script>
+			<goto next="#Fs_3"/>	
+		</catch>
+		<catch cond="true" count="1" event="nomatch">
+			<prompt bargein="true">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+		<reprompt/>
+		</catch>
+		<catch cond="true" count="2" event="nomatch">
+			<prompt bargein="true">
+				<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<script> 
+					unike_play=unike_play+1;
+			</script>
+			<goto next="#Fs_3"/>
+		
+		</catch>
+		  
+		      <filled>
+				<assign name="digits" expr="Song_2"/>		
+		          	<if cond="Song_2=='1'">
+				  <script> unike_play=unike_play+1; </script>
+				 <goto next="#Fs_3"/>	
+				 <elseif cond="Song_2=='8'"/>
+					 <goto next="#Fs_1"/>
+				 <elseif cond="Song_2=='2'"/>
+				 	<script> unike_play=unike_play</script>
+					<goto next="#Fs_3"/> 				 
+				 
+				 <elseif cond="Song_2=='3'"/>	
+				 	 <script> unike_play=unike_play-1</script>
+					<goto next="#Fs_3"/> 
+				 <else/>	
+				 	<script> unike_play=unike_play+1</script>		
+				   	 <goto next="#Fs_3"/> 		
+				 </if>				 
+			  </filled>				  
+		</field>
+	  	
+	</form>	
+</vxml>

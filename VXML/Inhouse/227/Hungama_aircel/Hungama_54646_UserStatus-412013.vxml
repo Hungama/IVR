@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_54646_UserStatus_MM.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+		var ciropr=new Object();
+		
+	</script>
+
+	<form id="CIRCLEID">
+		<block>
+				<assign name="C_Start" expr="start_time()"/>
+				<script>  
+					realDNIS=session.connection.local.uri;                   
+					ANI=session.connection.remote.uri;						   
+                </script>
+                <script>
+					var length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				</script>                             			    		        		                                      		   
+            	<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+            	<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+        		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+				<log> operator-circle identification </log>
+				
+				<script srcexpr="'http://192.168.100.227:8082/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+				
+				<assign name="ciropr" expr="ciropr1.value"/>
+				<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+				<script>
+					var songcheck=ciropr.split("#");
+					operator=songcheck[1];
+					circle=songcheck[2];
+				</script>								      					       
+				<log>circle  is	<value expr="circle"/>    </log>
+				<log>operator is <value expr="operator"/>    </log>
+                		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+				
+<if cond="ANI=='85270007791'">
+	<assign name="circle" expr="'tnu'"/>
+	<assign name="realDNIS" expr="'66291491'"/>
+	<assign name="DNIS" expr="'5464691'"/>
+	<log expr="'callingggggDNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+	<log expr="'callingggggrealDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+</if>
+				<if cond="realDNIS=='66291091'">
+					<assign name="DNIS" expr="'5464631'"/>
+					<assign name="operator" expr="'airc'"/>
+				<elseif cond="realDNIS=='66291092'"/>
+					 <assign name="DNIS" expr="'5464632'"/>
+					 <assign name="operator" expr="'airc'"/>
+				<elseif cond="realDNIS=='66291093'"/>
+					 <assign name="DNIS" expr="'5464633'"/>
+					 <assign name="operator" expr="'airc'"/>		   
+				<elseif cond="realDNIS=='66291094'"/>
+					 <assign name="DNIS" expr="'5464634'"/>
+					 <assign name="operator" expr="'airc'"/>
+				<elseif cond="realDNIS=='66291095'"/>
+					<assign name="DNIS" expr="'5464635'"/>
+					<assign name="operator" expr="'airc'"/>
+				<elseif cond="realDNIS=='66291096'"/>
+					<assign name="DNIS" expr="'5464636'"/>
+					<assign name="operator" expr="'airc'"/>
+				<elseif cond="realDNIS=='66291097'"/>
+					 <assign name="DNIS" expr="'5464637'"/>
+					 <assign name="operator" expr="'airc'"/>
+				<elseif cond="realDNIS=='66291098'"/>
+					<assign name="DNIS" expr="'5464638'"/>
+					 <assign name="operator" expr="'airc'"/>
+				<elseif cond="realDNIS=='66291099'"/>
+					 <assign name="DNIS" expr="'5464639'"/>
+					 <assign name="operator" expr="'airc'"/>		   
+				<elseif cond="realDNIS=='66291100'"/>
+					 <assign name="DNIS" expr="'5464630'"/>
+					 <assign name="operator" expr="'airc'"/>
+
+				</if>
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+		<log expr="'contentlog=='+contentlog"></log>
+		<goto next="Hungama_54646_play.vxml"></goto>
+	        </block>		
+	</form>
+	
+	
+</vxml>

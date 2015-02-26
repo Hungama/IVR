@@ -1,0 +1,611 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_Reliancefree_sub_TEST.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="contentfilepath" expr="''"/>
+<var name="cfgFile" expr="''"/>
+<var name="contentfile" expr="''"/>
+<var name="countersong" expr="0"/>
+<var name="var_wel" expr="''"/>
+<var name="trans_id" expr="''"/>
+<var name="PATH" expr="''"/>
+<var name="call_BalenceMinute" expr="0"/>
+<var name="total_used_balnce" expr="0"/>
+<var name="double_switch" expr="-1"/>
+<var name="skip_level" expr="0"/>
+<var name="MyError" expr="0"/>
+<var name="uninorretry_counter" expr="1"/>
+<var name="MyErrorMsg" expr="0"/>
+<var name="prompt_switch" expr="0"/> 
+<var name="tataswitch_time" expr="0"/> 
+     <script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var spzone=new Object();
+		var len=0;
+	</script>
+<script>
+function getUNIMDT()
+{
+	var currentDT = new Date();
+	var day = currentDT.getDate();
+	var month = currentDT.getMonth() + 1;
+	var year = currentDT.getFullYear();
+	var hours = currentDT.getHours();
+	var minutes = currentDT.getMinutes();
+	var seconds = currentDT.getSeconds();
+	if (!(month > 9)) {month = "0" + month; }
+	if (!(day > 9 )) {day = "0" + day; }
+	if (!(hours > 9)) {hours = "0" + hours; }
+	if (!(minutes > 9 )) {minutes = "0" + minutes ; }
+	if (!(seconds > 9) ) {seconds = "0" + seconds ; }
+	var strDateTime =  year + "-" + month + "-" + day +" "+ hours+":"+minutes+":"+seconds ;    
+	return strDateTime;
+}
+</script>						  
+ <form id="loadcliptoplay">
+		  <block> 
+		  <assign name="scorepartfirst" expr="'FREE'"/>
+		  <assign name="playconfig" expr="'freecontent'" />
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=54646config_V2/relc/FREECONTENT/'+playconfig+'_'+circle+'.cfg&amp;TOKEN=FREE'"/>
+			<script>
+						array.length=0;
+						unike_play=0;
+			</script>
+		
+					<assign name="len" expr="favSongs.length" />
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+					
+					
+			<script>
+				<![CDATA[
+					   for(k=0; k<len ;  k++)
+					   {  	  
+						array[k] = favSongs[k];						   
+					   }
+
+				]]>		
+			</script> 	       					       
+			<goto next="#PlayFullSongs"/>  					
+		   </block>
+	</form>
+
+	
+<form id="PlayFullSongs"> 
+  	<block>
+  	<assign name="Section_Name" expr="'FREECONTENT_KEYPAD'"/>
+		<script>
+				 <![CDATA[
+				if(timerflag==1)
+				 start_BalenceMinute=starttime();
+			   ]]>	 	
+		  </script>
+	
+  	</block>
+  	
+	 <field name="keypadoption">               
+		    	 
+		<grammar mode="dtmf" root="start31" version="1.0">
+                   	<rule id="start31" scope="public">
+                     	<one-of>     
+				<item>6</item>
+				<item>8</item>
+			 </one-of>
+                	</rule>
+               	</grammar>
+              <prompt bargein="true"  timeout="1s" cond="operator!='unim'">
+		 <audio expr="promptspath_54646+'/'+lang+'/keypad.wav'"/>
+	     </prompt>  
+				 
+        <filled>              
+            	<if cond="keypadoption=='6'">	
+				 <goto next="#playoption"/>
+		<elseif cond="keypadoption=='8'"/>
+			<goto next="Hungama_Reliancefree_menu.vxml"/>
+			<goto next="#"/>
+    		<else/>          
+				<goto next="#StartToPlaysongs"/>
+		</if>	
+         </filled>
+			  
+		<noinput>		  
+			
+	             	<goto next="#StartToPlaysongs"/>	     
+              </noinput>
+              
+              <nomatch>
+			<goto next="#StartToPlaysongs"/>	
+			</nomatch>		
+          </field>		
+		
+	</form>
+	
+	<form id="StartToPlaysongs">
+
+
+				<block>
+				<assign name="Section_Name" expr="'reliancefree_CONTENT'"/>
+					<script>
+							 <![CDATA[
+							if(timerflag==1)
+							 start_BalenceMinute=starttime();
+						   ]]>	 	
+					  </script>
+					  <assign name="unike_play" expr="getRandom(1,len)" />
+
+					  <log expr="'@@@@@@ unike_play isssssssssssssssssssssss '+unike_play"/>
+					  
+						  <if cond="TotalTV=='3' &amp;&amp; (operator=='relc' || operator=='relm' || operator=='unim'  || operator=='tatc' || operator=='tatm' ) &amp;&amp; usr_status=='-1'">
+						 		<goto next="#subscription"/>
+						   </if>
+						   
+					  	<if cond="unike_play &gt; len-1">
+							<assign name="unike_play" expr="0" />
+						<elseif cond="unike_play &lt; 0" />
+							<assign name="unike_play" expr="len-1" />
+						</if>
+					
+						<script>
+							songcheck=array[unike_play].split("_");
+							contentdir=songcheck[0]; 
+							song = array[unike_play];
+							
+						</script>
+			
+					 <assign name="song_begin" expr="starttime()"/>
+					 <assign name="song_listen" expr="'START'" />
+					 <assign name="CALCULATE_TIME" expr="'SET'" />
+					 
+					 
+					 <script>
+						contentfilepath="54646config_V2/"+operator+"/mwconfig/songconfig/";
+	 				 </script>
+					 <script>
+					 	cfgFile=playconfig+".cfg";
+					 </script>
+					 <assign name="contentfile" expr="song+hash+contentfilepath+hash+cfgFile+hash+compare_time"></assign>
+ 
+      </block>
+		   <field name="selectoption">
+
+				    <grammar mode="dtmf" root="start32" version="1.0">
+			   		<rule id="start32" scope="public">
+			   		  <one-of>
+					      <item>1</item>
+						<item>8</item> 
+					      <item>2</item>	
+					      <item>3</item>
+					      <item>6</item>
+					     
+					 </one-of>
+			   		</rule>
+		       		    </grammar>
+			
+		      <prompt bargein="true"  timeout="1s">
+			  <audio expr="contentpath+contentdir+'/'+song+'.wav'"/>
+		      </prompt> 			 
+		  
+		      <filled>
+		      <script>
+		     		 TotalTV=TotalTV+1;
+		      </script>
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>							 
+				<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time"></assign>	
+				<if cond="selectoption=='1'">
+					<script> unike_play=unike_play+1;</script>
+					<goto next="#StartToPlaysongs"/>	
+				<elseif cond="selectoption=='2'"/>
+					<script> unike_play=unike_play</script>
+					<goto next="#StartToPlaysongs"/> 				 
+				<elseif cond="selectoption=='3'"/>	
+					<script> unike_play=unike_play-1</script>
+					<goto next="#StartToPlaysongs"/> 
+				<elseif cond="selectoption=='6'"/>
+					<goto next="#playoption"/>
+				<elseif cond="selectoption=='8'"/>
+					<goto next="Hungama_Reliancefree_menu.vxml"/>
+				
+				<else/>	
+					<script> unike_play=unike_play+1</script>		
+					<goto next="#StartToPlaysongs"/> 		
+				</if>				 
+			  </filled>				  
+		
+		     
+			   <noinput>	
+			        <script> 
+			      		unike_play=unike_play+1;
+			      		TotalTV=TotalTV+1;
+			      	</script> 
+			      	<goto next="#StartToPlaysongs"/> 	
+			</noinput>
+			
+			<nomatch>
+				<script>
+					 TotalTV=TotalTV+1;
+				</script>
+				<goto next="#StartToPlaysongs"/> 
+			</nomatch>	
+			 
+			<catch event="error.badfetch">
+				<script srcexpr="'http://'+IP+'/hungama/song_missing?SONG='+song+'/54646_version2/'+playconfig+'.cfg'"/>
+				<if cond="selectoption=='3'">
+					<script>unike_play=unike_play-1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				<else/>
+					<script>unike_play=unike_play+1;</script> 				 				 	
+			                <goto next="#StartToPlaysongs"/> 
+				</if>
+			</catch>
+			
+	  </field>
+	  	
+	</form>	
+	
+	<form id="playoption">
+	<block>
+	<assign name="Section_Name" expr="'reliancefree_PLAYOPTION'"/>
+			<script>
+					 <![CDATA[
+					if(timerflag==1)
+					 start_BalenceMinute=starttime();
+				   ]]>	 	
+			  </script>
+
+	</block>
+	
+	        <field name="playclipOptionInfo">
+			<grammar mode="dtmf" root="start33" version="1.0">
+               		<rule id="start33" scope="public">
+			 <one-of>				 
+					  <item>1</item>
+					  <item>2</item>	
+					  <item>3</item>
+					 <item>6</item>
+					  <item>7</item>
+					  <item>8</item>
+					 
+					 
+			  	 </one-of>
+              	</rule>
+            </grammar>
+			
+				<prompt bargein="true">
+			     <audio expr="promptspath_54646+'/'+lang+'/keypad_option_mw.wav'"/>     
+	   	        </prompt>
+		   	
+		<filled>
+				
+			    <if cond="playclipOptionInfo=='1'">
+			    	    <script> unike_play=unike_play+1</script> 
+				     <goto next="#StartToPlaysongs"/> 
+			    <elseif cond="playclipOptionInfo=='2'"/>
+			            <script> unike_play=unike_play</script>
+				      <goto next="#StartToPlaysongs"/> 
+			   <elseif cond="playclipOptionInfo=='3'"/>
+			   	    <script> unike_play=unike_play-1</script>
+				    <goto next="#StartToPlaysongs"/> 
+			   <elseif cond="playclipOptionInfo=='6'"/>
+			   	  <goto next="#playoption"/> 
+			    <elseif cond="playclipOptionInfo=='7'"/>
+			    	<goto next="#loadcliptoplay"/> 
+			  <elseif cond="playclipOptionInfo=='8'"/>
+				<goto next="Hungama_Reliancefree_menu.vxml"/>     
+			  
+			    </if>
+			    
+		</filled>		
+			
+		<noinput>
+			
+			<goto next="#StartToPlaysongs"/> 	
+		</noinput>
+
+		  <nomatch>
+			
+			<goto next="#StartToPlaysongs"/> 
+		</nomatch>
+
+	</field>	
+	  	 
+  </form>
+  <form id="subscription">
+  	
+		  <field name="choice">
+
+  				<grammar mode="dtmf" root="start13" version="1.0">
+  						<rule id="start13" scope="public">
+  							<one-of>	
+  														 
+  								 <item>  1 </item>
+  								 
+  							</one-of>
+  						</rule>
+  				</grammar>
+  				
+  				<prompt bargein="true" timeout="0s">			
+  					<audio expr="promptspath_54646+'/'+lang+'/subintro.wav'"/>
+  				</prompt> 
+  				
+  				
+  				<filled>					
+  					<if cond="choice=='1'">
+  						<if cond="(operator=='relc' || operator=='relm')">
+							<assign name="amt" expr="'30'"/>
+							<assign name="plan_id" expr="'5'"/>
+							<assign name="service_id" expr="'1202'"/>
+							<assign name="lang" expr="'01'"/>
+							<assign name="firstconsent" expr="'YY'"/>
+							<assign name="firstconsenttime" expr="start_time()"/>
+							<assign name="sub_flag" expr="'true'"/>	
+							<assign name="direct_status" expr="'1'" />			
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/relhungama_dbinteraction?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>
+							<goto next="Hungama_54646_UserSub.vxml#BillStatusChk"/> 
+						<elseif cond="operator=='unim'"/>
+							<assign name="firstconsent" expr="'Y'"/>
+							<assign name="firstconsenttime" expr="start_time()"/>
+							<assign name="sub_flag" expr="'true'"/>	
+							<assign name="amt" expr="'30'"/>
+							<assign name="plan_id" expr="'10'"/>
+							<assign name="service_id" expr="'1402'"/>
+							<goto next="#SubOptionDoubleconfirm_uninor"></goto>
+						<elseif cond="(operator=='tatc' || operator=='tatm' || operator=='virm')"/>
+								<if cond="(operator=='tatm' || operator=='virm')">
+									<assign name="amt" expr="'35'"/>
+									<assign name="plan_id" expr="'8'"/>
+									<assign name="service_id" expr="'1002'"/>
+								<elseif cond="operator=='tatc'"/>
+									<assign name="amt" expr="'35'"/>
+									<assign name="plan_id" expr="'24'"/>
+									<assign name="service_id" expr="'1602'"/>
+								</if>
+							<assign name="firstconsent" expr="'Y'"/>
+							<assign name="firstconsenttime" expr="start_time()"/>
+							<assign name="sub_flag" expr="'true'"/>
+						 	<goto next="#SubOptionDoubleconfirm"></goto>
+						</if>	
+  					</if>					
+  				</filled>
+  			</field>
+  			<noinput count="1">
+  				<prompt bargein="true" timeout="0s">
+  					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+  				</prompt>				
+  				<reprompt></reprompt>
+  			</noinput>
+  			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/waiting_response.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+  			</noinput>
+  			<noinput count="3">
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</noinput>
+  			<nomatch count="1">
+  				<prompt bargein="true" timeout="0s">
+  					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+  				</prompt>				
+  				<reprompt></reprompt>
+  			</nomatch>
+  			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="promptspath_54646+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>				
+				<reprompt></reprompt>
+  			</nomatch>
+  			<nomatch count="3">
+			  	<goto next="Hungama_54646_End.vxml"></goto>
+  			</nomatch>
+	</form>
+	<form id="SubOptionDoubleconfirm">
+		<block>
+	
+				      <if cond="operator=='tatm'">
+						<assign name="productID" expr="'GSMHMP30'"/>
+					<elseif cond="operator=='tatc'"/>
+						<assign name="productID" expr="'CDMAGSMHMP30'"/>
+					<else/>
+						<assign name="productID" expr="'GSMHMP30'"/>
+	
+					</if>
+					<assign name="pName" expr="'Entertainment Portal'"/>
+	
+					<assign name="CpId" expr="'hug'"/>
+					<assign name="CpPwd" expr="'hug@8910'"/>
+					<assign name="CpName" expr="'Hungama'"/>
+					<assign name="reqMode" expr="'Hungama'"/>	
+					<assign name="Ivr_approach" expr="'VXML'"/>
+					<assign name="NetworkId" expr="'ISDNPRI'"/>
+					<assign name="circleId" expr="circle"/>
+					<assign name="trans_id" expr="gettransidtime()"/>
+	
+					<assign name="Lang_A" expr="'F'"/>
+					<assign name="reqType" expr="'Event'"/>
+	
+					<assign name="ismID" expr="'16'"/>
+					<assign name="transID" expr="C_Start"/>
+	
+					<script>
+						pPrice=amt*100;
+					</script>
+	
+					<if cond="amt=='35'">
+						<assign name="pVal" expr="'35'"/>
+					</if>
+	
+	
+					<if cond="lang=='01'">
+						<assign name="Lang" expr="'Hin'"/>
+					<elseif cond="lang=='02'"/>
+						<assign name="Lang" expr="'Eng'"/>
+					<elseif cond="lang=='11'"/>
+						<assign name="Lang" expr="'Mar'"/>
+					<elseif cond="lang=='10'"/>
+						<assign name="Lang" expr="'Kan'"/>
+					<elseif cond="lang=='08'"/>
+						<assign name="Lang" expr="'Tel'"/>
+					<elseif cond="lang=='09'"/>
+						<assign name="Lang" expr="'Mal'"/>
+					<elseif cond="lang=='07'"/>
+						<assign name="Lang" expr="'Tam'"/>
+					<elseif cond="lang=='13'"/>
+						<assign name="Lang" expr="'Ori'"/>
+					<elseif cond="lang=='06'"/>
+						<assign name="Lang" expr="'Ben'"/>
+					<elseif cond="lang=='12'"/>
+						<assign name="Lang" expr="'Guj'"/>
+					<elseif cond="lang=='17'"/>
+						<assign name="Lang" expr="'Asm'"/>
+					<elseif cond="lang=='18'"/>
+						<assign name="Lang" expr="'Maw'"/>
+					<elseif cond="lang=='03'"/>
+						<assign name="Lang" expr="'Pun'"/>
+					<elseif cond="lang=='05'"/>
+						<assign name="Lang" expr="'Har'"/>
+					<else/>
+						<assign name="Lang" expr="'Hin'"/>
+					</if>       
+	
+	
+	</block>
+			<subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.80:8091/API/CCG?MSISDN=91'+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;reqMode=IVR&amp;Ivr_approach=VXML&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID=16&amp;transID='+trans_id+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpName='+CpName+'&amp;CpPwd='+CpPwd+'&amp;Songname=abc'">			
+	
+				<filled>
+					<assign name="secondconsent" expr="'Y'"/>
+					<assign name="secondconsenttime" expr="start_time()"/>
+					<assign name="ccgresult" expr="confirmUserChoice.CCGResponse"/>
+					<assign name="CPTID" expr="trans_id"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/TATA_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=546460&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+trans_id+'&amp;ccgresult='+confirmUserChoice.CCGResponse"/> 
+	
+					<log>Confirmation page</log>
+					<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+					<log>back from the confirmation app, the CCGRESPONSE:<value expr="confirmUserChoice.CCGResponse"/></log>
+					<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userinput"/></log>
+					<log>back from the confirmation app, the user tranId:<value expr="confirmUserChoice.tranId"/></log>
+					<if cond="confirmUserChoice.CCGResponse=='Success'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id+'&amp;INPARAM[7]='+trans_id"/>
+						<prompt bargein="false" timeout="0s" cond="direct_status=='1'">
+							<audio expr="promptspath_54646+'/'+lang+'/charging_wait.wav'"/>
+						</prompt>
+						<goto next="Hungama_54646_UserSub.vxml#BillStatusChk"/> 
+					<else/>
+						<goto next="Hungama_54646_End.vxml"/>
+					</if>			
+				</filled>
+			</subdialog>
+		</form>
+
+<form id="SubOptionDoubleconfirm_uninor">
+			<catch event="error">
+				<assign name="MyError" expr="_event"  />
+				<assign name="MyErrorMsg" expr="_message.replace(/\s+/g,'-')"/>
+				<log>MY ERROR VALUES:<value expr="MyError"/></log>
+				<log>MY uninorretry_counter values:<value expr="uninorretry_counter"/></log>
+				 <assign name="MyError" expr="_event"  />
+					 <if cond="uninorretry_counter=='3'">
+						<goto next="Hungama_54646_End.vxml"/>
+					 <else/>
+						<goto next="#SubOptionDoubleconfirm_uninor"/>
+					  </if>
+			</catch>
+			<block>
+			<script>
+				PATH=promptspath_54646+'/'+lang;
+				uninorretry_counter=uninorretry_counter+1;
+			</script>
+				<assign name="PATH" expr="promptspath_54646+'/'+lang"/>
+				<assign name="SCHN" expr="'IVR'"/>
+				<assign name="CP" expr="'HUNGAMA'"/>
+				<assign name="MSISDN" expr="ANI"/>
+				<assign name="CPPID" expr="'HUI0002105'"/>
+				<assign name="PRODTYPE" expr="'Music'"/>	
+				<assign name="PMARKNAME" expr="'Hungama Entertainment Portal'"/>
+				<assign name="PRICE" expr="'30'"/>
+				<assign name="SE" expr="'HUNGAMA'"/>
+				<assign name="CPTID" expr="gettransidtime()"/>
+				<assign name="DT" expr="getUNIMDT()"/>
+				<assign name="PD" expr="'movies new songs and movie reviews'"/>
+				<assign name="SCODE" expr="'songid'"/>
+				<assign name="RSV" expr="'rsv'"/>
+				<assign name="RSV2" expr="'rsv2'"/>
+				<script>
+					PRICE=amt*100;
+				</script>
+				<log expr="'PATH @@@@@@@@@ '+PATH"></log>
+				<log expr="'DT @@@@@@@@@ '+DT"></log>
+				<log expr="'CPTID @@@@@@@@@ '+CPTID"></log>
+				<log expr="'PRICE @@@@@@@@@ '+PRICE"></log>
+				<if cond="lang=='01'">
+					<assign name="LANG" expr="'HIN'"/>
+				<elseif cond="lang=='02'"/>
+					<assign name="LANG" expr="'ENG'"/>
+				<elseif cond="lang=='11'"/>
+					<assign name="LANG" expr="'MAR'"/>
+				<elseif cond="lang=='10'"/>
+					<assign name="LANG" expr="'KAN'"/>
+				<elseif cond="lang=='08'"/>
+					<assign name="LANG" expr="'TEL'"/>
+				<elseif cond="lang=='09'"/>
+					<assign name="LANG" expr="'MAL'"/>
+				<elseif cond="lang=='07'"/>
+					<assign name="LANG" expr="'TAM'"/>
+				<elseif cond="lang=='13'"/>
+					<assign name="LANG" expr="'ORI'"/>
+				<elseif cond="lang=='06'"/>
+					<assign name="LANG" expr="'BEN'"/>
+				<elseif cond="lang=='12'"/>
+					<assign name="LANG" expr="'GUJ'"/>
+				<elseif cond="lang=='17'"/>
+					<assign name="LANG" expr="'ASM'"/>
+				<elseif cond="lang=='18'"/>
+					<assign name="LANG" expr="'MAW'"/>
+				<elseif cond="lang=='03'"/>
+					<assign name="LANG" expr="'PUN'"/>
+				<elseif cond="lang=='05'"/>
+					<assign name="LANG" expr="'HAR'"/>
+				<else/>
+					<assign name="LANG" expr="'HIN'"/>
+				</if> 
+      
+		</block>
+
+			<subdialog name="confirmUserChoice" srcexpr="'http://180.178.28.62:7001/IVR/SecondConsentIVRRequestSyncPS?PATH='+PATH+'&amp;LANG='+LANG+'&amp;SCHN='+SCHN+'&amp;CP='+CP+'&amp;MSISDN='+MSISDN+'&amp;CPPID='+CPPID+'&amp;PRODTYPE='+PRODTYPE+'&amp;PMARKNAME='+PMARKNAME+'&amp;PRICE='+PRICE+'&amp;SE='+SE+'&amp;CPTID='+CPTID+'&amp;DT='+DT+'&amp;PD='+PD+'&amp;SCODE='+SCODE+'&amp;RSV='+RSV+'&amp;RSV2='+RSV2">			
+			<filled>
+					<assign name="secondconsent" expr="'Y'"/>
+					<assign name="secondconsenttime" expr="start_time()"/>
+					<assign name="ccgresult" expr="confirmUserChoice.result"/>
+					<assign name="pressdtmf" expr="confirmUserChoice.PRESSED_DTMF"/>
+
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/Uninor_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=546460&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+CPTID+'&amp;ccgresult='+confirmUserChoice.result+'&amp;ccgdtmf='+confirmUserChoice.PRESSED_DTMF"/> 
+					<log>Confirmation page</log>
+					<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+					<log>back from the confirmation app, the PRESSED_DTMF:<value expr="confirmUserChoice.PRESSED_DTMF"/></log>
+						<log>back from the confirmation app, the response:<value expr="confirmUserChoice.result"/></log>
+					<if cond="confirmUserChoice.result=='success'">
+						  <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id"/>         
+						
+						<prompt bargein="true" timeout="1s">	
+							<audio expr="promptspath_54646+'/'+lang+'/charging_wait.wav'"/>
+							<audio expr="promptspath_54646+'/01/54646BGM.wav'"/>
+						</prompt> 
+						
+					         <goto next="Hungama_54646_UserSub.vxml#BillStatusChk"/> 
+					<else/>
+						<goto next="Hungama_54646_End.vxml"/>
+
+					</if>			
+			</filled>
+		</subdialog>
+	</form>	
+</vxml>

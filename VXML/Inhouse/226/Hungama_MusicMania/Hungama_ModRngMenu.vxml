@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ModRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModRngMenu.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	<var name="maxlang" expr="0"/>
+
+	<var name="rngid" expr="''"/>
+	<var name="rngmenu" expr="''"/>
+	<var name="rng_len" expr="''"/>	
+	<var name="movie_idx" expr="''"/>
+	<script>
+		var out_string=new Object();
+		var temp= new Array();
+	</script>
+	<form id="FetchTone">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_rngmenu&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+songID+'&amp;INPARAM[1]=RNG'"/>
+			<script>
+				array2.length=0;
+				array3.length=0;
+			</script>
+			<assign name="rng_len" expr="out_string.length" />
+			<assign name="maxlang" expr="rng_len" />
+			<assign name="movie_idx" expr="0" />
+			<assign name="i" expr="0" />
+			<script>
+				 <![CDATA[
+				   for(j=0; j<rng_len ;  j++)
+				   {  	  
+					temp = out_string[j].split("@");						   
+					array2[j] = temp[0];
+					array3[j] = temp[1];
+				   }
+				]]>		
+			</script> 	       					       
+			<log>Length  is	<value expr="rng_len"/>    </log>
+			<log>Array2[0]  is	<value expr="array2[0]"/>    </log>	
+			<log>Array3[0]  is       <value expr="array3[0]"/>    </log>
+			<if cond="array2[0]==''">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/no-ringtone-avail.wav'"/>
+				</prompt>	
+				<goto next="Hungama_ModPlay.vxml#next"/>
+			</if>	
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start1" version="1.0">
+				<rule id="start1" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+						 <item>  3  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<foreach item="names" array="array2">
+					<log>	song is is    	<value expr="movie_idx"/>  	</log>
+					<log>	names is is    	<value expr="names"/>  	</log>
+					<audio expr="Prompt_Path+'/'+lang+'/select_download_'+names+'.wav'"/>
+					<audio expr="Prompt_Path+'/'+lang+'/press_dtmf'+ ++movie_idx+'.wav'"/>
+				</foreach>
+			</prompt>
+
+			<filled>
+				<if cond="choice &lt; rng_len+1">
+					<assign name="rngmenu" expr="array2[--choice]"/>
+					<assign name="rngid" expr="array3[choice]"/>
+					<log expr="'selected rng category is '+rngmenu"></log>
+					<log expr="'selected rng id is '+rngid"></log>
+					<!--<assign name="CRBT_RING_COMMON" expr="'RING'"/>-->
+					<!--<assign name="END_songID" expr="songID"/>-->		
+					
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_crbtrngreqs&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+rngid+'&amp;INPARAM[3]='+rngmenu+'&amp;INPARAM[4]='+circle+'&amp;INPARAM[5]='+DNIS"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="Prompt_Path+'/'+lang+'/thanks-download.wav'"/>
+					</prompt>										
+					
+					<goto next="Hungama_ModPlay.vxml#next"/>
+				<else/>
+					<throw event="nomatch"/>
+				</if>
+			</filled>
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<goto next="Hungama_ModPlay.vxml#next"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<assign name="movie_idx" expr="0"/>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<goto next="Hungama_ModPlay.vxml#next"/>
+		</nomatch>
+	</form>
+</vxml>

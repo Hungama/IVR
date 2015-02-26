@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_RedFMRouting.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+	<var name="G_time" expr=""/>
+	<var name="cmp_time" expr=""/>
+	<var name="DNIS1" expr="'0'"/>
+	<var name="temp_lang" expr="'ENG'"/>
+	<var name="Dnis_Len" expr="0"/>
+	<var name="opt_status" expr="'0'"/>
+	<var name="Friend_Play" expr="'0'"/>
+	<var name="Friend_sub" expr="'0'"/>
+	<var name="server_id" expr="'0'"/>
+	<var name="length" expr=""/>
+	<var name="CALLID" expr="''"/>
+	<var name="ciropr" expr="''"/>
+	
+	<var name="DNIS_PREFIX" expr="''"/>
+	
+	
+	<script>
+		var ciropr1=new Object();
+	</script>
+	<form id="Main">
+	
+		<block>						
+			<script>				
+				realDNIS=session.connection.local.uri;                   
+				ANI=session.connection.remote.uri;
+				
+			</script>			
+			<assign name="C_Start" expr="start_time()"/>
+			<script>
+				length = ANI.length;
+				if(length == 15)
+					ANI = ANI.substring(5,15);
+				if(length == 14)
+					ANI = ANI.substring(4,14);
+				if(length == 13)
+					ANI = ANI.substring(3,13);
+				if(length == 12)
+					ANI = ANI.substring(2,12);
+				if(length == 11)
+					ANI = ANI.substring(1,11);
+			</script>			
+			<log> User ANI  is	<value expr="ANI"/>	</log>			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>				
+			<assign name="ciropr" expr="ciropr1.value"/>
+			<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+			<script>
+				var songcheck=ciropr.split("#");
+				operator=songcheck[1];
+				circle=songcheck[2];
+			</script>	       
+			<log>circle  is	<value expr="circle"/>    </log>
+			<log>operator is <value expr="operator"/>    </log>	
+			<if cond="realDNIS=='0115909066'">
+				<assign name="realDNIS" expr="01155935"/>
+					
+			</if>
+			<if cond="realDNIS=='66293935'">
+				<assign name="DNIS" expr="'54646935'"/>
+				<assign name="operator" expr="'unim'"/>
+            <elseif cond="realDNIS=='66291380'"/>
+				<assign name="DNIS" expr="'559350'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291381'"/>
+				<assign name="DNIS" expr="'559351'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291382'"/>
+				<assign name="DNIS" expr="'559352'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291383'"/>
+				<assign name="DNIS" expr="'559353'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291384'"/>
+				<assign name="DNIS" expr="'559354'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291385'"/>
+				<assign name="DNIS" expr="'559355'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291386'"/>
+				<assign name="DNIS" expr="'559356'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291387'"/>
+				<assign name="DNIS" expr="'559357'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291388'"/>
+				<assign name="DNIS" expr="'559358'"/>
+				<assign name="operator" expr="'unim'"/>
+			<elseif cond="realDNIS=='66291036'"/>
+				<assign name="DNIS" expr="'55935'"/>
+				<assign name="operator" expr="'tatm'"/>	
+			<elseif cond="realDNIS=='66291390'"/>
+				<assign name="DNIS" expr="'55935'"/>
+				<assign name="operator" expr="'unim'"/>						
+								
+			<else/>
+				<assign name="DNIS" expr="realDNIS"/>
+				<assign name="operator" expr="'tatm'"/>
+			</if>
+			
+			<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>			            		        									       					       
+			<log>circle  is	<value expr="circle"/>    </log>
+			<log>operator is <value expr="operator"/>    </log>
+			<script>
+			DNIS_PREFIX = realDNIS.substring(0,4);
+			</script>
+			
+			<if cond="DNIS_PREFIX=='0111'">
+				<assign name="DNIS" expr="55935"/>
+				<assign name="operator" expr="'tatc'"/>	
+			<elseif cond="DNIS_PREFIX=='0115'"/>
+				<assign name="DNIS" expr="55935"/>
+				<assign name="operator" expr="'tatm'"/>	
+			<elseif cond="DNIS_PREFIX=='0110'"/>
+				<assign name="DNIS" expr="55935"/>
+				<assign name="operator" expr="'virm'"/>
+			<elseif cond="DNIS_PREFIX=='6629'"/>
+				<assign name="DNIS" expr="55935"/>
+				<assign name="operator" expr="'unim'"/>	
+			</if>
+			<if cond="realDNIS=='66291036'">
+				<assign name="DNIS" expr="55935"/>
+				<assign name="operator" expr="'tatm'"/>		
+			</if>
+			<if cond="realDNIS=='30959300'">
+				<assign name="DNIS" expr="55935"/>
+				<assign name="operator" expr="'virm'"/>		
+			</if>
+
+			
+			<if cond="operator=='relm' || operator=='relc'">
+				<assign name="amt" expr="'30'"/>
+				<assign name="plan_id" expr="'5'"/>
+				<assign name="service_id" expr="'1202'"/>
+			<elseif cond="operator=='unim'"/>
+				<assign name="amt" expr="'10'"/>
+				<assign name="plan_id" expr="'35'"/>
+				<assign name="service_id" expr="'1410'"/>
+			<elseif cond="operator=='tatm'"/>
+				<assign name="amt" expr="'10'"/>
+				<assign name="plan_id" expr="'38'"/>
+				<assign name="service_id" expr="'1010'"/>	
+			<elseif cond="operator=='tatc'"/>
+				<assign name="amt" expr="'10'"/>
+				<assign name="plan_id" expr="'68'"/>
+				<assign name="service_id" expr="'1610'"/>
+			<elseif cond="operator=='virm'"/>
+				<assign name="amt" expr="'10'"/>
+				<assign name="plan_id" expr="'72'"/>
+				<assign name="service_id" expr="'1810'"/>
+			</if>       	 
+
+
+			<assign name="dbservlet" expr="'redfm_dbinteraction'"/>
+			<if cond="operator=='virm'">
+				<assign name="dbservlet" expr="'redfmnew_dbinteraction'"/>
+		
+			</if>
+		 	<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+			<log>dbservlet  is	<value expr="dbservlet"/>    </log>
+			<log>contentlog  is	<value expr="contentlog"/>    </log>
+			<log>ANI  is	<value expr="ANI"/>    </log>
+			<log>operator  is	<value expr="operator"/>    </log>
+			<goto next="Hungama_RedFMmain.vxml"/>
+		</block>
+	</form>	
+</vxml>

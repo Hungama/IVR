@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_RootMenu.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="contentfilepath" expr="''"/>
+<var name="cfgFile" expr="''"/>
+<var name="contentfile" expr="''"/>
+
+<script>
+realDNIS=session.connection.local.uri;                   
+ANI=session.connection.remote.uri;
+var out_string=new Object();
+
+</script>
+<script>
+	var length = ANI.length;
+	ANI = ANI.substring(6,16);
+</script>
+
+
+        <script>
+		var len=0;
+	</script>
+	<form id="MAINMENU">
+		<block>
+			
+			<script>
+				 <![CDATA[
+				if(timerflag==1)
+				 start_BalenceMinute=starttime();
+			   ]]>	 	
+			</script>
+				
+				<assign name="Usage_time" expr="rim(section_begin)"/>
+				<!--<assign name="Usagelog" expr="Usagelog+Section_Name+hash+Usage_time+hash"></assign>-->
+				<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+				<assign name="Section_Name" expr="'root_play'"/>
+				<assign name="section_begin" expr="starttime()"/>
+				<assign name="CATEGORY" expr="'ROOTMENU'"/>
+				        			    		   		
+			</block>
+			
+		<field name="choice">
+				<grammar mode="dtmf" root="start80" version="1.0"> 
+						<rule id="start80" scope="public">	
+							<one-of>
+								<item>  1  </item>
+								<item>  2  </item>
+								<item>  4  </item>
+								<item>  5  </item>
+								<item>  3  </item>
+								<!--<item>  6  </item>-->
+
+								<item>  7  </item>
+								<item>  9 </item>
+
+								
+							</one-of>
+						</rule>
+				</grammar>
+				<prompt bargein="true" timeout="3s">
+					
+					<audio expr="promptpath+'/'+lang+'/select_radio.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/press_dtmf1.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/select_movies.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/press_dtmf2.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/select_chat.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/press_dtmf3.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/select_care.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/press_dtmf4.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/select_playlist.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/press_dtmf5.wav'"/>
+					<!--<audio expr="promptpath+'/'+lang+'/select_bhartiaxa.wav'"/>-->
+					<!--<audio expr="promptpath+'/'+lang+'/select_call.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/press_dtmf6.wav'"/>-->
+					<audio expr="promptpath+'/'+lang+'/select_tnc.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/press_dtmf7.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/select_optout.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/press_dtmf9.wav'"/>
+				</prompt>
+		<filled>
+			<if cond="timerflag=='1'">
+				<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;  						  
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+balance"/>
+				<if cond="balance &lt;= '0'">          
+					<goto next="Topup.vxml"/>
+				</if>     
+			</if>
+				<if cond="choice=='1'">
+					<assign name="Usage_time" expr="rim(section_begin)"/>
+					<!--<assign name="Usagelog" expr="Usagelog+Section_Name+hash+Usage_time+hash"></assign>-->
+					<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+					<assign name="Section_Name" expr="'root_1'"/>
+					<assign name="section_begin" expr="starttime()"/>
+					<goto next="Hungama_GLC_Radio.vxml"/>
+				<elseif cond="choice=='2'"/>
+					<assign name="Usage_time" expr="rim(section_begin)"/>
+					<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+					<assign name="Section_Name" expr="'root_5'"/>
+					<assign name="section_begin" expr="starttime()"/>
+					<goto next="Hungama_GLC_Movies.vxml"/>
+				<elseif cond="choice=='3'"/>
+					<assign name="Usage_time" expr="rim(section_begin)"/>
+					<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+					<assign name="Section_Name" expr="'root_4'"/>
+					<assign name="section_begin" expr="starttime()"/>
+					<goto next="Hungama_GLC_LiveChat.vxml"/>
+				<elseif cond="choice=='4'"/>
+					<assign name="Usage_time" expr="rim(section_begin)"/>
+					<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+					<assign name="Section_Name" expr="'root_5'"/>
+					<assign name="section_begin" expr="starttime()"/>
+					<goto next="Hungama_GLC_LeverCare.vxml"/>
+				<!--<elseif cond="choice=='6'"/>
+					<assign name="Usage_time" expr="rim(section_begin)"/>
+					<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+					<assign name="Section_Name" expr="'root_5'"/>
+					<assign name="section_begin" expr="starttime()"/>
+					<goto next="Hungama_GLC_BhartiAxa.vxml"/>-->
+				<!--<elseif cond="choice=='6'"/>
+					<assign name="Usage_time" expr="rim(section_begin)"/>
+					<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+					<assign name="Section_Name" expr="'root_5'"/>
+					<assign name="section_begin" expr="starttime()"/>
+					<goto next="Hungama_GLC_CallPatch.vxml"/>-->
+				<elseif cond="choice=='9'"/>
+					<goto next="#OPTOUT"/>
+				<elseif cond="choice=='5'"/>
+					<goto next="Hungama_GLC_playlist.vxml"/>
+				<!--<elseif cond="choice=='6'"/>
+					<assign name="Usage_time" expr="rim(section_begin)"/>
+					<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+					<assign name="Section_Name" expr="'root_4'"/>
+					<assign name="section_begin" expr="starttime()"/>
+					<goto next="Hungama_GLC_ListenContent_option.vxml"/>
+					<goto next="Hungama_GLC_ListenContent.vxml"/>-->
+				<elseif cond="choice=='7'"/>
+					<goto next="Hungama_GLC_TNC.vxml"/>
+				</if>
+			</filled>				    
+					
+			 <noinput count="1">
+				<if cond="timerflag=='1'">
+					   <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+					   <script>
+						total_used_bal=rim(start_BalenceMinute);
+						       balance=balance-total_used_bal;  						  
+						</script> 
+
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+						   <if cond="balance &lt;= '0'">          
+							   <goto next="Topup.vxml"/>
+						   </if>     
+				</if>
+				<audio expr="promptpath+'/'+lang+'/waiting_response.wav'"/>
+			<reprompt/> 
+			</noinput>       
+			 <noinput count="2">
+				<if cond="timerflag=='1'">
+				   <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+				   <script>
+					total_used_bal=rim(start_BalenceMinute);
+					       balance=balance-total_used_bal;  						  
+					</script> 
+
+					   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+					   <if cond="balance &lt;= '0'">          
+						   <goto next="Topup.vxml"/>
+					   </if>     
+				</if>
+				<assign name="Usage_time" expr="rim(section_begin)"/>
+				<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+				<assign name="Section_Name" expr="'root_1'"/>
+				<assign name="section_begin" expr="starttime()"/>
+				<goto next="Hungama_GLC_Radio.vxml"/>
+			</noinput>       
+
+			  <nomatch count="1">
+				<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+					       balance=balance-total_used_bal;  						  
+					</script> 
+					    <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+					   <if cond="balance &lt;= '0'">          
+						   <goto next="Topup.vxml"/>
+					   </if>     
+				</if>
+				<reprompt/>
+			</nomatch> 
+			<nomatch count="2">
+				
+				<if cond="timerflag=='1'">
+					<script>
+						total_used_bal=rim(start_BalenceMinute);
+					       balance=balance-total_used_bal;  						  
+					</script> 
+					    <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					   <log expr="'@@@@@@ left balance is '+balance"/>
+					   <if cond="balance &lt;= '0'">          
+						   <goto next="Topup.vxml"/>
+					   </if>     
+				</if>
+				<assign name="Usage_time" expr="rim(section_begin)"/>
+				<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+				<assign name="Section_Name" expr="'root_1'"/>
+				<assign name="section_begin" expr="starttime()"/>
+				<goto next="Hungama_GLC_Radio.vxml"/>
+			</nomatch> 
+		</field>
+	</form>
+	<form id="OPTOUT"> 
+			 <field name="choice">               
+				<grammar mode="dtmf" root="start41" version="1.0">
+		                   	<rule id="start41" scope="public">
+		                     	<one-of>     
+						   <item>1</item>
+						   <item>8</item>
+					</one-of>
+		                	</rule>
+		               	</grammar>
+		               	
+		          	<prompt bargein="false" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/welcome_optout.wav'"/>
+					<audio expr="promptpath+'/'+lang+'/mainmenu.wav'"/>
+				</prompt>   
+						 
+				<filled>  
+					<if cond="choice=='1'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_OPTOUT&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>	
+						<prompt bargein="false" timeout="1s">
+							<audio expr="promptpath+'/'+lang+'/success_optout.wav'"/>
+						</prompt>  
+						<goto next="#MAINMENU"/>
+					<elseif cond="choice=='8'"/>
+						<goto next="#MAINMENU"/>
+					</if>
+				</filled>
+					  
+			      <noinput>		  
+			             	<goto next="#MAINMENU"/>	     
+		              </noinput>
+		              
+		              <nomatch>
+					<goto next="#MAINMENU"/>	
+			      </nomatch>		
+		        </field>		
+				
+</form>
+	<form id="termcondition">
+			<block>
+				<script>
+					 <![CDATA[
+					if(timerflag==1)
+					 start_BalenceMinute=starttime();
+				   ]]>	 	
+				</script>
+				<assign name="Usage_time" expr="rim(section_begin)"/>
+				<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+					<assign name="Section_Name" expr="'TnC_Play'"/>
+					<assign name="section_begin" expr="starttime()"/>
+					<assign name="CATEGORY" expr="'MUSIC'"/>
+					
+					         			    		   		
+				</block>
+				
+			<field name="choice">
+					<grammar mode="dtmf" root="start80" version="1.0"> 
+							<rule id="start80" scope="public">	
+								<one-of>
+								  	<item>  9 </item>
+								</one-of>
+							</rule>
+					</grammar>
+					<prompt bargein="true" timeout="3s">
+						<audio expr="promptpath+'/'+lang+'/select_tnc.wav'"/>
+					</prompt>
+			<filled>
+				<if cond="timerflag=='1'">
+					<script> 
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+balance"/>
+					<if cond="balance &lt;= '0'">          
+						<goto next="Topup.vxml"/>
+					</if>     
+				</if>
+					<if cond="choice=='9'">
+						<prompt bargein="true" timeout="3s">
+							<audio expr="promptpath+'/'+lang+'/welcome_tnc.wav'"/>
+							<audio expr="promptpath+'/'+lang+'/tnc.wav'"/>
+						</prompt>
+					
+						<goto next="Hungama_GLC_Radio.vxml"/>
+					
+					</if>
+				</filled>				    
+						
+				  
+				 <noinput>
+					<if cond="timerflag=='1'">
+					   <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+					   <script>
+						total_used_bal=rim(start_BalenceMinute);
+						       balance=balance-total_used_bal;  						  
+						</script> 
+	
+						   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+						   <if cond="balance &lt;= '0'">          
+							   <goto next="Topup.vxml"/>
+						   </if>     
+					</if>
+					<goto next="#MAINMENU"/>
+				</noinput>       
+	
+				 
+				<nomatch >
+					<if cond="timerflag=='1'">
+						<script>
+							total_used_bal=rim(start_BalenceMinute);
+						       balance=balance-total_used_bal;  						  
+						</script> 
+						    <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+						   <log expr="'@@@@@@ left balance is '+balance"/>
+						   <if cond="balance &lt;= '0'">          
+							   <goto next="Topup.vxml"/>
+						   </if>     
+					</if>
+					<goto next="#MAINMENU"/>
+				</nomatch> 
+			</field>
+	</form>
+	<form id="termcondition1">
+				<block>
+					<script>
+						 <![CDATA[
+						if(timerflag==1)
+						 start_BalenceMinute=starttime();
+					   ]]>	 	
+					</script>
+						<assign name="Usage_time" expr="rim(section_begin)"/>
+						<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+						<assign name="Section_Name" expr="'TnC_Play'"/>
+						<assign name="section_begin" expr="starttime()"/>
+						<assign name="CATEGORY" expr="'MUSIC'"/>
+						
+						         			    		   		
+					</block>
+					
+				<field name="choice">
+						<grammar mode="dtmf" root="start80" version="1.0"> 
+								<rule id="start80" scope="public">	
+									<one-of>
+									  	<item>  8 </item>
+									</one-of>
+								</rule>
+						</grammar>
+						<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/welcome_tnc.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/tnc.wav'"/>
+						</prompt>
+				<filled>
+						<if cond="timerflag=='1'">
+							<script> 
+								total_used_bal=rim(start_BalenceMinute);
+								balance=balance-total_used_bal;  						  
+							</script>
+							<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							<log expr="'@@@@@@ left balance is '+balance"/>
+							<if cond="balance &lt;= '0'">          
+								<goto next="Topup.vxml"/>
+							</if>     
+						</if>
+						<goto next="Hungama_GLC_Radio.vxml"/>
+						
+						
+					</filled>				    
+							
+					 <noinput>
+						<if cond="timerflag=='1'">
+							   <log expr="'@@@@@@ start_BalenceMinute balance is '+start_BalenceMinute"/>
+							   <script>
+								total_used_bal=rim(start_BalenceMinute);
+								       balance=balance-total_used_bal;  						  
+								</script> 
+		
+								   <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+								   <log expr="'@@@@@@ left balance is '+balance"/>
+								   <if cond="balance &lt;= '0'">          
+									   <goto next="Topup.vxml"/>
+								   </if>     
+						</if>
+						<goto next="#MAINMENU"/>
+					</noinput>       
+					 <nomatch>
+						<audio expr="promptpath+'/'+lang+'/invalidoption.wav'"/>
+						<if cond="timerflag=='1'">
+							<script>
+								total_used_bal=rim(start_BalenceMinute);
+							       balance=balance-total_used_bal;  						  
+							</script> 
+							    <log expr="'@@@@@@ used balance is '+total_used_bal"/>
+							   <log expr="'@@@@@@ left balance is '+balance"/>
+							   <if cond="balance &lt;= '0'">          
+								   <goto next="Topup.vxml"/>
+							   </if>     
+						</if>
+						<goto next="#MAINMENU"/>
+					</nomatch> 
+					
+				</field>
+	</form>
+</vxml>

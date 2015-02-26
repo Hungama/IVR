@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="jyotish_root1.vxml" xmlns="http://www.w3.org/2001/vxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<meta name="end.vxml" content=""/>
+	<meta name="Author" content=""/>
+	<meta name="Date" content=""/>
+	<meta name="Description" content=""/>
+	<meta name="Support" content=""/>
+	<var name="rem_time" expr="0"/>
+	<var name="realDNIS" expr="0"/>
+	<script>
+		var out_string=new Object();
+	</script>
+	<form id="EndLogin">
+		<block>
+							<log>calling end page</log>
+			<assign name="C_End" expr="start_time()"/>
+			<script>
+				total_used_bal=chkBalenceMinute(start_BalenceMinute);
+			  	balance=balance-total_used_bal;
+			</script>
+			<script>
+				balance=Math.floor(balance/60);
+			</script>
+				
+		   <if cond="song_listen=='START'">
+				<log> @@@@@@ content start time  <value expr="song_begin"/> </log>	
+				<assign name="song_listen" expr="'END'" />							 
+				 <assign name="compare_time" expr="time_duration(song_begin)"/>
+				 <log>@@@@@@@ content listen time  <value expr="compare_time"/> </log>
+				 <assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				 <log>@@@@@@@ content add time  <value expr="ContentTime"/> </log>
+
+				<assign name="songID" expr="'sunsign'+gSunSign+'_'+filetoplay"/>
+
+				<log>Song ID:<value expr="songID"/></log>
+				<assign name="contentlog" expr="contentlog+songID+hash+compare_time+hash+'NA'+hash+'NA'+hash"></assign>
+				<log>Content Log:<value expr="contentlog"/></log>
+		</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/>
+			<if cond="sub_flag=='true'">
+				<script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1416&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>
+			</if>
+			<log>Exit Log:<value expr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realdnis+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=JYOTISH&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/></log>
+			
+			<script srcexpr="'http://'+IP+'/hungama/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realdnis+hash+program_name+hash+channel+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=JYOTISH&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>		
+			<!--<log>Hang up message:<value expr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Jyotish_SendMessage&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=hangup&amp;INPARAM[2]=pan"/></log>-->
+
+			<script srcexpr="'http://'+IP+'/hungama/'+dbservlet+'?PROCEDURE=Jyotish_SendMessage&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=hangup&amp;INPARAM[2]=pan'"/>
+
+
+			<exit/>
+		</block>
+		<!-- <catch event="error.*">
+			<log>
+				Inside Error BadCatch catch  End2222
+			</log>
+			<exit/>
+		</catch> -->
+		<catch event="error.badfetch">
+			<log>
+				Inside Error BadCatch catch  End2222
+			</log>
+			<exit/>
+		</catch>
+		<catch event="telephone.disconnect.hangup">
+			<log>
+				Inside Telephone Disconnect Hangup catch  End3333
+			</log>
+			<exit/>
+		</catch>
+		<catch event="telephone.disconnect">
+			<log>
+				Inside Telephonet Disconnected catch  End4444
+			</log>
+			<exit/>
+		</catch>
+		<catch event="connection.disconnect.hangup">
+			<log>
+				Inside connection.disconnect.hangup catch  End5555
+			</log>
+			<exit/>
+		</catch>
+		<catch event="error.semantic">
+			<log>
+				$$$$$$$$$$$$$$$$ error.semantic $$$$$$$$$$$$$$$$
+			</log>
+			<exit/>
+		</catch>
+	</form>
+</vxml>

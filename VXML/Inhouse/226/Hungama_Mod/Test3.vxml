@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+	xmlns:lang="en-US"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	
+	<meta name="Test3.vxml" content="" />
+	
+	
+
+	<form id="MAINMENU">
+			<block>
+				<if cond="directaccess=='DEVOHAY'">
+					<goto next="Hungama_MODDevoMenu.vxml"/>
+				</if>
+
+			</block>
+				<field name="selectCat">
+				<grammar mode="dtmf" root="start11" version="1.0">
+						<rule id="start11" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>
+								 <item>  3  </item>
+								 <item>  4  </item>
+								 <item>  5  </item>
+								 <item>  6  </item>
+								 <item>  9  </item>
+							 	 <item>  0  </item>
+							</one-of>
+						</rule>
+				</grammar>				
+				<prompt cond="circle=='mah'">					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/06/welcome_durgapuja.wav'"/>
+					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/06/select_cat31.wav'"/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/06/press_dtmf1.wav'"/>
+					
+					
+				</prompt>
+				
+
+				<prompt cond="circle=='mah'">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/06/select_cat30.wav'"/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/06/press_dtmf2.wav'"/>
+				</prompt>
+
+				<filled>
+					<log>press dtmf:<value expr="selectCat"/></log>
+
+					<if cond="selectCat=='1'">
+						<goto nextitem="Start"/>
+					<elseif cond="selectCat=='2'"/>
+						<assign name="playconfig" expr="'0613'"></assign>
+						<goto next="#FETCHSONGS"/>
+						
+					<else/>
+						<goto nextitem="Start"/>
+					</if>
+					
+				</filled>
+				<catch event="noinput">
+					<goto nextitem="Start"/>
+				</catch>
+		</field>
+					
+	</form>
+</vxml>

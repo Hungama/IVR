@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	
+	<meta name="Hungama_ModCRBT.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+
+	<var name="cRBTMODE" expr="''"></var>
+	<var name="CLIPID" expr="''"></var>
+        <var name="len_rng" expr="0"/>
+        <var name="cRBTSTATUS" expr="''"/>	
+	<var name="cRBTStatus" expr="''"/>
+	<script>
+		var UserStatus1=new Object();
+		var out_string = new Object();
+	</script>
+
+	<form id="CRBT">
+		<block>
+			<assign name="Section_Name" expr="'CRBT_SELECTION'"/>
+		    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_rngmenu&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+songID+'&amp;INPARAM[1]=CRBT'"/>
+		    	<log expr="'CLIPID=='+out_string[0]"></log>
+		    	<assign name="len_rng" expr="out_string.length" />
+			<log>previous Array[1]  is	<value expr="CLIPID"/>    </log>
+			<script>
+				 CLIPID = out_string[0];
+			</script>
+			<log>after Array[1]  is	<value expr="CLIPID"/>    </log>
+			<if cond="CLIPID==''">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="Prompt_Path+'/'+lang+'/nocrbt.wav'"/>
+				</prompt>
+				<goto next="Hungama_ModPlay.vxml#next"/>
+			</if>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Prompt_Path+'/'+lang+'/welcome_crbt.wav'"/>
+			</prompt>			
+		</block>
+		<field name="choice">
+			<grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  1  </item>
+							 <item>  2  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="Prompt_Path+'/'+lang+'/crbt_option.wav'"/>				
+			</prompt>
+			<filled>
+				<if cond="choice=='1'">	
+					<assign name="firstconsent" expr="'crbt'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_crbtrngreqs&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+songID+'&amp;INPARAM[2]='+CLIPID+'&amp;INPARAM[3]=crbtDOWNLOAD&amp;INPARAM[4]='+circle+'&amp;INPARAM[5]='+DNIS"/>
+					<goto next="#THANKS"/>
+					
+				<elseif cond="choice=='2'"/>
+					<goto next="#NOTHANKS"/>
+				</if>
+			</filled>	
+		</field>
+		<noinput count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count="2">
+			<goto next="Hungama_ModPlay.vxml#next"/>
+		</noinput>
+		<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count="2">
+			<goto next="Hungama_ModPlay.vxml#next"/>
+		</nomatch>		
+	</form>
+	<form id="THANKS">
+		<block>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/thanks_crbt.wav'"/>
+			</prompt>			
+			<goto next="Hungama_ModPlay.vxml#next"/>
+		</block>
+	</form>		
+	<form id="NOTHANKS">
+		<block>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompt_Path+'/'+lang+'/nothanks_crbt.wav'"/>
+			</prompt>
+			<goto next="Hungama_ModPlay.vxml#next"/>
+		</block>
+	</form>
+</vxml>

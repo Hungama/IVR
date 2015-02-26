@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="CricketRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Cricket_QuesPlay.vxml" content="" />
+
+<meta name="Author" content="" />
+
+<meta name="Date" content="" />
+
+<meta name="Description" content="" />
+
+<meta name="Support" content="" />	
+
+<script>
+	var favSongs=new Object();
+	var out_string=new Object();
+	var QuestionArray=new Object();
+	var AnswerArray=new Object();
+	var Question=new Array();
+	var Answer=new Array();
+</script>	
+
+
+<form id="MAINMENU">
+	<field name="wait_input">
+		<grammar mode="dtmf" root="start3" version="1.0">
+			<rule id="start3" scope="public">
+			<one-of>     
+						<item>1</item>
+
+			</one-of>
+			</rule>
+		</grammar>
+
+
+		<prompt bargein="false" timeout="1s">
+			<audio expr="promptspath_54646+'/'+lang+'/round2_sit2.wav'"/>
+		</prompt>
+		 
+
+		<filled>
+			<goto next="#playcontest"/>
+
+		</filled>
+
+		<noinput>
+			<goto next="#playcontest"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#playcontest"/>
+		</nomatch>
+
+
+	</field>
+</form>
+
+
+
+
+<form id="playcontest">
+	<block>			
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/Surtarang_QA?path=FKSCcontest-'+lang"/>
+		<script>
+			<![CDATA[
+			  for(j=0; j<QuestionArray.length; j++)
+			     {  	  
+			         Question[j] = QuestionArray[j];
+		            }
+			 for(j=0; j<AnswerArray.length; j++)
+			     {  	  
+			         Answer[j] = AnswerArray[j];
+			     }
+		]]>	
+		</script>
+		<assign name="NumberOfQues" expr="QuestionArray.length"/>
+	<!--	<assign name="index" expr="1" />
+		<assign name="score" expr="0" />
+		<log> random index is <value expr="index"/></log>
+	-->
+		<log> NumberOfQues <value expr="NumberOfQues"/></log>
+		
+		<goto next="#GetScoreDetails"/>
+	</block>
+</form>
+
+
+<form id="GetScoreDetails">
+	<block>			
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_FKSCONTEST_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						score = out_string[j];
+					       if(j==1)
+						questionnum = out_string[j];							      
+					  }
+
+				]]>
+
+		</script>
+		<script>
+			score=parseInt(score);
+			questionnum=parseInt(questionnum);
+		</script>
+			<log expr="'score of user @@@@@@@@@ '+score"></log>
+			<log expr="'questionnum of user @@@@@@@@@ '+questionnum"></log>
+	
+		<goto next="#next"/>
+	</block>
+</form>
+
+<form id="next">
+	<block>
+		<log expr="'@@@@@@@ farari ka score total ===>' +score"/>
+		<assign name="song_begin" expr="starttime()"/>
+		<assign name="song_listen" expr="'START'" />
+		<assign name="song" expr="'question'"/>
+		<assign name="index" expr="getRandom(1,28)" />
+	
+		<log expr="'@@@@@@@ VALUE OF INDEX ISSSSSS ===>' +index"/>
+	</block>
+<field name="Play">
+	<grammar mode="dtmf" root="start4">      <!--  inline dtmf grammar    -->
+	     <rule id="start4" scope="public">
+			<one-of>
+			    <item>1</item>
+			    <item>2</item>
+			    <item>8</item>
+			</one-of>
+	     </rule>
+	</grammar>
+	
+	
+	<prompt bargein="true" timeout="2s">
+		<audio expr="promptspath_54646+'/'+lang+'/question'+index+'.wav'"/>
+	</prompt>
+	
+<filled>
+	<assign name="total_used_bal" expr="Play$.promptduration"/>
+	<script>ind=index-1</script>
+	<log expr="'@@@@@@@ VALUE OF IND ISSSSSS ===>' +ind"/>
+	<assign name="ans" expr="Answer[ind]"/>
+	<log expr="'@@@@@@@ VALUE OF ANS ISSSSSS ===>' +ans"/>
+
+	<if cond="Play == ans">
+				<assign name="score" expr="score+10"/>
+				<prompt bargein="true" timeout="3s">							
+						<audio expr="promptspath_54646+'/'+lang+'/round2_sit2_right.wav'"/>
+				</prompt>
+				
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_FKSCONTEST_UPDATETIME&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+Sit_Counter+'&amp;INPARAM[5]='+round"/>
+				<assign name="Sit_Counter" expr="3"/>
+				
+				<goto next="Ferrari_Contest_Playgame.vxml#Round2_starts"/>
+	<elseif cond="Play=='8'"/>
+				<goto next="MainMenu.vxml"/>		
+	<else/>	
+		<prompt bargein="true" timeout="3s">
+			<audio expr="promptspath_54646+'/'+lang+'/round2_sit2_wrong.wav'"/>
+		</prompt>
+			
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_FKSCONTEST_UPDATETIME&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+Sit_Counter+'&amp;INPARAM[5]='+round"/>
+		<assign name="Sit_Counter" expr="3"/>
+					
+		<goto next="Ferrari_Contest_Playgame.vxml#Round2_starts"/>
+	  
+	</if>
+</filled>
+	<noinput>
+		<prompt bargein="true" timeout="0s">  
+			<audio expr="promptspath_54646+'/'+lang+'/no_input.wav'"/>
+		</prompt>
+		<reprompt></reprompt>
+	</noinput>
+
+	<nomatch>
+		<prompt bargein="true" timeout="0s"> 
+			<audio expr="promptspath_54646+'/'+lang+'/invalid.wav'"/>
+		</prompt>
+		<reprompt></reprompt>
+	</nomatch>
+</field>
+
+</form>
+
+</vxml>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_ModNewUserMM.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	
+<!--	<var name="movie_idx" expr="0"/>
+	<var name="firsttime" expr="'true'"/>	
+	
+	<script>		
+		var dishes=new Array();				
+	</script>-->
+
+	<form id="WELNEW">
+		<assign name="lang" expr="'18'"/>
+		<field name="nochoice">
+			<prompt bargein="true" timeout="0s" cond="operator=='tatc'">			
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/common/welcome_new_indicom_'+lang+'.wav'"/>
+			</prompt>			
+			<prompt bargein="true" timeout="0s" cond="operator=='tatm'">			
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/common/welcome_new_docomo_'+lang+'.wav'"/>
+			</prompt>
+			<filled>
+				<goto next="#LANGSEL1"></goto>				
+			</filled>
+		</field>
+		<noinput>
+			<goto next="#LANGSEL1"></goto>
+		</noinput>
+		<nomatch>
+			<goto next="#LANGSEL1"></goto>
+		</nomatch>
+	</form>
+	
+	
+	
+</vxml>

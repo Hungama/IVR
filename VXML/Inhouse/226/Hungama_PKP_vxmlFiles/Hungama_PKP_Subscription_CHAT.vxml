@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_PKPRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_PKP_Subscription_NEW.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+<var name="double_switch" expr="0"/>
+<var name="prompt_switch" expr="0"/> 
+<var name="switch_type" expr="0"/>	
+<var name="random" expr="''"/>
+<var name="random_play" expr="6"/>
+<var name="flag_random" expr="'false'"/>
+<var name="uniq_id" expr="0"/>
+<script>
+function getUID()
+	{
+		var uid = Math.random().toString(36).substr(2, 14);
+		 return uid;
+	}
+</script>
+<form id="SubMain">
+	 <block>
+	 	 <if cond="DNIS=='55001'">
+					<if cond="operator=='tatc'">
+						<assign name="amt" expr="'35'" />
+						<assign name="service_id" expr="'1613'" />
+						<assign name="plan_id" expr="'163'" />
+					<elseif cond="operator=='virm'"/>
+						<assign name="amt" expr="'35'" />
+						<assign name="service_id" expr="'1813'" />
+						<assign name="plan_id" expr="'220'" />
+					<else/>
+						<assign name="amt" expr="'35'" />
+						<assign name="service_id" expr="'1013'" />
+						<assign name="plan_id" expr="'106'" />
+					</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=PKP_Switch&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+service_id"/>
+				<script>
+					 double_switch=out_string[0];
+					 prompt_switch=out_string[1];
+					 switch_type=out_string[2];
+				</script>				
+				<log>double_switch Sub : <value expr="double_switch"/></log>
+				<log>switch_Tpye Sub : <value expr="switch_type"/></log>
+				
+				<if cond="ANI=='8586967046' || ANI=='92106439791'">
+					<assign name="double_switch" expr="1" />
+					<assign name="switch_type" expr="1" />
+				</if>
+					<if cond="double_switch=='1'">
+					<assign name="random" expr="getRandom(0,10)" />
+					<log>random value is : <value expr="random"/></log>
+						<if cond="random=='0' || random=='1' || random=='2' || random=='3' || random=='4' || random=='5' || random=='6' || random=='7' || random=='8' || random=='9'">
+							<assign name="flag_random" expr="'TRUE'"/>
+							<if cond="switch_type=='1'">							
+								<assign name="firstconsent" expr="'Switchlevel-1'"/>
+								<assign name="firstconsenttime" expr="start_time()"/>
+								<assign name="sub_flag" expr="'true'"/>
+							<elseif cond="switch_type=='2'"/>
+								<assign name="firstconsent" expr="'Switchlevel-1'"/>
+								<assign name="firstconsenttime" expr="start_time()"/>
+								<assign name="sub_flag" expr="'true'"/>
+							<elseif cond="switch_type=='3'"/>
+								<assign name="firstconsent" expr="'Switchlevel-3'"/>
+								<assign name="firstconsenttime" expr="start_time()"/>
+								<assign name="sub_flag" expr="'true'"/>
+							<else/>
+								<goto next="#SubMainmenu"/>
+							</if>
+						</if>
+					</if>	
+				
+		<else/>
+			<goto next="#SubMainmenu"/>
+		
+		</if>
+	 
+	</block>
+	<field name="choice1">			
+					<grammar mode="dtmf" root="start34" version="1.0">
+						<rule id="start34" scope="public">
+							<one-of>
+								 <item>  1  </item>								
+							</one-of>
+						</rule>
+					</grammar>
+					<prompt bargein="true" timeout="0s" cond="switch_type=='3'">
+						<audio expr="promptpath+'/'+lang+'/common/subintro_35_switch.wav'"/>	
+					</prompt>
+					<prompt bargein="true" timeout="3s" cond="switch_type=='1'">
+						<audio expr="promptpath+'/'+lang+'/common/subintro_35_switch.wav'"/>	
+					</prompt>
+			   <filled>
+					<if cond="double_switch=='1'">
+						 <if cond="random=='0' || random=='1' || random=='2' || random=='3' || random=='4' || random=='5' || random=='6' || random=='7' || random=='8' || random=='9'">
+							<if cond="switch_type=='1'">							
+								<goto next="#Doublecheck"></goto>
+							<elseif cond="switch_type=='2'"/>
+								<goto next="#SubMainmenu"/>							
+							<elseif cond="switch_type=='3'"/>
+								<goto next="#DoubleconfirmSwitch"></goto>
+							<else/>
+								<goto next="#SubMainmenu"/>
+							</if>
+						  <else/>
+							<goto next="#SubMainmenu"/>
+						  </if>
+					<else/>
+						<goto next="#SubMainmenu"/>
+					</if>
+			    </filled>
+		   <noinput>
+				<if cond="double_switch=='1'">
+					 <if cond="random=='0' || random=='1' || random=='2' || random=='3' || random=='4' || random=='5' || random=='6' || random=='7' || random=='8' || random=='9'">
+						<if cond="switch_type=='1'">							
+							<goto next="#Doublecheck"></goto>
+						<elseif cond="switch_type=='2'"/>
+							<goto next="#SubMainmenu"/>							
+						<elseif cond="switch_type=='3'"/>
+							<goto next="#DoubleconfirmSwitch"></goto>
+						<else/>
+							<goto next="#SubMainmenu"/>
+						</if>
+					  <else/>
+						<goto next="#SubMainmenu"/>
+					  </if>
+				<else/>
+					<goto next="#SubMainmenu"/>
+				</if>
+		   </noinput>
+		   <nomatch>
+			<if cond="double_switch=='1'">
+				 <if cond="random=='0' || random=='1' || random=='2' || random=='3' || random=='4' || random=='5' || random=='6' || random=='7' || random=='8' || random=='9'">
+					<if cond="switch_type=='1'">							
+						<goto next="#Doublecheck"></goto>
+					<elseif cond="switch_type=='2'"/>
+						<goto next="#SubMainmenu"/>							
+					<elseif cond="switch_type=='3'"/>
+						<goto next="#DoubleconfirmSwitch"></goto>
+					<else/>
+						<goto next="#SubMainmenu"/>
+					</if>
+				  <else/>
+					<goto next="#SubMainmenu"/>
+				  </if>
+			<else/>
+				<goto next="#SubMainmenu"/>
+			</if>
+
+		   </nomatch>
+	
+	 </field>
+</form>
+
+
+<form id="SubMainmenu">
+	 <block>
+		
+		<assign name="drop_point" expr="'Sub_Menu'"/>
+		<log>circle  isss  <value expr="circle"/>    </log>
+		<assign name="random" expr="getRandom(0,10)" />
+		<if cond="random=='1' || random=='3' || random=='5' || random=='7'">
+			<assign name="random" expr="'1'" />
+		<else/>
+			<assign name="random" expr="'2'" />
+		</if>
+		<log>Random Value  isss  <value expr="random"/>    </log>
+	 </block>
+	 <field name="choice">
+		<grammar mode="dtmf" root="start" version="1.0">
+			<rule id="start" scope="public">	
+				<one-of>
+					 <item>  1  </item>
+					 
+				</one-of>
+			</rule>
+		</grammar>
+				
+				<prompt bargein="true" timeout="1s" cond="DNIS!='550011'">
+					<audio expr="promptpath+'/CHAT/'+lang+'/subintro_55001.wav'"/>			   		
+				</prompt>
+				<prompt bargein="true" timeout="1s" cond="DNIS=='550011'">
+			   		<audio expr="promptpath+'/'+lang+'/common/subintro_50.wav'"/>			   		
+			   	</prompt>
+										      			      
+		  <filled>
+		  			<assign name="firstconsent" expr="'Y'"/>
+					<assign name="firstconsenttime" expr="start_time()"/>
+					<assign name="sub_flag" expr="'true'"/>
+					
+			        <if cond="choice=='1' &amp;&amp; DNIS!='550011'">
+			        			<if cond="operator=='tatc'">
+								<assign name="amt" expr="'35'" />
+								<assign name="service_id" expr="'1613'" />
+								<assign name="plan_id" expr="'163'" />
+							<elseif cond="operator=='virm'"/>
+								<assign name="amt" expr="'35'" />
+								<assign name="service_id" expr="'1813'" />
+								<assign name="plan_id" expr="'220'" />
+							<else/>
+								<assign name="amt" expr="'35'" />
+								<assign name="service_id" expr="'1013'" />
+								<assign name="plan_id" expr="'106'" />
+							</if>
+							
+								<if cond="double_switch=='1' &amp;&amp; switch_type=='2' &amp;&amp; flag_random=='TRUE' &amp;&amp; DNIS=='55001'">	
+									<assign name="firstconsent" expr="'Switchlevel-2'"/>
+									<assign name="firstconsenttime" expr="start_time()"/>
+									<assign name="sub_flag" expr="'true'"/>							
+									<goto next="#DoubleconfirmSwitch"></goto>		                            
+								<else/>
+									<assign name="firstconsent" expr="'Y'"/>
+									<assign name="firstconsenttime" expr="start_time()"/>
+									<assign name="sub_flag" expr="'true'"/>						
+									<goto next="#Doublecheck"></goto>
+								</if>	
+							
+				<elseif cond="choice=='1' &amp;&amp; DNIS=='550011'"/>
+							<if cond="operator=='tatc'">
+								<assign name="amt" expr="'50'" />
+								<assign name="service_id" expr="'1613'" />
+								<assign name="plan_id" expr="'219'" />
+							<elseif cond="operator=='virm'"/>
+								<assign name="amt" expr="'50'" />
+								<assign name="service_id" expr="'1813'" />
+								<assign name="plan_id" expr="'221'" />
+							
+							<else/>
+								<assign name="amt" expr="'50'" />
+								<assign name="service_id" expr="'1013'" />
+								<assign name="plan_id" expr="'164'" />
+							</if>
+							<goto next="#Doublecheck"></goto>  
+			        </if>
+		 </filled>				    
+			
+			<noinput>
+				<audio expr="promptpath+'/'+lang+'/common/nodtmf.wav'"/>
+				<goto next="#SubMainmenu"/>
+			</noinput>  
+
+			<noinput count="3">
+				<goto next="Hungama_PKP_end.vxml"></goto>
+			</noinput>  
+		    
+          
+			<nomatch>
+				<audio expr="promptpath+'/'+lang+'/common/invalidoption.wav'"/>
+				<goto next="#SubMainmenu"/>
+		    </nomatch> 
+		    
+			<nomatch count="3">
+				<goto next="Hungama_PKP_end.vxml"></goto>
+		    </nomatch> 
+	</field>
+</form>
+
+
+<form id="Doublecheck">
+		<block>
+				<assign name="drop_point" expr="'Double_sub'"/>
+				<!--http://10.124.168.27:8091/API/TPCG? MSISDN=<10digit number>&productID=<pid>&pName=<name of product>&pPrice=1000&pVal=30&CpId=45&CpPwd=245&CpName=Hungama&reqMode=IVR&Ivr_approach=VXML&NetworkId=CDMA&circleId=MH&Lang=Hindi&Lang_A=F&reqType=Event&ismID=10&transID=24525-->
+	
+				<!--http://10.124.168.27:8091/API/TPCG? MSISDN=<10digit number>&productID=<pid>&pName=<name of product>&pPrice=1000&pVal=30&CpId=45&CpPwd=245&CpName=Hungama&reqMode=IVR&Ivr_approach=VXML&NetworkId=CDMA&circleId=MH&Lang=Hindi&Lang_A=F&reqType=Event&ismID=10&transID=24525-->
+	
+				<if cond="operator=='tatc'">
+						<if cond="amt=='50'">
+							<assign name="productID" expr="'CDMAPKP50'"/>
+						<else/>
+							<assign name="productID" expr="'CDMAPKP'"/>
+						</if>
+				<elseif cond="operator=='virm'"/>
+						<if cond="amt=='50'">
+							<assign name="productID" expr="'VMIPKP50'"/>
+						<else/>
+							<assign name="productID" expr="'VMIPKP'"/>
+						</if>
+				<else/>
+						<if cond="amt=='50'">
+							<assign name="productID" expr="'GSMPKP50'"/>
+						<else/>
+							<assign name="productID" expr="'GSMPKP'"/>
+						</if>
+				</if>
+				
+				<assign name="pName" expr="'Pyaar ke Panne'"/>
+	
+				<assign name="CpId" expr="'hug'"/>
+				<assign name="CpPwd" expr="'hug@8910'"/>
+				<assign name="CpName" expr="'Hungama'"/>
+				<assign name="reqMode" expr="'Hungama'"/>	
+				<assign name="Ivr_approach" expr="'VXML'"/>
+				<assign name="NetworkId" expr="'ISDNPRI'"/>
+				<assign name="circleId" expr="circle"/>
+				<!--<assign name="trans_id" expr="gettransidtime()"/>-->
+				<assign name="trans_id" expr="getUID()"/>
+				<log>trans_id : <value expr="trans_id"/></log>
+				<assign name="Lang_A" expr="'F'"/>
+				<assign name="reqType" expr="'Event'"/>
+	
+				<assign name="ismID" expr="'16'"/>
+				<assign name="transID" expr="C_Start"/>
+	
+				<script>
+						pPrice=amt*100;
+				</script>
+	
+				<assign name="pVal" expr="amt"/>
+			
+				<if cond="ANI=='9711711335'">
+					<assign name="lang" expr="'09'"/>
+				</if>
+
+	
+				<if cond="lang=='01'">
+					<assign name="Lang" expr="'Hin'"/>
+				<elseif cond="lang=='02'"/>
+					<assign name="Lang" expr="'Eng'"/>
+				<elseif cond="lang=='11'"/>
+					<assign name="Lang" expr="'Mar'"/>
+				<elseif cond="lang=='10'"/>
+					<assign name="Lang" expr="'Kan'"/>
+				<elseif cond="lang=='08'"/>
+					<assign name="Lang" expr="'Tel'"/>
+				<elseif cond="lang=='09'"/>
+					<assign name="Lang" expr="'Mal'"/>
+				<elseif cond="lang=='07'"/>
+					<assign name="Lang" expr="'Tam'"/>
+				<elseif cond="lang=='13'"/>
+					<assign name="Lang" expr="'Ori'"/>
+				<elseif cond="lang=='06'"/>
+					<assign name="Lang" expr="'Ben'"/>
+				<elseif cond="lang=='12'"/>
+					<assign name="Lang" expr="'Guj'"/>
+				<elseif cond="lang=='17'"/>
+					<assign name="Lang" expr="'Asm'"/>
+				<elseif cond="lang=='18'"/>
+					<assign name="Lang" expr="'Maw'"/>
+				<elseif cond="lang=='03'"/>
+					<assign name="Lang" expr="'Pun'"/>
+				<elseif cond="lang=='05'"/>
+					<assign name="Lang" expr="'Har'"/>
+				<else/>
+					<assign name="Lang" expr="'Hin'"/>
+				</if>       
+			</block>
+			 <subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.80:8091/API/CCG?MSISDN=91'+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;reqMode=IVR&amp;Ivr_approach=VXML&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID=16&amp;transID='+trans_id+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpName='+CpName+'&amp;CpPwd='+CpPwd+'&amp;Songname=abc'">	
+			
+			<!-- <subdialog name="confirmUserChoice" srcexpr="'http://182.156.191.79:8091/API/CCG?MSISDN=91'+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;reqMode=IVR&amp;Ivr_approach=VXML&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;ismID=16&amp;transID='+trans_id+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpName='+CpName+'&amp;CpPwd='+CpPwd+'&amp;Songname=abc'"> -->
+			
+			<filled>
+					<assign name="secondconsent" expr="'Y'"/>
+					<assign name="secondconsenttime" expr="start_time()"/>
+					<assign name="ccgresult" expr="confirmUserChoice.CCGResponse"/>
+
+					<script srcexpr="'http://192.168.100.226:8082/hungama/TATA_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=MND&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+trans_id+'&amp;ccgresult='+confirmUserChoice.CCGResponse"/> 
+					<log>Confirmation page</log>
+					<log>back from the confirmation app, the user input:<value expr="confirmUserChoice"/></log>
+					<log>back from the confirmation app, the CCGRESPONSE:<value expr="confirmUserChoice.CCGResponse"/></log>
+					<log>back from the confirmation app, the user input:<value expr="confirmUserChoice.userinput"/></log>
+					<log>back from the confirmation app, the user tranId:<value expr="confirmUserChoice.tranId"/></log>
+					<if cond="confirmUserChoice.CCGResponse=='Success'">
+							<goto next="#BillStatusChk"></goto>
+					<else/>
+							<goto next="Hungama_PKP_end.vxml"/>
+					</if>			
+			</filled>
+		</subdialog>
+	</form>
+
+<!--*********************secondconsent skip*****************************-->
+
+<form id="DoubleconfirmSwitch">		
+		<block>
+				<assign name="drop_point" expr="'Double_sub'"/>
+							
+							<if cond="operator=='tatc'">
+									<if cond="amt=='50'">
+										<assign name="productID" expr="'CDMAPKP50'"/>
+									<else/>
+										<assign name="productID" expr="'CDMAPKP'"/>
+									</if>
+							<elseif cond="operator=='virm'"/>
+									<if cond="amt=='50'">
+										<assign name="productID" expr="'VMIPKP50'"/>
+									<else/>
+										<assign name="productID" expr="'VMIPKP'"/>
+									</if>
+							<else/>
+									<if cond="amt=='50'">
+										<assign name="productID" expr="'GSMPKP50'"/>
+									<else/>
+										<assign name="productID" expr="'GSMPKP'"/>
+									</if>
+							</if>
+							
+							<assign name="pName" expr="'Pyaar ke Panne'"/>
+				
+							<assign name="CpId" expr="'hug'"/>
+							<assign name="CpPwd" expr="'hug@8910'"/>
+							<assign name="CpName" expr="'Hungama'"/>
+							<assign name="reqMode" expr="'Hungama'"/>	
+							<assign name="Ivr_approach" expr="'VXML'"/>
+							<assign name="NetworkId" expr="'ISDNPRI'"/>
+							<assign name="circleId" expr="circle"/>
+							<!--<assign name="trans_id" expr="gettransidtime()"/>-->
+							<assign name="trans_id" expr="getUID()"/>
+							<log>trans_id : <value expr="trans_id"/></log>
+				
+							<assign name="Lang_A" expr="'F'"/>
+							<assign name="reqType" expr="'Event'"/>
+				
+							<assign name="ismID" expr="'16'"/>
+							<assign name="transID" expr="C_Start"/>
+				
+							<script>
+									pPrice=amt*100;
+							</script>
+				
+							<assign name="pVal" expr="amt"/>
+						
+							<if cond="ANI=='9711711335'">
+								<assign name="lang" expr="'09'"/>
+							</if>
+			
+				
+							<if cond="lang=='01'">
+								<assign name="Lang" expr="'Hin'"/>
+							<elseif cond="lang=='02'"/>
+								<assign name="Lang" expr="'Eng'"/>
+							<elseif cond="lang=='11'"/>
+								<assign name="Lang" expr="'Mar'"/>
+							<elseif cond="lang=='10'"/>
+								<assign name="Lang" expr="'Kan'"/>
+							<elseif cond="lang=='08'"/>
+								<assign name="Lang" expr="'Tel'"/>
+							<elseif cond="lang=='09'"/>
+								<assign name="Lang" expr="'Mal'"/>
+							<elseif cond="lang=='07'"/>
+								<assign name="Lang" expr="'Tam'"/>
+							<elseif cond="lang=='13'"/>
+								<assign name="Lang" expr="'Ori'"/>
+							<elseif cond="lang=='06'"/>
+								<assign name="Lang" expr="'Ben'"/>
+							<elseif cond="lang=='12'"/>
+								<assign name="Lang" expr="'Guj'"/>
+							<elseif cond="lang=='17'"/>
+								<assign name="Lang" expr="'Asm'"/>
+							<elseif cond="lang=='18'"/>
+								<assign name="Lang" expr="'Maw'"/>
+							<elseif cond="lang=='03'"/>
+								<assign name="Lang" expr="'Pun'"/>
+							<elseif cond="lang=='05'"/>
+								<assign name="Lang" expr="'Har'"/>
+							<else/>
+								<assign name="Lang" expr="'Hin'"/>
+				</if>
+				<script srcexpr="'http://192.168.100.212:6666/hungamas/TataSecondConsent_PARTONE?MSISDN='+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;transID='+trans_id+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpName='+CpName+'&amp;CpPwd='+CpPwd"/>
+							<script>
+								<![CDATA[
+									 for(j=0; j< out_string.length;  j++)
+									  {  	if(j==0)
+											var firsturl = out_string[j];
+									      					      
+									  }
+								]]>
+							</script>			
+						
+					<log>back from the confirmation app, the firsturl :<value expr="firsturl"/></log>
+					
+			<assign name="random_play" expr="getRandom(6,10)" />		
+		</block>
+		<field name="choice12">
+				<grammar mode="dtmf" root="start172" version="1.0">
+				       <rule id="start172" scope="public">
+							 <one-of>				 
+								  <item>1</item>
+							 </one-of>
+				       </rule>
+				</grammar>	
+					
+					<prompt bargein="false" timeout="0s">
+						<audio expr="promptpath+'/'+lang+'/common/wait_music_'+random_play+'.wav'"/>
+						
+					</prompt>
+						
+				<filled>
+						<goto next="#DoubleconfirmSwitch_part2"></goto>					
+				</filled>
+						
+				<nomatch>
+						 <goto next="#DoubleconfirmSwitch_part2"></goto>	
+				</nomatch>
+				
+				<noinput>
+						<goto next="#DoubleconfirmSwitch_part2"></goto>	
+				</noinput>
+	</field>
+	</form>
+	
+<form id="DoubleconfirmSwitch_part2">		
+		<block>
+				<assign name="drop_point" expr="'Double_sub'"/>
+							
+							<if cond="operator=='tatc'">
+									<if cond="amt=='50'">
+										<assign name="productID" expr="'CDMAPKP50'"/>
+									<else/>
+										<assign name="productID" expr="'CDMAPKP'"/>
+									</if>
+							<elseif cond="operator=='virm'"/>
+									<if cond="amt=='50'">
+										<assign name="productID" expr="'VMIPKP50'"/>
+									<else/>
+										<assign name="productID" expr="'VMIPKP'"/>
+									</if>
+							<else/>
+									<if cond="amt=='50'">
+										<assign name="productID" expr="'GSMPKP50'"/>
+									<else/>
+										<assign name="productID" expr="'GSMPKP'"/>
+									</if>
+							</if>
+							
+							<assign name="pName" expr="'Pyaar ke Panne'"/>
+				
+							<assign name="CpId" expr="'hug'"/>
+							<assign name="CpPwd" expr="'hug@8910'"/>
+							<assign name="CpName" expr="'Hungama'"/>
+							<assign name="reqMode" expr="'Hungama'"/>	
+							<assign name="Ivr_approach" expr="'VXML'"/>
+							<assign name="NetworkId" expr="'ISDNPRI'"/>
+							<assign name="circleId" expr="circle"/>
+							
+				
+							<assign name="Lang_A" expr="'F'"/>
+							<assign name="reqType" expr="'Event'"/>
+				
+							<assign name="ismID" expr="'16'"/>
+							<assign name="transID" expr="C_Start"/>
+				
+							<script>
+									pPrice=amt*100;
+							</script>
+				
+							<assign name="pVal" expr="amt"/>
+						
+							<if cond="ANI=='9711711335'">
+								<assign name="lang" expr="'09'"/>
+							</if>
+			
+				
+							<if cond="lang=='01'">
+								<assign name="Lang" expr="'Hin'"/>
+							<elseif cond="lang=='02'"/>
+								<assign name="Lang" expr="'Eng'"/>
+							<elseif cond="lang=='11'"/>
+								<assign name="Lang" expr="'Mar'"/>
+							<elseif cond="lang=='10'"/>
+								<assign name="Lang" expr="'Kan'"/>
+							<elseif cond="lang=='08'"/>
+								<assign name="Lang" expr="'Tel'"/>
+							<elseif cond="lang=='09'"/>
+								<assign name="Lang" expr="'Mal'"/>
+							<elseif cond="lang=='07'"/>
+								<assign name="Lang" expr="'Tam'"/>
+							<elseif cond="lang=='13'"/>
+								<assign name="Lang" expr="'Ori'"/>
+							<elseif cond="lang=='06'"/>
+								<assign name="Lang" expr="'Ben'"/>
+							<elseif cond="lang=='12'"/>
+								<assign name="Lang" expr="'Guj'"/>
+							<elseif cond="lang=='17'"/>
+								<assign name="Lang" expr="'Asm'"/>
+							<elseif cond="lang=='18'"/>
+								<assign name="Lang" expr="'Maw'"/>
+							<elseif cond="lang=='03'"/>
+								<assign name="Lang" expr="'Pun'"/>
+							<elseif cond="lang=='05'"/>
+								<assign name="Lang" expr="'Har'"/>
+							<else/>
+								<assign name="Lang" expr="'Hin'"/>
+				</if>
+			
+	
+			<script srcexpr="'http://192.168.100.212:6666/hungamas/TataSecondConsent_PARTTWO?MSISDN='+ANI+'&amp;productID='+productID+'&amp;pName='+pName+'&amp;NetworkId='+NetworkId+'&amp;circleId='+circleId+'&amp;Lang='+Lang+'&amp;Lang_A='+Lang_A+'&amp;reqType='+reqType+'&amp;transID='+trans_id+'&amp;pPrice='+pPrice+'&amp;pVal='+pVal+'&amp;CpId='+CpId+'&amp;CpName='+CpName+'&amp;CpPwd='+CpPwd"/>
+						<script>
+							<![CDATA[
+								 for(j=0; j< out_string.length;  j++)
+								  {  	
+								       if(j==0)
+										var firstResponse = out_string[j];
+								       if(j==1)
+										var secondurl = out_string[j]; 
+									if(j==2)
+										var secondResponse = out_string[j];
+								       if(j==3)
+										var thirdurl = out_string[j];
+								       if(j==4)
+										var thirdResponse = out_string[j];
+								       if(j==5)
+										var CCGResponse = out_string[j];
+								       if(j==6)
+										var userinput = out_string[j];
+								       if(j==7)
+										trans_id = out_string[j];							      
+								  }
+							]]>
+						</script>			
+						
+							
+							<log>back from the confirmation app, the firstResponse :<value expr="firstResponse"/></log>
+							<log>back from the confirmation app, the secondurl :<value expr="secondurl"/></log>
+							<log>back from the confirmation app, the secondResponse:<value expr="secondResponse"/></log>
+							<log>back from the confirmation app, the thirdurl:<value expr="thirdurl"/></log>
+							<log>back from the confirmation app, the thirdResponse:<value expr="thirdResponse"/></log>
+							<log>back from the confirmation app, the CCGRESPONSE:<value expr="CCGResponse "/></log>
+							<log>back from the confirmation app, the user input:<value expr="userinput"/></log>
+							<log>back from the confirmation app, the user tranId:<value expr="trans_id"/></log>			
+						
+							<assign name="secondconsent" expr="'Y'"/>
+							<assign name="secondconsenttime" expr="start_time()"/>
+							<assign name="ccgresult" expr="CCGResponse"/>
+							
+							<script srcexpr="'http://192.168.100.226:8082/'+servlet_path+'/TATA_DClog?ANI='+ANI+'&amp;circle='+circle+'&amp;starttime='+C_Start+'&amp;service=MOD&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;IVRtransid='+trans_id+'&amp;ccgresult='+CCGResponse"/>
+				
+							<goto next="#BillStatusChk"></goto>
+					
+		</block>
+	</form>	
+<form id="BillStatusChk">
+	<block>
+		<assign name="drop_point" expr="'Billing_Hit'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=MND_SUB&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amt+'&amp;INPARAM[5]='+service_id+'&amp;INPARAM[6]='+plan_id+'&amp;INPARAM[7]='+trans_id"/>         
+	</block>
+	<field name="choice">
+		<grammar mode="dtmf" root="start171" version="1.0">
+		       <rule id="start171" scope="public">
+					 <one-of>				 
+						  <item>1</item>
+					 </one-of>
+		       </rule>
+		</grammar>	
+			
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptpath+'/'+lang+'/common/delay_charge.wav'"/>
+			</prompt>
+				
+		<filled>
+				<goto next="#BillStatusChkAgain"></goto>					
+		</filled>
+				
+		<nomatch>
+				 <goto next="#BillStatusChkAgain"></goto>	
+		</nomatch>
+		
+		<noinput>
+				<goto next="#BillStatusChkAgain"></goto>	
+		</noinput>
+	</field>
+</form>
+
+<form id="BillStatusChkAgain">
+		<block>
+			<assign name="drop_point" expr="'Billing_check'"/>
+			<!-- SUB REQUEST STATUS -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=8'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							       	usr_status = out_string[j];
+						       if(j==1)
+							       	lang = out_string[j];
+						       if(j==2)
+							       	balance = out_string[j];							      
+						  }
+					]]>
+			</script>			
+			<log>	usr_status isssss    <value expr="usr_status"/> 	</log>
+			<if cond="usr_status=='-1'">
+				<assign name="drop_point" expr="'charging_fail'"/>
+				<prompt bargein="true" timeout="1s">
+						<audio expr="promptpath+'/'+lang+'/common/delay_charge.wav'"/>
+						<audio expr="promptpath+'/'+lang+'/common/thanks_nosub.wav'"/>
+				</prompt>
+				<goto next="Hungama_PKP_end.vxml"/>
+			<elseif cond="usr_status=='1'"/>
+				<assign name="drop_point" expr="'charging_success'"/>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/thanks_sub.wav'"/>
+				</prompt>
+				
+				<script>
+					playbalance=balance;
+					balance=balance*60;
+					timerflag=1;
+					start_BalenceMinute=starttime();
+				</script>
+				
+				<assign name="playbalance" expr="getPromptCtr(playbalance)"/>
+				<log>playbalance iss <value expr="playbalance"/></log>
+				
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/acmanager_balanceis.wav'"/>
+				</prompt>
+				<prompt bargein="true" timeout="1s">
+					<foreach item="singledigit" array="num2play_Array">
+						<audio expr="promptpath+'/'+lang+'/common/'+parseInt(singledigit)+'.wav'"/>
+						<log>	--------	<value expr="singledigit"/>	</log>
+					</foreach>
+				</prompt>
+				
+				<goto next="Hungama_PKP_mainmenu.vxml"/>	
+			<else/> 
+				<assign name="drop_point" expr="'charging_fail'"/>
+				<prompt bargein="true" timeout="1s">
+					<audio expr="promptpath+'/'+lang+'/common/delay_charge.wav'"/>
+				</prompt>
+				<goto next="Hungama_PKP_end.vxml"></goto>
+			</if>
+		</block>
+	</form>
+</vxml>

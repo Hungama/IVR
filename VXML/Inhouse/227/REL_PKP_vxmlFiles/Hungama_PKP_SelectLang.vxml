@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_PKPRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_PKP_SelectLang.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<form id="Main">
+	<block>
+		<assign name="C_Start" expr="start_time()"/>
+			<script>  
+				realDNIS=session.connection.local.uri;                   
+				ANI=session.connection.remote.uri;	   
+				var length = ANI.length;
+				ANI = ANI.substring(length-10,length);
+			</script>
+			
+		<script srcexpr="'http://192.168.100.226:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+		<script>
+		<![CDATA[
+			  for(j=0; j< out_string.length;  j++)
+			   {      
+					if(j==0)
+					circle = out_string[j];
+			   }
+		]]>
+		</script>
+                     
+              <log> FIRST DB FETCH circle  is   <value expr="circle"/>    </log>
+              <if cond="circle=='oth'">
+                    <script srcexpr="'http://192.168.100.226:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+                    <assign name="DNIS" expr="realDNIS"/>
+                    <assign name="operator" expr="'und'"/>
+                    <goto next="Hungama_PKP_end.vxml"></goto>                    
+               </if>
+		<if cond="realDNIS=='5464656'">
+			 <assign name="DNIS" expr="'5464656'"/>
+			 <assign name="operator" expr="'relm'"/>
+			 <assign name="dbservlet" expr="'tatm_mnd_dbinteraction'"/>
+		<else/>
+			<assign name="DNIS" expr="'5464656'"/>
+			<assign name="operator" expr="'relm'"/>
+			<assign name="dbservlet" expr="'tatm_mnd_dbinteraction'"/>
+		</if>
+		<log>circle  is	<value expr="circle"/>    </log>
+		<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>	
+		<log expr="'operator issssss =' + operator"/>
+		<log expr="'dbservlet issssss =' + dbservlet"/>
+
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/>
+		<goto next="Hungama_PKP_Userstatus.vxml"/>
+	</block>
+  </form>
+</vxml>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_ModEnd.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	<var name="lencontent" expr="0"/>
+	<var name="modofsub" expr="'NA'"/>
+	<var name="pricepoint" expr="'0'"/>
+
+	<script>
+			var out_string=new Object();
+	</script>
+
+	<form id="EndLogin">
+		<block>
+			<assign name="C_End" expr="start_time()"/>
+			<if cond="song_listen=='START'">
+				
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="rim(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<if cond="compare_time &gt; '1000'">
+					<assign name="compare_time" expr="'30'" />
+				</if>
+				<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			</if>
+			<if cond="dtmf_check=='1'">
+				<script srcexpr="'http://'+IP+'/hungama/dtmf_logs?service=uniMRT&amp;SONG='+dtmf_log"/>
+			</if>
+
+			<if cond="(operator=='unim') &amp;&amp; sub_flag=='true'">
+                                <script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1412&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+trans_id+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>  
+			</if>
+
+			
+			<log expr="'songID isssssss : =='+songID"></log>
+
+			<if cond="HEARD!='0' &amp;&amp; (songID!=undefined)">
+							<script srcexpr="'http://'+IP+'/hungama/exit_log_lastcat?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;circle='+circle+'&amp;dnis='+DNIS+'&amp;service=MRT&amp;songid='+songID+'&amp;catagory_id='+HEARD"/>
+			</if>
+			
+			
+			<if cond="HEARD!='0' &amp;&amp; directaccess==''">
+				
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_USERCATPROFILE&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD"/>
+			</if>
+			<if cond="playconfig=='00' || HEARD=='00'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_newyear_profile_update&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+unike_play"/>
+			</if>
+			<!--<if cond="backendsub=='true'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_SUB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=DEFAULT&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=2&amp;INPARAM[5]=1001&amp;INPARAM[6]=1'"/>		
+			</if>-->
+			
+			<if cond="RINGTONE_SMS=='TRUE'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_RINGTONE_BDSSMS&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]=52888'"/>
+			</if>
+
+			<assign name="total_time" expr="time_duration(C_Start)"/>
+			<script> total_time=(Math.floor(total_time/60))+1; </script>
+			
+			<!-- <script>
+				total_time=C_End-C_Start;  						  
+			</script>
+			<script> total_time=Math.floor(total_time/60); </script> -->			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_UPDATETIME&amp;INTOKEN=5&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+total_time+'&amp;INPARAM[2]=52888&amp;INPARAM[3]=' + circle + '&amp;INPARAM[4]=' + HEARD"/>
+
+			<!--	<assign name="lencontent" expr="getstringlength(contentlog)"/>
+				<if cond="lencontent &gt;= 0">
+					<script srcexpr="'http://192.168.100.226:8080/hungama/appendcontent?ani='+ANI+'&amp;contentlog='+contentlog"/>
+	                <assign name="lencontent" expr="0"/>
+	                <assign name="contentlog" expr="''"/>
+					<log expr="'content log written into temp file '+ANI+'.tmp'"/>
+				</if>
+			 	<script srcexpr="'http://192.168.100.226:8080/hungama/exit_log_file?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=MRT&amp;subflag='+usr_status"/>-->
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+drop_point+hash+modofsub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=MRT&amp;subflag=-1&amp;contentlog='+contentlog"/>
+				<send event="timerEnd"/>
+			<exit/>
+		</block>
+	</form>
+	 <catch event="error.badfetch">		 								
+    	 	 <exit/>
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 	<exit/>
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+		  	<exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+			<exit/>
+      </catch>
+      
+      <!--<catch event=" error.* "> 
+  			<exit/>
+	   </catch>-->
+</vxml>

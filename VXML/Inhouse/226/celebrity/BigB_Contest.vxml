@@ -1,0 +1,849 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="FMJRoot.vxml"
+
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+<meta name="BigB_Contest.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+
+<var name="promptspath" expr="'http://192.168.100.226:8080/hungama/promptFiles/BIGB_Prompts'" />
+
+<script>
+	var tno=0;
+</script>
+
+<form id="welcomeBigB">
+	<block>
+		<assign name="BIGB" expr="'TRUE'"/>
+	</block>
+	<field name="choice">               
+			<grammar mode="dtmf" root="start0" version="1.0">
+				 <rule id="start0" scope="public">
+				     <one-of>     
+						 <item>1</item>
+				     </one-of>
+				 </rule>
+				</grammar>
+	
+			    <prompt bargein="true"  timeout="1s">
+					<audio expr="promptspath+'/welcome_catname7.wav'"/>
+			    </prompt> 
+		<filled>
+			<goto next="#welcome"/>
+		</filled>
+			
+		<noinput>
+			<goto next="#welcome"/>
+		</noinput>
+		
+		<nomatch>
+			<goto next="#welcome"/>
+		</nomatch>
+					
+	</field>
+
+</form>
+ 
+<form id="welcome">
+	
+	<field name="choice">               
+			<grammar mode="dtmf" root="start1" version="1.0">
+				 <rule id="start1" scope="public">
+				     <one-of>     
+						 <item>1</item>
+						 <item>2</item>
+						 <item>8</item>
+						 <item>9</item>
+						 <item>0</item>
+				     </one-of>
+				 </rule>
+				</grammar>
+	
+			    <prompt bargein="true"  timeout="2s">
+					<audio expr="promptspath+'/menu_option.wav'"/>
+			    </prompt> 
+		<filled>
+			<if cond="choice=='1'">  
+				<goto next="#Fetch_Round"/>
+			<elseif cond="choice=='2'"/>
+				<goto next="#BigB_Rules"/>
+			<elseif cond="choice=='8'"/>
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="actmanager.vxml"/>
+			<elseif cond="choice=='0'"/>
+				<goto next="followup.vxml"/>
+			</if>
+		</filled>
+			
+		<noinput>
+			<prompt bargein="true" timeout="1s">  
+			    	<audio expr="promptspath+'/no_input.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count='3'>
+			<goto next="#Fetch_Round"/>
+		</noinput>
+
+
+		<nomatch>
+			<prompt bargein="true" timeout="1s"> 
+			   	<audio expr="promptspath+'/invalid.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count='3'>
+			<goto next="#Fetch_Round"/>
+		</nomatch>
+
+			
+	</field>
+
+</form>
+
+
+<form id="BigB_Rules">
+	<field name="choice">               
+		<grammar mode="dtmf" root="start2" version="1.0">
+			 <rule id="start2" scope="public">
+			     <one-of>     
+					 <item>1</item>
+					 <item>2</item>
+					 <item>8</item>
+					 <item>9</item>
+					 <item>0</item>
+			     </one-of>
+			 </rule>
+		</grammar>
+
+			    <prompt bargein="true"  timeout="1s">
+					<audio expr="promptspath+'/contest_info.wav'"/>
+					<audio expr="promptspath+'/listen_again.wav'"/>
+			    </prompt> 
+		<filled>
+			<if cond="choice=='1'">  
+				<goto next="#BigB_Rules"/>
+			<elseif cond="choice=='2'"/>
+				<goto next="#Fetch_Round"/>
+			<elseif cond="choice=='8'"/>
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="actmanager.vxml"/>
+			<elseif cond="choice=='0'"/>
+				<goto next="followup.vxml"/>
+			</if>
+		</filled>
+
+		<noinput>
+			<prompt bargein="true" timeout="1s">  
+			    	<audio expr="promptspath+'/no_input.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+		<noinput count='3'>
+			<goto next="#Fetch_Round"/>
+		</noinput>
+
+
+		<nomatch>
+			<prompt bargein="true" timeout="1s"> 
+			   	<audio expr="promptspath+'/invalid.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</nomatch>
+		<nomatch count='3'>
+			<goto next="#Fetch_Round"/>
+		</nomatch>
+
+	</field>
+</form>
+
+<form id="Fetch_Round">
+	<block>
+		
+           <script srcexpr="'http://'+CIP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_BIGBCONTEST_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+DNIS"/>
+    		<script>
+    		 <![CDATA[
+    				   for(j=0; j< out_string.length;  j++)
+    					  {  	  
+    					       if(j==0)
+    						   score = out_string[j];
+    					       if(j==1)
+    						   questionnum = out_string[j];
+    					       if(j==2)
+    						   Sit_Counter= out_string[j];
+    					       if(j==3)
+    						   round= out_string[j];							      
+    					  }
+    
+    				]]>
+    		</script>
+    		<script>
+    			score=parseInt(score);
+    			questionnum=parseInt(questionnum);
+    			Sit_Counter=parseInt(Sit_Counter);
+    			round=parseInt(round);
+		</script>
+		<log expr="'@@@@@@@ BIGB ka score total ===>' +score"/>
+		<log expr="'@@@@@@@ BIGB ka score total questionnum ===>' +questionnum"/>
+		<log expr="'@@@@@@@ BIGB ka score total Sit_Counter ===>' +Sit_Counter"/>
+		<log expr="'@@@@@@@ BIGB ka score total round ===>' +round"/>
+		<goto next="#GetQA"/>
+	</block>
+</form>
+
+<form id="GetQA">
+	<block>
+		
+		<script srcexpr="'http://'+CIP+'/'+servlet_path+'/Surtarang_QA?path=BigBCcontest-'+round"/>
+		<script>
+			<![CDATA[
+			  for(j=0; j<QuestionArray.length; j++)
+			     {  	  
+				 Question[j] = QuestionArray[j];
+			     }
+			 for(j=0; j<AnswerArray.length; j++)
+			     {  	  
+				 Answer[j] = AnswerArray[j];
+			     }
+			]]>	
+		</script>
+		<assign name="NumberOfQues" expr="QuestionArray.length"/>
+
+		<if cond="round==0">
+			<goto next="#Round1_welcome"/>
+		</if>
+		<if cond="round==1">
+			<if cond="Sit_Counter==1">
+				<goto next="#Round1_welcome"/>
+			<else/>
+				<goto next="#Round1_starts"/>
+			</if>
+		<elseif cond="round==2"/>
+			<if cond="Sit_Counter==1">
+				<goto next="#Round2_Intro"/>
+			<else/>
+				<goto next="#Round2_starts"/>
+			</if>
+		<elseif cond="round==3"/>
+			<if cond="Sit_Counter==1">
+				<goto next="#Round3_Intro"/>
+			<else/>
+				<goto next="#Round2_starts"/>
+			</if>
+		</if>
+	</block>
+</form>
+
+
+<form id="Round1_welcome">
+	<block>
+		<script>
+			round=1;
+			Sit_Counter=1;
+		</script>
+	</block>
+	<field name="choice">               
+		<grammar mode="dtmf" root="start3" version="1.0">
+			 <rule id="start3" scope="public">
+			     <one-of>     
+					 <item>8</item>
+					 <item>9</item>
+					 <item>0</item>
+			     </one-of>
+			 </rule>
+		</grammar>
+			    <prompt bargein="true"  timeout="1s">
+					<audio expr="promptspath+'/welcome_round1.wav'"/>
+					<audio expr="promptspath+'/follow_amitabh.wav'"/>
+			    </prompt> 
+		<filled>
+			
+			<if cond="choice=='8'">
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="actmanager.vxml"/>
+			<elseif cond="choice=='0'"/>
+				<goto next="followup.vxml"/>
+			<else/>
+				<goto next="#Round1_starts"/>
+			</if>
+		</filled>
+
+		<noinput>
+			<goto next="#Round1_starts"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#Round1_starts"/>
+		</nomatch>
+
+	</field>
+</form>
+
+
+<form id="Round1_starts">
+	<block>
+		<assign name="index" expr="getRandom(1,50)" />
+		<assign name="tno" expr="getRandom(1,10)" />
+
+		<log expr="'@@@@@@@ VALUE OF INDEX ISSSSSS ===>' +index"/>
+		<if cond="Sit_Counter==3">
+			<goto next="#ScorePart"/>
+		</if>
+	</block>
+	<field name="choice">               
+		<grammar mode="dtmf" root="start4" version="1.0">
+			 <rule id="start4" scope="public">
+			     <one-of>     
+					 <item>1</item>
+					 <item>2</item>
+					 <item>8</item>
+					 <item>9</item>
+					 <item>0</item>
+			     </one-of>
+			 </rule>
+		</grammar>
+
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptspath+'/question'+index+'.wav'"/>
+			</prompt>
+		<filled>
+			<script>ind=index-1</script>
+			<log expr="'@@@@@@@ VALUE OF IND ISSSSSS ===>' +ind"/>
+			<assign name="ans" expr="Answer[ind]"/>
+			<log expr="'@@@@@@@ VALUE OF ANS ISSSSSS ===>' +ans"/>
+			
+			<if cond="choice == ans">
+				<assign name="score" expr="score+10"/>
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptspath+'/correct_ans.wav'"/>
+			        </prompt>
+				
+				 <prompt bargein="true" timeout="2s" cond="Sit_Counter==1">
+					<audio expr="promptspath+'/trivia_intro.wav'"/>
+					<audio expr="promptspath+'/trivia'+tno+'.wav'"/>
+					<audio expr="promptspath+'/trivia_end.wav'"/>
+			        </prompt>
+
+			        <script>
+			        	Sit_Counter = Sit_Counter + 1;
+				</script>
+				<goto next="#Round1_starts"/>
+			<elseif cond="choice=='8'"/>
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="actmanager.vxml"/>
+			<elseif cond="choice=='0'"/>
+				<goto next="followup.vxml"/>
+			<else/>
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptspath+'/wrong_ans.wav'"/>
+			        </prompt>
+				<prompt bargein="true" timeout="2s" cond="Sit_Counter==1">
+					<audio expr="promptspath+'/trivia_intro.wav'"/>
+					<audio expr="promptspath+'/trivia'+tno+'.wav'"/>
+					<audio expr="promptspath+'/trivia_end.wav'"/>
+			        </prompt>
+
+			        <script>
+					Sit_Counter = Sit_Counter + 1;
+				</script>
+				<goto next="#Round1_starts"/>
+			</if>
+			
+		</filled>
+
+		
+		<noinput>
+			<prompt bargein="true" timeout="1s">  
+				<audio expr="promptspath+'/no_input.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+
+		<nomatch>
+			<prompt bargein="true" timeout="1s"> 
+				<audio expr="promptspath+'/invalid.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+	        </nomatch>
+
+
+	</field>
+</form>
+
+
+<form id="Round2_Intro">
+	<block>
+		<script>
+			round=2;
+			Sit_Counter=1;
+		</script>
+	</block>
+	<field name="choice">               
+		<grammar mode="dtmf" root="start5" version="1.0">
+			 <rule id="start5" scope="public">
+			     <one-of>     
+					 <item>1</item>
+					 <item>8</item>
+					 <item>9</item>
+					 <item>0</item>
+			     </one-of>
+			 </rule>
+		</grammar>
+			    <prompt bargein="true"  timeout="1s">
+					<audio expr="promptspath+'/welcome_round2.wav'"/>
+			    </prompt> 
+		<filled>
+			<if cond="choice=='8'">
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="actmanager.vxml"/>
+			<elseif cond="choice=='0'"/>
+				<goto next="followup.vxml"/>
+			<else/>
+				<goto next="#Round2_starts"/>
+			</if>
+		</filled>
+
+		<noinput>
+			<goto next="#Round2_starts"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#Round2_starts"/>
+		</nomatch>
+
+	</field>
+</form>
+
+
+<form id="Round2_starts">
+	<block>
+		<assign name="index" expr="getRandom(1,50)" />
+		<assign name="tno" expr="getRandom(1,10)" />
+
+		<assign name="round" expr="2" />
+		<log expr="'@@@@@@@ VALUE OF INDEX ISSSSSS ===>' +index"/>
+		<if cond="Sit_Counter==3">
+			<goto next="#ScorePart"/>
+		</if>
+	</block>
+	<field name="choice">               
+		<grammar mode="dtmf" root="start6" version="1.0">
+			 <rule id="start6" scope="public">
+			     <one-of>     
+					 <item>1</item>
+					 <item>2</item>
+					 <item>8</item>
+					 <item>9</item>
+					 <item>0</item>
+			     </one-of>
+			 </rule>
+		</grammar>
+
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptspath+'/question'+index+'.wav'"/>
+			</prompt>
+		<filled>
+			<script>ind=index-1</script>
+			<log expr="'@@@@@@@ VALUE OF IND ISSSSSS ===>' +ind"/>
+			<assign name="ans" expr="Answer[ind]"/>
+			<log expr="'@@@@@@@ VALUE OF ANS ISSSSSS ===>' +ans"/>
+			
+			<if cond="choice == ans">
+				<assign name="score" expr="score+10"/>
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptspath+'/correct_ans.wav'"/>
+			        </prompt>
+				<prompt bargein="true" timeout="2s" cond="Sit_Counter==1">
+					<audio expr="promptspath+'/trivia_intro.wav'"/>
+					<audio expr="promptspath+'/trivia'+tno+'.wav'"/>
+					<audio expr="promptspath+'/trivia_end.wav'"/>
+			        </prompt>
+
+			        <script>
+			        	Sit_Counter = Sit_Counter + 1;
+				</script>
+				<goto next="#Round2_starts"/>
+			<elseif cond="choice=='8'"/>
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="actmanager.vxml"/>
+			<elseif cond="choice=='0'"/>
+				<goto next="followup.vxml"/>
+			<else/>
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptspath+'/wrong_ans.wav'"/>
+			        </prompt>
+				<prompt bargein="true" timeout="2s" cond="Sit_Counter==1">
+					<audio expr="promptspath+'/trivia_intro.wav'"/>
+					<audio expr="promptspath+'/trivia'+tno+'.wav'"/>
+					<audio expr="promptspath+'/trivia_end.wav'"/>
+			        </prompt>
+
+			        <script>
+					Sit_Counter = Sit_Counter + 1;
+				</script>
+				<goto next="#Round2_starts"/>
+			</if>
+			
+		</filled>
+
+	
+		<noinput>
+			<prompt bargein="true" timeout="1s">  
+				<audio expr="promptspath+'/no_input.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+
+		<nomatch>
+			<prompt bargein="true" timeout="1s"> 
+				<audio expr="promptspath+'/invalid.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+	        </nomatch>
+
+
+	</field>
+</form>
+
+<form id="Round3_Intro">
+	<block>
+		<script>
+			round=3;
+			Sit_Counter=1;
+		</script>
+	</block>
+	<field name="choice">               
+		<grammar mode="dtmf" root="start7" version="1.0">
+			 <rule id="start7" scope="public">
+			     <one-of>     
+					 <item>1</item>
+					 <item>8</item>
+					 <item>9</item>
+					 <item>0</item>
+			     </one-of>
+			 </rule>
+		</grammar>
+			    <prompt bargein="true"  timeout="1s">
+					<audio expr="promptspath+'/welcome_round3.wav'"/>
+			    </prompt> 
+		<filled>
+			<if cond="choice=='8'">
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="actmanager.vxml"/>
+			<elseif cond="choice=='0'"/>
+				<goto next="followup.vxml"/>
+			<else/>
+				<goto next="#Round3_starts"/>
+			</if>
+		</filled>
+
+		<noinput>
+			<goto next="#Round3_starts"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="#Round3_starts"/>
+		</nomatch>
+
+	</field>
+</form>
+
+
+<form id="Round3_starts">
+	<block>
+		<assign name="index" expr="getRandom(1,50)" />
+		<assign name="tno" expr="getRandom(1,10)" />
+
+		<assign name="round" expr="3" />
+		<log expr="'@@@@@@@ VALUE OF INDEX ISSSSSS ===>' +index"/>
+		<if cond="Sit_Counter==4">
+			<goto next="#ScorePart"/>
+		</if>
+	</block>
+	<field name="choice">               
+		<grammar mode="dtmf" root="start8" version="1.0">
+			 <rule id="start8" scope="public">
+			     <one-of>     
+					 <item>1</item>
+					 <item>2</item>
+					 <item>8</item>
+					 <item>9</item>
+					 <item>0</item>
+			     </one-of>
+			 </rule>
+		</grammar>
+
+			<prompt bargein="true" timeout="2s">
+				<audio expr="promptspath+'/question'+index+'.wav'"/>
+			</prompt>
+		<filled>
+			<script>ind=index-1</script>
+			<log expr="'@@@@@@@ VALUE OF IND ISSSSSS ===>' +ind"/>
+			<assign name="ans" expr="Answer[ind]"/>
+			<log expr="'@@@@@@@ VALUE OF ANS ISSSSSS ===>' +ans"/>
+			
+			<if cond="choice == ans">
+				<assign name="score" expr="score+10"/>
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptspath+'/correct_ans.wav'"/>
+			        </prompt>
+				<prompt bargein="true" timeout="2s" cond="Sit_Counter==2">
+					<audio expr="promptspath+'/trivia_intro.wav'"/>
+					<audio expr="promptspath+'/trivia'+tno+'.wav'"/>
+					<audio expr="promptspath+'/trivia_end.wav'"/>
+			        </prompt>
+
+			        <script>
+			        	Sit_Counter = Sit_Counter + 1;
+				</script>
+				<goto next="#Round3_starts"/>
+			<elseif cond="choice=='8'"/>
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="actmanager.vxml"/>
+			<elseif cond="choice=='0'"/>
+				<goto next="followup.vxml"/>
+			<else/>
+				<prompt bargein="true" timeout="2s">
+					<audio expr="promptspath+'/wrong_ans.wav'"/>
+			        </prompt>
+				 <prompt bargein="true" timeout="2s" cond="Sit_Counter==2">
+					<audio expr="promptspath+'/trivia_intro.wav'"/>
+					<audio expr="promptspath+'/trivia'+tno+'.wav'"/>
+					<audio expr="promptspath+'/trivia_end.wav'"/>
+			        </prompt>
+
+			        <script>
+					Sit_Counter = Sit_Counter + 1;
+				</script>
+				<goto next="#Round3_starts"/>
+			</if>
+			
+		</filled>
+
+	
+		<noinput>
+			<prompt bargein="true" timeout="1s">  
+				<audio expr="promptspath+'/no_input.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+
+		<nomatch>
+			<prompt bargein="true" timeout="1s"> 
+				<audio expr="promptspath+'/invalid.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+	        </nomatch>
+
+
+	</field>
+</form>
+
+
+
+<form id="ScorePart">
+      <block>
+      	     
+             <if cond="score==0">
+	     		<prompt bargein="true"  timeout="1s">
+	     			<audio expr="promptspath+'/score_is.wav'"/>
+	     			<audio expr="promptspath+'/0.wav'"/>
+	     		</prompt>
+	      <elseif cond="score==90 || score==80"/>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptspath+'/score_is.wav'"/>
+	     			<audio expr="promptspath+'/'+score+'.wav'"/>
+	     		</prompt>
+	      <elseif cond="score==1090 || score==1080 || score==2080 || score==2090"/>
+			<prompt bargein="true" timeout="1s" cond="score==1090">
+				<audio expr="promptspath+'/score_is.wav'"/>
+				<audio expr="promptspath+'/1.wav'"/>
+				<audio expr="promptspath+'/1000.wav'"/>
+				<audio expr="promptspath+'/90.wav'"/>
+	     		</prompt>
+			<prompt bargein="true" timeout="1s" cond="score==1080">
+				<audio expr="promptspath+'/score_is.wav'"/>
+				<audio expr="promptspath+'/1.wav'"/>
+				<audio expr="promptspath+'/1000.wav'"/>
+				<audio expr="promptspath+'/80.wav'"/>
+	     		</prompt>
+
+			<prompt bargein="true" timeout="1s" cond="score==2090">
+				<audio expr="promptspath+'/score_is.wav'"/>
+				<audio expr="promptspath+'/2.wav'"/>
+				<audio expr="promptspath+'/1000.wav'"/>
+				<audio expr="promptspath+'/90.wav'"/>
+	     		</prompt>
+
+			<prompt bargein="true" timeout="1s" cond="score==2080">
+				<audio expr="promptspath+'/score_is.wav'"/>
+				<audio expr="promptspath+'/2.wav'"/>
+				<audio expr="promptspath+'/1000.wav'"/>
+				<audio expr="promptspath+'/80.wav'"/>
+	     		</prompt>
+
+	       <else/>			
+			<script>
+				scorepartfirst = score/100;
+				scorepartthird = score/1000;
+			</script>
+				<assign name="scorepartsecond" expr="''+scorepartthird+''"/>
+				<assign name="scorepartfirstnew" expr="''+scorepartfirst+''"/>
+	     
+			<script>
+				var v1=scorepartsecond.split(".");
+				var v2=v1[0];
+				var v3=v1[1];
+				var c1=scorepartfirstnew.split(".");
+				var c2=c1[0];
+				var c3=c1[1];
+				var c4=c3*10;
+			</script>
+	     			<assign name="v" expr="''+v3+''"/>
+	     
+	     		<log> v varible length is  <value expr="v"/></log>
+	     		<log> scorepartsecond varible length is  <value expr="scorepartsecond"/></log>
+	     		<log> scorepartfirstnew varible length is  <value expr="scorepartfirstnew"/></log>
+	     
+			<script>
+				var mm=parseInt(v);
+				var v5=mm/10;
+			</script>
+	     		<assign name="v" expr="''+v5+''"/>
+	     		<log> v5 length varible length is  <value expr="v5"/></log>
+	     		<log> v.length varible length is  <value expr="v.length"/></log>
+	     
+	     	<if cond="v3.length &gt; 1">
+	     		<script>
+	     			var v4=v.split(".");
+	     			var v6=v4[0];
+	     			var c6=v4[1];
+	     			var c8=c6*10;
+	     		</script>
+	     		<assign name="v3" expr="''+v6+''"/>
+	     		<assign name="c3" expr="''+c6+''"/>
+	     		<assign name="c4" expr="''+c8+''"/>
+	     		<log expr="'VALUE OF C3 ISSSS ===>' +c3"/>
+	     		<log expr="'VALUE OF C4 ISSSS ===>' +c4"/>
+	     
+	     	</if>
+	     		<log> scorepartfirst varible length is  <value expr="scorepartfirst"/></log>
+	     		<prompt bargein="true" timeout="1s">
+	     			<audio expr="promptspath+'/score_is.wav'"/>
+	     		</prompt>
+	     
+	     		<prompt bargein="true" timeout="1s" cond="score &gt; 990">
+	     			<audio expr="promptspath+'/'+v2+'.wav'"/>
+	     			<audio expr="promptspath+'/1000.wav'"/>
+	     		</prompt>
+	     
+	     		 <prompt bargein="true" timeout="1s" cond="v3 &gt; 0.9">
+	     			<audio expr="promptspath+'/'+v3+'.wav'"/>
+	     			<audio expr="promptspath+'/100.wav'"/>
+	     		</prompt> 
+	     
+	     		<prompt bargein="true" timeout="1s" cond="c3 &gt; 0">
+	     			<audio expr="promptspath+'/'+c4+'.wav'"/>
+	     		</prompt>
+			 
+			
+
+      	</if>	
+			
+	     		<if cond="round==1">
+	     			<prompt bargein="true" timeout="1s">
+		     			<audio expr="promptspath+'/congrats_r1.wav'"/>
+	     			</prompt>
+	     			<script>
+					round=2;
+					Sit_Counter=1;
+	     			</script>
+	     			<script srcexpr="'http://'+CIP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_BIGBCONTEST_UPDATETIME&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+Sit_Counter+'&amp;INPARAM[5]='+round"/>
+	     			<goto next="#GetQA"/>
+	     		<elseif cond="round==2"/>
+	     			<prompt bargein="true" timeout="1s">
+			     		<audio expr="promptspath+'/congrats_r2.wav'"/>
+	     			</prompt>
+	     			<script>
+	     				round=3;
+	     				Sit_Counter=1;
+	     			</script>
+	     			<script srcexpr="'http://'+CIP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_BIGBCONTEST_UPDATETIME&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+Sit_Counter+'&amp;INPARAM[5]='+round"/>
+	     			<goto next="#GetQA"/>
+	     		<elseif cond="round==3"/>
+	     			<prompt bargein="true" timeout="1s">
+					<audio expr="promptspath+'/congrats_r3.wav'"/>
+	     			</prompt>
+	     			<script>
+					round=1;
+					Sit_Counter=1;
+				</script>
+				<script srcexpr="'http://'+CIP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_BIGBCONTEST_UPDATETIME&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]='+index+'&amp;INPARAM[4]='+Sit_Counter+'&amp;INPARAM[5]='+round"/>
+	     			<goto next="#RepeatGame"/>
+	     		</if>
+      </block>
+</form>
+<form id="RepeatGame">
+	<field name="choice">               
+		<grammar mode="dtmf" root="start9" version="1.0">
+			 <rule id="start9" scope="public">
+			     <one-of>     
+					 <item>1</item>
+					 <item>8</item>
+					 <item>9</item>
+					 <item>0</item>
+			     </one-of>
+			 </rule>
+		</grammar>
+			    <prompt bargein="true"  timeout="1s">
+					<audio expr="promptspath+'/contest_repeat.wav'"/>
+			    </prompt> 
+		<filled>
+			<if cond="choice=='1'">
+				<goto next="#GetQA"/>
+			<elseif cond="choice=='8'"/>
+				<goto next="HUNGAMA_startclub_MainMnu_subs.vxml#hungamasubcatMenu"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="actmanager.vxml"/>
+			<elseif cond="choice=='0'"/>
+				<goto next="followup.vxml"/>
+			</if>
+		</filled>
+
+		<noinput>
+			<prompt bargein="true" timeout="1s">  
+				<audio expr="promptspath+'/no_input.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+		</noinput>
+
+		<nomatch>
+			<prompt bargein="true" timeout="1s"> 
+				<audio expr="promptspath+'/invalid.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+	        </nomatch>
+
+	</field>	
+
+</form>
+
+
+</vxml>

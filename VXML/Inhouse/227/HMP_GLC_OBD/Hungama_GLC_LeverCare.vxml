@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_GLC_ServiceRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_GLC_LeverCare.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+ <var name="contentfilepath" expr="''"/>
+ <var name="cfgFile" expr="''"/>
+<var name="contentfile" expr="''"/>
+<var name="TXFLAG" expr="'1'"/>
+	<script>
+		var favSongs=new Object();
+		var favLangs=new Object();
+		var out_string=new Object();
+		var spzone=new Object();
+		var len=0;
+	</script>
+	<form id="MAINMENU">
+		<block>
+		<assign name="Usage_time" expr="rim(section_begin)"/>
+		<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+		       <assign name="Section_Name" expr="'Wel_levercare'"/>
+		       <assign name="section_begin" expr="starttime()"/>
+			<assign name="CATEGORY" expr="'GLC_LEVERCARE_MENU'"/>
+			
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+'/'+lang+'/call_callcc.wav'"/>
+			</prompt>
+			
+			
+		</block>
+			<field name="choice">
+				<grammar mode="dtmf" root="start180" version="1.0"> 
+					<rule id="start180" scope="public">	
+						<one-of>
+
+							 <item>  8  </item>
+						</one-of>
+					</rule>
+				</grammar>
+				<filled>
+					<if cond="timerflag=='8'">
+						 <goto next="Hungama_GLC_RootMenu.vxml"/>
+					<else/>
+						<goto next="#Care_menu"/>
+					</if>
+				</filled>
+				<noinput>
+					<goto next="#Care_menu"/>
+				</noinput>
+				<nomatch>
+					<goto next="#Care_menu"/>
+				</nomatch>
+			</field>
+	</form>
+	<form id="Care_menu">
+			<block>
+			
+			<assign name="C_End" expr="start_time()"/>
+				<assign name="Usage_time" expr="rim(section_begin)"/>
+				<assign name="Usagelog" expr="Usagelog+Section_Name+hash"></assign> 
+				
+				<if cond="song_listen=='START'">
+					<assign name="song_listen" expr="'END'" />
+					<assign name="compare_time" expr="rim(song_begin)"/>
+					<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+					<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			
+					<if cond="CALCULATE_TIME=='SET'">
+						<script>
+						  total_used_bal=rim(start_BalenceMinute);
+						  balance=balance-total_used_bal;					  
+						</script>
+					</if>
+			
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+balance"/>
+				</if>	
+				<if cond="balance &lt; 0">
+						<script> balance=0;</script> 
+					</if>
+				<if cond="timerflag=='1'">
+					<script>balance=Math.floor(balance/60);</script> 
+					<if cond="balance &lt; 0">
+						<script> balance=0;</script> 
+					</if>
+				</if>
+					<if cond="CATEGORY=='NONLIVE'">
+						<assign name="compare_time" expr="rim(song_begin)"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=HUL_RECEIVE_OBD_NONLIVE&amp;INTOKEN=6&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=3&amp;INPARAM[2]='+compare_time+'&amp;INPARAM[3]=NONLIVE_APP&amp;INPARAM[4]='+C_Start+'&amp;INPARAM[5]=NA'"/>		
+					<else/>
+						<assign name="compare_time_live" expr="rim(song_begin_live)"/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=HUL_RECEIVE_OBD_NEW&amp;INTOKEN=6&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]='+compare_time_live+'&amp;INPARAM[3]=LIVE_APP&amp;INPARAM[4]='+C_Start+'&amp;INPARAM[5]=NA'"/>		
+					</if>
+						<!--<if cond="(HEARD!='0' || HEARD!='') &amp;&amp; CATEGORY=='GLC_RADIO_MENU' &amp;&amp; saguniflag=='0'">
+							<assign name="HEARD" expr="playconfig"/>
+					      		  <assign name="HEARD_Folder" expr="contentdir"/>
+					     		   <assign name="HEARD_Song" expr="song"/>
+					     		    
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_USERPROFILE&amp;INTOKEN=5&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]='+HEARD_Song+'&amp;INPARAM[3]='+HEARD_Folder+'&amp;INPARAM[4]=SET'"/>
+							<script>
+								var res = out_string[0];
+							</script>
+						</if>-->
+			<!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=GLC_POSTOBD&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>-->
+			 <!--<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=GLC&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>-->
+ 				<script srcexpr="'http://'+IP+'/hungama/Hungama_ExitLog?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=GLC&amp;subflag='+usr_status+'&amp;contentlog='+contentlog+'&amp;Usagelog='+Usagelog"/>
+			</block> 
+			<transfer name="mytransfer"  destexpr="DC_DNIS" bridge="true" connecttimeout="2000s" namelist="ANI TXFLAG"> 
+			<filled>
+				<log> transfer done now</log>
+				<clear namelist="mytransfer"/>
+			</filled>
+			</transfer>
+	</form>
+</vxml>
+	

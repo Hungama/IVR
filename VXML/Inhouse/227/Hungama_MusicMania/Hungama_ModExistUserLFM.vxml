@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<meta name="Hungama_ModExistUserLFM.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+
+<var name="specialzonedate" expr="0"/>
+<var name="catlang" expr="0"/>
+<var name="caller_cnt" expr="0"/>
+	<script>
+		function GetDate()
+		{
+		var currentDT = new Date();
+		var day = currentDT.getDate();
+		var month = currentDT.getMonth() + 1;
+	 	var year = currentDT.getFullYear();
+		var hours = currentDT.getHours();
+	  	var minutes = currentDT.getMinutes();
+	  	var seconds = currentDT.getSeconds();
+	
+		if (month.length == 1) {month = "0" + month; }
+		if (day.length == 1) {day = "0" + day; }
+		
+		var strDateTime =  year + "-" + month + "-" + day;
+		return strDateTime;
+		}
+
+		function GetCurrentHour()
+		{
+			var currentDT = new Date();
+			var hours = currentDT.getHours();
+			return hours;
+		}
+	</script>	
+	<script>
+		var out_string=new Object();
+	</script>
+	
+	<form id="LASTHEARD_PROFILE">
+		<block>
+			<assign name = "specialzonedate" expr = "GetDate()" />
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_userprofile&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=GET'"/>
+			<script>
+			 <![CDATA[
+			   for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					HEARD = out_string[j];
+				  }
+			]]>			
+			</script>	
+			<assign name="var_wel" expr="getRandom(1,50)" />
+			<log expr="'HEARD @@@@@@@@@ '+HEARD"></log>
+			<script>
+				length = HEARD.length;						
+			</script>
+			<log expr="'Length of HEARD is@@@@@@@@@ '+length"></log>
+
+			<if cond="length == 3 || length &gt; 4">
+	 			<prompt bargein="true" cond="lang=='01'">
+					<audio expr="Prompt_Path+'/'+lang+'/welcome_old_newyr.wav'"/>
+				</prompt>
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			</if>	
+			<assign name="Section_Name" expr="'WEL_PROMPT_OLD_USER'"/>
+		</block>
+		<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+	 		<prompt bargein="true" cond="lang=='01'">
+				<audio expr="Prompt_Path+'/'+lang+'/wel_old_'+specialzonedate+'.wav'"/>
+			</prompt>
+ 			<prompt bargein="true" cond="lang!='01'">
+				<!--<audio expr="Prompt_Path+'/'+lang+'/welcome_afternoon_mon.wav'"/>-->
+				<audio expr="Prompt_Path+'/'+lang+'/wel_old_'+specialzonedate+'.wav'"/>				
+			</prompt>	
+			<filled>
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="#playclip"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					<!--cat = HEARD.substring(0,2);
+					subcat = HEARD.substring(2,4);-->
+				</script>
+				<log expr="'Length of HEARD is@@@@@@@@@ '+length"></log>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<assign name="cat" expr="HEARD"></assign>
+				<assign name="subcat" expr="HEARD"></assign>
+				<goto next="#playclip"></goto>												
+			</if>									
+			</filled>
+		</field>
+		<noinput>
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="#playclip"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					<!--cat = HEARD.substring(0,2);
+					subcat = HEARD.substring(2,4);-->
+				</script>				
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<assign name="cat" expr="HEARD"></assign>
+				<assign name="subcat" expr="HEARD"></assign>
+				<goto next="#playclip"></goto>												
+			</if>
+		</noinput>
+		<nomatch>
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="#playclip"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					<!--cat = HEARD.substring(0,2);
+					subcat = HEARD.substring(2,4);-->
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<assign name="cat" expr="HEARD"></assign>
+				<assign name="subcat" expr="HEARD"></assign>
+				<goto next="#playclip"></goto>												
+			</if>
+		</nomatch>
+	</form>
+	
+	<form id="playclip">
+		<block>
+			<if cond="HEARD=='0' || HEARD=='00' || HEARD=='OTH'">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			<else/>
+				<goto next="#LASTHEARD"></goto>
+			</if>
+		</block>
+	</form>
+	<form id="LASTHEARD">
+		<block>
+			<assign name="Section_Name" expr="'LAST_HEARD'"/>
+		</block>	
+		<field name="choice">
+		    <grammar mode="dtmf" root="start" version="1.0">
+					<rule id="start" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Prompt_Path+'/'+lang+'/listining_cat.wav'"/>
+				<audio expr="Prompt_Path+'/'+lang+'/cat'+HEARD+'.wav'"/>
+			</prompt>
+
+			<filled>
+				<if cond="choice=='8'">
+					<goto next="Hungama_ModMainMenu.vxml"></goto>
+				<else/>						
+					<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>					
+				</if>									
+			</filled>
+		</field>
+		<noinput>			
+			<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>			
+		</noinput>
+		<nomatch>
+			<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>				
+		</nomatch>
+	</form>
+</vxml>

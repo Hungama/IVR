@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="NineXMPortalRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	
+	<meta name="SelectLang.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+        <var name="wellang" expr="''" />
+	 
+	<script>
+		var ciropr1 = new Object();
+		var out_string=new Object();		
+	</script>
+	
+<form id="Main">
+	<block>
+	<assign name="C_Start" expr="start_time()"/>
+	<assign name="Section_Name" expr="'USER_STATUS_CHECK'"/>
+
+ 		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;	   
+	        </script>
+	    
+		<script>
+			var length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		  </script>
+		
+<if cond="ANI=='8546048758'">
+	<submit expr="'../Hungama_54646_JOKE_MM_TEST/SelectLang.vxml'"/>
+</if>
+			  <assign name="DNIS" expr="realDNIS"/>   
+              	  <log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+              	  <log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+		              	  
+              	   <assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"/> 
+   
+	    	           <!-- <script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>    				
+				<assign name="ciropr" expr="ciropr1.value"/>
+				<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>
+				<script>
+					var splitstr=ciropr.split("#");
+					operator=splitstr[1];
+					circle=splitstr[2];
+				</script>
+
+			<log>circle  is	<value expr="circle"/>    </log>
+			<log>operator is <value expr="operator"/>    </log>-->
+
+<script srcexpr="'http://192.168.100.226:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							circle = out_string[j];
+
+						  }
+
+					]]>
+
+		</script>
+
+	 <log> FIRST DB FETCH circle  is	<value expr="circle"/>    </log>
+	 <if cond="circle=='oth'">
+		<script srcexpr="'http://192.168.100.226:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+		<assign name="DNIS" expr="realDNIS"/>
+		<assign name="operator" expr="'und'"/>
+		<goto next="End.vxml"></goto>
+
+	 </if>
+
+
+	<if cond="ANI=='85869670461' || ANI=='8527000779' || ANI=='9582802919' || ANI=='8341425904'">
+			<assign name="circle" expr="'apd'"/>
+	</if>
+
+		<if cond="realDNIS=='66291422' &amp;&amp; circle=='apd'">
+				<submit expr="'../Hungama_ComedyPortal_UNIM/Hungama_54646_UserStatus_MM.vxml'"/>
+			</if>
+
+		<if cond="realDNIS=='5464622'">
+			 <assign name="DNIS" expr="'5464622'"/>
+			 <assign name="operator" expr="'relm'"/>
+		<elseif cond="realDNIS=='0115464622'"/>
+			 <assign name="DNIS" expr="'5464622'"/>
+			 <assign name="operator" expr="'tatm'"/>
+		<elseif cond="realDNIS=='01115464622'"/>
+			 <assign name="DNIS" expr="'5464622'"/>
+			 <assign name="operator" expr="'tatc'"/>
+		<elseif cond="realDNIS=='66291422'"/>
+			 <assign name="realDNIS" expr="'5464622'"/>
+			 <assign name="DNIS" expr="'5464622'"/>
+			 <assign name="operator" expr="'unim'"/>
+		<else/>
+			<assign name="DNIS" expr="'5464622'"/>
+			 <assign name="operator" expr="'unim'"/>
+		</if>
+	
+		<log>operator is <value expr="operator"/>    </log>
+
+		<if cond="operator=='relm' || operator=='relc'">
+			<assign name="dbservlet" expr="'relhungama_dbinteraction'"/>
+		<elseif cond="operator=='unim'"/>
+			<assign name="dbservlet" expr="'unihungama_dbinteraction'"/>
+		<elseif cond="operator=='tatm'"/>
+			<assign name="dbservlet" expr="'tatmhungama_dbinteraction'"/>
+		<elseif cond="operator=='tatc'"/>
+			<assign name="dbservlet" expr="'tatchungama_dbinteraction'"/>
+		<else/>
+		 	<assign name="dbservlet" expr="''unihungama_dbinteraction'"/>
+		</if>
+				
+	   <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			<![CDATA[
+			    for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status = out_string[j];
+				       if(j==1)
+					lang = out_string[j];
+				       if(j==2)
+					balance = out_string[j];
+					   if(j==3)
+					movienumber = out_string[j];
+					 if(j==4)
+					modesub = out_string[j];									      								       							      
+				  }
+
+			]]>
+			</script>
+			<log>length of outstring  is	<value expr="out_string.length"/></log>
+			<log expr="'@@@@@@@New usr_status===>' +usr_status"/>
+
+		<if cond="usr_status=='1'">
+			<script> 					 
+				    balance=balance*60;
+				    timerflag=1;      
+			</script>							
+			<script>
+				<![CDATA[
+					if(timerflag==1)
+					start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+
+			<log expr="'ballance at the time of call start '+balance"></log>
+			<goto next="NineXMMainMenu.vxml"/>
+		<elseif cond="usr_status == '-1'"/>
+			<goto next="Subscription.vxml"/> 
+		 <elseif cond="usr_status=='5'"/>
+				<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+				</prompt>
+				<goto next="End.vxml"></goto>
+
+		<else/>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="promptpath+LANG_DESCRIPTION+'/delay_charging.wav'"/>
+			</prompt>
+			<goto next="End.vxml"></goto>
+
+		</if>
+	</block>
+  </form>
+
+
+</vxml>

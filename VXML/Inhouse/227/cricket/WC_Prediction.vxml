@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="CricketRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="WC_Prediction.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+
+<var name="AnswerStatus" expr="'0'"/>
+<var name="bedge_prompt" expr="''"/>
+<var name="WC_lang" expr="'0'"/>
+
+		
+	<form id="userstatus">
+		<block>
+			<assign name="WC_lang" expr="lang"/>
+			<if cond="circle=='apd' || circle=='asm' || circle=='chn' || circle=='kar' || circle=='ker' || circle=='nes' || circle=='tnu'">
+				<assign name="WC_lang" expr="'02'"/>
+			<else/>
+				<assign name="WC_lang" expr="'01'"/>
+			</if>
+			<!--<if cond="WC_lang!='01' &amp;&amp; WC_lang!='02' &amp;&amp; WC_lang!='08'">
+				<assign name="WC_lang" expr="'02'"/>
+			</if>-->
+
+
+					<assign name="SECTION" expr="'IPL_PREDICTION'"/>
+		<assign name="Section_Name" expr="'IPL_PREDICTION'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=IPL_CATALOG&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							match_id = out_string[j];
+						       if(j==1)
+							T1 = out_string[j];
+						       if(j==2)
+							 T2 = out_string[j];
+							
+						   }
+
+					]]>
+
+			</script>
+			<log expr="'match_id @@@@@@@@@ '+match_id"></log>
+			<log expr="'team T1  @@@@@@@@@ '+T1"></log>
+			<log expr="'team T2  @@@@@@@@@ '+T2"></log>
+			<if cond="ANI=='85869670461'">
+				<assign name="match_id" expr="35" />
+				<assign name="cat" expr="'hyderabad'" />
+				<assign name="cat" expr="'bangalore'" />
+
+
+			</if>
+
+				<if cond="match_id=='-1'">
+					 <goto next="MainMenu.vxml"/>
+				<else/>
+					<goto next="#MainMenu"/>
+				</if>
+		</block>
+	</form>
+	<form id="MainMenu">
+		<block>
+			<!-- Checking for Last Heard -->
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=IPL_QUERY&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1&amp;INPARAM[2]='+match_id"/>
+			<script>
+				qusplayed=out_string[0];
+				qusplayed=parseInt(qusplayed);
+			</script>
+				<log expr="'qusplayed @@@@@@@@@ '+qusplayed"></log>
+				
+				<if cond="qusplayed=='0'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/welcome_contest.wav'"/>
+						<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/welcome_old_0.wav'"/>
+						<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/pre_question.wav'"/>
+					</prompt>
+					 <goto next="#Game_Play"/>
+				<elseif cond="qusplayed=='5'"/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/questions_played.wav'"/>
+					</prompt>
+					<goto next="MainMenu.vxml"/>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/welcome_old_0.wav'"/>
+						<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/pre_question.wav'"/>
+					</prompt>
+					<script>
+						IPL_quscounter=qusplayed;
+						IPL_quscounter=IPL_quscounter+1;
+					</script>
+					<goto next="#Game_Play"/>
+				</if>
+					
+		</block>
+	</form>		
+	
+	<form id="Game_Play">
+		<block>
+				<assign name="song_begin" expr="start_time()"/>
+				<assign name="song_listen" expr="'START'" />
+				<assign name="cat" expr="'IPL'" />
+				<assign name="subcat" expr="'IPL'" />
+				<script>song='question'+IPL_quscounter</script>
+				<log expr="'@@@@@@@@@@@@@@@@@@@@@@@@@@@song=='+song"></log>
+
+		</block>
+			
+		
+			<field name="userdtmf">
+			<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								<item>  1  </item>
+								<item>  2  </item>
+								<item>  9  </item>
+								
+							</one-of>
+						</rule>
+				</grammar>
+				
+				<prompt bargein="false" timeout="2s" cond="IPL_quscounter=='1'">
+					<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/question'+IPL_quscounter+'.wav'"/>
+					<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/'+T1+'.wav'"/>
+					<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/for1.wav'"/>
+					<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/'+T2+'.wav'"/>
+					<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/for2.wav'"/>
+				</prompt>
+				<prompt bargein="false" timeout="2s" cond="IPL_quscounter!='1'">
+					<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/question'+IPL_quscounter+'.wav'"/>
+				</prompt>
+			<filled>
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+					
+					<log>userdtmf  is<value expr="userdtmf"/></log>
+					
+				<if cond="userdtmf=='1' || userdtmf=='2'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=IPL_SCORE&amp;INTOKEN=4&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+match_id+'&amp;INPARAM[2]='+IPL_quscounter+'&amp;INPARAM[3]='+userdtmf"/>
+						<prompt timeout="2s"  bargein="true">
+							<audio expr="'http://'+IP+'/'+IPLPrompt_Path+'/'+WC_lang+'/thanks_contest.wav'"/>
+						</prompt>
+						<assign name="IPL_quscounter" expr="IPL_quscounter+1"/>
+						<goto next="MainMenu.vxml"/>
+				<elseif cond="userdtmf=='9'"/>
+					<goto next="AccountManager.vxml"/>
+				</if>
+			</filled>
+			
+			<nomatch count="1">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+WC_lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>		 
+			</nomatch>
+			<nomatch count="2">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				<goto next="MainMenu.vxml"/>					 
+			</nomatch>
+			<noinput count="1">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+WC_lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt></reprompt>	 
+			</noinput>
+			<noinput count="2"> 
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+				<goto next="MainMenu.vxml"/>				 
+			</noinput>
+		</field>
+	</form>
+</vxml>

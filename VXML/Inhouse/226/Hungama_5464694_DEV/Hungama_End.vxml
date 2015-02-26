@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_End.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+<form id="EndLogin">
+<block>
+	<assign name="C_End" expr="start_time()"/>
+	<if cond="song_listen=='START'">
+		<assign name="song_listen" expr="'END'" />
+		<assign name="compare_time" expr="rim(song_begin)"/>
+		<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+		<assign name="contentlog" expr="contentlog+hash+song+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			<script>
+			  total_used_bal=rim(start_BalenceMinute);
+			  balance=balance-total_used_bal;					  
+			</script>
+	
+	</if>	
+	<if cond="balance &lt; 0">
+			<script> balance=0;</script> 
+	</if>
+	<log expr="'balance@@@@@@@@@@@@@@@@@@@@ =' + balance"/>							
+
+	<if cond="timerflag=='1'">
+		<script>balance=Math.floor(balance/60);</script> 
+		<if cond="balance &lt; 0">
+			<script> balance=0;</script> 
+		</if>
+	<log expr="' after calulating balance@@@@@@@@@@@@@@@@@@@@ =' + balance"/>	
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DEV_UPDATETIME&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+balance+'&amp;INPARAM[2]='+DNIS"/>
+	</if>
+ <if cond="(operator=='tatm' || operator=='tatc' || operator=='virm' || operator=='unim') &amp;&amp; sub_flag=='true'">
+	<script srcexpr="'http://192.168.100.226:8082/hungama/Inhouse_Concentlog?ANI='+ANI+'&amp;circle='+circle+'&amp;service=1027&amp;SC='+DNIS+'&amp;firstconsent='+firstconsent+'&amp;firstconsenttime='+firstconsenttime+'&amp;secondconsent='+secondconsent+'&amp;secondconsenttime='+secondconsenttime+'&amp;ccgresult='+ccgresult+'&amp;IVRtransid='+CPTID+'&amp;operator='+operator+'&amp;dtmf='+pressdtmf"/>  
+</if>
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+modesub+hash+callcharge+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=Deiva&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+
+	<exit/>
+</block>
+
+ <catch event="error.badfetch">		 								
+    	 	 <exit/>
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 	<exit/>
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+		  	<exit/>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+			<exit/>
+      </catch>
+      
+    
+</form>
+	
+
+
+
+</vxml>

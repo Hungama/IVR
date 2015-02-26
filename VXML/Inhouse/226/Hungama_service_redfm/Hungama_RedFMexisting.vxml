@@ -1,0 +1,767 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_RedFMRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_RedFMexisting.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="defaultclipflag" expr="'f'"></var>
+	<var name="staticclipflag" expr="'f'"></var>
+	<var name="dfltcnt" expr="0"></var>
+	<var name="prevhour" expr="''"></var>
+	<var name="offset" expr="0"></var>
+	<var name="date1" expr="''"></var>
+	<var name="names" expr="''"/>
+	<var name="movie_idx" expr="0"/>
+	<var name="mark2" expr="0"/>
+	<var name="NM_count" expr="1"/>
+	<var name="NI_count" expr="1"/>	
+	<var name="live_cnt" expr="0"/>
+	<var name="fillerfile" expr="''"></var>	
+	<var name="Song_Type" expr="''"></var>
+	<var name="Song_Path" expr="''"></var>
+	<var name="type" expr="''"></var>
+	<var name="len" expr="0"></var>
+	<var name="hash_new" expr="'%5C'"/>
+	<var name="lennew" expr="0"></var>
+	<var name="modules" expr="0"></var>
+	<var name="modulecounter" expr="1"></var>
+	<var name="prevmodulecounter" expr="0"></var>
+	<var name="staticpath" expr="'hindi'"></var>
+	<var name="rem_time" expr="0"/>
+	<var name="cnt" expr="0"/>
+	<var name="feed_duration" expr="0"/>
+	<var name="var_wel" expr="''"/>
+	<var name="start_index" expr=""/>
+	<var name="end_index" expr=""/>
+	<var name="OTHER_RECIPES" expr="''"/>
+	<var name="choice" expr="''"/>
+	<var name="playconfig" expr="''"/>
+	<script>
+		aNavHistory.push("Hungama_RedFMexisting.vxml");		 
+	    	var favSongs=new Object();
+	    	var category_Array = new Array();
+	       var out_string=new Object();
+	       var j = new Object();
+		var MostHeard = new Object();
+		var curbalance= new Object();
+	</script>
+	
+	
+	<form id="main">
+		<block>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=GET'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	MostHeard = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			<log>
+				MostHeard is <value expr="MostHeard"/>
+			</log>
+			<assign name="var_wel" expr="'1'" />								
+		</block>
+		<field name="opt">
+			<grammar mode="dtmf" root="alldigits" version="1.0">
+				<rule id="alldigits" scope="public">
+					<one-of>
+						<item>  0  </item>
+						<item>  1  </item>
+						<item>  2  </item>
+						<item>  3  </item>
+						<item>  4  </item>
+						<item>  5  </item>
+						<item>  6  </item>
+						<item>  7  </item>
+						<item>  8  </item>
+						<item>  9  </item>
+						<item>  *  </item>
+						<item>  #  </item>
+					</one-of>
+				</rule>
+			</grammar>
+					<!--<prompt bargein="true" timeout="0s">
+				    	<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_old_'+var_wel+'.wav'" />
+					</prompt>-->
+			<filled>
+				<if cond="MostHeard == '0' || MostHeard == 'xyz'">
+					<goto next="#list"/>
+				<else/>
+					<var name="station" expr="MostHeard"/> 
+					<goto next="#navi"></goto>	
+				</if>
+			</filled>
+			<noinput>
+				<if cond="MostHeard == '0' || MostHeard == 'xyz'">
+					<goto next="#list"/>
+				<else/>
+					<var name="station" expr="MostHeard"/> 
+					<goto next="#navi"></goto>	
+				</if>
+			</noinput>
+			<nomatch>
+				<if cond="MostHeard == '0' || MostHeard == 'xyz'">
+					<goto next="#list"/>
+				<else/>
+					<var name="station" expr="MostHeard"/> 
+					<goto next="#navi"></goto>	
+				</if>
+			</nomatch>
+			<catch event=" error.badfetch ">
+				<if cond="MostHeard == '0' || MostHeard == 'xyz'">
+						<goto next="#list"/>
+					<else/>
+						<var name="station" expr="MostHeard"/> 
+						<goto next="#navi"></goto>	
+					</if>
+			</catch>
+		</field>
+	</form>
+
+
+	<form id="navi">
+		<block>
+			<assign name="Aarti_Name" expr="MostHeard"></assign>
+			
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Redfm/'+circle+'.txt'"/>
+                     <assign name="len" expr="favSongs.length"/>
+		     <script>
+			      <![CDATA[
+					      
+					   var k=1;
+						for(j=0;j < len;j++)
+						  {  	  
+												 
+						  category_Array[j] = favSongs[j];
+						  
+								 }
+			      ]]>		
+		   </script>
+           
+           <if cond="len=='0'">
+           <script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Redfm/del.txt'"/>
+                     <assign name="len" expr="favSongs.length"/>
+		     <script>
+			      <![CDATA[
+					      
+					   var k=1;
+						for(j=0;j < len;j++)
+						  {  	  
+												 
+						  category_Array[j] = favSongs[j];
+						  
+								 }
+			      ]]>		
+		   </script>
+           </if>   
+           
+ 	      	<assign name="movie_idx" expr="0" />
+		</block>
+
+		<field name="opt">
+			<grammar mode="dtmf" root="onlyonetwonine" version="1.0">
+				<rule id="onlyonetwonine" scope="public">
+					<one-of>
+						<item>  9  </item>
+						<item>  1  </item>
+						<item>  2  </item>						
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="3s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/listining_cat.wav'"/>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/station'+MostHeard+'.wav'"/>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/continue_prompt.wav'"/>				
+	     	</prompt>
+	     	<filled>
+	     		<if cond="opt=='9'">
+	     			<assign name="backmovepage" expr="'Hungama_RedFMexisting.vxml#navi'"/>
+					<goto next="Hungama_RedFMHELP.vxml"/>
+			<elseif cond="opt=='2'"/>
+				<goto next="#list"/>
+			<else/>
+	     			<assign name="HeardCat" expr="MostHeard"/>
+				<goto next="#keypad"></goto>		
+	     		</if>
+	     	</filled>
+			<noinput count="1">
+     				<assign name="HeardCat" expr="MostHeard"/>
+				<goto next="#keypad"></goto>			
+			</noinput>
+			<nomatch count="1">
+     				<assign name="HeardCat" expr="MostHeard"/>
+				<goto next="#keypad"></goto>		
+			</nomatch>
+			
+		</field>
+	</form>
+	<form id="list">
+		<block>
+			<assign name="Aarti_Name" expr="MostHeard"></assign>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Redfm/'+circle+'.txt'"/>
+	                     <assign name="len" expr="favSongs.length"/>
+			     <script>
+				      <![CDATA[
+						      
+						   var k=1;
+							for(j=0;j < len;j++)
+							  {  	  
+													 
+							  category_Array[j] = favSongs[j];
+							  
+									 }
+				      ]]>		
+			   </script>
+			   
+           <if cond="len=='0'">
+		   <script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=Redfm/del.txt'"/>
+			     <assign name="len" expr="favSongs.length"/>
+			     <script>
+			      <![CDATA[
+					      
+					   var k=1;
+						for(j=0;j < len;j++)
+						  {  	  
+												 
+						  category_Array[j] = favSongs[j];
+						  
+								 }
+			      ]]>		
+		   </script>
+           </if>   
+           
+            	       
+ 	      	<assign name="movie_idx" expr="0" />
+	</block>
+		<field name="opt">
+			<grammar mode="dtmf" root="alldigitsexceptzero"  version="1.0">
+				<rule id="alldigitsexceptzero" scope="public">
+					<one-of>
+						<item>  9  </item>
+						<item>  1  </item>
+						<item>  2  </item>	
+						<item>  3  </item>
+						<item>  4  </item>
+						<item>  5  </item>	
+						<item>  6  </item>						
+						<item>  8  </item>
+						<item>  7  </item>						
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="0s">
+				<!--<foreach item="names" array="category_Array">
+				<mark nameexpr="movie_idx++"/>
+				
+				 <log>	song is is    	<value expr="movie_idx"/>  	</log>
+			        <log>	names is is    	<value expr="names"/>  	</log>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/select_station'+names+'.wav'" />
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf'+movie_idx+'.wav'"  />
+				</foreach> -->
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/select_station'+category_Array[movie_idx]+'.wav'" />
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf'+ ++movie_idx+'.wav'"  />
+				
+				
+			</prompt>
+			<prompt bargein="true" timeout="3s" cond="movie_idx &gt;=len-1">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/select_acmanager.wav'" />
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf9.wav'"  />   
+			</prompt>
+			<filled>
+			<if cond="opt=='9'">	
+				<assign name="backmovepage" expr="'Hungama_RedFMexisting.vxml#navi'"/>
+					<goto next="Hungama_RedFMHELP.vxml"/>
+			<else/>
+		        <if cond="opt &lt; len || opt == len "> 
+      				
+      					<script>
+      						opt = parseInt(opt)-1;
+      					</script>
+      					<assign name="unike_play" expr="opt" />
+      					<assign name="MostHeard" expr="category_Array[opt]" />
+      					<assign name="HeardCat" expr="MostHeard"/>
+      					<log expr="'unike_play==>'+unike_play"></log>
+      					<goto next="#keypad"/>
+      			<else/>
+      					<assign name="movie_idx" expr="0" />
+  					<clear namelist="opt"></clear>
+	      		    		<throw event="nomatch"></throw>
+  			</if>
+			</if>	
+			</filled>		
+			<nomatch>
+           		<assign name="movie_idx" expr="0"/>
+				<prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+		   	</nomatch>		
+			
+			<noinput>
+				<if cond="movie_idx &lt; len">
+					<goto nextitem="opt"/>
+				</if>
+				<assign name="movie_idx" expr="0"/>
+			    <prompt bargein="true">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<reprompt></reprompt>
+			</noinput>
+		</field>
+	</form>
+	
+	<form id="keypad">
+		<block>
+			<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/keypad.wav'"/>					
+			</prompt>
+			<goto next="#FETCHSONGS"></goto>
+		</block>
+	</form>
+
+	<form id="FETCHSONGS">				
+		<block>
+			<script>
+		    	total_used_bal=chkBalenceMinute(start_BalenceMinute);
+             		curbalance=balance-total_used_bal;  						  
+		    </script>
+		   	<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+		   	<log expr="'@@@@@@ left balance is '+balance"/>
+
+			<if cond="curbalance &lt;= '0'">          
+                 <if cond="operator=='unim' &amp;&amp; circle=='upe' &amp;&amp; modeofsub=='TOBD' &amp;&amp; lang=='01'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>		    				    		
+					 <goto next="Hungama_RedFMEnd.vxml"/>
+				<elseif cond="circle=='upw' &amp;&amp; (modeofsub=='TIVR' || modeofsub=='TOBD' || modeofsub=='TUSSD' || modeofsub=='TWAP')"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+					<goto next="Hungama_RedFMNewuser.vxml"/>
+				<elseif cond="modeofsub=='TIVR5'"/>
+					<goto next="Hungama_RedFMNewuser.vxml"/>
+				<else/>
+				 <goto next="Hungama_RedFMTopUpFinish.vxml"/>
+				 </if>
+            </if>
+			<goto next="#next"></goto>
+		</block>
+	</form>
+
+	
+
+	
+	<form id="next">
+		<block>
+                 <script>
+		    	total_used_bal=chkBalenceMinute(start_BalenceMinute);
+             		curbalance=balance-total_used_bal;  						  
+		    </script>
+		   	<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+		   	<log expr="'@@@@@@ left balance is '+balance"/>
+            <if cond="curbalance &lt;= '0'">          
+                  <if cond="operator=='unim' &amp;&amp; circle=='upe' &amp;&amp; modeofsub=='TOBD' &amp;&amp; lang=='01'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>		    				    		
+					 <goto next="Hungama_RedFMEnd.vxml"/>
+				<elseif cond="circle=='upw' &amp;&amp; (modeofsub=='TIVR' || modeofsub=='TOBD' || modeofsub=='TUSSD' || modeofsub=='TWAP')"/>
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_UNSUB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SELF_REQ'"/>
+					<goto next="Hungama_RedFMNewuser.vxml"/>
+				<elseif cond="modeofsub=='TIVR5'"/>
+					<goto next="Hungama_RedFMNewuser.vxml"/>
+
+				<else/>
+				 <goto next="Hungama_RedFMTopUpFinish.vxml"/>
+				 </if>
+            </if>    
+           
+	     <!--    Start to play song as per the clock sheet start  -->
+
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=redfm_clip&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;OPERATOR='+operator+'&amp;INPARAM[0]='+HeardCat"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	FilePlay = out_string[j];
+						       	if(j==1)
+						       	delay= out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+			
+			<script>
+				var songcheck1=FilePlay.split("_");
+				Song_Path=songcheck1[0];
+				songID = FilePlay;
+			</script>	
+            
+             <!--    Start to play song as per the clock sheet End  -->
+            
+            
+            
+			 <assign name="song_begin" expr="start_time()"/>
+			<assign name="song_listen" expr="'START'" />			
+			<assign name="bedfatch" expr="'LIVE'"/>
+			
+			
+			<log>File To be Played @@@@@@@@@@@@@@@@@@ <value expr="FilePlay"></value></log>
+			
+			
+			
+			<if cond="HeardCat=='01'">
+				<assign name="station" expr="'Delhi'"/>
+			<elseif cond="HeardCat=='02'"/>
+				<assign name="station" expr="'Mumbai'"/>
+			<elseif cond="HeardCat=='03'"/>
+				<assign name="station" expr="'Chennai'"/>
+			<elseif cond="HeardCat=='04'"/>
+				<assign name="station" expr="'Kolkata'"/>
+			<elseif cond="HeardCat=='08'"/>
+				<assign name="station" expr="'Pune'"/>
+			<elseif cond="HeardCat=='07'"/>
+				<assign name="station" expr="'Banglore'"/>
+			<elseif cond="HeardCat=='10'"/>
+				<assign name="station" expr="'Ahmedabad'"/>
+			<elseif cond="HeardCat=='11'"/>
+				<assign name="station" expr="'Jamshedpur'"/>
+			</if>
+			
+			
+			
+			<log expr="'station========================================'+station"></log>
+			
+			<log expr="'Song_Path========================================'+Song_Path"></log>
+
+			<log expr="'songID========================================'+songID"></log>		
+		
+		
+		</block>		
+		
+		
+		<field name="opt">
+			<grammar mode="dtmf" root="only137890"  version="1.0">
+				<rule id="only137890" scope="public">
+					<one-of>
+						<item>  1  </item>
+						<item>  3  </item>
+						<item>  7  </item>
+					    	<item>  8  </item>
+					    	<item>  9  </item>
+					    	<item>  0  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="0s">					
+					<audio expr="contentpath+'/'+Song_Path+'/'+songID"/>
+			</prompt>			
+			<filled>
+				<log expr="'unike_play==>'+unike_play"></log>	
+				<assign name="feed_duration" expr="opt$.promptduration"/>			
+				<if cond="opt=='1'">
+					<script> unike_play = unike_play + 1 </script>
+					<if cond="unike_play &gt; 6">
+						<assign name="unike_play" expr="0" />	
+					</if>
+					<assign name="MostHeard" expr="category_Array[unike_play]" />
+					<assign name="HeardCat" expr="MostHeard"/>
+                    			<log expr="'next Mostheard cat -->'+MostHeard"/>
+					<assign name="choice" expr="opt"/>
+      					<goto next="#contentlogin"/>				 	
+				<elseif cond="opt=='3'"/>
+					<script> unike_play = unike_play - 1 </script>
+					<if cond="unike_play &lt; 0">
+						<assign name="unike_play" expr="6" />	
+					</if>
+					<assign name="MostHeard" expr="category_Array[unike_play]" />
+					<assign name="HeardCat" expr="MostHeard"/>
+					<log expr="'prev Mostheard cat -->'+MostHeard"/>
+      					<assign name="choice" expr="opt"/>
+					<goto next="#contentlogin"/>
+				<elseif cond="opt=='7'"/>
+					<assign name="choice" expr="opt"/>
+					<goto next="#contentlogin"/>					
+				<elseif cond="opt=='8'"/>
+					<assign name="choice" expr="opt"/>
+					<goto next="#contentlogin"/>					
+				<elseif cond="opt=='9'"/>
+					<assign name="choice" expr="opt"/>
+					<goto next="#contentlogin"/>					
+				<elseif cond="opt=='0'"/>
+					<assign name="choice" expr="opt"/>
+					<goto next="#contentlogin"/>					
+				</if>
+			</filled>
+			<nomatch>
+				<goto next="#next" />
+			</nomatch>
+			<noinput>
+				
+				<assign name="feed_duration" expr="59"/>
+				<assign name="choice" expr="'1'"/>
+      				<goto next="#contentlogin"/>
+			</noinput>
+		</field>		
+	</form>
+	
+	<form id="prevclip">
+		<block>
+			<goto next="#next"></goto>
+		</block>
+	</form>
+
+	<form id="contentlogin">
+		<block>
+			<if cond="HeardCat=='01'">
+				<assign name="station" expr="'Delhi'"/>
+			<elseif cond="HeardCat=='02'"/>
+				<assign name="station" expr="'Mumbai'"/>
+			<elseif cond="HeardCat=='03'"/>
+				<assign name="station" expr="'Chennai'"/>
+			<elseif cond="HeardCat=='04'"/>
+				<assign name="station" expr="'Kolkata'"/>
+			<elseif cond="HeardCat=='08'"/>
+				<assign name="station" expr="'Pune'"/>
+			<elseif cond="HeardCat=='07'"/>
+				<assign name="station" expr="'Banglore'"/>
+			<elseif cond="HeardCat=='10'"/>
+				<assign name="station" expr="'Ahmedabad'"/>
+			<elseif cond="HeardCat=='11'"/>
+				<assign name="station" expr="'Jamshedpur'"/>
+			</if>
+
+			<assign name="song_listen" expr="'END'" />
+			
+			<assign name="compare_time" expr="time_duration(song_begin)"/>
+			<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+			<log expr="'compare_time=='+compare_time"></log>
+			<log expr="'ContentTime=='+ContentTime"></log>
+			<log expr="'hash=='+hash"></log>
+			<log expr="'FilePlay=='+FilePlay"></log>
+			<log expr="'station=='+station"></log>			
+			<log expr="'contentlog=='+contentlog"></log>
+			<if cond="(FilePlay!='undefined' &amp;&amp; FilePlay!='' &amp;&amp; FilePlay!='null')">
+				<assign name="contentlog" expr="contentlog+station+hash+FilePlay+hash+compare_time+hash"></assign>
+			</if>
+			<if cond="choice=='1'">
+				<goto next="#FETCHSONGS"/>						 	
+			<elseif cond="choice=='3'"/>
+				<goto next="#FETCHSONGS"/>	
+			<elseif cond="choice=='7'"/>			
+				<goto next="#navigation"/>
+			<elseif cond="choice=='8'"/>					
+				<goto next="#list"/>
+			<elseif cond="choice=='9'"/>
+				<goto next="Hungama_RedFMHELP.vxml"/>
+			<elseif cond="choice=='0'"/>					
+				<goto next="#list"/>				
+			</if>			
+		</block>
+	</form>
+	
+	<form id="fillersongs">
+		<block>
+			<assign name="bedfatch" expr="'STATIC'"/>
+			<log>inside fillersongs</log>
+			<if cond="HeardCat=='01'">
+				<assign name="playconfig" expr="'0101'"/>
+			<elseif cond="HeardCat=='02'"/>
+				<assign name="playconfig" expr="'1101'"/>
+			<elseif cond="HeardCat=='03'"/>
+				<assign name="playconfig" expr="'0701'"/>
+			<elseif cond="HeardCat=='04'"/>
+				<assign name="playconfig" expr="'0601'"/>
+			<elseif cond="HeardCat=='05'"/>
+				<assign name="playconfig" expr="'0901'"/>
+			<elseif cond="HeardCat=='06'"/>
+				<assign name="playconfig" expr="'0801'"/>
+			<elseif cond="HeardCat=='07'"/>
+				<assign name="playconfig" expr="'1001'"/>
+			<else/>
+				<assign name="playconfig" expr="'1001'"/>
+			</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/songconfig/'+playconfig+'.cfg'"/>
+			 <script>
+
+				                 <![CDATA[
+				                 			array1.length = 0;
+						                   for(j=0; j< favSongs.length;  j++)
+						 	                  {  	  
+						 	                       array1[j] = favSongs[j];
+						 					   }
+						 								   							
+						 	        ]]>		
+			</script>
+			<assign name="len" expr="favSongs.length"/>
+			<if cond="len &lt; 0 || len==0">
+				<goto next="Hungama_RedFMEnd.vxml"/>
+			</if>
+			<log>	Length  is ==	<value expr="len"/>    </log>
+			<assign name="unike_play" expr="getRandom(1,len-1)" />
+			<if cond="unike_play &gt; len-1">
+		   		<assign name="unike_play" expr="0" />
+			<elseif cond="unike_play &lt; 0" />
+				<assign name="unike_play" expr="0" />
+			</if>
+			<log>	unike_play  is ==	<value expr="unike_play"/>    </log>
+			<log>	array value == <value expr="array1[unike_play]"/>    </log>
+			<script>
+				var songcheck1=array1[unike_play].split("_");
+				Song_Path=songcheck1[0];
+				songID = array1[unike_play];
+			</script>
+			
+		</block>
+		
+			<field name="opt" >
+			<grammar mode="dtmf" root="onlyonethreeseventoninezero"  version="1.0">
+				<rule id="onlyonethreeseventoninezero" scope="public">
+					<one-of>
+						<item>  1  </item>
+						<item>  3  </item>
+						<item>  7  </item>
+				    	<item>  8  </item>
+				    	<item>  9  </item>
+				    	<item>  0  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+			<!--	<audio expr="'http://'+CDSIP+'/'+cds_path+'/'+Song_Path+'/'+songID+'.wav'"/> -->
+				<audio expr="'http://119.82.69.212:6666/'+cds_path+'/'+Song_Path+'/'+songID+'.wav'"/>
+			
+			</prompt>
+			<filled>
+				<if cond="opt=='1'">
+					<script> unike_play = unike_play + 1 </script>
+					<if cond="unike_play &gt; 6">
+						<assign name="unike_play" expr="0" />	
+					</if>
+					<assign name="MostHeard" expr="category_Array[unike_play]" />
+					<assign name="HeardCat" expr="MostHeard"/>
+                    <log expr="'next Mostheard cat -->'+MostHeard"/>
+      				<goto next="#FETCHSONGS"/>				 	
+				<elseif cond="opt=='3'"/>
+					<script> unike_play = unike_play - 1 </script>
+					<if cond="unike_play &lt; 0">
+						<assign name="unike_play" expr="7" />	
+					</if>
+					<assign name="MostHeard" expr="category_Array[unike_play]" />
+					<assign name="HeardCat" expr="MostHeard"/>
+					<log expr="'prev Mostheard cat -->'+MostHeard"/>
+      				<goto next="#FETCHSONGS"/>
+				<elseif cond="opt=='7'"/>
+					<goto next="#navigation"/>
+				<elseif cond="opt=='8'"/>
+					<goto next="#list"/>
+				<elseif cond="opt=='9'"/>
+					<goto next="Hungama_RedFMHELP.vxml"/>
+				<elseif cond="opt=='0'"/>
+					<goto next="#list"/>
+				<else/>
+					<goto next="#next"/>
+				</if>
+			</filled>
+			<nomatch>
+				<goto next="#next" />
+			</nomatch>
+			<noinput>
+				<goto next="#next" />
+			</noinput>
+		</field>
+	</form>
+	
+	<form id="navigation">
+		<field name="opt">
+			<grammar mode="dtmf" root="onlyonethree890" version="1.0">
+				<rule id="onlyonethree890" scope="public">
+					<one-of>
+						<item>  1  </item>
+						<item>  3  </item>						
+				    	<item>  8  </item>
+				    	<item>  9  </item>
+				    	<item>  0  </item>
+					</one-of>
+				</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/keypad_options.wav'" />			
+			</prompt>
+			<filled>
+				<if cond="opt=='1'">
+					<script> unike_play = unike_play + 1 </script>
+					<if cond="unike_play &gt; 6">
+						<assign name="unike_play" expr="0" />	
+					</if>
+					<assign name="MostHeard" expr="category_Array[unike_play]" />
+					<assign name="HeardCat" expr="MostHeard"/>
+                    <log expr="'next Mostheard cat -->'+MostHeard"/>
+                    <goto next="#FETCHSONGS"/>
+				<elseif cond="opt=='3'"/>
+					<script> unike_play = unike_play - 1 </script>
+					<if cond="unike_play &lt; 0">
+						<assign name="unike_play" expr="7" />	
+					</if>
+					<assign name="MostHeard" expr="category_Array[unike_play]" />
+					<assign name="HeardCat" expr="MostHeard"/>
+					<log expr="'prev Mostheard cat -->'+MostHeard"/>
+      				<goto next="#FETCHSONGS"/>				
+				<elseif cond="opt=='8'"/>
+					<goto next="#list"/>
+				<elseif cond="opt=='9'"/>
+					<goto next="Hungama_RedFMHELP.vxml"/>
+				<elseif cond="opt=='0'"/>
+					<goto next="#list"/>
+				<else/>
+					<goto next="#next"/>
+				</if>
+			</filled>
+			<nomatch>
+				<goto next="#next" />
+			</nomatch>
+			<noinput>
+				<goto next="#next" />
+			</noinput>
+		</field>
+	</form>
+	
+	
+	<catch event="error">
+		<if cond="bedfatch=='LIVE'">
+			<goto next="#fillersongs"></goto>
+			<if cond="cnt &gt; 10">
+				<script> cnt=cnt+1 </script>
+				<goto next="#fillersongs"></goto>
+			<else/>
+				<script> cnt=cnt+1 </script>
+				<goto next="#next"></goto>
+			</if>
+		<else/>
+			<goto next="Hungama_RedFMEnd.vxml"></goto>
+		</if>	
+	</catch>
+	<catch event="error.bedfetch">
+		<if cond="bedfatch=='LIVE'">
+					<script srcexpr="'http://192.168.100.226:8081/hungama/song_missing?SONG='+FilePlay+'/REDFM/'+station"/>
+			<goto next="#fillersongs"></goto>
+			<if cond="cnt &gt; 10">
+				<script> cnt=cnt+1 </script>
+				<goto next="#fillersongs"></goto>
+			<else/>
+				<script> cnt=cnt+1 </script>
+				<goto next="#next"></goto>
+			</if>
+		<else/>
+			<goto next="Hungama_RedFMEnd.vxml"></goto>
+		</if>	
+	</catch>
+</vxml>

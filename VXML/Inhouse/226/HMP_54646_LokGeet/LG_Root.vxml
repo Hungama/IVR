@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="LG_Root.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="Root file for the Hungama_54646_Services project" />
+<meta name="Support" content="" />
+<var name="lang_status" expr="'0'"/>
+<!--*****************ADVERTISMENT COMPIGN***********************************************************************8******-->
+	<var name="Ad_switch" expr="'0'"/>
+	<var name="ADskip_flag" expr="'0'"/>
+	<var name="AD_id" expr="'0'"/>
+	<var name="AD_name" expr="'0'"/>
+	<var name="ADPrompt_Path" expr="'http://192.168.100.226:8081/promptFiles/ADVERTISMENT/'"/>
+	<var name="add_starttime" expr="0"/>
+	<var name="add_endtime" expr="0"/>
+	<var name="Ad_flag" expr="0"/>
+	<var name="block_flag" expr="0"/>
+	<var name="add_starttime1" expr="0"/>
+<var name="add_endtime1" expr="0"/>
+<!--***********************tata double consent variable declariation ***********************-->
+	<var name="MSISDN" expr="''"/>
+	<var name="productID" expr="''"/>
+	<var name="trans_id" expr="''"/>
+	<var name="pName" expr="''"/>
+	<var name="pPrice" expr="''"/>
+	<var name="pVal" expr="''"/>
+	<var name="CpId" expr="''"/>
+	<var name="CpPwd" expr="''"/>
+	<var name="CpName" expr="''"/>
+	<var name="reqMode" expr="''"/>
+	<var name="Ivr_approach" expr="''"/>
+	<var name="NetworkId" expr="''"/>
+	<var name="circleId" expr="''"/>
+	<var name="Lang" expr="''"/>
+	<var name="Lang_A" expr="''"/>
+	<var name="reqType" expr="''"/>
+	<var name="ismID" expr="''"/>
+	<var name="transID" expr="''"/>
+<!--********************************UNINOR DOUBLE CONSENT *************************************************-->
+	<var name="PATH" expr="''"/>
+	<var name="LANG" expr="''"/>
+	<var name="SCHN" expr="''"/>
+	<var name="CP" expr="''"/>
+	<var name="CPPID" expr="''"/>
+	<var name="PRODTYPE" expr="''"/>
+	<var name="PMARKNAME" expr="''"/>
+	<var name="PRICE" expr="''"/>
+	<var name="SE" expr="''"/>
+	<var name="CPTID" expr="''"/>
+	<var name="DT" expr="''"/>
+	<var name="PD" expr="''"/>
+	<var name="SCODE" expr="''"/>
+	<var name="RSV" expr="''"/>
+	<var name="RSV2" expr="''"/>
+<!--************************************Consent Logs****************************************************-->
+ <var name="pressdtmf" expr="'0'"/>
+<var name="firstconsent" expr="'N'"/>
+<var name="firstconsenttime" expr="'NA'"/>
+<var name="secondconsent" expr="'N'"/>
+<var name="secondconsenttime" expr="'NA'"/>
+<var name="ccgresult" expr="'NA'"/>
+<var name="sub_flag" expr="'false'"/>
+<!--*************************************************************************************************-->
+<var name="lang" expr="'01'"/>
+<var name="cat" expr="''"/>
+<var name="subcat" expr="'0'"/>
+<var name="balance" expr="'0'"/>
+<var name="scorepartfirst" expr="0"/>
+<var name="sp_event" expr="'01'"/>
+<var name="lencontent" expr="0"/>
+<var name="sp_zone" expr="'00'"/>
+<var name="Section_Name" expr="'0'" />
+<var name="modesub" expr="'ND'" />
+<var name="callcharge" expr="0" />
+
+	<var name="event_zone" expr="'00'"/>
+
+	<var name="scorepartsecond" expr="''"/>
+	<var name="scorepartthird" expr="0"/>
+
+	<var name="score" expr="0"/>
+	<var name="questionnum" expr="0"/>
+	<var name="SCORE_STATUS" expr="'FALSE'"/>
+		<var name="dbservlet" expr="0"/>
+	<var name="FLOW_FLAG" expr="'CATEGORY'"/>
+	<var name="CALCULATE_TIME" expr="'RESET'"/>
+	<var name="HeardCat" expr="0"/>
+	<var name="nextchoice" expr="'1'"/>
+	<var name="servlet_path" expr="'hungama'"/>
+	<var name="C_Start" expr=""/>	
+    <var name="ANI" expr="'9711071741'"/>       
+	<var name="DNIS" expr="'546463'"/>
+	<var name="realDNIS" expr="'546463'"/>
+	<var name="Flag" expr="''"/>
+	<var name="tot" expr="5"/>
+	<var name="type" expr="'E'"/>
+	<var name="service_token" expr="'5006'"/>
+	<var name="sub_type" expr="'NA'"/>
+	<var name="mood_cnt" expr="0"/>
+	<var name="usr_status" expr="-1"/>
+	<var name="loc_balance" expr="0"/>
+	<var name="tarrif" expr="0"/>
+	<var name="songID" expr="''"/>	
+	<var name="circle" expr="''"/>
+	<var name="operator" expr="''"/>		
+	<var name="pref_counter" expr="1"/>
+	<var name="IP" expr="'192.168.100.226:8082'"/>
+	 <var name="RECORD_IP" expr="'119.82.69.213:8080'"/>
+	<var name="CDSIP" expr="'192.168.100.226'" />	
+	<var name="CDSPATH" expr="':8082/hungama/'" />	
+	<var name="LANG_DESCRIPTION" expr="'HIN'"/>
+	<var name="mxopt" expr="''"/>
+	<var name="bopt" expr="''"/>
+	<var name="lang_status1" expr="''"/>
+	<var name="lang_change_st" expr="'true'"/>
+	<var name="timerflag" expr="'0'"/>
+	<var name="start_BalenceMinute" expr="'0'"/>
+	<var name="total_used_bal" expr="'0'"/>
+	<var name="forcastyyyyddmm" expr="''"/>
+	<var name="forcastdd" expr="''"/>
+	<var name="contentdir" expr=""/>
+	<var name="Song_Path" expr=""/>
+	<var name="contentdir1" expr=""/>
+	<var name="CATEGORY" expr="'0'"/>
+	<var name="CATEGORYINTRO" expr="''"/>
+	<var name="song_begin" expr="'END'"/>
+    <var name="song_listen" expr="''" />
+    <var name="compare_time" expr="0"/>
+	<var name="ContentTime" expr="0"/>					 
+	<var name="contentlog" expr="''"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="starting_time" expr="0"/>
+	<var name="promptspath_54646" expr="'http://192.168.100.226:8082/promptFiles/54646_version2_prompts/LGPrompts'"/>
+	<var name="moviectr" expr="0"/>
+	<var name="moviesetflag" expr="'false'"/>
+	<var name="clipflag" expr="1"/>
+	<var name="movieflag" expr="1"/>
+	<var name="firstmovie" expr="1"/>	
+	<var name="firstclip" expr="1"/>
+	<var name="moviename" expr="'@'"/>
+	<var name="contentpath" expr="'http://192.168.100.212:6666/hungama/'"/> 
+	<var name="unike_play" expr="0"/>
+	<!-- script srcexpr="'http://'+IP+'/hungama/ECMAScripts/common_files.es'"/ -->	
+	<script srcexpr="'../ECMAScripts/common_files.es'"/>	
+	
+   	<script>	
+			var TotalFM= 0;
+			var TotalTV= 0;
+			var TotalloveguruQA=0;
+			var TotalloveguruPQ=0;
+			var len=0;    
+			var i=0; 
+			var playconfig=0;
+			var j=0;
+			var k=0;
+			var len=0;
+			var HEARD=0;
+			var song=0;
+			var aNavHistory=new Array();			
+			var array=new Array();
+			var array1=new Array();
+			var FMFileNames=new Array();
+			var TVFileNames=new Array();
+			var array2=new Array();
+			var array3=new Array();
+			var songarray=new Array();
+			var ERFileNames=new Array();
+			var LGQarray=new Array();
+			var LGAarray=new Array();
+			var LGPRQarray=new Array();
+			var score=new Array();
+			var favSongs=new Object();
+			var songcheck=new Array();
+			var songcheck1=new Array();
+			var favLangs=new Object();
+			var movie_idx=0;
+			var FM_details=new Object();				
+			var TV_details=new Object();
+			var songs_details=new Object();	
+			var bollywood_details=new Object();
+			var startinterviewFileNames=new Object();
+			var LGQA_details=new Object();			
+			var LGPRQA_details=new Object();
+			var lang_status=new Object();
+			var usrlang=new Object();
+			var sub_status=new Object();
+			var usrbalance=new Object();
+			var totaltopup=new Object();
+			var topup1=new Object();
+			var topup2=new Object();
+			var topup3=new Object();			
+			var ASTRO_Compatibility=new Object();
+			var ASTRO_Forecast=new Object();
+			var out_string=new Object();
+     </script>
+      <catch event="error.badfetch">
+		 								
+    	  <log>Inside Error BadCatch catch  2222</log>  	      		  
+		   <goto next="LS_End.vxml"></goto>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  3333</log> 		     
+		   <goto next="LG_End.vxml"></goto>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  4444</log>			   				
+		   <goto next="LG_End.vxml"></goto>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  5555</log>			   		
+		   <goto next="LG_End.vxml"></goto>
+		  
+      </catch>
+</vxml>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_54646_ServicesRoot.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="Root file for the Hungama_54646_Services project" />
+
+	<meta name="Support" content="" />
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	<var name="lang" expr="'01'"/>
+	<var name="Section_Name" expr="'0'" />
+<var name="modesub" expr="'ND'" />
+<var name="callcharge" expr="0" />
+	<var name="cat" expr="''"/>
+	<var name="subcat" expr="'0'"/>
+	<var name="movie_idx" expr="0"/>
+	<var name="nomtch" expr="0"/>
+	<var name="sp_event" expr="'0'"/>
+	<var name="sp_zone" expr="'00'"/>
+	<var name="event_zone" expr="'00'"/>
+	<var name="bal" expr="'0'"/>
+	<var name="balance" expr="'0'"/>
+	<var name="scorepartfirst" expr="0"/>
+	<var name="nomtch" expr="0"/>
+	<var name="var_wel" expr="0"/>
+	<var name="LangFirstValue" expr="''"/>
+	
+	<var name="DATE_NEW" expr="''"/>
+	<var name="TIME_NEW" expr="''"/>
+	<var name="RECORD_FILE" expr="''"/>
+	
+	<var name="amt" expr="'0'"/>
+	<var name="plan_id" expr="'0'"/>
+	<var name="service_id" expr="'0'"/>
+	<var name="direct_status" expr="'0'"/>
+	<var name="playconfig" expr="''"/>
+	<var name="number" expr="''"/>
+	<var name="ANSWER" expr="''"/>
+	
+	<var name="scorepartsecond" expr="''"/>
+	<var name="scorepartthird" expr="0"/>
+	<var name="PLAYSONG_STATUS" expr="''"/>
+	
+	<var name="score" expr="0"/>
+	<var name="length" expr="0"/>
+	<var name="questionnum" expr="0"/>
+	
+	<var name="dbservlet" expr="''"/>
+	<var name="Six_Digit" expr="''"/>
+	
+	<var name="STATUS_ELEVEN_FLAG" expr="'FALSE'"/>
+	<var name="CIRCLE_LANG" expr="'FALSE'"/>
+	<var name="SCORE_STATUS" expr="'FALSE'"/>
+	<var name="directaccess" expr="'FALSE'"/>
+	<var name="FLOW_FLAG" expr="'CATEGORY'"/>
+	<var name="CALCULATE_TIME" expr="'RESET'"/>
+	<var name="HeardCat" expr="0"/>
+	<var name="HEARD" expr="''"/>
+	<var name="subcat_search" expr="''"/>
+	<var name="nextchoice" expr="'1'"/>
+	<var name="servlet_path" expr="'hungama'"/>
+	
+	<var name="C_Start" expr=""/>
+	<var name="C_End" expr=""/>
+    <var name="ANI" expr="''"/>       
+	<var name="DNIS" expr="''"/>
+	<var name="realDNIS" expr="''"/>
+	<var name="Flag" expr="''"/>
+	<var name="tot" expr="5"/>
+	<var name="type" expr="'E'"/>
+	<var name="service_token" expr="'5006'"/>
+	<var name="sub_type" expr="'NA'"/>
+	<var name="mood_cnt" expr="0"/>
+	<var name="usr_status" expr="-1"/>
+	<var name="whitelist_status" expr="-1"/>
+	<var name="localbal" expr="0"/>
+	<var name="tarrif" expr="0"/>
+	<var name="songID" expr="''"/>	
+	<var name="song" expr="''"/>	
+	<var name="circle" expr="''"/>
+	<var name="operator" expr="''"/>		
+	<var name="pref_counter" expr="1"/>
+	<var name="IP" expr="'192.168.100.226:8082'"/>
+	 <var name="RECORD_IP" expr="'192.168.100.226:8082'"/>
+	
+	<var name="LANG_DESCRIPTION" expr="'HIN'"/>
+	<var name="mxopt" expr="''"/>
+	<var name="bopt" expr="''"/>
+	<var name="lang_status1" expr="''"/>
+	<var name="lang_change_st" expr="'true'"/>
+	<var name="timerflag" expr="'0'"/>
+	<var name="saguniflag" expr="'0'"/>
+	<var name="start_BalenceMinute" expr="'0'"/>
+	<var name="total_used_bal" expr="'0'"/>
+	<var name="forcastyyyyddmm" expr="''"/>
+	<var name="forcastdd" expr="''"/>
+	<var name="contentdir" expr=""/>
+	<var name="Song_Path" expr=""/>
+	<var name="contentdir1" expr=""/>
+	<var name="CATEGORY" expr="''"/>
+	<var name="CATEGORYINTRO" expr="''"/>
+	<var name="song_begin" expr="'END'"/>
+    <var name="song_listen" expr="''" />
+    <var name="compare_time" expr="0"/>
+	<var name="ContentTime" expr="0"/>					 
+	<var name="contentlog" expr="''"/>
+	<var name="hash" expr="'%23'"/>
+	<var name="starting_time" expr="0"/>
+	
+	<var name="MOBISUR_FLAG" expr="'FALSE'"/>
+
+	<var name="promptspath_54646" expr="'http://192.168.100.226:8082/promptFiles/54646_version2_prompts/uninortest'"/>
+	
+	<var name="moviectr" expr="0"/>
+	<var name="moviesetflag" expr="'false'"/>
+	<var name="clipflag" expr="1"/>
+	<var name="movieflag" expr="1"/>
+	<var name="firstmovie" expr="1"/>	
+	<var name="firstclip" expr="1"/>
+	<var name="moviename" expr="'@'"/>
+
+	<var name="contentpath" expr="'http://192.168.100.212:6666/hungama/'"/> 
+
+	<var name="unike_play" expr="0"/>
+	<!-- script srcexpr="'http://'+IP+'/hungama/ECMAScripts/common_files.es'"/ -->	
+	<script srcexpr="'../ECMAScripts/common_files.es'"/>		
+   	<script>	
+	        var TotalFM= 0;
+			var TotalTV= 0;
+			var TotalloveguruQA=0;
+			var TotalloveguruPQ=0;
+ 		    var len=0;    
+			var i=0; 
+		    var j=0;
+			var k=0;	                  
+	        var aNavHistory=new Array();			
+		    var array=new Array();
+		    var array1=new Array();
+			var FMFileNames=new Array();
+			var TVFileNames=new Array();
+		    var array2=new Array();
+		    var array3=new Array();
+		    var ciropr1 = new Object();
+			var songarray=new Array();
+			var ERFileNames=new Array();
+			var LGQarray=new Array();
+			var LGAarray=new Array();
+			var LGPRQarray=new Array();
+
+			var score=new Array();
+			var favSongs=new Object();
+			var songcheck=new Array();
+			var songcheck1=new Array();
+			var favLangs=new Object();
+			var get_duration=new Object();
+			var out_string=new Object();
+			
+			var lang_status=new Object();
+			var usrlang=new Object();
+			var sub_status=new Object();
+			var usrbalance=new Object();
+			var lovesol=new Object();
+			
+     </script>
+      <catch event="error.badfetch">
+		 								
+    	  <log>Inside Error BadCatch catch  2222</log>  	      		  
+		   <goto next="Hungama_End.vxml"></goto>
+		 								
+      </catch>      
+                 
+      <catch event="telephone.disconnect.hangup">
+		 								
+	      <log>Inside Telephone Disconnect Hangup catch  3333</log> 		     
+		   <goto next="Hungama_End.vxml"></goto>							
+      </catch>
+                 
+      <catch event="telephone.disconnect">
+	
+		   <log>Inside Telephonet Disconnected catch  4444</log>			   				
+		   <goto next="Hungama_End.vxml"></goto>
+      </catch>   
+	  
+	  <catch event="connection.disconnect.hangup">
+	
+		   <log>Inside connection.disconnect.hangup catch  5555</log>			   		
+		   <goto next="Hungama_End.vxml"></goto>
+		  
+      </catch>
+
+
+
+
+</vxml>

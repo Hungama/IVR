@@ -1,0 +1,917 @@
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<meta name="Hungama_ModUserStatus.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />
+
+<var name="subtype" expr="''"/>
+<var name="dnislen" expr="0"/>	
+<var name="multimodaldnis" expr="'0'"/>
+<var name="catcode" expr="'0'"/>
+
+<!--	<script>
+
+	var out_string=new Object();
+</script>-->
+
+<form id="CIRCLEID">
+	<block>
+		<assign name="C_Start" expr="start_time()"/>
+		<assign name="CallTime" expr="starttime()"/>
+		<assign name="program_name" expr="'USER_STATUS_CHECK'"/>
+		<log>Start Time:<value expr="C_Start"/></log>
+		<assign name="F_Start" expr="start_time()"/>
+		<script>  
+			realDNIS=session.connection.local.uri;                   
+			ANI=session.connection.remote.uri;						   
+		</script>
+		<script>
+			length = ANI.length;
+			if(length == 15)
+				ANI = ANI.substring(5,15);
+			if(length == 14)
+				ANI = ANI.substring(4,14);
+			if(length == 13)
+				ANI = ANI.substring(3,13);
+			if(length == 12)
+				ANI = ANI.substring(2,12);
+			if(length == 11)
+				ANI = ANI.substring(1,11);
+		</script>
+		<script>
+		  <![CDATA[
+				c_test=new Date();
+			]]>
+		 </script>
+		<script>
+			c_test_day=c_test.getDay();
+		</script>
+
+		<if cond="ANI=='1557600104' || ANI=='1567346598' || ANI=='9613968080' || ANI=='1555948774'">
+			<assign name="ANI" expr="'9711071741'"/>
+			<assign name="lang" expr="'02'"/>
+		</if>
+
+		<log expr="'c_test_day @@@@@@@@@@@@@@@@@@@@ =' + c_test_day"/>
+		
+		  <if cond="c_test_day==1">
+			<assign name="play_day" expr="'mon'"/>
+
+		  <elseif cond="c_test_day==2"/>
+			<assign name="play_day" expr="'tue'"/>
+
+		  <elseif cond="c_test_day==3"/>
+			<assign name="play_day" expr="'wed'"/>				  	
+
+		  <elseif cond="c_test_day==4"/>
+			<assign name="play_day" expr="'thu'"/>				  	
+
+		  <elseif cond="c_test_day==5"/>
+			<assign name="play_day" expr="'fri'"/>				  	
+
+		  <elseif cond="c_test_day==6"/>
+			<assign name="play_day" expr="'sat'"/>				  	
+
+		  <elseif cond="c_test_day==0"/>
+			<assign name="play_day" expr="'sun'"/>				  	
+		  </if>      			
+		 <log expr="'play_day @@@@@@@@@@@@@@@@@@@@ =' + play_day"/>	    				  
+		 <log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+
+		<if cond="realDNIS=='66291031' || realDNIS=='30959300'">
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/radio_dbinteraction?PROCEDURE=master_db.WHITELIST_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+realDNIS"/>
+			<script>
+				 <![CDATA[
+					for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						 whitelist_user = out_string[j];
+					       if(j==1)
+						 short_code = out_string[j];
+					       if(j==2)
+						 whitelist_circle = out_string[j];								       
+					       if(j==3)
+						 whitelist_opt = out_string[j];
+					  }
+
+				]]>
+
+			</script>
+
+			<log>whitelist_user:<value expr="whitelist_user"/></log>
+			<if cond="whitelist_user=='-1'">
+				<goto next="Hungama_ModEnd.vxml"/>
+			</if>
+			<!--<assign name="realDNIS" expr="short_code"/>-->
+		</if>
+		  <log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+		<if cond="ANI=='83769034421' || ANI=='96544156761' || ANI=='8586968482'">
+			<submit expr="'../Hungama_MusicMania/Hungama_ModUserStatus.vxml'"/>
+		</if>
+	    <script>
+		length = realDNIS.length;
+		operator1= realDNIS.substring(0,4);
+	    </script>
+	    <if cond="operator1=='0111'">
+		<script>
+			length = realDNIS.length;
+			DNIS= realDNIS.substring(4,length);
+			operator1 = "tatc";
+		</script>
+	    <elseif cond="operator1=='0110'"/>
+		<script>
+			length = realDNIS.length;
+			DNIS= realDNIS.substring(4,length);
+			operator1 = "virm";
+		</script>		    		    
+	    <elseif cond="operator1=='0115'"/>
+		<script>
+			length = realDNIS.length;
+			DNIS= realDNIS.substring(3,length);
+			operator1 = "tatm";
+		</script>
+	    <elseif cond="whitelist_user=='1'"/>	
+			<assign name="operator" expr="whitelist_opt"/>
+	    <else/>
+			<goto next="Hungama_ModEnd.vxml"/>
+	    </if>
+
+	<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+	<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+	<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+			<log> operator-circle identification </log>
+			<!--
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+			<assign name="ciropr" expr="ciropr1.value"/>
+			<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>							
+			<script>
+				var songcheck=ciropr.split("#");
+				operator=songcheck[1];
+				circle=songcheck[2];
+			</script>
+			-->
+
+			<script srcexpr="'http://'+IP+'/hungama/radio_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+		    	<script>
+			<![CDATA[
+				     for(j=0; j< out_string.length;  j++)
+					   {
+						if(j==0)
+						       circle = out_string[j];
+					   }
+				  ]]>
+	     		</script>
+	     		
+			<log> FIRST DB FETCH circle  is   <value expr="circle"/>    </log>
+			<if cond="circle=='oth'">
+			    <script srcexpr="'http://192.168.100.227:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+			    <assign name="DNIS" expr="realDNIS"/>
+			    <assign name="operator" expr="'und'"/>
+			    <goto next="Hungama_ModEnd.vxml"></goto>                    
+			</if>
+		
+			<assign name="operator" expr="operator1"/>
+			<log>short_code  is	<value expr="short_code"/>    </log>
+			<if cond="whitelist_user=='1'">
+				<assign name="circle" expr="whitelist_circle"/>
+				<assign name="operator" expr="whitelist_opt"/>
+				<assign name="realDNIS" expr="short_code"/>
+				<assign name="DNIS" expr="short_code"/>					
+			</if>
+			<log>DNIS **************  is	<value expr="DNIS"/>    </log>		
+			<!-- Longcodes Routing Check -->
+			<if cond="operator=='tatm'">
+				<assign name="len_cmp" expr="'9'"/>
+			<else/>	
+				<assign name="len_cmp" expr="'10'"/>
+		    	</if>
+		    	<script>
+				len_dnis = realDNIS.length;
+			</script>
+			
+			<log>DNIS  is	<value expr="DNIS"/>    </log>
+			<log>len_dnis  is here	<value expr="len_dnis"/>    </log>
+			<log>len_cmp  is	<value expr="len_cmp"/>    </log>
+			<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>				
+			<!--<if cond="ANI=='8527000779'"> 
+				<goto next="Hungama_Mod_MMCRBT.vxml"></goto>
+			</if>-->
+
+			 <if cond="operator=='tatm' || operator=='virm'">
+				<assign name="dbservlet" expr="'radio_dbinteraction'"/>
+			<elseif cond="operator=='tatc'"/>
+				<assign name="dbservlet" expr="'tatcradio_dbinteraction'"/>	
+			<else/>
+				<assign name="dbservlet" expr="'radio_dbinteraction'"/>				
+			</if>
+			<if cond="len_dnis &gt; len_cmp">
+				<script>
+					 var mm_status="0";
+					 if(realDNIS.match("590904"))
+						{	
+							mm_status="crbt";
+							DirectSC="true";
+						}
+					else if(realDNIS.match("590908"))
+						mm_status="crbt";
+					 else
+						mm_status="normal";
+				</script>
+
+				 <log expr="'DNIS status*****************=='+mm_status"></log>
+				 <if cond="mm_status=='crbt'">
+					<assign name="DirectSC" expr="'true'"/>
+					<!--<if cond="whitelist_user=='1'">
+						<script>				
+							DNIS=DNIS.substring(3);
+						</script>										
+					</if>-->
+					<log>DNIS **************  is	<value expr="DNIS"/>    </log>	
+					<goto next="#USRSTATUS"></goto>
+				 </if>
+			</if>
+
+			<!-- Longcodes Routing Check -->								
+
+			<log>circle value is:<value expr="circle"/></log>
+			<if cond="circle=='upw'">
+				<log>Disclamer Prompt</log>
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/disclaimer_tollfree.wav'"/>
+			</if>
+
+			<if cond="circle=='del' &amp;&amp; operator=='tatc'">
+					<assign name="Prompts_Path" expr="Prompts_Path+'/indicom'"/>
+		</if>
+			<!--<if cond="DNIS==59090 &amp;&amp; circle=='raj'">
+					<assign name="DNISFlag" expr="'TRUE'"/>
+					<assign name="DNIS" expr="'590907'"/>-->
+
+				<!--<if cond="DNIS==59090 &amp;&amp; circle=='pub' &amp;&amp; operator=='tatm'">	
+					<assign name="DNISFlag" expr="'TRUE'"/>
+					<assign name="DNIS" expr="'5909011'"/>
+				</if>   -->
+
+			<log>circle  is	<value expr="circle"/>    </log>
+			<log>operator is <value expr="operator"/>    </log>
+			<log>Longcode Check</log>
+			<if cond="DNIS=='5909010' &amp;&amp; (circle=='kol' || circle=='wbl' || circle=='ori') &amp;&amp; operator=='tatm'">
+				<assign name="directaccess" expr="'SMSPACK'"></assign>
+				<goto next="Hungama_ModNew_SMSPACK.vxml"></goto>
+			</if>
+			<!--<if cond="DNIS=='5909060' &amp;&amp; (circle=='mpd' || circle=='raj') &amp;&amp; operator=='tatm'">
+				<log>5909060 logic start</log>
+				<assign name="directaccess" expr="'BAL45'"></assign>
+			</if>-->
+
+			<if cond="DNIS=='5909060'">
+				<log>5909060 logic start</log>
+				<assign name="directaccess" expr="'BAL45'"></assign>
+			</if>
+
+
+			<if cond="DNIS=='5909066' &amp;&amp; (circle=='kol' || circle=='wbl' || circle=='ori') &amp;&amp; operator=='tatm'">
+				<log>5909066 logic start</log>
+				<assign name="directaccess" expr="'combo'"></assign>
+				<goto next="#USRSTATUS"></goto>
+			</if>
+
+			<if cond="DNIS=='5909067' &amp;&amp; circle=='wbl'">
+				<assign name="directaccess" expr="'DURGA'"></assign>
+				<goto next="#USRSTATUS"></goto>
+			</if>
+
+
+			<log>assign servlet</log>
+			<log>Dnis value:<value expr="DNIS"/></log>
+		 <if cond="operator=='tatm' || operator=='virm'">
+			<assign name="dbservlet" expr="'radio_dbinteraction'"/>
+		<elseif cond="operator=='tatc'"/>
+			<assign name="dbservlet" expr="'tatcradio_dbinteraction'"/>	
+		<else/>
+			<assign name="dbservlet" expr="'radio_dbinteraction'"/>				
+		</if>
+     <!--*************************************Advertisment switch functionality ****************************************************-->
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Inhouse_IVR.AD_Switch&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+circle+'&amp;INPARAM[1]='+DNIS+'&amp;INPARAM[2]=1001'"/>
+		<script>
+			Ad_switch=out_string[0];
+			AD_id=out_string[1];
+			AD_name=out_string[2];
+			ADskip_flag=out_string[3];
+		</script>
+			<log>Ad_switch  : <value expr="Ad_switch"/></log>
+			<log>AD_id for msisdn : <value expr="AD_id"/></log>
+			<log>AD_name for msisdn : <value expr="AD_name"/></log>
+			<log>ADskip_flag for msisdn : <value expr="ADskip_flag"/></log>
+     <!--****************************************************************************************************************************-->				
+
+			<if cond="(DNIS=='590902' || DNIS=='590905')  &amp;&amp; operator=='tatm'">
+				<goto next="#USRSTATUSTRAI"></goto> 
+			</if>
+
+			<!-- Gujrat TnB start on 590908 GSM 2/May/2012 -->
+
+			<if cond="DNIS=='590908' &amp;&amp; circle=='guj' &amp;&amp; operator=='tatm'">
+					<goto next="#USRSTATUS"></goto>
+			</if>
+			<!-- Gujrat TnB end -->				
+
+			<!-- dev MM for kol and wbl 27 july -->
+			<!--<if cond="(DNIS=='590903' || DNIS=='590909') &amp;&amp; ( circle=='wbl' || circle=='kol' || circle=='jnk'|| circle=='del' || circle=='ori'|| circle=='upe' || circle=='upw'|| circle=='bih' || circle=='nes'|| circle=='asm') &amp;&amp; (operator=='tatm' || operator=='tatc')">
+					<log>Direct Code</log>
+					<assign name="directaccess" expr="'DEVOHAY'"></assign>				
+					<goto next="#USRSTATUS"></goto>
+			</if>
+
+			<if cond="(DNIS=='590903' || DNIS=='590909') &amp;&amp; (circle=='hay' ||  circle=='pub' || circle=='raj' ) &amp;&amp; (operator=='tatm' || operator=='tatc')">
+					<log>Direct CodeHAy</log>
+					<assign name="directaccess" expr="'DEVOHAY'"></assign>				
+					<goto next="#USRSTATUS"></goto>
+			</if>
+
+			<if cond="(DNIS=='590909') &amp;&amp; ( circle=='mum' || circle=='mah') &amp;&amp; (operator=='tatm' || operator=='tatc')">
+					<assign name="directaccess" expr="'DEVOHAY'"></assign>				
+					<goto next="#USRSTATUS"></goto>
+			</if>
+
+			<if cond="(DNIS=='590903') &amp;&amp; (circle=='mpd') &amp;&amp; (operator=='tatm' || operator=='tatc')">
+					<log>Direct CodeHAy</log>
+					<assign name="directaccess" expr="'DEVOHAY'"></assign>				
+					<goto next="#USRSTATUS"></goto>
+			</if>-->
+
+			<!-- dev MM for kol and wbl 27 july -->				
+
+			<!--<if cond="DNIS=='590908' &amp;&amp; circle=='raj' &amp;&amp; operator=='tatm'">
+				<assign name="directaccess" expr="'raj'"></assign>
+				<goto next="#USRSTATUS_RAJMM"></goto>
+			</if>-->
+
+			<if cond="DNIS=='590901' &amp;&amp; (operator=='tatm' || operator=='tatc')">
+				<assign name="directaccess" expr="'FKS'"></assign>
+				<goto next="#USRSTATUS"></goto>
+			</if>
+			<!--<if cond="(DNIS=='5909063' || DNIS=='5909069'|| DNIS=='5909070' || DNIS=='5909072' || DNIS=='5909073' || DNIS=='5909013' || DNIS=='5909031' || DNIS=='5909032' || DNIS=='5909033' || DNIS=='59090711'|| DNIS=='59090712' || DNIS=='59090713' || DNIS=='59090714'|| DNIS=='59090715' || DNIS=='59090716'|| DNIS=='59090717'|| DNIS=='59090718' || DNIS=='59090719' || DNIS=='59090720'|| DNIS=='59090721' || DNIS=='59090722'|| DNIS=='59090723'|| DNIS=='59090724' || DNIS=='59090725') &amp;&amp; (operator=='tatm' || operator=='tatc')">
+					<log>Direct MM</log>
+					<assign name="directaccess" expr="'MM'"></assign>
+			</if>-->
+			<!--**********************************************************************DynamicMUltimodal******************************************************-->
+			<assign name="dnislen" expr="DNIS.length"/>
+			<log expr="'dnislen @@@@@@@@@@@@@@@@@@@  =' + dnislen"/>
+			<if cond="dnislen &gt; '5'"> 
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_MM&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+DNIS"/>
+				<script>
+				<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							multimodaldnis = out_string[j];
+
+							}
+
+					]]>
+				</script>
+				<assign name="directaccess" expr="multimodaldnis"></assign>
+				<log expr="'multimodaldnis @@@@@@@@@@@@@@@@@@@  =' + multimodaldnis"/>
+				<log expr="'directaccess @@@@@@@@@@@@@@@@@@@  =' + directaccess"/>
+				<if cond="directaccess=='MM' &amp;&amp; (operator=='tatm' || operator=='tatc')"> 
+					<assign name="directaccess" expr="'MM'"></assign>					
+				<else/>	
+					<assign name="directaccess" expr="'NO'"></assign>
+				</if>
+			</if>
+			<!--*****************************************************************************************************************************************-->
+
+
+			<if cond="(DNIS=='5909030') &amp;&amp; operator=='tatm' &amp;&amp; (circle=='kol' || circle=='wbl' || circle=='ori')">
+					<log>Direct Access 5909030MM</log>
+					<assign name="directaccess" expr="'5909030MM'"></assign>
+					<assign name="lang" expr="'06'"></assign>
+			</if>
+
+			<if cond="(DNIS=='5909030') &amp;&amp; operator=='tatm' &amp;&amp; (circle!='kol' || circle!='wbl' || circle!='ori')">
+					<log>Direct Access 5909030MM</log>
+					<assign name="directaccess" expr="'5909030MM'"></assign>
+					<assign name="lang" expr="'01'"></assign>
+			</if>
+
+
+				<!-- UNCOMMENT WHEN STAYMEV MM STOP -->	
+<!--				<if cond="(DNIS=='590903' || DNIS=='590908') &amp;&amp; operator=='tatm'">-->
+			<!--<if cond="(DNIS=='590903') &amp;&amp; operator=='tatm'">
+				<assign name="directaccess" expr="'true'"></assign>
+				<goto next="#USRSTATUSMM"></goto> 
+		    </if>-->
+
+	    	<if cond="(circle=='mum' || circle=='mah') &amp;&amp; DNIS=='590904'">
+			    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=6'"/>
+				<script>
+					<![CDATA[
+						for(j=0; j< out_string.length;  j++)
+						{  	  
+						if(j==0)
+							RetailerCheck= out_string[j];						       
+						}
+						]]>
+				</script>	
+
+				<log expr="'RetailerCheck @@@@@@@@@= '+RetailerCheck"></log>
+				<if cond="RetailerCheck=='1'">
+					<log expr="'In RetailerCheck Menu enter'"></log>
+					<goto next="Retailer.vxml"></goto>
+				<else/>
+					<goto next="#USRSTATUS"></goto>
+				</if>
+		<else/>
+			<goto next="#USRSTATUS"></goto>
+		</if>
+	</block>	
+</form>
+<!--***************************************************USER STATUS CHECK API**********************************-->		
+<form id="USRSTATUS">
+	<block>
+		<assign name="program_name" expr="'USRSTATUS'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						usr_status = out_string[j];
+					       if(j==1)
+						lang = out_string[j];
+					       if(j==2)
+						bal = out_string[j];
+					       if(j==3)
+						mod = out_string[j];
+					  }
+			]]>
+		</script>
+		<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+		<log expr="'lang @@@@@@@@@ '+lang"></log>
+		<log expr="'bal @@@@@@@@@ '+bal"></log>
+		<log expr="'mode of sub @@@@@@@@@ '+mod"></log>
+		<log expr="'DirectSC=='+DirectSC"></log>
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+		<log expr="'contentlog=='+contentlog"></log>
+
+		<!--<if cond="Ad_switch=='1' &amp;&amp; Ad_flag=='0' &amp;&amp; ANI=='8376903442'">
+			<script>
+				Ad_flag=Ad_flag+1;
+			</script>
+			<assign name="add_starttime" expr="starttime()"/>
+			<log>add_starttime for msisdn : <value expr="add_starttime"/></log>
+			<goto next="#ADDUSERSTAUS"></goto>
+		</if>-->	
+		<if cond="lang=='undef'">
+			<assign name="lang" expr="'01'"></assign>
+		</if>
+
+		<if cond="usr_status=='-1'">
+			<if cond="DirectSC=='true'">
+				<assign name="lang" expr="'01'"></assign>
+				<goto next="Hungama_Mod_MMCRBT.vxml#suboption"></goto>
+			</if>
+			<assign name="DirectSC" expr="'false'"/>
+			<if cond="DNIS=='590909' &amp;&amp; (lang=='01' || lang=='06' || lang=='07' || lang=='08')">
+				<assign name="usr_status" expr="'7'"></assign>
+				<goto next="#WelcomeTnB"></goto>
+			</if>
+			<if cond="DNIS=='590907' &amp;&amp; circle=='raj'">
+				<goto next="#CHK_10MINSFREEBASE"/>
+			<else/>
+				<if cond="directaccess=='DEVO'">
+					<goto next="Hungama_ModSub_Dev.vxml"></goto>
+				</if>
+				<if cond="directaccess=='DEVOHAY'">
+					<goto next="Hungama_ModSub_Dev.vxml"></goto>
+				</if>
+				<goto next="Hungama_ModNewUser.vxml"></goto>
+			</if>
+		<elseif cond="usr_status=='1'"/>
+			<script>bal=bal*60;</script>
+			<if cond="mod=='EVD'">
+				<script>					 
+					timerflag=1;
+				</script>
+				<script>
+					<![CDATA[
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+			</if>
+			<!--**********************************************************************Dynamic Category MUltimodal******************************************************-->
+			<assign name="dnislen" expr="DNIS.length"/>
+			<log expr="'dnislen @@@@@@@@@@@@@@@@@@@  =' + dnislen"/>
+			<if cond="dnislen &gt; '5'"> 
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_CATEGORY_MMs&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+DNIS"/>
+				<script>
+				<![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+							catcode = out_string[j];
+							}
+					]]>
+				</script>
+
+				<log expr="'Business category @@@@@@@@@@@@@@@@@@@  =' + catcode"/>
+				<if cond="catcode!='no' &amp;&amp; (operator=='tatm' || operator=='tatc' || operator=='virm')">
+					<assign name="directaccess" expr="'CATMM'"></assign>
+					<log expr="'directaccess @@@@@@@@@@@@@@@@@@@  =' + directaccess"/>
+					<assign name="playconfig" expr="catcode"></assign>
+					<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>
+				</if>
+			</if>
+			<!--*****************************************************************************************************************************************-->								
+			<if cond="DirectSC=='true'">
+				<goto next="Hungama_Mod_MMCRBT.vxml#CrbtMM"></goto>
+			</if>
+
+			<if cond="directaccess=='DURGA'">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			</if>
+
+			<if cond="lang=='99' &amp;&amp; circle!='mpd'">
+				<goto next="Hungama_ModNewUser.vxml"></goto>	
+			<else/>
+				<if cond="circle=='mpd'">
+						<assign name="lang" expr="'01'"/>
+				</if>
+
+				<if cond="directaccess=='combo'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=9'"/>
+					<script>
+						<![CDATA[
+							for(j=0; j< out_string.length;  j++)
+							{  	  
+								if(j==0)
+									subtype = out_string[j];						       
+							}
+						]]>
+					</script>		
+						<log expr="'subtype @@@@@@@@@ '+subtype"></log>
+						<!--<if cond="subtype!='COMBO'">
+							<goto next="Hungama_ModExistUser.vxml"></goto>
+						</if>-->
+					<goto next="Hungama_combo_menu.vxml"></goto>			
+				</if>		
+				<goto next="Hungama_ModExistUser.vxml"></goto>
+			</if>
+		<elseif cond="usr_status=='7'"/>		
+			<script>bal=300;</script>
+			<script>
+				<![CDATA[
+					start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+			<goto next="#WelcomeTnB"></goto>
+		<else/>
+			<if cond="lang=='99'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/charge_req_recd.wav'"/>
+				</prompt>
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/charge_req_recd.wav'"/>
+				</prompt>
+			</if>	
+			<goto next="Hungama_ModEnd.vxml"/>
+		</if>
+	</block>
+</form>
+<!--***************************************************ADD COMPAIGN BLOCK**********************************-->	
+<form id="ADDUSERSTAUS">
+	<field name="choice">
+		<grammar mode="dtmf" root="start36" version="1.0">
+			<rule id="start36" scope="public" >
+				<one-of>
+					 <item>  1  </item>
+
+				</one-of>
+			</rule>
+		</grammar>
+		<prompt bargein="false" timeout="0s" cond="ADskip_flag!='1'">	
+			<audio expr="ADPrompt_Path+AD_name+'.wav'"/>
+		</prompt> 
+		<prompt bargein="true" timeout="0s" cond="ADskip_flag=='1'">	
+			<audio expr="ADPrompt_Path+AD_name+'.wav'"/>
+		</prompt> 
+	<filled>
+		<if cond="choice=='1'">
+			<assign name="block_flag" expr="'1'"/>
+			<assign name="add_endtime" expr="rim(add_starttime)"/>
+			<log>add_endtime for msisdn : <value expr="add_endtime"/></log>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<goto next="#USRSTATUS"></goto>
+		</if>
+		</filled>
+		<noinput >
+
+			<assign name="block_flag" expr="'1'"/>
+			<assign name="add_endtime" expr="rim(add_starttime)"/>
+			<log>add_endtime for msisdn : <value expr="add_endtime"/></log>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<goto next="#USRSTATUS"></goto>				
+		</noinput>
+
+		<nomatch>
+			<assign name="block_flag" expr="'1'"/>
+			<assign name="add_endtime" expr="rim(add_starttime)"/>
+			<log>add_endtime for msisdn : <value expr="add_endtime"/></log>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+			<goto next="#USRSTATUS"></goto>
+		</nomatch>		
+	</field>
+</form>	
+
+<form id="CHK_10MINSFREEBASE">
+	<block>
+		<assign name="program_name" expr="'CHK_10MINSFREEBASE'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=4'"/>
+			<script>
+					<![CDATA[
+						for(j=0; j< out_string.length;  j++)
+						{  	  
+						if(j==0)
+							freebase = out_string[j];						       
+						}
+					]]>
+			</script>
+			<if cond="freebase=='1'">
+				<if cond="operator=='tatm'">
+					<assign name="MOS" expr="'CC'"/>
+				<else/>
+					<assign name="MOS" expr="'HUNCC'"/>
+				</if>
+
+				<assign name="bal" expr="15000"/>
+				<assign name="FreeBaseFLAG" expr="'TRUE'"/>
+				<log expr="'@@@@@free_time=='+free_time"></log>
+				<log expr="'@@@@@total_time=='+total_time"></log>
+				<log expr="'@@@@rcv_time=='+rcv_time"></log>
+			<else/>
+				<assign name="backendsub" expr="'true'"/>
+			</if>	
+			<goto next="Hungama_ModNewUser.vxml"/>					
+
+	</block>	
+</form>
+<form id="CHURNTNB">
+	<block>
+		<if cond="circle=='kar'">
+			<assign name="lang" expr="'10'"/>
+		<elseif cond="circle=='tnu'"/>
+			<assign name="lang" expr="'07'"/>
+		<elseif cond="circle=='chn'"/>
+			<assign name="lang" expr="'07'"/>			
+		<else/>
+			<assign name="lang" expr="'01'"/>
+		</if>
+	</block>
+	<field name="choice">			
+		<grammar mode="dtmf" root="start" version="1.0">
+				<rule id="start" scope="public">
+					<one-of>
+						 <item>  1  </item>
+						 <item>  2  </item>
+					</one-of>
+				</rule>
+		</grammar>
+		<prompt bargein="true" timeout="3s">						
+			<!-- <audio expr="Prompt_Path+'/'+lang+'/free_service_2.wav'"/> -->
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/subscription_14_free.wav'"/>
+		</prompt>
+
+		<filled>
+			<if cond="choice=='1'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DTMF_LOGGING_TNB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+choice"/>
+				<if cond="operator=='tatm'">
+					<assign name="planid" expr="'2'"/>
+					<assign name="Amt" expr="'14'"/>
+					<assign name="serviceid" expr="'1001'"/> 
+				<elseif cond="operator=='tatc'"/>
+					<assign name="planid" expr="'26'"/>
+					<assign name="Amt" expr="'14'"/>
+					<assign name="serviceid" expr="'1601'"/>
+				</if>					
+				<goto next="Hungama_ModSub.vxml#Doubleconfirm"></goto>										
+			<elseif cond="choice=='2'"/>
+				<assign name="playconfig" expr="lang+'01'"></assign>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=DTMF_LOGGING_TNB&amp;INTOKEN=2&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+choice"/>
+				<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>
+			</if>
+		</filled>
+	</field>
+	<noinput count="1">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+		</prompt>			
+		<reprompt></reprompt>
+	</noinput>
+	<noinput count="2">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+		</prompt>			
+		<reprompt></reprompt>
+	</noinput>
+	<noinput count="3">
+		<assign name="playconfig" expr="lang+'01'"></assign>
+		<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>
+	</noinput>
+	<nomatch count="1">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+		</prompt>			
+		<reprompt></reprompt>
+	</nomatch>
+	<nomatch count="2">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+		</prompt>			
+		<reprompt></reprompt>
+	</nomatch>
+	<nomatch count="3">
+		<assign name="playconfig" expr="lang+'01'"></assign>
+		<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>
+	</nomatch>
+</form>	
+
+<form id="USRSTATUSMM">
+	<block>
+		<assign name="program_name" expr="'USRSTATUSMM'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						usr_status = out_string[j];
+					       if(j==1)
+						lang = out_string[j];
+					       if(j==2)
+						bal = out_string[j];
+					       if(j==3)
+						mod = out_string[j];						       	
+					  }
+			]]>
+
+		</script>
+		<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+		<log expr="'lang @@@@@@@@@ '+lang"></log>
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+		<log expr="'contentlog=='+contentlog"></log>
+		<if cond="usr_status=='-1'">
+			<goto next="Hungama_ModNewUserMM.vxml"></goto>
+		<elseif cond="usr_status=='1'"/>
+			<script>bal=bal*60;</script>
+			<if cond="lang=='99' &amp;&amp; circle!='mpd'">
+				<goto next="Hungama_ModNewUser.vxml"></goto>	
+			<else/>
+				<if cond="circle=='mpd'">
+					<assign name="lang" expr="'01'"/>
+				</if>
+				<goto next="Hungama_ModExistUser.vxml"></goto>
+			</if>
+		<else/>
+			<if cond="lang=='99'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/charge_req_recd.wav'"/>
+				</prompt>
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/charge_req_recd.wav'"/>
+				</prompt>
+			</if>				
+			<goto next="Hungama_ModEnd.vxml"/>
+		</if>
+	</block>
+</form>
+
+<form id="USRSTATUSTRAI">	
+<block>
+		<assign name="program_name" expr="'USRSTATUSTRAI'"/>
+		<var name="pricepoint" expr="'6'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=7'"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					{  	  
+					if(j==0)
+						lang= out_string[j];						       
+					}
+				]]>
+		</script>
+		<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+		<log expr="'lang @@@@@@@@@ '+lang"></log>
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+		<log expr="'contentlog=='+contentlog"></log>
+		<assign name="bal" expr="15000"/>
+		<if cond="lang=='-1'">				
+			<goto next="Hungama_ModNewUser.vxml"></goto>
+		<else/>
+			<if cond="circle=='mpd'">
+				<assign name="lang" expr="'01'"></assign>
+			</if>
+
+			<if cond="DNIS=='590902'">
+					<prompt bargein="true" timeout="0s">			
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome-6-TRAI.wav'"/>                        
+					</prompt>
+			<elseif cond="DNIS=='590905'"/>	
+					<prompt bargein="true" timeout="0s">			
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome-6-TRAI.wav'"/>                        
+					</prompt>
+			</if>
+			<goto next="Hungama_ModMainMenu.vxml"/>
+		</if>
+	</block>
+</form>
+<form id="WelcomeTnB">
+	<block>	
+		<assign name="program_name" expr="'TNB_WELCOME'"/>
+		<if cond="circle=='wbl' || circle=='kol'">
+			<assign name="lang" expr="'06'"/>			
+		<elseif cond="circle=='tnu' || circle=='chn'"/>
+			<assign name="lang" expr="'07'"/>			
+		<elseif cond="circle=='apd'"/>
+			<assign name="lang" expr="'08'"/>			
+		<else/>
+			<assign name="lang" expr="'01'"/>
+		</if>
+		<prompt bargein="true" timeout="3s">						
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/WelcomePrompt.wav'"/>
+		</prompt>
+		<if cond="operator=='tatm'">
+			<assign name="planid" expr="'2'"/>
+			<assign name="Amt" expr="'14'"/>
+			<assign name="serviceid" expr="'1001'"/> 
+		<elseif cond="operator=='tatc'"/>
+			<assign name="planid" expr="'26'"/>
+			<assign name="Amt" expr="'14'"/>
+			<assign name="serviceid" expr="'1601'"/>
+		</if>	
+		<script>
+			bal=300;
+			timerflag=1;
+			start_BalenceMinute=starttime();
+		</script>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_TNB_7DAYS&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+Amt+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+		<!--<goto next="#LANGSEL1"></goto>-->
+		<goto next="Hungama_ModMainMenu.vxml"/>
+	</block>
+</form>	
+
+<form id="USRSTATUS_RAJMM">
+	<block>
+		<assign name="program_name" expr="'USRSTATUS_RAJMM'"/>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+		<script>
+		 <![CDATA[
+				   for(j=0; j< out_string.length;  j++)
+					  {  	  
+					       if(j==0)
+						usr_status = out_string[j];
+					       if(j==1)
+						lang = out_string[j];
+					       if(j==2)
+						bal = out_string[j];
+					       if(j==3)
+						mod = out_string[j];						       	
+					  }
+
+				]]>
+
+		</script>
+		<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+		<log expr="'lang @@@@@@@@@ '+lang"></log>
+		<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+		<assign name="lang" expr="'18'"></assign>
+		<log expr="'contentlog=='+contentlog"></log>
+		<if cond="usr_status=='-1'">
+			<goto next="Hungama_ModSub_RAJMM.vxml"></goto>
+		<elseif cond="usr_status=='1'"/>
+			<script>bal=bal*60;</script>
+			<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_old_590908.wav'"/>
+			</prompt>
+			<goto next="Hungama_ModMainMenu_RAJMM.vxml"></goto>
+		<else/>
+			<if cond="lang=='99'">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/charge_req_recd.wav'"/>
+				</prompt>
+			<else/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/charge_req_recd.wav'"/>
+				</prompt>
+			</if>				
+			<goto next="Hungama_ModEnd.vxml"/>
+		</if>
+	</block>
+</form>
+</vxml>

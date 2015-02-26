@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="Hungama_PKPRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="Hungama_PKP_Userstatus.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+
+	<script>
+		var disclaimstatus=0;
+	</script>
+	
+	<form id="Call_Connect">
+		  <block>
+			<assign name="drop_point" expr="'status_check'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Reliance_PKP.JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=11'"/>
+			<script>
+				disclaimstatus=out_string[0];
+			</script>
+			<log>	disclaimstatus  isssss    <value expr="disclaimstatus"/> 	</log>
+		</block>
+		<field name="mnuopt">
+				<grammar mode="dtmf" root="start171" version="1.0">
+				       <rule id="start171" scope="public">
+							 <one-of>				 
+								   <item>1</item>
+							 </one-of>
+				       </rule>
+				</grammar>			
+	
+				<prompt bargein="true" timeout="1s" cond="usr_status=='-1'">
+						<audio expr="promptpath+'/'+lang+'/common/disclaimer_1.wav'"/>
+				</prompt>
+
+				<prompt bargein="true" timeout="1s" cond="disclaimstatus=='-1' &amp;&amp; usr_status=='1'">
+						<audio expr="promptpath+'/'+lang+'/common/disclaimer_2.wav'"/>
+				</prompt>
+				
+				<filled>
+					 	<goto next="#Checkuser"/>
+				</filled>		
+			
+				<noinput>
+						<goto next="#Checkuser"/>	   			     
+				</noinput>
+			
+				<nomatch>			   
+						<goto next="#Checkuser"/>          
+				</nomatch>
+		</field>
+	</form>	
+	
+<form id="Checkuser">
+	<block>
+		<assign name="drop_point" expr="'last_heard'"/>
+		
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=Reliance_PKP.JBOX_LASTCAT_ALLCHARACTER&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+playconfig+'&amp;INPARAM[2]=2'"/>
+		<script>
+			<![CDATA[
+				for(j=0; j< out_string.length;  j++)
+					{  	
+						playconfig = out_string[j];
+					}
+			]]>
+		</script>
+
+		<if cond="playconfig=='-1'">
+			<assign name="playconfig" expr="'ch1'" />
+			<goto next="Hungama_PKP_mainmenu.vxml"/>
+		<else/>
+			<assign name="cat" expr="playconfig" />
+			<assign name="subcat" expr="playconfig" />
+			<prompt bargein="true" timeout="1s">
+				<audio expr="promptpath+'/'+lang+'/'+playconfig+'/last_cat.wav'"/>
+			</prompt>
+			<goto next="Hungama_PKP_mainmenu.vxml#loadcliptoplay"/>
+		</if>
+	</block>
+  </form>
+</vxml>

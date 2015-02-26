@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_54646_UserStatus.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="SUBANI" expr="''"/>
+	<var name="TEMPANI" expr="''"/>
+	<var name="SUBDNIS" expr="''"/>
+	<var name="TEMPDNIS" expr="''"/>
+	<var name="ciropr" expr="''"/>
+	<var name="declaimDNIS" expr="0"/>
+	<var name="RELIANCEDNIS" expr="0"/>
+	<var name="declaimlength" expr="0"/>
+	<var name="declaimTF" expr="0"/>
+	<var name="declaimlang" expr="'01'"/>
+	<var name="tnb_modofsub" expr="0"/>
+	<var name="tnb_subtype" expr="0"/>
+	<var name="declaimPlay" expr="0"/>
+<var name="shuffle_userstatus" expr="0"/>
+ <var name="iAnswer" expr="Math.floor(Math.random(1) *100)" />
+  <var name="bPrompt" expr="true" />
+	
+	<var name="operator2" expr="''"/>
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+
+<form id="call_pick_number">
+    <subdialog name="oResult" src="picknumber.vxml">
+      <param name="iAnswer" expr="'1'" />
+      <param name="bPrompt" expr="document.bPrompt" />
+
+      <filled>
+        <if cond="oResult.iRetval">
+        		  <prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/01/welcome_new_2.wav'"/>
+					</prompt>
+          <exit />
+        <else />
+          <if cond="oResult.iPick &gt; oResult.iAnswer">
+			  	<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/01/welcome_new_3.wav'"/>
+					</prompt>
+					<log expr="'oResult.iPick@@@@@@@@@@@@@@@@@@@  =' + oResult.iPick"/>
+                          <value expr="oResult.iPick" />
+           <else />
+          		 <prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/01/welcome_new_4.wav'"/>
+					</prompt>
+						<log expr="'oResult.iPick@@@@@@@@@@@@@@@@@@@  =' + oResult.iPick"/>
+
+
+                     </if>
+
+          <assign name="bPrompt" expr="false" />
+          <goto next="#call_pick_number" />
+        </if>
+      </filled>
+    </subdialog>
+  </form>
+</vxml>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="CricketRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="FeedBack.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />	
+	<var name="day" expr="''"/>
+	<var name="month" expr="''"/>
+	<var name="UploadFileName" expr="'refer'"/>
+	
+	<script>
+		var out_string=new Object();
+		
+	
+	</script>
+
+	<form id="feedback">
+		<block>
+				<if cond="timerflag=='1'">
+				<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					balance=balance-total_used_bal;  						  
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+balance"/>
+				<if cond="balance &lt;= '0'">          
+					   <goto next="Subscription.vxml"/>
+				  </if>     
+				</if>
+
+										
+				<script>
+					<![CDATA[
+						if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+
+				<assign name="Usage_time" expr="time_duration(section_begin)"/>
+				<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+				<assign name="SECTION" expr="'FEEDBACK'"/>
+				<assign name="Section_Name" expr="'FEEDBACK'"/>
+				<assign name="section_begin" expr="start_time()"/>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_FEEDBACK&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=CHK'"/>
+			<script>
+			 <![CDATA[
+					      feedback_status = out_string[0];
+					
+
+					]]>
+			
+			</script>
+			
+			<if cond="feedback_status=='0'">
+				<goto next="#record_feedback_inst"></goto>
+			<elseif cond="feedback_status=='1'"/>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/feedback_sorry.wav'"/>
+				</prompt>
+				<goto next="MainMenu.vxml"></goto>	
+			
+			</if>
+		</block>
+	</form>
+	
+	<form id="record_feedback_inst">	
+		<block>
+		
+			<assign name="feedtime" expr="start_time()"/>
+			<assign name="currtime" expr="getcurryyyymmdd()+feedtime"></assign>
+		</block>	
+		<field name="feedbackinst">              
+		    	 
+		<grammar mode="dtmf" root="start5" version="1.0">
+                   <rule id="start5" scope="public">
+                     <one-of>
+			  <item>1</item>
+			  <item>2</item>	
+                          <item>3</item>	
+                          <item>4</item>	
+                          <item>5</item>	
+                          <item>6</item>	
+                          <item>7</item>	
+                          <item>8</item>	
+                          <item>9</item>	
+                          <item>0</item>	               			 
+			  <item>#</item>
+			  <item>*</item>			      
+                        </one-of>
+                     </rule>
+                 </grammar> 
+			 
+                        <prompt bargein="true" >
+			  <audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_feedback.wav'"/>
+			</prompt> 
+				 
+                         <filled> 
+                         	<if cond="feedbackinst=='0'">
+                         		<goto next="AccountManager.vxml"/>
+                         	<else/>
+                  	           	<goto next="#record_feedback"/>
+                  	         </if>
+                         </filled>
+			  
+			  <noinput>		  
+	                           <goto next="#record_feedback"/>
+                          </noinput>	
+            </field>			
+	</form>
+
+	<form id="record_feedback">
+	<block>
+			<assign name="day" expr="'feedback'"/>
+			<assign name="month" expr="'unim_cricket'"/>
+			<log>	month isssss    <value expr="month"/> 	</log>
+			<log>	day isssss    <value expr="day"/> 	</log>
+			<script>UploadFileName='RECFEEDBACK_HIN_'+ANI+'_'+currtime+'.wav';</script>
+	</block>
+		
+            <record name="recording" beep="true" maxtime="60s" finalsilence="600000ms" dtmfterm="true" type="audio/wav;codec=alaw"/>  
+	      
+	       <subdialog name="messageUpload" srcexpr="'http://192.168.100.226:8082/hungama/air_recording_bolbabybol'" enctype="multipart/form-data" method="post" namelist="ANI UploadFileName month day recording">	    	    							
+	    	  
+	    	  </subdialog>
+  
+	     
+	     
+	     <field name="feedbackthanks">              
+		    	 
+				<grammar mode="dtmf" root="start6" version="1.0">
+                   <rule id="start6" scope="public">
+                     <one-of>
+				<item>1</item>
+				<item>2</item>	
+				<item>3</item>	
+				<item>4</item>	
+				<item>5</item>	
+				<item>6</item>	
+				<item>7</item>	
+				<item>8</item>	
+				<item>9</item>	
+				<item>0</item>	               			 
+				<item>#</item>
+				<item>*</item>			      
+                       </one-of>
+                     </rule>
+                 </grammar> 
+			 
+                        <prompt bargein="true" timeout="1s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/feedback_thanks.wav'"/>
+			</prompt>
+				 
+                         <filled> 
+		           		<script srcexpr="'http://192.168.100.226:8082/hungama/Record_bolbabybol?ANI='+ANI+'&amp;recfilename='+UploadFileName+'&amp;month='+month+'&amp;day='+day+'&amp;MSG='+recording"/> 		
+   		            
+   		            		<!--<script srcexpr="'http://119.82.69.213:8080/hungama/RecordFile?rq=fed&amp;ani='+ANI+'&amp;dni='+DNIS+'&amp;lang='+LANG_DESCRIPTION+'&amp;datetime='+currtime+'&amp;lgrecmsg='+recording"/>-->
+   		            			<!--<script srcexpr="'http://'+S_IP+'/'+servlet_path_1+'/RecordFile?rq=fed&amp;ani='+ANI+'&amp;dni='+DNIS+'&amp;lang='+LANG_DESCRIPTION+'&amp;datetime='+currtime+'&amp;lgrecmsg='+recording"/>-->
+   		           			 <log>Feed Back Recording DOne===========/>    </log>
+			   
+	                    	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_FEEDBACK&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SET'"/>         	        
+			    			<goto next="MainMenu.vxml"></goto>
+                  	    
+                         </filled>
+			  
+			  <noinput>		  
+	                  <!--  <script srcexpr="'http://119.82.69.213:8080/hungama/RecordFile?rq=fed&amp;ani='+ANI+'&amp;dni='+DNIS+'&amp;lang='+LANG_DESCRIPTION+'&amp;datetime='+currtime+'&amp;lgrecmsg='+recording"/>-->
+	                    <log>Feed Back Recording DOne/>    </log>
+      	                    <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_FEEDBACK&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=SET'"/>         	        
+			    <goto next="MainMenu.vxml"></goto>
+                          </noinput>	
+            </field>			
+	     
+		     
+	</form>
+</vxml>

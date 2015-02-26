@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+	<meta name="Hungama_PauseCodeRoute.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="SUBANI" expr="''"/>
+	<var name="TEMPANI" expr="''"/>
+	<var name="SUBDNIS" expr="''"/>
+	<var name="TEMPDNIS" expr="''"/>
+	<var name="ciropr" expr="''"/>
+	<var name="declaimDNIS" expr="0"/>
+	<var name="RELIANCEDNIS" expr="0"/>
+	<var name="declaimlength" expr="0"/>
+	<var name="declaimTF" expr="0"/>
+	<var name="declaimlang" expr="'01'"/>
+	<var name="tnb_modofsub" expr="0"/>
+	<var name="tnb_subtype" expr="0"/>
+	<var name="declaimPlay" expr="0"/>
+	<var name="shuffle_userstatus" expr="0"/>
+	<var name="iAnswer" expr="Math.floor(Math.random(1) *100)" />
+	<var name="bPrompt" expr="true" />
+	<var name="livmin" expr="0" />
+	<var name="livmin1" expr="0" />
+	<var name="operator2" expr="''"/>
+
+	<script>
+		var out_string=new Object();
+		var ciropr1 = new Object();
+	</script>
+<script>
+	function GetDate()
+	{
+		var currentDT = new Date();
+		var day = currentDT.getDate();
+		var month = currentDT.getMonth() + 1;
+	 	var year = currentDT.getFullYear();
+		var hours = currentDT.getHours();
+	  	var minutes = currentDT.getMinutes();
+	  	var seconds = currentDT.getSeconds();
+	
+		if (month.length == 1) {month = "0" + month; }
+		if (day.length == 1) {day = "0" + day; }
+		
+
+		var strDateTime = minutes;
+		return strDateTime;
+}
+	</script>
+
+
+<form id="CIRCLEID">
+		<block>
+				<assign name="Section_Name" expr="'USER_STATUS_CHECK'"/>
+				<assign name="C_Start" expr="start_time()"/>
+				<assign name="livmin" expr="GetDate()"/>
+				<assign name="CATEGORY" expr="'0'"/>
+
+
+				<script>  
+					realDNIS=session.connection.local.uri;                   
+					ANI=session.connection.remote.uri;						   
+		                </script>
+
+				<script>
+					length = ANI.length;
+					ANI = ANI.substring(length-10,length);
+				</script>  
+				
+				<log expr="'livmin@@@@@@@@@@@@@@@@@@@  =' + livmin"/>
+				<script>
+					livmin1=parseInt(livmin);
+					livmin1=livmin1-2;
+				</script>
+				<log expr="'livmin@@@@@@@@@@@@@@@@@@@  =' + livmin1"/>
+
+				<log expr="'ANI @@@@@@@@@@@@@@@@@@@  =' + ANI"/>
+				<log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/>
+				<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+				<log> operator-circle identification </log>
+		
+ 			<script srcexpr="'http://192.168.100.226:8082/hungama/unihungama_dbinteraction?PROCEDURE=master_db.HUNGAMA_CHECK&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       	circle = out_string[j];
+							      							      
+							  }
+	
+						]]>
+				
+			</script>
+			
+			 <log> FIRST DB FETCH circle  is	<value expr="circle"/>    </log>
+
+
+	
+			<if cond="circle=='oth'">
+				<script srcexpr="'http://192.168.100.226:8082/hungama/Hungama_unavailable_series?ANI='+ANI"/>
+				<assign name="DNIS" expr="realDNIS"/>
+				<assign name="operator" expr="'und'"/>
+				
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+
+				<if cond="realDNIS=='66291434'">
+					<assign name="DNIS" expr="'5464634'"/>
+					<assign name="operator" expr="'unim'"/>
+				<elseif cond="realDNIS=='5464634'"/>
+					 <assign name="DNIS" expr="'5464634'"/>
+					 <assign name="operator" expr="'relm'"/>
+				<elseif cond="realDNIS=='0115464634'"/>
+					 <assign name="DNIS" expr="'5464634'"/>
+					 <assign name="operator" expr="'tatm'"/>		   
+				<elseif cond="realDNIS=='01115464634'"/>
+					 <assign name="DNIS" expr="'5464634'"/>
+					 <assign name="operator" expr="'tatc'"/>
+				<elseif cond="realDNIS=='01105464634'"/>
+					 <assign name="DNIS" expr="'5464634'"/>
+					 <assign name="operator" expr="'virm'"/>
+				<elseif cond="realDNIS=='66291094'"/>
+					 <assign name="DNIS" expr="'5464634'"/>
+					 <assign name="operator" expr="'airc'"/>
+				</if>
+				<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+
+
+				<if cond="operator=='relm' || operator=='relc'">
+					<assign name="dbservlet" expr="'relhungama_dbinteraction'"/>
+				<elseif cond="operator=='unim'"/>
+					<assign name="dbservlet" expr="'unihungama_dbinteraction'"/>
+				<elseif cond="operator=='tatm' || operator=='virm'"/>
+					<assign name="dbservlet" expr="'tatmhungama_dbinteraction'"/>
+				<elseif cond="operator=='tatc'"/>
+					<assign name="dbservlet" expr="'tatchungama_dbinteraction'"/>
+				<elseif cond="operator=='airc'"/>
+					<assign name="dbservlet" expr="'airchungama_dbinteraction'"/>
+				<else/>
+					<assign name="dbservlet" expr="'unihungama_dbinteraction'"/>
+				</if>
+
+				<log>operator is <value expr="operator"/>    </log>
+				<log>dbservlet is <value expr="dbservlet"/>    </log>
+
+			<goto next="#USRSTATUS"/>
+
+	</block>
+</form>
+		
+<form id="USRSTATUS">
+	<block>
+	<if cond="(operator=='tatm' || operator=='tatc' || operator=='virm')">
+		<if cond="(circle=='apd')">
+			<assign name="lang" expr="'08'"></assign>	
+		<elseif cond="(circle=='kan')"/>
+			<assign name="lang" expr="'10'"></assign>
+		<elseif cond="(circle=='tnu')"/>
+			<assign name="lang" expr="'07'"></assign>
+		<elseif cond="(circle=='kol' || circle=='wbl')"/>
+			<assign name="lang" expr="'06'"></assign>
+		<elseif cond="(circle=='ker' || circle=='ori')"/>
+			<assign name="lang" expr="'02'"></assign>
+		<else/>
+			<assign name="lang" expr="'01'"></assign>
+		</if>
+	</if>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	usr_status = out_string[j];
+						       if(j==1)
+						       	lang = out_string[j];
+						       if(j==2)
+						       	balance = out_string[j];
+						       if(j==3)
+						        moviectr = out_string[j];
+							 if(j==4)
+						        modesub = out_string[j];								      
+						  }
+
+					]]>
+			
+			</script>
+			<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>			
+			<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start"></assign>
+			<log expr="'contentlog=='+contentlog"></log>
+
+
+
+		
+		
+
+			<if cond="usr_status=='-1'">
+<!--*****************************************5min logic*********************************************-->
+				<if cond="operator=='unim'">
+
+					<script> 					 
+						balance=5*60;
+						timerflag=1;      
+					</script>							
+					<script>
+						<![CDATA[
+							if(timerflag==1)
+							start_BalenceMinute=starttime();
+						]]>	 	
+					</script>
+				</if>
+<!--***************************************************************************************************-->
+						<goto next="Hungama_54646_NewUser.vxml"></goto>
+
+			<elseif cond="usr_status=='7' &amp;&amp; (operator=='relm' || operator=='relc')"/>
+				<script> 					 
+					balance=balance*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+				<if cond="lang=='99'">	
+					<goto next="Hungama_54646_NewUser.vxml"></goto>	
+				<else/>
+					
+						<if cond="lang=='01'">
+							<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+						<elseif cond="lang=='02'" />
+                     	   				<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+						<elseif cond="lang=='06'" />
+                        				<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+						<elseif cond="lang=='07'" />
+       	                 				<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+						<elseif cond="lang=='08'" />
+                     	   				<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+						<elseif cond="lang=='10'" />
+                        				<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+                        			<elseif cond="lang=='17'" />
+                        				<assign name="LANG_DESCRIPTION" expr="'ASM'"/>
+						<else/>
+							<if cond="circle=='kar'">
+								<assign name="lang" expr="'10'"/>
+							        <assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+							<else/>
+								<assign name="lang" expr="'01'"/>
+							        <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+							</if>
+						</if>
+						<goto next="Hungama_54646_ExistUser.vxml"></goto>
+				</if>
+
+
+			
+			<elseif cond="usr_status=='1'"/>
+				
+				<script> 					 
+					balance=balance*60;
+				        timerflag=1;      
+			        </script>							
+		                <script>
+					<![CDATA[
+		     				if(timerflag==1)
+						start_BalenceMinute=starttime();
+					]]>	 	
+				</script>
+				<log expr="'lang @@@@@@@@@ '+lang"></log>
+				<log expr="'balance @@@@@@@@@ '+balance"></log>				
+				<if cond="lang=='99'">	
+					<goto next="Hungama_54646_NewUser.vxml"></goto>	
+				<else/>
+					
+						<if cond="lang=='01'">
+							<assign name="LANG_DESCRIPTION" expr="'HIN'" />
+						<elseif cond="lang=='02'" />
+                     	   				<assign name="LANG_DESCRIPTION" expr="'ENG'"/>
+						<elseif cond="lang=='06'" />
+                        				<assign name="LANG_DESCRIPTION" expr="'BEN'"/>
+						<elseif cond="lang=='07'" />
+       	                 				<assign name="LANG_DESCRIPTION" expr="'TAM'"/>
+						<elseif cond="lang=='08'" />
+                     	   				<assign name="LANG_DESCRIPTION" expr="'TEL'"/>
+						<elseif cond="lang=='10'" />
+                        				<assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+                        			<elseif cond="lang=='17'" />
+                        				<assign name="LANG_DESCRIPTION" expr="'ASM'"/>
+						<else/>
+							<if cond="circle=='kar'">
+								<assign name="lang" expr="'10'"/>
+							        <assign name="LANG_DESCRIPTION" expr="'KAN'"/>
+							<else/>
+								<assign name="lang" expr="'01'"/>
+							        <assign name="LANG_DESCRIPTION" expr="'HIN'"/>
+							</if>
+						</if>
+						<goto next="Hungama_54646_ExistUser.vxml"></goto>
+				</if>
+			 <elseif cond="usr_status=='5'"/>
+				<goto next="#Play_delay_charging"></goto>
+			<else/>
+				<if cond="lang=='99'">
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/01/charge_req_recd.wav'"/>
+					</prompt>
+				<else/>
+					<prompt bargein="true" timeout="0s">
+						<audio expr="promptspath_54646+'/'+lang+'/charge_req_recd.wav'"/>
+					</prompt>
+				</if>				
+				<goto next="Hungama_54646_End.vxml"></goto>
+			</if>
+		</block>
+	</form>
+
+
+<form id="Play_delay_charging">
+	<field name="mnuopt">
+	<grammar mode="dtmf" root="start171" version="1.0">
+	       <rule id="start171" scope="public">
+		 <one-of>				 
+			   <item>1</item>					  			  		      
+		 </one-of>
+	       </rule>
+	</grammar>			
+
+	<prompt bargein="true" timeout="0s" cond="lang!='99'">
+		<audio expr="promptspath_54646+'/'+lang+'/delay_charging.wav'"/>
+	</prompt>
+	<prompt bargein="true" timeout="0s" cond="lang=='99'">
+		<audio expr="promptspath_54646+'/01/delay_charging.wav'"/>
+	</prompt>			
+
+	<filled>
+				<goto next="Hungama_54646_End.vxml"></goto>
+	</filled>		
+
+	<noinput>
+				<goto next="Hungama_54646_End.vxml"></goto> 			     
+	</noinput>
+
+	<nomatch>			   
+				<goto next="Hungama_54646_End.vxml"></goto>             
+	</nomatch>
+	</field>
+</form>
+	
+</vxml>

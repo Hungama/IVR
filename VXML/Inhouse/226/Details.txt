@@ -1,0 +1,90 @@
+VXML code on 226 server -
+
+Jyotish:
+/tomcat/webapps/hungama/uni_jotish
+
+Kiji:
+/tomcat/webapps/hungama/SummerContest
+
+
+MissRiya:
+/tomcat/webapps/hungama/ManchalaPremSub
+
+Aircel -
+/tomcat/webapps/hungama/Hungama_aircel
+
+Lokgeet -
+/tomcat/webapps/hungama/HMP_54646_LokGeet
+
+
+MRT -
+/tomcat/webapps/hungama/uni_mod
+
+SIVR -
+/tomcat/webapps/hungama/Hungama_SIVR
+
+PKP -
+/tomcat/webapps/hungama/Hungama_PKP_vxmlFiles
+/tomcat/webapps/hungama/MND_UNIM
+/tomcat/webapps/hungama/MND_RELM
+/tomcat/webapps/hungama/REL_PKP_vxmlFiles
+
+
+MPMC -
+/tomcat/webapps/hungama/Hungama_ComedyPortal_UNIM
+
+Chat -
+/tomcat/webapps/hungama/Hungama_ChatRoom
+
+
+MM-
+/tomcat/webapps/hungama/Hungama_546468_unim
+
+Devo -
+/tomcat/webapps/hungama/Hungama_5464682_DEV
+/tomcat/webapps/hungama/Hungama_5464694_DEV
+/tomcat/webapps/hungama/Hungama_Devo_Unim
+
+
+Sport -
+/tomcat/webapps/hungama/Hungama_USU
+
+Pause code -
+/tomcat/webapps/hungama/Hungama_5464634_pausecode
+
+Jokes -
+/tomcat/webapps/hungama/Hungama_54646_JOKE_MM
+
+HUL GLC -
+/tomcat/webapps/hungama/HMP_GLC_OBD
+
+Reliance Cricket -
+/tomcat/webapps/hungama/cricket
+
+54646 -
+/tomcat/webapps/hungama/HMP_54646
+/tomcat/webapps/hungama/Hungama_54646_Services_MM
+
+
+Endless -
+/tomcat/webapps/hungama/Hungama_Mod
+
+RMM -
+/tomcat/webapps/hungama/Hungama_MusicMania
+
+Starclub -
+/tomcat/webapps/hungama/celebrity
+
+Goodlife -
+/tomcat/webapps/hungama/Hungama_goodlife
+
+Devo_unim -
+/tomcat/webapps/hungama/Hungama_Devo_Unim
+
+Redfm unim -
+/tomcat/webapps/hungama/Hungama_service_redfm
+
+Redfm tata -
+/tomcat/webapps/hungama/Hungama_service_redfm_all
+
+

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_ModExistUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	
+	<script>
+		var out_string=new Object();
+	</script>
+	
+	<form id="LASTHEARD_PROFILE">
+		<block>
+			<!--<if cond="DNIS=='528881' || DNIS=='528882' || DNIS=='528883'">
+				<prompt bargein="true" timeout="0s">
+				<audio expr="Prompts_Path+'/'+lang+'/welcome_old_'+var_wel+'.wav'"/>
+				</prompt>
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			</if>-->
+			<assign name="drop_point" expr="'last_heard'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=RADIO_USERPROFILE&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=NA&amp;INPARAM[2]=GET'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	HEARD = out_string[j];
+						  }
+
+					]]>
+			
+			</script>			
+			 <assign name="var_wel" expr="getRandom(0,3)" />
+			<log expr="'HEARD @@@@@@@@@ '+HEARD"></log>
+
+		
+			
+								
+		</block>
+		<field name="choice">
+		    <grammar mode="dtmf" root="alldigits" version="1.0">
+					<rule id="alldigits" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+ 		
+
+			<prompt bargein="true" timeout="0s" cond="circle!='upw'">
+				<audio expr="Prompts_Path+'/'+lang+'/welcome_old_'+var_wel+'.wav'"/>
+			</prompt>
+			<prompt bargein="true" timeout="0s" cond="circle=='upw'">
+				<audio expr="Prompts_Path+'/'+lang+'/Welcome.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="HEARD=='0' || HEARD=='00'">
+					<goto next="Hungama_ModMainMenu.vxml"></goto>
+				<else/>
+					<script>
+						length = HEARD.length;
+						cat = HEARD.substring(0,2);
+						subcat = HEARD.substring(2,4);
+					</script>
+					<assign name="playconfig" expr="HEARD"></assign>					
+					<goto next="#LASTHEARD"></goto>												
+				</if>									
+			</filled>
+		</field>
+		<noinput>
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD.substring(0,2);
+					subcat = HEARD.substring(2,4);
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>	
+		</noinput>
+		<nomatch>
+			<if cond="HEARD=='0' || HEARD=='00'">
+				<goto next="Hungama_ModMainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD.substring(0,2);
+					subcat = HEARD.substring(2,4);
+				</script>
+				<assign name="playconfig" expr="HEARD"></assign>					
+				<goto next="#LASTHEARD"></goto>												
+			</if>
+		</nomatch>
+	</form>
+	
+	<form id="LASTHEARD">
+		<block>
+			<prompt bargein="true" timeout="0s">
+				<audio expr="Prompts_Path+'/'+lang+'/listening_cat.wav'"/>
+				<audio expr="Prompts_Path+'/'+lang+'/cat'+HEARD+'.wav'"/>
+				
+			</prompt>
+			<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>												
+		</block>		
+		<field name="choice">
+		    <grammar mode="dtmf" root="allnumber" version="1.0">
+					<rule id="allnumber" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+				<audio expr="Prompts_Path+'/'+lang+'/listening_cat.wav'"/>
+				<audio expr="Prompts_Path+'/'+lang+'/cat'+HEARD+'.wav'"/>
+				<audio expr="Prompts_Path+'/'+lang+'/return_option.wav'"/>
+			</prompt>
+			<filled>
+				<if cond="choice=='8'">
+					<goto next="Hungama_ModMainMenu.vxml"></goto>
+				<else/>					
+					<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>												
+				</if>									
+			</filled>
+		</field>
+		<noinput>
+			<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>	
+		</noinput>
+		<nomatch>
+			<goto next="Hungama_ModMainMenu.vxml#FETCHSONGS"></goto>
+		</nomatch>
+	</form>
+
+</vxml>

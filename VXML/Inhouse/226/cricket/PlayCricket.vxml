@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="CricketRoot.vxml"
+
+xmlns="http://www.w3.org/2001/vxml"
+
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+<meta name="PlayCricket.vxml" content="" />
+
+<meta name="Author" content="" />
+
+<meta name="Date" content="" />
+
+<meta name="Description" content="" />
+
+<meta name="Support" content="" />	
+
+ <script>
+	var favSongs=new Object();
+	var favLangs=new Object();
+	var out_string=new Object();
+	var ciropr1=new Object();
+	
+</script>
+
+<form id="PlayCricket">
+
+		 <block>	
+			<if cond="ball_counter==7">	
+				<if cond="Total_Run &gt; 4 ">
+					<assign name="SCORE_MESSAGE" expr="'TRUE'"/>	
+				</if>	
+					<log expr="'@@@@@@@ farari ka score total ===>' +score"/>
+					<log expr="'@@@@@@@ farari ka score total Sit_Counter ===>' +Sit_Counter"/>	
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_FKSCONTEST_UPDATETIME&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]=1&amp;INPARAM[4]=1&amp;INPARAM[5]=1'"/>		
+				<if cond="score==0">
+					<prompt bargein="true"  timeout="1s">
+						<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+						<audio expr="promptspath_54646+'/'+lang+'/0.wav'"/>
+					</prompt>
+ 				<else/>
+					<script>
+						scorepartfirst = score/100;
+						scorepartthird = score/1000;
+					</script>
+						<assign name="scorepartsecond" expr="''+scorepartthird+''"/>
+						<assign name="scorepartfirstnew" expr="''+scorepartfirst+''"/>
+
+					<script>
+						var v1=scorepartsecond.split(".");
+						var v2=v1[0];
+						var v3=v1[1];
+						var c1=scorepartfirstnew.split(".");
+						var c2=c1[0];
+						var c3=c1[1];
+						var c4=c3*10;
+		     			 </script>
+						<assign name="v" expr="''+v3+''"/>
+
+						<log> v varible length is  <value expr="v"/></log>
+						<log> scorepartsecond varible length is  <value expr="scorepartsecond"/></log>
+						<log> scorepartfirstnew varible length is  <value expr="scorepartfirstnew"/></log>
+
+					<script>
+						var vinay=parseInt(v);
+						var v5=vinay/10;
+					</script>
+						<assign name="v" expr="''+v5+''"/>
+						<log> v5 length varible length is  <value expr="v5"/></log>
+						<log> v.length varible length is  <value expr="v.length"/></log>
+
+					<if cond="v3.length &gt; 1">
+						<script>
+							var v4=v.split(".");
+							var v6=v4[0];
+							var c6=v4[1];
+							var c8=c6*10;
+						</script>
+						<assign name="v3" expr="''+v6+''"/>
+						<assign name="c3" expr="''+c6+''"/>
+						<assign name="c4" expr="''+c8+''"/>
+
+					</if>
+						<log> scorepartfirst varible length is  <value expr="scorepartfirst"/></log>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+						</prompt>
+
+						<prompt bargein="true" timeout="1s" cond="score &gt; 990">
+							<audio expr="promptspath_54646+'/'+lang+'/'+v2+'.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/1000.wav'"/>
+						</prompt>
+
+			 			<prompt bargein="true" timeout="1s" cond="v3 &gt; 0.9">
+							<audio expr="promptspath_54646+'/'+lang+'/'+v3+'.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/100.wav'"/>
+						</prompt> 
+
+						<prompt bargein="true" timeout="1s" cond="c3 &gt; 0">
+							<audio expr="promptspath_54646+'/'+lang+'/'+c4+'.wav'"/>
+						</prompt>
+						<prompt bargein="true" timeout="1s" cond="score==90 || score==80">
+							<audio expr="promptspath_54646+'/'+lang+'/'+score+'.wav'"/>
+						</prompt>
+					</if>
+						<!--<prompt bargein="true"  timeout="1s">
+							<audio expr="promptspath_54646+'/'+lang+'/cric_over_complt.wav'"/>
+						</prompt> -->
+
+						<assign name="GAME_OVER" expr="'TRUE'"/>
+						
+						<prompt bargein="true"  timeout="1s" cond="(Total_Run &gt; 0 &amp;&amp; Total_Run &lt; 11)">
+							<audio expr="promptspath_54646+'/'+lang+'/discount.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/5.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/percent.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/game_complete_sad'+hs+'.wav'"/>
+						</prompt>
+						<prompt bargein="true"  timeout="1s" cond="(Total_Run &gt; 10 &amp;&amp; Total_Run &lt; 21)">
+							<audio expr="promptspath_54646+'/'+lang+'/discount.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/10.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/percent.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/game_complete_happy'+hs+'.wav'"/>
+						</prompt>
+						<prompt bargein="true"  timeout="1s" cond="(Total_Run &gt; 20 &amp;&amp; Total_Run &lt; 31)">
+							<audio expr="promptspath_54646+'/'+lang+'/discount.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/20.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/percent.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/game_complete_happy'+hs+'.wav'"/>
+						</prompt>
+						<prompt bargein="true"  timeout="1s" cond="(Total_Run &gt; 30)">
+							<audio expr="promptspath_54646+'/'+lang+'/discount.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/30.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/percent.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/game_complete_happy'+hs+'.wav'"/>
+
+						</prompt>
+
+						<goto next="#RepeatCricket"/>
+				</if>		
+			
+				
+					
+				<assign name="round" expr="3"/>
+				<log expr="'@@@@@@@ farari ka score total ===>' +score"/>
+				<assign name="ball_opt" expr="getRandom(1,7)" />
+				<log expr="'@@@@@@@ farari ka ball_opt ===>' +ball_opt"/>
+				<if cond="ball_opt==2">
+					<script>Total_Run=Total_Run+2</script>
+				<elseif cond="ball_opt==4"/>
+					<script>Total_Run=Total_Run+4</script>
+				<elseif cond="ball_opt==6"/>
+					<script>Total_Run=Total_Run+6</script>
+				</if>
+				
+				<assign name="ball" expr="getRandom(1,5)" />
+				<assign name="hs" expr="getRandom(1,2)" />
+
+
+
+		</block>
+
+		<!-- 
+			 please follow the below rules-
+		     1=wide ball, 2=2Runs, 3= No ball, 4=4 Runs, 5= Caught out, 6= 6 Runs, 7= Bowled out, 8= Dot ball(noinput case)
+		-->
+
+		<field name="keypadoption">               
+			<grammar mode="dtmf" root="start26" version="1.0">
+				 <rule id="start26" scope="public">
+				 <one-of>     
+						 <item>1</item>
+						 <item>2</item>
+						 <item>3</item>
+						 <item>4</item>
+					     </one-of>
+				 </rule>
+				</grammar>
+
+				<prompt bargein="true"  timeout="2s">
+					<audio expr="promptspath_54646+'/'+lang+'/ball'+ball+'.wav'"/>
+				</prompt>
+			<filled>
+				 
+				 <if cond="ball_opt==1 || ball_opt==3">
+						<assign name="ball_counter" expr="ball_counter"/>
+				     <elseif cond="(ball_opt==5 || ball_opt==7)&amp;&amp; ball_counter!=6 &amp;&amp; out_counter &lt; 3"/>
+						<assign name="ball_counter" expr="ball_counter+1"/>
+						<assign name="out_counter" expr="out_counter+1"/>
+						<prompt bargein="true"  timeout="1s" cond="out_counter==2">
+							<audio expr="promptspath_54646+'/'+lang+'/wicket_down1.wav'"/>
+						</prompt>
+					<if cond="out_counter==3">
+							<if cond="Total_Run &gt; 4 ">
+								<assign name="SCORE_MESSAGE" expr="'TRUE'"/>	
+							</if>
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_FKSCONTEST_UPDATETIME&amp;INTOKEN=6&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+score+'&amp;INPARAM[2]='+DNIS+'&amp;INPARAM[3]=1&amp;INPARAM[4]=1&amp;INPARAM[5]=1'"/>				
+							<assign name="GAME_OVER" expr="'TRUE'"/>
+							
+					<if cond="score==0">
+					   <prompt bargein="true"  timeout="1s">
+						<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+						<audio expr="promptspath_54646+'/'+lang+'/0.wav'"/>
+					  </prompt>
+                                 <else/>
+					<script>
+						scorepartfirst = score/100;
+						scorepartthird = score/1000;
+					</script>
+						<assign name="scorepartsecond" expr="''+scorepartthird+''"/>
+						<assign name="scorepartfirstnew" expr="''+scorepartfirst+''"/>
+
+					<script>
+						var v1=scorepartsecond.split(".");
+						var v2=v1[0];
+						var v3=v1[1];
+						var c1=scorepartfirstnew.split(".");
+						var c2=c1[0];
+						var c3=c1[1];
+						var c4=c3*10;
+		     			 </script>
+						<assign name="v" expr="''+v3+''"/>
+
+						<log> v varible length is  <value expr="v"/></log>
+						<log> scorepartsecond varible length is  <value expr="scorepartsecond"/></log>
+						<log> scorepartfirstnew varible length is  <value expr="scorepartfirstnew"/></log>
+
+					<script>
+						var vinay=parseInt(v);
+						var v5=vinay/10;
+					</script>
+						<assign name="v" expr="''+v5+''"/>
+						<log> v5 length varible length is  <value expr="v5"/></log>
+						<log> v.length varible length is  <value expr="v.length"/></log>
+
+					<if cond="v3.length &gt; 1">
+						<script>
+							var v4=v.split(".");
+							var v6=v4[0];
+							var c6=v4[1];
+							var c8=c6*10;
+						</script>
+						<assign name="v3" expr="''+v6+''"/>
+						<assign name="c3" expr="''+c6+''"/>
+						<assign name="c4" expr="''+c8+''"/>
+
+					</if>
+						<log> scorepartfirst varible length is  <value expr="scorepartfirst"/></log>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="promptspath_54646+'/'+lang+'/score.wav'"/>
+						</prompt>
+
+						<prompt bargein="true" timeout="1s" cond="score &gt; 990">
+							<audio expr="promptspath_54646+'/'+lang+'/'+v2+'.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/1000.wav'"/>
+						</prompt>
+
+			 			<prompt bargein="true" timeout="1s" cond="v3 &gt; 0.9">
+							<audio expr="promptspath_54646+'/'+lang+'/'+v3+'.wav'"/>
+							<audio expr="promptspath_54646+'/'+lang+'/100.wav'"/>
+						</prompt> 
+
+						<prompt bargein="true" timeout="1s" cond="c3 &gt; 0">
+							<audio expr="promptspath_54646+'/'+lang+'/'+c4+'.wav'"/>
+						</prompt>
+					</if>
+
+							<goto next="#RepeatCricket"/>
+				</if>
+						<goto next="#PlayCricket"/>
+				     <else/>
+						<assign name="ball_counter" expr="ball_counter+1"/>
+						<assign name="score" expr="score+10"/>
+				     </if>
+				
+				
+				<prompt bargein="true"  timeout="2s">
+						<audio expr="promptspath_54646+'/'+lang+'/'+ball_opt+'-runs.wav'"/>
+					</prompt>
+					<goto next="#PlayCricket"/>
+				
+		  </filled>
+
+			<noinput>
+				<assign name="round" expr="3"/>
+				<assign name="ball_counter" expr="ball_counter+1"/>
+				<prompt bargein="true"  timeout="2s">
+							<audio expr="promptspath_54646+'/'+lang+'/crick_no-input.wav'"/>
+				</prompt>
+				<goto next="#PlayCricket"/>
+			</noinput>
+
+			<nomatch>
+				<assign name="round" expr="3"/>
+				<prompt bargein="true"  timeout="2s">
+							<audio expr="promptspath_54646+'/'+lang+'/invalid.wav'"/>
+				</prompt> 
+				<goto next="#PlayCricket"/>
+			</nomatch>
+
+		</field>
+
+</form>	
+
+<form id="RepeatCricket">
+
+	<field name="keypadoption">               
+			<grammar mode="dtmf" root="start27" version="1.0">
+				 <rule id="start27" scope="public">
+				 <one-of>     
+						 <item>1</item>
+				 </one-of>
+				 </rule>
+				</grammar>
+
+		    <prompt bargein="true"  timeout="2s">
+				<audio expr="promptspath_54646+'/'+lang+'/game_repeat.wav'"/>
+  		   </prompt> 
+			<prompt bargein="true" timeout="1s">
+				<audio expr="'http://'+S_IP+'/'+CONTENT_PATH+'/'+lang+'/prompts/p1_thanks-2.wav'"/>
+				
+			</prompt>
+
+		 <filled>
+			<log expr="'@@@@@@@ farari ka score total ===>' +score"/>
+			<goto next="MainMenu.vxml"/>
+	  	</filled>
+
+		<noinput>
+			<goto next="MainMenu.vxml"/>
+		</noinput>
+
+		<nomatch>
+			<goto next="MainMenu.vxml"/>
+		</nomatch>
+
+	</field>
+
+</form>	
+
+
+</vxml>

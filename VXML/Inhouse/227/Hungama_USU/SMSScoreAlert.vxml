@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="CricketRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="SMSScoreAlert.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+	<script>
+		var out_string=new Object();
+		
+	</script>
+	
+<!--<form id="sms_alert">
+		<block>
+					<if cond="timerflag=='1'">
+					<script> 
+						total_used_bal=rim(start_BalenceMinute);
+						balance=balance-total_used_bal;  						  
+					</script>
+					<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+					<log expr="'@@@@@@ left balance is '+balance"/>
+					<if cond="balance &lt;= '0'">          
+						   <goto next="Subscription.vxml"/>
+					  </if>     
+					</if>
+		
+											
+					<script>
+						<![CDATA[
+							if(timerflag==1)
+							start_BalenceMinute=starttime();
+						]]>	 	
+					</script>
+
+		<assign name="Section_Name" expr="'SMSSCORE'"/>
+		
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_SMS_ALERT&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=CHK'"/>
+			<script>
+			 <![CDATA[
+					      sms_status = out_string[0];
+					
+
+					]]>
+			
+			</script>
+			
+			<if cond="sms_status=='0'">
+				<goto next="#activate"></goto>
+			<elseif cond="sms_status=='1'"/>
+				<goto next="#deactivate"></goto>	
+			
+			</if>
+		</block>
+	</form>
+
+	<form id="activate">
+		<field name="actiopt">
+			<prompt bargein="true" timeout="3s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/schedule_options.wav'"/>
+			</prompt>
+			
+			<grammar mode="dtmf" root="start30">
+						<rule id="start30" scope="public">
+							<one-of>
+								 
+								 <item> 1 </item>
+								 
+							</one-of>
+						</rule>
+			</grammar>
+				
+			<filled>
+				<if cond="actiopt=='1'">
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_SMS_ALERT&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=ACTIVATE'"/>
+					<goto next="MainMenu.vxml"/>
+				<elseif cond="actiopt=='0'"/>
+					<goto next="AccountManager.vxml"/>
+				
+				</if>
+			</filled>
+				
+			<noinput>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+			</noinput>
+			
+			<noinput count="3">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<goto next="MainMenu.vxml"/>
+			</noinput>
+				
+			<nomatch>
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				
+			</nomatch>
+			
+			<nomatch count="3">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<goto next="MainMenu.vxml"/>
+			</nomatch>
+		</field>
+	</form> -->
+	
+	<form id="deactivate">
+		<block>
+		<assign name="Usage_time" expr="time_duration(section_begin)"/>
+				<assign name="Usagelog" expr="Usagelog+SECTION+hash+Usage_time+hash"></assign> 
+				<assign name="SECTION" expr="'SCOREALERT'"/>
+		<assign name="section_begin" expr="start_time()"/>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_SMS_ALERT&amp;INTOKEN=1&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI"/>
+			
+			<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/nosms_thanks.wav'"/>
+			</prompt>
+					
+			<goto next="MainMenu.vxml"/>
+
+	</block>
+
+	</form>
+</vxml>

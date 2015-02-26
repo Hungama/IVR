@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="CricketRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+<meta name="UserStatus_tnb.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<property name="documentmaxstale" value="0s"></property>
+	<property name="documentmaxage" value="0s"></property>
+	<var name="usr_status_tnb" expr="0"/>
+	
+		<script>
+			var ciropr1 = new Object();
+			var ciropr =new Object();
+			var out_string=new Object();
+			var length=0;
+		</script>
+			<script>  
+				realDNIS=session.connection.local.uri;                   
+				ANI=session.connection.remote.uri;						   
+			</script>
+
+	
+		<form id="Main">
+			<block>
+			<assign name="SECTION" expr="'Userstatus'"/>
+				<script>
+					length = ANI.length;
+					if(length == 15)
+						ANI = ANI.substring(5,15);
+					if(length == 14)
+						ANI = ANI.substring(4,14);
+					if(length == 13)
+						ANI = ANI.substring(3,13);
+					if(length == 12)
+						ANI = ANI.substring(2,12);
+					if(length == 11)
+						ANI = ANI.substring(1,11);
+				</script>  
+			<assign name="C_Start" expr="start_time()"/>
+			<assign name="call_stime" expr="getcurryyyymmdd()+start_time()"/>
+			
+			<!--<if cond="realDNIS=='30781925'">
+			                		<script srcexpr="'http://'+IP+'/'+servlet_path+'/relcricket_dbinteraction?PROCEDURE=master_db.WHITELIST_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+realDNIS"/>
+									<script>
+										 <![CDATA[
+										   	for(j=0; j< out_string.length;  j++)
+											  {  	  
+											       if(j==0)
+											       	 whitelist_user = out_string[j];
+											       if(j==1)
+											       	 short_code = out_string[j];
+											       if(j==2)
+											       	 whitelist_circle = out_string[j];								       
+											       if(j==3)
+											       	 whitelist_opt = out_string[j];
+											  }
+											  		
+										]]>
+								
+									</script>
+									<if cond="whitelist_user=='-1'">
+										<exit/>
+									</if>	
+									<assign name="realDNIS" expr="short_code"/>					
+			                </if>-->
+			                <script>
+					    		var length = realDNIS.length;
+					    		var operator1= realDNIS.substring(0,4);
+					    </script>
+					    <log expr="'realDNIS @@@@@@@@@@@@@@@@@@@@ =' + realDNIS"/> 
+					    <log expr="'operator1 @@@@@@@@@@@@@@@@@@@@ =' + operator1"/> 
+					    <log expr="'length @@@@@@@@@@@@@@@@@@@@ =' + length"/> 
+					    <if cond="operator1=='0111'">
+					    	<script>
+								length = realDNIS.length;
+								DNIS= realDNIS.substring(4,length);
+								operator1 = "tatc";
+					    	</script>	
+					    <elseif cond="operator1=='0115'"/>
+					    	<script>
+								length = realDNIS.length;
+								DNIS= realDNIS.substring(3,length);
+								operator1 = "tatm";
+					    	</script>
+					    	
+					    <else/>
+					    	<script>
+					    		DNIS= realDNIS;
+					    		operator1 = "relc";
+					    	</script>
+					    </if>
+							
+							<script srcexpr="'http://'+IP+'/'+servlet_path+'/hungama_check?ANI='+ANI"/>
+							
+							<assign name="ciropr" expr="ciropr1.value"/>
+							<log expr="'ciropr @@@@@@@@@@@@@@@@@@@@ =' + ciropr"/>
+							<script>
+								var songcheck=ciropr.split("#");
+								operator=songcheck[1];
+								circle=songcheck[2];
+							</script>
+							
+							<assign name="operator" expr="operator1"/>
+							<log>circle  is	<value expr="circle"/>    </log>
+							<log>operator is <value expr="operator"/>    </log>
+							<log>whitelist_user is <value expr="whitelist_user"/>    </log>
+							<log expr="'DNIS @@@@@@@@@@@@@@@@@@@@ =' + DNIS"/>
+							
+							<if cond="whitelist_user=='1'">
+								<assign name="circle" expr="whitelist_circle"/>
+								<assign name="operator" expr="whitelist_opt"/>
+							</if>
+							
+							<if cond="operator=='relm' || operator=='relc'">
+								<assign name="dbservlet" expr="'relcricket_dbinteraction'"/>
+								<assign name="serviceid" expr="'1208'"/>
+								<!--<assign name="planid" expr="'21'"/> -->
+							<elseif cond="operator=='unim'"/>
+								<assign name="dbservlet" expr="'unicricket_dbinteraction'"/>
+								<assign name="serviceid" expr="'1208'"/>
+								<assign name="planid" expr="'7'"/>
+							<elseif cond="operator=='tatm'"/>
+								<assign name="dbservlet" expr="'tatmcricket_dbinteraction'"/>
+								<assign name="serviceid" expr="'1208'"/>
+								<assign name="planid" expr="'7'"/>
+			                		 <else/>
+								<assign name="dbservlet" expr="'relcricket_dbinteraction'"/>
+								<assign name="serviceid" expr="'1208'"/>
+								<assign name="planid" expr="'21'"/>
+							</if>
+			                        
+							<goto next="#number_grid"></goto>
+					
+			
+			</block>
+		</form>
+	
+			<form id="number_grid">
+			<block>
+			<if cond="ANI=='8586967046'">
+				<assign name="DNIS" expr="'5443322'"/>
+			</if>
+				<if cond="DNIS=='544337'">
+					<prompt bargein="true" timeout="0s">			
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/disclaimer_9.wav'"/>
+					</prompt>
+				<elseif cond="DNIS=='5443311' || DNIS=='5443322' || DNIS=='5443322' || DNIS=='54433'"/>
+					<prompt bargein="true" timeout="0s">			
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/disclaimer.wav'"/>
+					</prompt>
+				<elseif cond="DNIS=='544334' || DNIS=='5443344'"/>
+					<prompt bargein="true" timeout="0s">			
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/disclaimer_6.wav'"/>
+					</prompt>
+				</if>
+		
+				
+				<if cond="DNIS=='5443333'">
+					<log expr="'!!!!!!!!!Direct Activation!!!!!!!!!!!!!!! '"></log>
+					<goto next="#USRSTATUS"></goto>
+				<elseif cond="DNIS=='544337'"/>
+					<log expr="'!!!!!!!!!Direct Prediction Contest!!!!!!!!!!!!!!! '"></log>
+					<goto next="NewUser.vxml"></goto>
+				<elseif cond="DNIS=='5443322'"/>
+					<log expr="'!!!!!!!!!Direct Activation!!!!!!!!!!!!!!! '"></log>
+					<goto next="#USRSTATUS_TNB"></goto>
+				<elseif cond="DNIS=='544334' || DNIS=='5443344'"/>
+					<log expr="'!!!!!!!!!Mother Portal Alacart!!!!!!!!!!!!!!! '"></log>
+					<goto next="NewUser.vxml"></goto>
+				<elseif cond="DNIS=='5443311'"/>
+					<log expr="'!!!!!!!!!Direct Activation!!!!!!!!!!!!!!! '"></log>
+					<assign name="DNIS" expr="5443311"/>
+					<goto next="#USRSTATUS"></goto>
+				<else/>
+					<log expr="'!!!!!!!!!Normal Subscription Mother Portal!!!!!!!!!!!!!!! '"></log>
+					<assign name="DNIS" expr="54433"/>
+					<goto next="#USRSTATUS"></goto>
+				</if>
+			</block>
+		</form>
+<!--*****************************************************************TRY AND BUY *******************************************************************-->
+	<form id="USRSTATUS_TNB">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_QUERY_5443322&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+			<script>
+			 <![CDATA[
+				for(j=0; j< out_string.length;  j++)
+				  {  	  
+				       if(j==0)
+					usr_status_tnb = out_string[j];
+				   }
+			]]>
+			</script>
+			<log expr="'usr_status_tnb @@@@@@@@@ '+usr_status_tnb"></log>
+		<if cond="usr_status_tnb=='-1'">
+			<assign name="amount" expr="49"/>
+			<assign name="planid" expr="'21'"/>
+			<assign name="serviceid" expr="'1208'"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_SUB_TNB&amp;INTOKEN=7&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]='+amount+'&amp;INPARAM[5]='+serviceid+'&amp;INPARAM[6]='+planid"/>
+		</if>
+		<goto next="#USRSTATUS"></goto>
+	</block>
+	</form>
+<!--***********************************************************************************************************************************************-->
+		
+	<form id="USRSTATUS">
+			<block>
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_QUERY&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]=1'"/>
+				<script>
+				 <![CDATA[
+						   for(j=0; j< out_string.length;  j++)
+							  {  	  
+							       if(j==0)
+							       	usr_status = out_string[j];
+							       if(j==1)
+							       	lang = out_string[j];
+							       if(j==3)
+							         frc_status = out_string[j];
+							   }
+	
+						]]>
+				
+				</script>
+				<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+									
+				<assign name="hh" expr="start_time()"/>
+				
+		  		<log expr="'now time======='+hh"/>
+		  		<script>
+		  			 hh=hh.substring(0,2);
+		  		</script>
+				<log expr="'HOUR time======='+hh"/>
+				<log expr="'usr_status @@@@@@@@@ '+usr_status"></log>
+				<assign name="contentlog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+				<assign name="Usagelog" expr="ANI+hash+DNIS+hash+getcurryyyymmdd()+hash+C_Start+hash"></assign>
+				<log expr="'contentlog=='+contentlog"></log>
+				<log expr="'Usagelog=='+Usagelog"></log>
+				<if cond="usr_status=='-1'">
+				
+					<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=CRICKET_PROMO_QUERY&amp;INTOKEN=1&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI"/>
+					<script>
+					 <![CDATA[
+							   for(j=0; j< out_string.length;  j++)
+								  {  	  
+								       if(j==0)
+									promo_status = out_string[j];
+								      
+								   }
+
+							]]>
+
+					</script>
+					<log expr="'promo_status @@@@@@@@@ '+promo_status"></log>
+					<if cond="promo_status=='3'">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_promoa15.wav'"/>
+					</if>
+					
+					<goto next="NewUser.vxml"></goto>
+				<elseif cond="usr_status=='1'"/>
+					<if cond="lang=='99'">
+						<assign name="lang" expr="'01'"/>
+						<goto next="NewUser.vxml#LANGSEL1"/>
+					<else/>
+						<if cond="hh &gt; '00' &amp;&amp; hh &lt; '12'">
+							<prompt bargein="true" timeout="0s">			
+								<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_morning.wav'"/>
+							</prompt>
+						<elseif cond="(hh &gt; '12' || hh == '12') &amp;&amp; (hh &lt; '16')"/>
+							<prompt bargein="true" timeout="0s">			
+								<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_noon.wav'"/>
+							</prompt>
+						<else/>
+							<prompt bargein="true" timeout="0s">			
+								<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_evening.wav'"/>
+							</prompt>
+						</if>
+						<goto next="MainMenu.vxml"></goto>
+					</if>	
+				<elseif cond="usr_status=='5'"/>
+					<if cond="lang=='99'">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="'http://'+IP+'/'+Prompt_Path+'/01/delay_charging.wav'"/>
+						</prompt>
+					<else/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+						</prompt>
+					</if>
+					<goto next="End.vxml"></goto>
+				
+				   <if cond="frc_status==0">
+				   	<goto next="NewUser.vxml"></goto>
+				   <elseif cond="frc_status==1"/>
+				   		<prompt bargein="true" timeout="0s">			
+							<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/welcome_new_frc1.wav'"/>
+						</prompt>
+					<goto next="MainMenu.vxml"></goto>	
+				   </if>
+				<else/>
+					<if cond="lang=='99'">
+						<prompt bargein="true" timeout="0s">
+							<audio expr="'http://'+IP+'/'+Prompt_Path+'/01/delay_charging.wav'"/>
+						</prompt>
+					<else/>
+						<prompt bargein="true" timeout="0s">
+							<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/delay_charging.wav'"/>
+						</prompt>
+					</if>
+					<goto next="End.vxml"></goto>
+				</if>
+			</block>
+	</form>
+	
+</vxml>

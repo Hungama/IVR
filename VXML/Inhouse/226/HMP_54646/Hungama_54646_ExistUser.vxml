@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_54646_ServicesRoot.vxml"
+xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+<meta name="Hungama_54646_ExistUser.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	
+	<var name="length" expr="0"/>
+<var name="specialzonedate" expr="0"/>
+	
+	<script>
+		var out_string=new Object();
+	</script>
+<script>
+	function GetDate()
+	{
+		var currentDT = new Date();
+		var day = currentDT.getDate();
+		var month = currentDT.getMonth() + 1;
+	 	var year = currentDT.getFullYear();
+		var hours = currentDT.getHours();
+	  	var minutes = currentDT.getMinutes();
+	  	var seconds = currentDT.getSeconds();
+	
+		if (month.length == 1) {month = "0" + month; }
+		if (day.length == 1) {day = "0" + day; }
+		
+		var strDateTime =  year + "-" + month + "-" + day;
+		return strDateTime;
+	}
+	</script>
+
+	
+	<form id="LASTHEARD_PROFILE">
+		<block>
+	<assign name = "specialzonedate" expr = "GetDate() " />
+	<if cond="specialzonedate=='2015-2-7' || specialzonedate=='2015-2-8' || specialzonedate=='2015-2-9' || specialzonedate=='2015-2-10' || specialzonedate=='2015-2-11' || specialzonedate=='2015-2-12' || specialzonedate=='2015-2-13' || specialzonedate=='2015-2-14'">
+				<goto next="Hungama_54646_ExistUser_LV.vxml"/>
+		</if>
+
+
+		<assign name="Section_Name" expr="'EXISTING_USER'"/>
+				<if cond="(realDNIS=='0115464695' || realDNIS=='01115464695') &amp;&amp; circle=='tnu'">
+					<goto next="Audio_Cinema_MainMenu.vxml"/>
+				</if>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_USERPROFILE_54646&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=GET'"/>
+			<script>
+			 <![CDATA[
+					   for(j=0; j< out_string.length;  j++)
+						  {  	  
+						       if(j==0)
+						       	HEARD = out_string[j];
+						  }
+
+					]]>
+			
+			</script>
+				
+			<goto next="#WelcomeIntroRandom"/>					
+		</block>
+	</form>
+	<form id="WelcomeIntroRandom">
+	 <block>
+			 		<log expr="'operator @@@@@@@@@@@@@@@@@@@  =' + operator+circle+DNIS"/>
+			<assign name="var_wel" expr="getRandom(0,4)" />	
+			
+				<!--<prompt bargein="true" timeout="0s" cond="(circle=='apd' &amp;&amp; DNIS=='546460')">
+					<audio expr="promptspath_54646+'/NN/welcome_'+lang+'_vd.wav'"/>
+				</prompt>-->
+
+<if cond="ANI=='9167610350' || ANI=='7532090874' || ANI=='9210643979' || ANI=='9017080530' || ANI=='8546048758' || ANI=='8483943917'">
+	<if cond="specialzonedate=='2015-2-5' || specialzonedate=='2015-2-6' || specialzonedate=='2015-2-7' || specialzonedate=='2015-2-8' || specialzonedate=='2015-2-9' || specialzonedate=='2015-2-10' || specialzonedate=='2015-2-11' || specialzonedate=='2015-2-12' || specialzonedate=='2015-2-13' || specialzonedate=='2015-2-14'">
+		<prompt bargein="true" timeout="2s">
+			<audio expr="promptspath_54646+'/'+lang+'/wel_old_'+specialzonedate+'.wav'"/>
+		</prompt>
+		<goto next="Hungama_54646_MainMenu.vxml"></goto>
+
+	</if>
+</if>
+
+
+			<prompt bargein="true" timeout="0s" cond="(operator!='tatc' || operator!='tatm') &amp;&amp; (circle!='mpd' &amp;&amp; circle!='upw' &amp;&amp; circle!='upe' &amp;&amp; circle!='bih') || DNIS!='546460'">			
+				<audio expr="promptspath_54646+'/NN/wel-'+lang+'.wav'"/>
+				
+			</prompt>
+				<prompt bargein="true" timeout="0s" cond="circle=='mpd' &amp;&amp; DNIS=='54646' &amp;&amp; (operator=='relc' || operator=='relm')">
+					<audio expr="promptspath_54646+'/01/Welcome_54646_newRL.wav'"/>
+				</prompt>
+
+
+	<if cond="(operator=='tatc' || operator=='tatm') &amp;&amp; DNIS=='546460'">
+			
+		<assign name="localbal" expr="balance"/>
+		 <log expr="' localbal for playing is :' +localbal"/>
+		<script> 
+			  localbal=Math.floor(localbal/60); 	  
+		</script>
+		 <log expr="' localbal for playing is :' +localbal"/>
+
+		<if cond="localbal &lt;= '0'">          
+			<prompt bargein="false" >
+				<audio expr="promptspath_54646+'/'+lang+'/acmanager_balanceis.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/0.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/minutes.wav'"/>
+			</prompt>
+
+		<elseif cond="localbal == '100'"/>
+			<prompt bargein="false" >
+				<audio expr="promptspath_54646+'/'+lang+'/acmanager_balanceis.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/1.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/100.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/minutes.wav'"/>
+			</prompt>
+
+		<elseif cond="localbal &gt; '100'"/>
+			<script>localbal=localbal-100;</script>
+			<prompt bargein="false" >
+				<audio expr="promptspath_54646+'/'+lang+'/acmanager_balanceis.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/1.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/100.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/'+localbal+'.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/minutes.wav'"/>
+			</prompt>
+
+		<else/>
+			<prompt bargein="false" >
+				<audio expr="promptspath_54646+'/'+lang+'/acmanager_balanceis.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/'+localbal+'.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/minutes.wav'"/>
+			</prompt>
+		</if> 
+</if>
+
+  
+		</block> 	
+		<field name="choice">
+		    <grammar mode="dtmf" root="start2" version="1.0">
+					<rule id="start2" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							
+						</one-of>
+					</rule>
+			</grammar>
+			
+			<filled>
+			
+			  <if cond="choice &lt; 10">
+				<if cond="HEARD=='0' || HEARD=='00' || HEARD=='' ">
+					<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				<else/>
+					<script>
+						length = HEARD.length;
+						cat = HEARD;
+						
+					</script>
+										
+					<goto next="#LASTHEARD"></goto>												
+				</if>
+			</if>										
+			</filled>
+		</field>
+		<noinput>
+				<if cond="HEARD=='0' || HEARD=='00' || HEARD==''">
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD;
+					
+				</script>
+									
+				<goto next="#LASTHEARD"></goto>												
+			</if>	
+		</noinput>
+		<nomatch>
+				<if cond="HEARD=='0' || HEARD=='00' || HEARD=='' ">
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>
+			<else/>
+				<script>
+					length = HEARD.length;
+					cat = HEARD;
+					
+				</script>
+									
+				<goto next="#LASTHEARD"></goto>												
+			</if>
+		</nomatch>
+	</form>
+	
+	<form id="LASTHEARD">
+	<block>
+	<assign name="Section_Name" expr="'EXISTING_LASTHEARD'"/>
+	</block>
+		<field name="choice">
+		    <grammar mode="dtmf" root="start3" version="1.0">
+					<rule id="start3" scope="public">
+						<one-of>
+							 <item>  0  </item>
+							 <item>  1  </item>
+							 <item>  2  </item>
+							 <item>  3  </item>
+							 <item>  4  </item>
+							 <item>  5  </item>
+							 <item>  6  </item>
+							 <item>  7  </item>
+							 <item>  8  </item>
+							 <item>  9  </item>
+							 <item>  *  </item>
+							 <item>  #  </item>
+						</one-of>
+					</rule>
+			</grammar>
+			<prompt bargein="true" timeout="1s">
+
+				<audio expr="promptspath_54646+'/'+lang+'/listining_cat.wav'"/>
+				<audio expr="promptspath_54646+'/'+lang+'/'+HEARD+'.wav'"/>
+
+			</prompt>
+			<filled>
+				<goto next="Hungama_54646_MainMenu.vxml"></goto>
+				  
+			</filled>
+		</field>
+		<noinput>
+			<if cond="HEARD=='rootcat_02'">					       
+					<goto next="Hungama_54646_LoveGuru.vxml"/> 
+			<elseif cond="HEARD=='rootcat_04'"/>
+				<goto next="Hungama_MUSICWORLD_PlayContent.vxml"/>
+			<elseif cond="HEARD=='rootcat_05'"/>
+				<goto next="Hungama_54646_CelebrityWorld.vxml"/>
+			<elseif cond="HEARD=='rootcat_06'"/>
+				<goto next="Audio_Cinema_MainMenu.vxml"/>
+			<elseif cond="HEARD=='celebwld_cat02'"/>
+				<goto next="Hungama_54646_CelebrityWorld.vxml#CELINTERVIEW"/>
+			<else/>      
+				<assign name="playconfig" expr="HEARD" />          							 				 					 		         
+				<goto next="Hungama_MUSICWORLD_PlayContent.vxml#loadcliptoplay"/>
+			</if>
+		</noinput>
+		<nomatch>
+			<if cond="HEARD=='rootcat_02'">					       
+					<goto next="Hungama_54646_LoveGuru.vxml"/> 
+			<elseif cond="HEARD=='rootcat_04'"/>
+				<goto next="Hungama_MUSICWORLD_PlayContent.vxml"/>
+			<elseif cond="HEARD=='rootcat_05'"/>
+				<goto next="Hungama_54646_CelebrityWorld.vxml"/>
+			<elseif cond="HEARD=='rootcat_06'"/>
+				<goto next="Audio_Cinema_MainMenu.vxml"/>
+			<elseif cond="HEARD=='celebwld_cat02'"/>
+				<goto next="Hungama_54646_CelebrityWorld.vxml#CELINTERVIEW"/>
+			<else/>                							 				 					 		         
+<assign name="playconfig" expr="HEARD" />          							 				 					 		         
+				<goto next="Hungama_MUSICWORLD_PlayContent.vxml#loadcliptoplay"/>
+
+			</if>
+		</nomatch>
+	</form>
+
+</vxml>

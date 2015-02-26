@@ -1,0 +1,271 @@
+
+<vxml version="2.0" application="MSDRoot.vxml">      
+    
+   <var name="len" expr="''"/>	
+   <var name="Digit1st" expr="0"/>
+   <var name="Digit2nd" expr="0"/>
+   <var name="Digit3rd" expr="0"/>
+   <var name="Digit4th" expr="0"/>
+   <var name="PlayOnce" expr="true"/>		
+   <var name="names"/>
+   <var name="NXTEVENT" expr="'OFF'"/>	 
+   <var name="return_opt" expr="''"/>
+   <script>
+	var favSongs=new Object();
+	var out_string=new Object();
+   </script>
+	
+<form id="loadstarclubcelebritycfg">
+  <block>   
+       <script>
+	    i=0;			    
+            Totalmf=0;
+	    len=0;					
+       </script>			
+       <log>--------------- START starclubcelebrity FILE LOADEDING  ----------------- </log>
+       <if cond="NXTEVENT=='ON'">
+	 	<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=starclubconfig/songconfig/'+lang+'nextchatevent.cfg&TOKEN=FREE'"/>
+       <else/>					
+		<!--<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=starclubconfig/'+operator+'/songconfig/'+lang+playconfig+'.cfg&TOKEN=FREE'"/>-->
+		<script srcexpr="'http://'+IP+'/hungama/ar_ReadConfigSong?ConfigPath=starclubconfig/songconfig/'+lang+playconfig+'.cfg&TOKEN=FREE'"/>
+       </if>
+       <log expr="'@@@@@@ Array Length is >>>>>> '+favSongs.length"/>
+       <log expr="'@@@@@@ Array is >>>>>> '+favSongs[0]"/>
+       <script>
+              <![CDATA[
+	          for(i=0; i<favSongs.length; i++)
+ 	           { 				       
+		          mfFileNames[i]= favSongs[i]; 
+		          var str=mfFileNames[i].split("_");   <!-- (Parameters are in the config file (109_1_1_2_20110927_170000_0)) -->
+			  contentdir=str[0];		<!-- Content place in the directory  (109) -->			      
+			  celeshowid=str[1];		<!-- Status of Show ID (1) -->
+			  celeshowstatus=str[2]; 	<!-- Show Status (1) -->
+			  celebrityid=str[3]; 		<!-- Celeb id (2) -->
+			  showdate=str[4];		<!-- Show date (20110927) -->
+			  showtime=str[5]; 		<!-- Show time (170000) -->
+  			  nxteventflag=str[6];		<!-- Next event Flag (0) -->
+			  price_tkt=str[6];		<!-- Next event Flag (0) -->
+		  }
+						 		  
+		]]>	
+	</script> 
+	<log expr="'@@@@@@ contentdir is >>>>>> '+contentdir"/>
+	<log expr="'@@@@@@ celeshowid is >>>>>> '+celeshowid"/>
+	<log expr="'@@@@@@ celeshowstatus is >>>>>> '+celeshowstatus"/>
+	<log expr="'@@@@@@ celebrityid is >>>>>> '+celebrityid"/>
+	<log expr="'@@@@@@ showdate is >>>>>> '+showdate"/>
+	<log expr="'@@@@@@ showtime is >>>>>> '+showtime"/>
+	<log expr="'@@@@@@ nxteventflag is >>>>>> '+nxteventflag"/>
+	<log expr="'@@@@@@ Price Ticket is >>>>>> '+price_tkt"/>
+	<script>
+	   i=0;
+	   j=0;
+	</script>
+	
+	<!--  Event Check case (Inactive,Offline and Active) -->
+	
+	<if cond="celeshowstatus == '1'">
+		<goto next="#starclubcelesubMenu"/> 	
+	<elseif cond="celeshowstatus=='2'"/>
+	        <goto next="#starclubcelesubMenu"/> 
+	<else/>
+		<prompt bargein="true" timeout="0s">	
+	  		<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'event_inactive.wav"/>
+	        </prompt>
+	</if>
+		  
+  </block>
+		  
+</form>
+
+<form id="starclubcelesubMenu">
+  <block>       
+	<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=sp_CHK_CELEBRITY_ATCIVE_USER&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeshowid"/>
+	<script>
+		<![CDATA[
+		for(j=0; j< out_string.length;  j++)
+		{  	  
+		     if(j==0)
+		       	cele_usr_status = out_string[j];
+  		}
+		]]>
+	</script>	
+	<if cond="cele_usr_status == '1'">
+		 <log expr="'DNIS >>>>>>>>>>>>>>> '+DNIS"/>
+		 <if cond="celeshowstatus=='2'">   			<!-- Event Offline -->
+		 	
+		 	<if cond="nxteventflag=='1'">
+		 		<goto next="#nextevent"/>
+		 		
+		 	<elseif cond="nxteventflag=='0'"/>
+		 		<goto next="#celebchatpending"/>
+			<else/>
+				<prompt bargein="true" timeout="0s">	
+  		        		<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'event_inactive.wav"/>
+        			</prompt>
+			</if>
+		<else/>
+		 	<goto next="#celebrityMainMenu"/>
+		</if>
+	<else/>		
+	     	<goto nextitem="submnuopt"/>   <!-- Subs option for New User   -->
+ 	</if>				
+    </block>		
+   
+    <field name="submnuopt">
+	 <grammar mode="dtmf" root="start">
+             <rule id="start" scope="public">
+         	<one-of>				 
+		  	<item>1</item>
+		  	<item>2</item>						  			  		      
+         	</one-of>
+             </rule>
+         </grammar>
+	 <prompt bargein="true" timeout="3s">	
+               <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'event_nosub1.wav'"/>
+         </prompt>
+	 <filled>
+	 	<if cond="submnuopt=='1'">
+		     <script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=JBOX_PURCHASE_CELEBRITY_TICKET&amp;INTOKEN=8&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+lang+'&amp;INPARAM[2]=IVR&amp;INPARAM[3]='+DNIS+'&amp;INPARAM[4]=15&amp;INPARAM[5]='+celeshowid+'&amp;INPARAM[6]='+serviceid+'&amp;INPARAM[7]='+c_planid"/>
+	    	     <clear namelist="submnuopt"/> 		
+		     <prompt bargein="true" timeout="3s">	
+                         <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/charging_wait.wav'"/>	
+                     </prompt>
+		     <goto next="#BillStatusChk"/>
+		<elseif cond="submnuopt=='2'"/>				 	
+		       <!-- <goto next="HUNGAMA_startclub_MainMnu_3s.vxml"/> -->
+		       <prompt bargein="true" timeout="3s">	
+		              <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/CBC_thanksNoSub.wav'"/>	
+                       </prompt>
+                       <disconnect/>
+		</if>
+	 </filled>
+			
+	 <noinput>
+		<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'nodtmf.wav'"/>                
+                <reprompt/> 
+         </noinput>
+	        
+         <noinput count="3">		  
+                <disconnect/>
+         </noinput>
+	 <nomatch>
+                <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'invalidoption.wav'"/>		
+                <reprompt/>
+         </nomatch> 
+	 <nomatch count="3">
+	        <disconnect/>					
+	 </nomatch>                
+					
+    </field>	 
+</form>
+    
+<form id="BillStatusChk">
+	<block>
+		<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=sp_CHK_CELEBRITY_ATCIVE_USER&amp;INTOKEN=2&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+celeshowid"/>
+		<script>
+		 <![CDATA[
+		   for(j=0; j< out_string.length;  j++)
+		   {  	  
+		       if(j==0)
+		       	cele_usr_status = out_string[j];
+		   }
+		  ]]>
+		</script>
+			
+		<if cond="cele_usr_status == '1'">
+		   <log expr="'DNIS >>>>>>>>>>>>>>> celebrityMainMenu '+DNIS"/>
+		   <goto next="#celebrityMainMenu"/>
+		<else/>		
+		   <prompt bargein="true" timeout="3s">	
+                    	   <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/delay_charging.wav'"/>	
+               	   </prompt>
+                   <goto next="starclub_End.vxml"/>			  	 				  				  
+                </if>	
+         </block>
+</form> 
+  
+<form id="celebrityMainMenu">
+     <block>
+     	   <prompt bargein="false">	
+		<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'disclaimer_ticket.wav'"/>	
+           </prompt>
+           <if cond="celeshowstatus=='1'">
+	   	<prompt bargein="false">	
+	   		 <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'event_active.wav'"/>
+	   		 <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'disclaimer_pre_chat.wav'"/>
+	   	</prompt>
+	        <ccp_handoff profile="celebrity_talk" aep="CELEBTITY_AEP" wait=true />
+	   	<ccp_getinfo key="return_opt" variable="return_opt"/>
+	   	<log expr="'CELE CHAT RESULT '+return_opt"/>
+	   	<if cond="return_opt=='*'"> 
+	   	 	<log expr="'Successful return from chat'"/>
+	   	 	<goto next="starclub_End.vxml"/>		
+		</if>
+		<catch event="error.ccp_handoff">
+			<disconnect/>
+		</catch>
+		<catch event="error.ccp_getinfo">
+			<disconnect/>
+		</catch>	
+	    </if>
+      </block>
+</form>      
+	
+<form id="nextevent">
+	<block>
+	
+	    <if cond="nxteventflag=='0'">
+		 <prompt bargein="true" timeout="0s">	
+			<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'call_postevent.wav'"/>
+        	 </prompt>
+	 		
+	    <else/>
+		 <prompt bargein="true" timeout="0s">	
+  	      		<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'call_postevent_next.wav'"/>
+        	 </prompt>
+	    </if>
+	    <disconnect/>
+	</block>    
+</form>
+
+
+<form id="celebchatpending">
+	 <block>   
+	    <assign name="call_date" expr="getcurryyyymmdd()"></assign>
+	    <assign name="call_time" expr="start_time()"/>
+
+	    <if cond="call_date==showdate">
+	    	 <if cond="(time_duration(showtime) &lt; 30) || (time_duration(showtime)==30)">
+			<prompt bargein="true" timeout="0s">	
+			       <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'pre_event_engagement.wav'"/>
+		        </prompt>
+		 <elseif cond="call_time >= showtime"/>
+			<prompt bargein="true" timeout="0s">	
+		  	       <audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'event_cancel.wav'"/>
+		        </prompt>
+		 <else/>
+		 	<prompt bargein="true" timeout="0s">	
+		      		<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'chat_today.wav'"/>
+		    	</prompt>
+	         </if>
+	 	
+	    <else/>
+		 <prompt bargein="true" timeout="0s">	
+  	      		<audio expr="'http://'+Prompt_Path+LANG_DESCRIPTION+'/'+'call_postevent_next.wav'"/>
+        	 </prompt>
+	    </if>
+	    
+	    
+	    
+	    
+	    <disconnect/>
+	 </block>   
+</form>
+
+
+</vxml>
+
+
+
+   

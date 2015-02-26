@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="test.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="number" expr="'0'"/>
+	<var name ="MOB" expr =""/>
+<form id="test">
+	<block>
+		<log expr="'############ In testing Menu #############'"></log>
+	</block>
+		<field name="mobilenumber" type="digits?minlength=1;maxlength=2">		
+    		<prompt bargein="true" timeout="4s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/01/Welcome_mdn_Retailer.wav'"/>				
+			</prompt>
+			<filled>
+				<script>
+						mobilenumber= mobilenumber.replace(/\s+/g,'');
+						number = mobilenumber.length;
+						MOB=mobilenumber;
+				</script>
+				<log expr="'User Input is: ==' +MOB"/>
+				
+				<if cond="MOB=='13'">
+					<log expr="'User Input Correct'"/>
+				<else/>
+					<log expr="'User Input Wrong'"/>
+				</if>
+				
+			</filled>	
+		</field>		
+</form>
+</vxml>
+	  
+
+
+
+
+

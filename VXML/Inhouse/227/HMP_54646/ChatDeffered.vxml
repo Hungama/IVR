@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_54646_ServicesRoot.vxml"
+
+xmlns="http://www.w3.org/2001/vxml"
+
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+<meta name="ChatDeffered.vxml" content="" />
+<meta name="Author" content="" />
+<meta name="Date" content="" />
+<meta name="Description" content="" />
+<meta name="Support" content="" />	
+<var name="celeb_status" expr="''"/>
+<var name="celeb_rec_fcount" expr="''"/>
+<var name="celeb_rec_fcount_check" expr="''"/>
+<var name="LANG_DESCRIPTION" expr="'HIN'"/>
+
+<script>
+	var out_string=new Object();
+</script>
+
+
+<form id="GetDefferedFileNum">
+   <block>
+                <script srcexpr="'http://192.168.100.226:8080/hungama/newselebhungama_dbinteraction?PROCEDURE=CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+                <log> before fetch</log>
+                <script>
+                                <![CDATA[
+                                   for(j=0; j< out_string.length;  j++)
+                                   {             
+                                       if(j==0)
+                                                                celeb_rec_fcount = out_string[j];
+                                       
+
+                                  }
+                                ]]>
+                </script>
+                
+                <prompt bargein="false" timeout="1s">
+                               <!-- <audio expr="celeb_Prompt_Path+LANG_DESCRIPTION+'/welcome_chat.wav'"/>-->
+                               <audio expr="celeb_Prompt_Path+LANG_DESCRIPTION+'/event_active.wav'"/>
+                              <!-- <audio expr="celeb_Prompt_Path+LANG_DESCRIPTION+'/disclaimer_ticket.wav'"/>-->
+                                <audio expr="celeb_Prompt_Path+LANG_DESCRIPTION+'/inqueue.wav'"/>
+                              <!--  <audio expr="celeb_Prompt_Path+LANG_DESCRIPTION+'/return_mainmenu.wav'"/>-->
+                                <!--<audio expr="celeb_Prompt_Path+LANG_DESCRIPTION+'/disclaimer_pre_chat.wav'"/>-->
+                </prompt>
+                <script>celeb_rec_fcount=parseInt(celeb_rec_fcount);</script>
+                <script>celeb_rec_fcount=celeb_rec_fcount-1;</script>
+                <goto next="#Main"/>
+  </block>
+</form>
+
+<form id="Main">
+                <block>
+                                <script srcexpr="'http://192.168.100.226:8080/hungama/newselebhungama_dbinteraction?PROCEDURE=CELEB_FILE_RECORD_COUNT&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]=9711071741&amp;INPARAM[1]='+celeb_rec_fcount+'&amp;INPARAM[2]=GET'"/>
+                                                <log> cll will not go black if play file count value will exeed the celeb_rec_fcount value</log>
+                                                <script>
+                                                                <![CDATA[
+                                                                   for(j=0; j< out_string.length;  j++)
+                                                                   {             
+									if(j==0)
+									celeb_rec_fcount_check = out_string[j];
+									if(j==1)
+									celeb_status = out_string[j];
+                                                                  }
+                                                                ]]>
+                                </script>
+                                
+                <if cond="celeb_status=='FALSE'">
+                	 <goto next="celeb_offline.vxml"/>
+                </if>
+                </block>
+                <field name="wait_input">
+                                <grammar mode="dtmf" root="start1" version="1.0">
+                                                <rule id="start1" scope="public">
+                                                <one-of>     
+                                                                <item>8</item>                   
+                                                </one-of>
+                                                </rule>
+                                </grammar>
+
+                                <prompt bargein="true" timeout="1s" >
+                                                <audio expr="'http://192.168.100.226:8080/hungama/RecordChat/celeb_record_'+celeb_rec_fcount+'.wav'"/>
+                                </prompt>
+                                <filled>
+                                	       
+                                              		 <script>celeb_rec_fcount=celeb_rec_fcount+1;</script>
+								<goto next="#Main"/>
+                                            
+                                </filled>
+
+                                <noinput>
+                                                <script>celeb_rec_fcount=celeb_rec_fcount+1;</script>
+						<goto next="#Main"/>
+                                </noinput>
+
+                                <nomatch>
+                                                <script>celeb_rec_fcount=celeb_rec_fcount+1;</script>
+		                                <goto next="#Main"/>
+                                </nomatch>
+                </field>                                
+</form>
+</vxml>

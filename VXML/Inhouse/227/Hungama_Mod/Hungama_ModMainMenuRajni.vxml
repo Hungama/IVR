@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_ModMainMenuRajni.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />
+	
+	<var name="movie_idx" expr="0"/>
+	
+	<script>
+		var favSongs=new Object();
+		var out_string=new Object();
+	</script>
+	
+	<form id="MAINMENU">			
+			<field name="choice">
+				<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								 <item>  1  </item>
+								 <item>  2  </item>								 
+								 <item>  9  </item>
+							</one-of>
+						</rule>
+				</grammar>				
+				<prompt bargein="true" timeout="2s">					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/selectcat_rajni1.wav'"/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf1.wav'"/>																		
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/selectcat_rajni2.wav'"/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/press_dtmf2.wav'"/>
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/acmanager_rajni.wav'"/>
+				</prompt>
+				<filled>
+					<if cond="choice=='1'">
+						<assign name="cat" expr="'rajni1'"/>
+						<assign name="playconfig" expr="cat"></assign>
+						<goto next="#FETCHSONGS"/>	
+					<elseif cond="choice=='2'"/>
+						<assign name="cat" expr="'rajni2'"/>
+						<assign name="playconfig" expr="cat"></assign>
+						<goto next="#FETCHSONGS"/>
+                    <else/>
+						<goto next="Hungama_ModMngAccnt_Rajni.vxml"/>	
+					</if>
+				</filled>
+				
+			</field>
+			<noinput count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</noinput>
+			<noinput count="3">
+				<assign name="cat" expr="'rajni1'"/>
+				<assign name="playconfig" expr="cat"></assign>
+				<goto next="#FETCHSONGS"/>
+			</noinput>
+			<nomatch count="1">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="2">
+				<prompt bargein="true" timeout="0s">
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+				</prompt>
+				<assign name="movie_idx" expr="0"/>
+				<reprompt></reprompt>
+			</nomatch>
+			<nomatch count="3">
+				<assign name="cat" expr="'rajni1'"/>
+				<assign name="playconfig" expr="cat"></assign>
+				<goto next="#FETCHSONGS"/>
+			</nomatch>
+	</form>	
+	
+	<form id="FETCHSONGS">
+				<block>												
+					<log> fetching songs </log>
+					<if cond="playconfig=='00'">
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/songconfig/'+lang+playconfig+'.cfg'"/>
+					<else/>
+						<script srcexpr="'http://'+IP+'/'+servlet_path+'/ar_ReadConfigSong?ConfigPath=config/'+operator+'/songconfig/'+playconfig+'.cfg'"/>
+					</if>
+					<script>
+								array1.length=0;
+								unike_play=0;
+					</script>
+					<assign name="HEARD" expr="playconfig" />
+					<assign name="len" expr="favSongs.length" />
+					<assign name="movie_idx" expr="0" />
+					<assign name="i" expr="0" />
+					<log>previous Array[1]  is	<value expr="array1[0]"/>    </log>
+					<script>
+						 <![CDATA[
+							   for(j=0; j<len ;  j++)
+							   {  	  
+										array1[j] = favSongs[j];						   
+							   }
+
+						]]>		
+					</script> 	       					       
+					<log>Length  is	<value expr="len"/>    </log>
+					<log>Array[1]  is	<value expr="array1[0]"/>    </log>					
+				</block>
+				<field name="choice">
+					<grammar mode="dtmf" root="start2" version="1.0">
+						<rule id="start2" scope="public">
+							<one-of>
+								 <item>  8  </item>
+								 <item>  9  </item>									
+							</one-of>
+						</rule>
+					</grammar>
+					<prompt bargein="true" timeout="1s">
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/welcome_cat_'+playconfig+'.wav'"/>							
+						<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/keypad.wav'"/>						
+					</prompt>
+					<filled>
+						<if cond="choice=='8'">
+							<goto next="#MAINMENU"/>
+						<elseif cond="choice=='9'"/>
+							<goto next="Hungama_ModMngAccnt_Rajni.vxml"/>
+						<else/>
+							<goto next="Hungama_ModPlay.vxml#next"/>
+						</if>						
+					</filled>
+					<noinput>
+						<goto next="Hungama_ModPlay.vxml#next"/>
+					</noinput>
+					<nomatch>
+						<goto next="Hungama_ModPlay.vxml#next"/>
+					</nomatch>
+				</field>
+	</form>
+</vxml>

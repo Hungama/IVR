@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" application="Hungama_ModRoot.vxml"
+	xmlns="http://www.w3.org/2001/vxml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+	<meta name="Hungama_ModEnd.vxml" content="" />
+	<meta name="Author" content="" />
+	<meta name="Date" content="" />
+	<meta name="Description" content="" />
+	<meta name="Support" content="" />
+	
+	<script>
+		var out_string=new Object();
+	</script>
+
+	<form id="EndLogin">
+		<block>
+			<log>Section Name isssssss  <value expr="Section_Name"/>  </log>
+			<assign name="C_End" expr="start_time()"/>
+			<log expr="'song_listen=='+song_listen"></log>
+			<if cond="song_listen=='START'">
+				<assign name="song_listen" expr="'END'" />
+				<assign name="compare_time" expr="time_duration(song_begin)"/>
+				<assign name="ContentTime" expr="AddContentTime(compare_time,ContentTime)"/>
+				<assign name="contentlog" expr="contentlog+songID+hash+cat+hash+subcat+hash+compare_time+hash"></assign>
+			</if>
+			<log>	END  HEARD == <value expr="HEARD"/>    </log>
+			<log>	directaccess  HEARD == <value expr="directaccess"/>    </log>
+			
+			<if cond="HEARD!='0' &amp;&amp; HEARD!='00'">
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_userprofile&amp;INTOKEN=3&amp;OUTTOKEN=1&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+HEARD+'&amp;INPARAM[2]=SET'"/>
+			</if>
+			<script>
+				<![CDATA[
+				if(timerflag==1)
+					start_BalenceMinute=starttime();
+				]]>	 	
+			</script>
+			<if cond="timerflag=='1'">
+				<script> 
+					total_used_bal=rim(start_BalenceMinute);
+					bal=bal-total_used_bal;  						  
+				</script>
+				<log expr="'@@@@@@ used balance is '+total_used_bal"/>
+				<log expr="'@@@@@@ left balance is '+bal"/>
+			</if>
+			<script> bal=(Math.floor(bal/60)); </script>
+			 <log expr="'@@@@@@ left balance in minutes is '+bal"/>
+			<if cond="bal &lt; 0">
+				<script>bal=0;</script>
+			</if>
+
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/'+dbservlet+'?PROCEDURE=reliance_music_mania.music_updatetime&amp;INTOKEN=3&amp;OUTTOKEN=0&amp;INPARAM[0]='+ANI+'&amp;INPARAM[1]='+bal+'&amp;INPARAM[2]='+DNIS"/>
+			<script srcexpr="'http://'+IP+'/'+servlet_path+'/exit_log?starttime='+C_Start+'&amp;endtime='+C_End+'&amp;ani='+ANI+'&amp;dnis='+DNIS+'&amp;realdnis='+realDNIS+hash+Section_Name+hash+mod_of_sub+hash+pricepoint+'&amp;contenttime='+ContentTime+'&amp;circle='+circle+'&amp;operator='+operator+'&amp;service=RMUSICMANIA&amp;subflag='+usr_status+'&amp;contentlog='+contentlog"/>
+			<exit/>
+		</block>
+	</form>
+	<catch event="error.badfetch">		 								
+		<exit/>
+    	</catch>
+	<catch event="telephone.disconnect.hangup">
+		<exit/>
+	</catch>                 
+      	<catch event="telephone.disconnect">
+		<exit/>
+	</catch>   	  
+	<catch event="connection.disconnect.hangup">
+		<exit/>
+      	</catch>    
+</vxml>

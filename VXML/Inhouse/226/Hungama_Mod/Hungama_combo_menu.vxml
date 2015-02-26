@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vxml version="2.0" application="Hungama_ERoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="Hungama_combo_menu.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+
+
+<form id="MAINMENU">
+
+	<block>
+		<assign name="program_name" expr="'Hungama_combo_menu_MANIMENU'"/>
+	</block>
+	<field name="choice">
+				<grammar mode="dtmf" root="start1" version="1.0">
+						<rule id="start1" scope="public">
+							<one-of>
+								<item> 1 </item>
+								<item> 2 </item>
+								<item> 3 </item>
+								<item> 4 </item>																
+							</one-of>
+						</rule>
+				</grammar>				
+
+				<prompt bargein="true" timeout="2s">					
+					<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/root_combo.wav'"/>
+				</prompt>				
+				
+				<filled>
+						<if cond="choice=='1'">
+								<goto next="Hungama_ModMainMenu.vxml"/>
+						<elseif cond="choice=='2'"/>
+								<submit expr="'../ManchalaPremRiyaSub/playcontent.vxml'"/>
+						<elseif cond="choice=='3'"/>
+								<submit expr="'../Hungama_service_redfm_all/Hungama_RedFMRouting.vxml'"/>
+						<elseif cond="choice=='4'"/>
+								<submit expr="'../celebrity/starclub-SelectLang.vxml'"/>
+						</if>
+				</filled>
+	</field>
+	
+	<noinput count="1">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+		</prompt>
+		<assign name="movie_idx" expr="1"/>
+		<reprompt></reprompt>
+	</noinput>
+	<noinput count="2">
+		<prompt bargein="true" timeout="0s">
+			<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/nodtmf.wav'"/>
+		</prompt>
+		<assign name="movie_idx" expr="1"/>
+		<reprompt></reprompt>
+	</noinput>
+	<noinput count="3">
+			<goto next="Hungama_ModMainMenu.vxml"/>
+	</noinput>
+	<nomatch count="1">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>
+	</nomatch>
+	<nomatch count="2">
+			<prompt bargein="true" timeout="0s">
+				<audio expr="'http://'+PROMPTS_CONTENT+'/'+Prompts_Path+'/'+lang+'/invalidoption.wav'"/>
+			</prompt>
+			<reprompt></reprompt>			
+	</nomatch>
+	<nomatch count="3">
+			<goto next="Hungama_ModMainMenu.vxml"/>			
+	</nomatch>
+	
+</form>
+
+
+</vxml>

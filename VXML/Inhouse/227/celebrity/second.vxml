@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml" xmlns:gmap="http://www.example.org/gmap" xmlns:java="http://www.example.org/java/XSLSupportFunctions" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+<form id="one">
+    <field name="getDigits">
+	<grammar mode="dtmf" root="r1" version="1.0">
+      		<rule id="r1" scope="public">
+        	<one-of>
+	          <item>1</item>
+        	  <item>2</item>
+	          <item>3</item>
+        	 </one-of>
+	       </rule>
+     	</grammar>
+	<filled>
+		<log> Got the dtmf input.. </log>
+		<goto next="#two"/>
+	</filled>
+    </field>
+</form>		
+
+<form id="two">
+	<block>
+	    <exit/>
+	</block>
+</form>
+
+<catch event="noinput">
+	<goto next="#one"/>
+</catch>
+
+<catch event="connection.disconnect">
+	<log> Dialog Terminate Called from CCXML </log>
+	<exit/>
+</catch>
+
+<!--<form id="two">
+	<block>
+		<prompt>
+			<audio src="welcome.wav"/>
+		</prompt>
+	</block>
+</form>-->
+
+</vxml>

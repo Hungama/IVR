@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<vxml version="2.0" application="CricketRoot.vxml"
+
+	xmlns="http://www.w3.org/2001/vxml"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://www.w3.org/2001/vxml http://www.w3.org/TR/voicexml20/vxml.xsd">
+
+
+
+	<meta name="RecordShare.vxml" content="" />
+
+	<meta name="Author" content="" />
+
+	<meta name="Date" content="" />
+
+	<meta name="Description" content="" />
+
+	<meta name="Support" content="" />	
+	<var name="req" expr="'refer'"/>
+
+<var name="dni" expr="'54433'"/>
+<var name="datetime" expr="'0'"/>
+<var name="recfilename" expr="'refer'"/>
+<var name="UploadFileName" expr="'refer'"/>
+
+	<form id="record_instruction">
+	<script>
+	var rectime=0;
+	var curtime=0;
+	
+	</script>
+                 <block>
+                 
+						<assign name="rectime" expr="start_time()"/>
+						<assign name="currtime" expr="getcurryyyymmdd()+rectime"></assign>
+		
+		
+					<prompt bargein="true" >
+						<!-- <audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/record_instruction.wav'"/> -->
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/rec_n_share.wav'"/>
+					</prompt>
+			<goto next="#record_share"/>
+		</block>
+         </form>
+	
+	<form id="record_share">
+	<block>
+		<script>UploadFileName='RECSHARE_HIN_'+ANI+'_'+currtime+'.wav';</script>
+	</block>
+	  
+<!--<record name="msg1" beep="true" maxtime="20s" finalsilence="600000ms" dtmfterm="true"/>			    
+	   
+	   <subdialog name="messageUpload" srcexpr="'http://'+IP+'/hungama/rel_recording_cricket'" enctype="multipart/form-data" method="post" namelist="req ANI dni lang datetime UploadFileName msg1">	    	    							
+	
+		</subdialog> 	-->	    
+	     <!-- <subdialog name="messageUpload" srcexpr="'http://'+IP+'/hungama/RecordFile'" enctype="multipart/form-data" method="post" namelist="ANI DNIS LANG_DESCRIPTION currtime msg1">	    	    							
+	
+		</subdialog>-->
+	     
+	     <block>
+             
+
+ 		
+               
+		<!--<script srcexpr="'http://'+IP+'/hungama/Record_cricket?req=rec_share&amp;ani='+ANI+'&amp;dni='+DNIS+'&amp;lang='+LANG_DESCRIPTION+'&amp;datetime='+currtime+'&amp;recfilename='+UploadFileName+'&amp;MSG='+msg1"/>-->
+  
+
+	       <goto next="#share_thanks"/>
+	     </block>
+	     
+		     
+	</form>
+	
+	<form id="share_thanks">
+         <block>
+         		<!--	<script srcexpr="'http://'+IP+'/'+servlet_path+'/cricket_fb?ANI='+ANI+'&amp;MSG=has%20just%20wished%20his%20favorite%20Team%20wishes%20for%20the%20India-Australia%20Series.%20Click%20below%20to%20listen%20to%20the%20wishes.%20You%20can%20also%20send%20your%20wishes%20to%20your%20Favorite%20Team%20%20by%20simply%20Dialing%2054433%20from%20your%20Reliance%20Mobile.&amp;option=0'"/>-->
+				<script srcexpr="'http://'+IP+'/'+servlet_path+'/cricket_fb?ANI='+ANI+'&amp;MSG=has%20just%20wished%20his%20favorite%20Team%20wishes%20for%20the%2020-20%20cup.%20Click%20below%20to%20listen%20to%20the%20wishes.%20You%20can%20also%20send%20your%20wishes%20to%20your%20Favorite%20Team%20%20by%20simply%20dialing%2054433%20from%20your%20Reliance%20Mobile.&amp;option=0'"/>
+
+				   <!-- <script srcexpr="'http://'+IP+'/'+servlet_path+'/cricket_fb?ANI='+ANI+'&amp;MSG=has%20just%20wished%20his%20favorite%20Team%20wishes%20of%20the%20Cricket.%20Click%20below%20to%20listen%20to%20the%20wishes.%20You%20can%20also%20send%20your%20wishes%20to%20your%20Favorite%20Team%20%20by%20simply%20dialing%2054433%20from%20your%20Reliance%20Mobile.&amp;option=0'"/>-->
+
+                	<prompt bargein="true" timeout="3s">
+						<audio expr="'http://'+IP+'/'+Prompt_Path+'/'+lang+'/rec_thanks.wav'"/>
+					</prompt>
+			<goto next="MainMenu.vxml"/>
+		</block>
+	</form>
+
+
+
+</vxml>
