@@ -1,0 +1,2 @@
+Path of servlet on BSNL North -
+/var/lib/apache-tomcat-6.0.29/webapps/hungama/WEB-INF/classes

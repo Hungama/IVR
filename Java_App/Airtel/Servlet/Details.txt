@@ -1,0 +1,6 @@
+Path of servlet on airtel 156 and 158 server -
+On 156 -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/WEB-INF/classes
+
+On 158 -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/WEB-INF/classes

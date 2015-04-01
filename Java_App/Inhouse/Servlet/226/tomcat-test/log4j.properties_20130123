@@ -1,0 +1,48 @@
+log4j.rootLogger=debug, D
+log4j.rootLogger=error, E
+log4j.rootLogger=info, R
+
+# ***** R is set to be a DailyRollingFileAppender
+log4j.appender.R=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.R.File=/db/logs/servelet_logs_dev/uni_mrt/unidbinteraction-info.log
+# ***** DatePattern set to yyyyMMdd
+log4j.appender.R.DatePattern='.'yyyyMMdd
+# ***** R uses PatternLayout.
+log4j.appender.R.layout=org.apache.log4j.PatternLayout
+log4j.appender.R.layout.ConversionPattern=[%-5p][%d{dd-MM-yyyy HH:mm:ss,SSS}][%C{1}][%L] - %m%n
+
+
+# ***** D is set to be a DailyRollingFileAppender
+log4j.appender.D=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.D.File=/db/logs/servelet_logs_dev/uni_mrt/unidbinteraction-debug.log
+# ***** DatePattern set to yyyyMMdd
+log4j.appender.D.DatePattern='.'yyyyMMdd
+# ***** R uses PatternLayout.
+log4j.appender.D.layout=org.apache.log4j.PatternLayout
+log4j.appender.D.layout.ConversionPattern=[%-5p][%d{dd-MM-yyyy HH:mm:ss,SSS}][%C{1}][%L] - %m%n
+
+# ***** E is set to be a DailyRollingFileAppender
+log4j.appender.E=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.E.File=/db/logs/servelet_logs_dev/uni_mrt/unidbinteraction-error.log
+# ***** DatePattern set to yyyyMMdd
+log4j.appender.E.DatePattern='.'yyyyMMdd
+# ***** R uses PatternLayout.
+log4j.appender.E.layout=org.apache.log4j.PatternLayout
+log4j.appender.E.layout.ConversionPattern=[%-5p][%d{dd-MM-yyyy HH:mm:ss,SSS}][%C{1}][%L] - %m%n
+
+
+#log4j.logger.com.hungama=debug
+log4j.logger.ie.omk=warn
+
+# ***** M is set to be a SMTP appender
+#log4j.appender.M=org.apache.log4j.net.SMTPAppender
+#log4j.appender.M.Threshold=ERROR
+#log4j.appender.M.BufferSize=5
+#log4j.appender.M.To=milind@hungama.com	
+#log4j.appender.M.From=etisalat@hungama.com
+#log4j.appender.M.SMTPHost=smtp-out2.hungama.com
+#log4j.appender.M.Subject=DuCCG Error
+#log4j.appender.M.layout=org.apache.log4j.PatternLayout
+#log4j.appender.M.layout.ConversionPattern=[%-5p][%d{dd-MM-yyyy HH:mm:ss,SSS}][%C{1}][%L] - %m%n
+
+

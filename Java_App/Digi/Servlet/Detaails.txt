@@ -1,0 +1,6 @@
+path of servlet on Digi 42 and 43 server -
+On 42 -
+/usr/local/apache-tomcat-6.0.32/webapps/hungama/WEB-INF/classes
+
+on 43 -
+/usr/local/apache-tomcat-6.0.32/webapps/hungama/WEB-INF/classes

@@ -1,0 +1,14 @@
+Path of servelt on 226 and 227 server -
+On 226 -
+/tomcat/webapps/hungama/WEB-INF/classes/
+/tomcat2/webapps/hungama/WEB-INF/classes/
+/tomcat3/webapps/hungama/WEB-INF/classes/
+/tomcat4/webapps/hungama/WEB-INF/classes/
+/tomcat-test/webapps/hungama/WEB-INF/classes/
+
+On 227 -
+/db/tomcat1/webapps/hungama/WEB-INF/classes/
+/db/tomcat2/webapps/hungama/WEB-INF/classes/
+/db/tomcat3/webapps/hungama/WEB-INF/classes/
+/db/tomcat4/webapps/hungama/WEB-INF/classes/
+/db/tomcat-test/webapps/hungama/WEB-INF/classes/

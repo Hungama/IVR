@@ -1,0 +1,2 @@
+Path of servlet on Vodafone 137 server -
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/WEB-INF/classes/

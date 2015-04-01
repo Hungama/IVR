@@ -1,0 +1,3 @@
+pth of servlet on 106 server -
+
+/var/lib/apache-tomcat-6.0.32/webapps/hungama/WEB-INF/classes
