@@ -1,0 +1,16 @@
+Path of application code on 226 -
+Content automation application -
+/home/java/ContentLog_Automation_Bsnl/BsnlContentAutomation.java
+/home/java/ContentLog_Automation/contentlog_new1.jar
+
+Billing Data process -
+/home/java/BillingDataProcess
+/home/java/BillingDataProcess/INDICOM
+/home/java/BillingDataProcess/VMI
+/home/java/BillingDataProcess/RELIANCE
+/home/java/BillingDataProcess/UNINOR
+/home/java/BillingDataProcess/ETISALAT
+
+
+
+

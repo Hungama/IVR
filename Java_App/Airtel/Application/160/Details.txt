@@ -1,0 +1,4 @@
+Application path on 160 server of Airtel setup -
+
+/home/Java/AirtelBillingDataProcess
+

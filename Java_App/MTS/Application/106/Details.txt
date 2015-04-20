@@ -1,0 +1,4 @@
+Application path on mts 106 server -
+
+/home/java/BILLINGDATAPROCESS
+/home/java/MuCrbtManager

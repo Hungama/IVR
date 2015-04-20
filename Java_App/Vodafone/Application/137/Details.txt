@@ -1,0 +1,4 @@
+Application path on 137 voda server -
+
+/home/java/MU_CRBT_MANGER
+/home/java/BillingDataProcess

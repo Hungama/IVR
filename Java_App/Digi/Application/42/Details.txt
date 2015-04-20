@@ -1,0 +1,3 @@
+Application path on 42 Digi server-
+
+/home/ivr/JAVA/BillingDataProcess
